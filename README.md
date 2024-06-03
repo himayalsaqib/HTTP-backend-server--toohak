@@ -8,6 +8,8 @@
 
 ## Change Log
 
+N/A
+
 ## 🫡 0. Aims:
 
 1. Demonstrate effective use of software development tools to build full-stack end-user applications.
@@ -25,7 +27,7 @@ UNSW must resort to giving into the limited attention span of students and gamif
 
 However, instead of licensing well-built and tested software, UNSW is hoping to use the pool of extremely talented and interesting COMP1531 students to create their own version to distribute around campus for free. The chosen game to "take inspiration from" is **<a href="https://kahoot.com/">Kahoot</a>**.
 
-The 24T1 cohort of COMP1531 students will build the **backend Javascript server** for a new quiz game platform, **Toohak**. We plan to task future COMP6080 students to build the frontend for Toohak, something you won't have to worry about.
+The 24T2 cohort of COMP1531 students will build the **backend Javascript server** for a new quiz game platform, **Toohak**. We plan to task future students to build the frontend for Toohak, something you won't have to worry about.
 
 **Toohak** is the questionably-named quiz tool that allows admins to create quiz games, and players to join (without signing up) to participate and compete.
 
@@ -41,7 +43,7 @@ We highly recommend **creating and playing** a Kahoot game to better understand 
 
 ## 🐭 2. Iteration 0: Getting Started
 
-[You can watch the iteration 0 introductory video here.](https://youtu.be/fk6FJ-c6hhQ) This video is not required watching (the specification is clear by itself) though many students find it useful as a starting point.
+[You can watch the iteration 0 introductory video here.](https://youtu.be/81r1oUQHRNA) This video is not required watching (the specification is clear by itself) though many students find it useful as a starting point.
 
 ### 🐭 2.1. Task
 
@@ -62,7 +64,7 @@ function adminAuthLogin(email, password) {
   }
 }
 ```
-1. Design a structure to store all the data needed for Toohak, and place this in the [code block](https://www.markdownguide.org/extended-syntax/#fenced-code-blocks) inside the `data.md` file. Specifically, you must consider how to store information about **users** and **quizzes** and populate ONE example `user` and `quiz` in your data structure (any values are fine - see example below).
+2. Design a structure to store all the data needed for Toohak, and place this in the [code block](https://www.markdownguide.org/extended-syntax/#fenced-code-blocks) inside the `data.md` file. Specifically, you must consider how to store information about **users** and **quizzes** and populate ONE example `user` and `quiz` in your data structure (any values are fine - see example below).
     * Use the interface table (2.2) to help you decide what data might need to be stored. This will require making some educated guesses about what would be required to be stored in order to return the types of data you see. **Whilst the data structure you describe in data.md might be similar to the interface, it is a different thing to the interface.** If you're still confused, think of the interface like a restaurant menu, and `data.md` like where the food is stored in the back. It's all the same food, but the menu is about how it's packaged up and received from the kitchen, and `data.md` is describing the structure of how it's all stored behind the scenes. 
     * As functions are called, this structure would be populated with more users and quizzes, so consider this in your solution.
     * Focus on the structure itself (object/list composition), rather than the example contents.
@@ -77,8 +79,9 @@ function adminAuthLogin(email, password) {
 }
 ```
 
-2. Follow best practices for git and teamwork as discussed in lectures.
-    * You are expected to have **at least 1 meeting** with your group, and document the meeting(s) in meeting minutes which should be stored at a timestamped location in your repo (e.g. uploading a word doc/pdf or writing in the GitLab repo Wiki after each meeting).
+3. Follow best practices for git and teamwork as discussed in lectures.
+    * Create a group contract by completing `contract.md` - you may add/edit this template as you see fit.
+    * You are expected to have **at least 1 meeting** with your group, and document the meeting(s) in meeting minutes which should be stored at a timestamped location in your repo (e.g. uploading a word doc/pdf or writing in the GitLab repo Wiki after each meeting). We have provided you with a `minutes-template.md` which you may use if you choose.
     * For this iteration each team member will need to make a minimum of **1 merge request per person** in your group into the `master` branch.
     * **1 merge request per function** must be made (11 in total).
     * Check out the lab on Git from week 1 to get familiar with using Git.
@@ -165,7 +168,7 @@ In terms of file structure:
       <code>( authUserId, email, nameFirst, nameLast )</code>
       <br /><br />
       <b>Return object:</b><br />
-      <code>{ }</code>
+      <code>{ }</code> empty object
     </td>
   </tr>
   <tr>
@@ -179,7 +182,7 @@ In terms of file structure:
       <code>( authUserId, oldPassword, newPassword )</code>
       <br /><br />
       <b>Return object:</b><br />
-      <code>{ }</code>
+      <code>{ }</code> empty object
     </td>
   </tr>
   <tr>
@@ -331,6 +334,7 @@ In terms of file structure:
     <td>Project Management & Teamwork</td>
     <td>10%</td>
     <td><ul>
+      <li>Completed group contract.</li>>
       <li>A generally equal contribution between team members.</li>
       <li>Effective use of course-provided MS Teams for communication, demonstrating an ability to competently manage teamwork online.</li>
       <li>Had a meeting together that involves planning and managing tasks, and taken notes from said meeting (and stored in a logical place in the repo e.g. Wiki section).</li>
@@ -359,24 +363,24 @@ Please see section 6 for information on **due date**.
 
 ## 🐶 3. Iteration 1: Basic Functionality and Tests
 
-Coming Soon
+Coming Soon.
 
 ## 🐝 4. Iteration 2: Building a Web Server
 
-Coming Soon
+Coming Soon.
 
 ## 🦆 5. Iteration 3: Completing the Lifecycle
 
-Coming Soon
+Coming Soon.
 
 ## 🌸 6. Due Dates and Weightings
 
 | Iteration | Due date                             | Demonstration to tutor(s)     | Assessment weighting (%) |
 | --------- | ------------------------------------ | ----------------------------- | ------------------------ |
-| 0         | 10pm Friday 23rd Feb (**week 2**)    | No demonstration              | 5% of project mark       |
-| 1         | 10pm Friday 8th Mar (**week 4**)     | In YOUR **week 5** laboratory | 30% of project mark      |
-| 2         | 10pm Thursday 28th Mar (**week 7**)  | In YOUR **week 8** laboratory | 35% of project mark      |
-| 3         | 10pm Friday 19th Apr (**week 10**)   | Final demonstration week 11   | 30% of project mark      |
+| 0         | 8pm Friday  7th Jun (**week 2**)    | No demonstration              | 5% of project mark       |
+| 1         | 8pm Friday 21st Jun (**week 4**)    | In YOUR **week 5** laboratory | 30% of project mark      |
+| 2         | 8pm Friday 12th Jul (**week 7**)    | In YOUR **week 8** laboratory | 35% of project mark      |
+| 3         | 8pm Friday 2nd Aug (**week 10**)    | Final demonstration week 11   | 30% of project mark      |
 
 For more information about demonstrations see section `6.2`.
 
@@ -388,20 +392,41 @@ The following late penalties apply depending on the iteration:
  * Iteration 0: No late submissions at all.
  * Iteration 1: No late submissions at all.
  * Iteration 2: No late submissions at all.
- * Iteration 3: Can submit up to 72 hours late, with 5% penalty applied off your mark every time a 24 hour window passes, starting from the due date.
+ * Iteration 3: Can submit up to 48 hours late, with 5% penalty applied off your mark every time a 24 hour window passes, starting from the due date.
 
 We will not mark commits pushed to master after the final submission time for a given iteration.
 
 If the deadline is approaching and you have features that are either untested or failing their tests, **DO NOT MERGE IN THOSE MERGE REQUESTS**. In some rare cases, your tutor will look at unmerged branches and may allocate some reduced marks for incomplete functionality, but `master` should only contain working code.
 
-Minor isolated fixes after the due date are allowed but carry a penalty to the automark, if the automark after re-running the autotests is greater than your initial automark. This penalty can be up to 30% of the automarking component for that iteration, depending on the number and nature of your fixes. Note that if the re-run automark after penalty is lower than your initial mark, we will keep your initial mark, meaning your automark cannot decrease after a re-run. E.g. imagine that your initial automark is 50%, on re-run you get a raw automark of 70%, and your fixes attract a 30% penalty: since the 30% penalty will reduce the mark of 70% to 49%, your final **automark** will still be 50% (i.e. your initial mark).
+Minor isolated fixes after the due date are allowed but may carry a penalty to the automark. If the isolated fixes result in a higher automark result (minus the penalty), then we will update your mark. E.g. imagine that your initial automark is 20%, on re-run you get a raw automark of 86%, and your fixes attract a 30% penalty: since the 30% penalty will reduce the mark of 86% to 60%, your final **automark** will still be 60%.
+
+If the re-run automark after penalty is lower than your initial mark, we will keep your initial mark. E.g. imagine that your initial automark is 50%, on re-run you get a raw automark of 70%, and your fixes attract a 30% penalty: since the 30% penalty will reduce the mark of 70% to 49%, your final **automark** will still be 50% (i.e. your initial mark).
 
 #### How to request a re-run
 
 * Create a branch, e.g. `iter[X]-fix`, based off the submission commit.
 * Make the minimal number of necessary changes (i.e. only fix the trivial bugs that cost you many automarks).
-* Push the changes to GitLab on a new branch, and take note of the latest commit hash on that branch.
-* Submit your commit hash for remark for a particular iteration [on this page](https://cgi.cse.unsw.edu.au/~cs1531/NOW/content/project/runs)
+* Create a merge request for this branch, and take note of merge request ID in the URL
+  * It is the number at the end of the URL
+  * "https://nw-syd-gitlab.cseunsw.tech/COMP1531/24T2/groups/H17B_CRUNCHIE/project-backend/-/merge_requests/**67**"
+* Log onto the [project runs page](https://cgi.cse.unsw.edu.au/~cs1531/NOW/content/project/runs) and submit that merge request ID (e.g. 67) for rerun
+* Once you submit it, it will take up to 24 hours for you to receive the results of the rerun.
+  * The results will appear in status "reviewing", which means an admin still needs to review the penalty.
+  * **Please note: The results of the rerun is your RAW automark BEFORE ANY penalties have been applied.**
+* Once your MR has been reviewed (this can take up to 72 hours), the status will change to "Complete" and the result will be updated to the mark after penalty
+* If the mark after penalty is higher than your current mark, this will then be updated in the grade system, and take 48 hours to propagate to you.
+
+Please note: The current limit on reruns is one every 24 hours. You can submit multiple re-runs before waiting for manual review or mark propagation, as long as they are 24 hours apart.
+
+##### What constitutes a "trivial fix”?
+* Fixing spelling/capitalisation/naming issues with values specified in spec documentation
+* Swapping a variable type e.g. token from 'number' to 'string'
+* Changing the return value type e.g. returning {} rather than null, to match spec documentation
+* Changing route versions e.g. v1 to v2 to match spec documentation
+* Fixing import values
+* Fixing a regex/logical equality check e.g. num === 0 to num === 1
+* Fixing constant variable values e.g. loginAttempts = 1 to loginAttempts = 0
+* As a general rule, any change that is < 3 lines of code
 
 ### 🌸 6.2. Demonstration
 
@@ -425,7 +450,7 @@ More information about the details of this 10 minute presentation will be made a
 
 ## 👌 7. Individual Contribution
 
-The marks given to you for each iteration are given to you individually. We do however use group marks (e.g. automarking) to infer this, and in many cases, you may receive the same mark as your group members, particularly in cases with well functioning groups. Your individual mark is determined by your tutor, with your group mark as a reference point.Your tutor will look at the following items each iteration to determine your mark:
+The marks given to you for each iteration are given to you individually. We do however use group marks (e.g. automarking) to infer this, and in many cases, you may receive the same mark as your group members, particularly in cases with well functioning groups. Your individual mark is determined by a combination of the factors below by your tutor, with your group mark as a reference point.Your tutor will look at the following items each iteration to determine your mark:
  * Project check-in
  * Code contribution
  * Tutorial contributions
@@ -517,21 +542,21 @@ Your other team members will **not** be able to see how you rated them or what c
   </tr>
   <tr>
     <td>1</td>
-    <td><a href="https://forms.office.com/Pages/ResponsePage.aspx?id=pM_2PxXn20i44Qhnufn7o_RvPhdrUs1DpZ0MlMs_Bf1UODVCWklKTFRZRUZNT1dYWFpENFVYMzhQUi4u">Click here</a></td>
-    <td>10pm Friday 8th Mar</td>
-    <td>9am Monday 11th Mar</td>
+    <td>Coming soon</td>
+    <td>8pm Friday 21st June</td>
+    <td>9am Monday 24th June</td>
   </tr>
   <tr>
     <td>2</td>
-    <td><a href="https://forms.office.com/Pages/ResponsePage.aspx?id=pM_2PxXn20i44Qhnufn7o_RvPhdrUs1DpZ0MlMs_Bf1UOFpSN1RLSlJSTUxZQ1Y5MzJBTE4xTUFUNy4u">Click here</a></td>
-    <td>10pm Thursday 28th Mar</td>
-    <td>9am Monday 1st Apr</td>
+    <td>Coming soon</td>
+    <td>8pm Thursday 12th July</td>
+    <td>9am Monday 15th July</td>
   </tr>
   <tr>
     <td>3</td>
-    <td><a href="https://forms.office.com/Pages/ResponsePage.aspx?id=pM_2PxXn20i44Qhnufn7o_RvPhdrUs1DpZ0MlMs_Bf1UOUg2S0hENUU2WFNUVUcyRUlSWkNEWFRVNi4u">Click here</a></td>
-    <td>10pm Friday 19th Apr</td>
-    <td>9am Monday 22nd Apr</td>
+    <td>Coming soon</td>
+    <td>8pm Friday 2nd August</td>
+    <td>9am Monday 5th August</td>
   </tr>
 </table>
 
@@ -554,7 +579,7 @@ It's imperative that issues are raised to your tutor ASAP, as we are limited in 
 
 Each iteration consists of an automarking component. The particular formula used to calculate this mark is specific to the iteration (and detailed above).
 
-When running your code or tests as part of the automarking, we place a 90 second timer on the running of your group's tests. This is more than enough time to complete everything unless you're doing something very wrong or silly with your code. As long as your tests take under 90 seconds to run on the pipeline, you don't have to worry about it potentially taking longer when we run automarking.
+When running your code or tests as part of the automarking, we place a 90 second timer on the running of your group's tests. This is more than enough time to complete everything unless you're doing something very wrong or silly with your code. As long as your tests take under 90 seconds to run, you don't have to worry about it potentially taking longer when we run automarking.
 
 ### 💻 8.2. Pre-submission Leaderboard
 
@@ -562,7 +587,7 @@ In the days preceding iterations 1, 2, and 3's due date, we will be running your
 
 You must have the code you wish to be tested in your `master` branch by **10pm** the night before leaderboard runs.
 
-The leaderboard will be updated on Monday, Wednesday, and Friday morning during the week that the iteration is due. For iteration 2, it will run on a Thursday instead of a Friday.
+The leaderboard will be updated on Monday, Wednesday, and Friday morning during the week that the iteration is due.
 
 This leaderboard run gives you a chance to sanity check your automark (without knowing the details of what you did right and wrong), and is just a bit of fun.
 
