@@ -25,4 +25,4 @@ Group:
 
 4. List the steps a team member does if they get stuck (e.g. can't meet a deadline or stuck debugging).
 - First look online to see if it can be resolved individually
-- Ask on Discord and whoever is available will help
+- Ask on Discord and whoever is available will help.
