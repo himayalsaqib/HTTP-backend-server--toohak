@@ -1,13 +1,15 @@
 Group:
 | zID      | Name    |
 | -------- | ------- |
-|          |         |
-|          |         |
-|          |         |
-|          |         |
-|          |         |
+| z5481287 |   Sarah |
+| z5534127 | Himayal |
+| z5361907 | Sameera |
+| z5361900 | Haleemah|
+| z5487977 | Tara    |
 
 1. When and where will we schedule meetings (e.g. 11am Wednesdays and 2pm Fridays: in-person at X location, on Teams video call, on Discord)?
+
+
 
 2. Where will we record our meeting minutes (e.g. Teams documents, Gitlab Wiki, Gitlab markdown file)?
 
