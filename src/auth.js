@@ -64,3 +64,21 @@ function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
 function adminUserDetailsUpdate( authUserId, email, nameFirst, nameLast ) {
   return {};
 }
+
+/**
+ * Provide a list of all quizzes that are owned by the 
+ * currently logged in user.
+ * 
+ * @param {number} authUserId
+ * @param {number} quizId 
+ * @returns {{quizId, name, timeCreated, timeLastEdited, description}}
+ */
+function adminQuizInfo (authUserId, quizId) {
+  return {
+      quizId: 1,
+      name: 'My Quiz',
+      timeCreated: 1683125870,
+      timeLastEdited: 1683125871,
+      description: 'This is my quiz',
+  }
+}
