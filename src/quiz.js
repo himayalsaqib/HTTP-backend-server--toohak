@@ -20,7 +20,7 @@ function adminQuizList(authUserId) {
  * @param {number} authUserId 
  * @param {string} name
  * @param {string} description 
- * @returns {object} - with a quizId
+ * @returns {object} - assigns a quizId
  */  
 function adminQuizCreate( authUserId, name, description ) {
     return {
