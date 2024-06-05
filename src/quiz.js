@@ -17,10 +17,11 @@ function adminQuizList(authUserId) {
 /**
  * Given basic details about a new quiz, create one for the logged in user
  * 
- * @param {number} authUserId
+ * @param {number} authUserId 
  * @param {string} name
- * @param {string} description
- * @returns {object}
+ * @param {string} description 
+ * 
+ * @returns {object} - with a quizId
  */  
 function adminQuizCreate( authUserId, name, description ) {
     return {
@@ -33,7 +34,8 @@ function adminQuizCreate( authUserId, name, description ) {
  * 
  * @param {number} authUserId 
  * @param {number} quizId 
- * @returns {object} 
+ * 
+ * @returns {object} - an empty object
  */
 function adminQuizRemove ( authUserId, quizId ) {
     return {}
@@ -45,7 +47,8 @@ function adminQuizRemove ( authUserId, quizId ) {
  * @param {number} authUserId
  * @param {number} quizId
  * @param {string} description
- * @returns {object}
+ * 
+ * @returns {object} - an empty object
  */
 function adminQuizDescriptionUpdate (authUserId, quizId, description) {
     return {}
