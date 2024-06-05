@@ -7,3 +7,13 @@ function adminAuthRegister (email, password, nameFirst, nameLast) {
         authUserId: 1,
     };
 }
+
+// Given a registered user's email and password returns their authUserId value
+// Parameters: email, password
+// Returns authUserId object
+
+function adminAuthLogin (email, password) {
+    return {
+        authUserId: 1,
+    };
+}
