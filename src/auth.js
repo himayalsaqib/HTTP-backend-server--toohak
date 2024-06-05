@@ -71,7 +71,7 @@ function adminUserDetailsUpdate( authUserId, email, nameFirst, nameLast ) {
  * 
  * @param {number} authUserId
  * @param {number} quizId 
- * @returns {{quizId, name, timeCreated, timeLastEdited, description}}
+ * @returns {{quizId: number, name: string, timeCreated: number, timeLastEdited: number, description: string}}
  */
 function adminQuizInfo (authUserId, quizId) {
   return {
@@ -82,3 +82,4 @@ function adminQuizInfo (authUserId, quizId) {
       description: 'This is my quiz',
   }
 }
+
