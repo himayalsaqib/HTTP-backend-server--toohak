@@ -17,7 +17,7 @@ let userData = [
     }
 ]
 
-// an array of objects storing quiz details
+// an array of objects storing quiz details.
 
 let quizzes =  [
     {
