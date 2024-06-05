@@ -26,7 +26,7 @@ function adminAuthLogin (email, password) {
  * @param {number} authUserId
  * @returns {object} user 
  */
-function adminUserDetails ( authUserId ) {
+function adminUserDetails (authUserId) {
     return { user:
         {
           userId: 1,
@@ -51,4 +51,16 @@ function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   return {};
 }
 
-
+/**
+ * Given an admin user's authUserId and a set of properties, 
+ * update the properties of this logged in admin user.
+ *
+ * @param {number} authUserId
+ * @param {string} email
+ * @param {string} nameFirst
+ * @param {string} nameLast
+ * @returns {object} empty
+ */
+function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
+  return {};
+}
