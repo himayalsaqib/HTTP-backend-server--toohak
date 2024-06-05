@@ -14,18 +14,39 @@ function adminQuizList(authUserId) {
     }
 }
 
-// Given basic details about a new quiz, create one for the logged in user
-// Parameters: authUserId (integer), name (string), and description (string)
-// Returns: an object
+/**
+ * Given basic details about a new quiz, create one for the logged in user
+ * 
+ * @param {number} authUserId 
+ * @param {string} name
+ * @param {string} description 
+ * @returns {object} - assigns a quizId
+ */  
 function adminQuizCreate( authUserId, name, description ) {
     return {
         quizId: 2
-    };
+    }
 }
 
-// Given a particular quiz, permanently remove the quiz
-// Parameters: authUserId (integer), quizId (integer)
-// Returns: an empty object
+/**
+ * Given a particular quiz, permanently remove the quiz
+ * 
+ * @param {number} authUserId 
+ * @param {number} quizId 
+ * @returns {object} - an empty object
+ */
 function adminQuizRemove ( authUserId, quizId ) {
-    return {};
+    return {}
+}
+
+/**
+ * Update the description of the relevant quiz
+ * 
+ * @param {number} authUserId
+ * @param {number} quizId
+ * @param {string} description
+ * @returns {object} - an empty object
+ */
+function adminQuizDescriptionUpdate (authUserId, quizId, description) {
+    return {}
 }
