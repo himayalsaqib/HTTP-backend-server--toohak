@@ -20,7 +20,6 @@ function adminQuizList(authUserId) {
  * @param {number} authUserId 
  * @param {string} name
  * @param {string} description 
- * 
  * @returns {object} - with a quizId
  */  
 function adminQuizCreate( authUserId, name, description ) {
@@ -34,7 +33,6 @@ function adminQuizCreate( authUserId, name, description ) {
  * 
  * @param {number} authUserId 
  * @param {number} quizId 
- * 
  * @returns {object} - an empty object
  */
 function adminQuizRemove ( authUserId, quizId ) {
@@ -47,7 +45,6 @@ function adminQuizRemove ( authUserId, quizId ) {
  * @param {number} authUserId
  * @param {number} quizId
  * @param {string} description
- * 
  * @returns {object} - an empty object
  */
 function adminQuizDescriptionUpdate (authUserId, quizId, description) {
