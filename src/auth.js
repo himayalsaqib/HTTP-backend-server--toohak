@@ -5,7 +5,7 @@
  * @param {number} authUserId
  * @param {string} oldPassword
  * @param {string} newPassword
- * @returns {empty}
+ * @returns {object} empty
  */
 function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   return {};
