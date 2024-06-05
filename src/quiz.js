@@ -68,3 +68,15 @@ function adminQuizInfo (authUserId, quizId) {
         description: 'This is my quiz',
     }
   }
+
+    /**
+ * Update the name of the relevant quiz.
+ * 
+ * @param {number} authUserId
+ * @param {number} quizId
+ * @param {string} name
+ * @returns {{}} - empty object
+ */
+function adminQuizNameUpdate (authUserId, quizId, name) {
+    return {};
+  }
