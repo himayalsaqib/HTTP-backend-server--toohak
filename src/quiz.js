@@ -57,7 +57,7 @@ function adminQuizDescriptionUpdate (authUserId, quizId, description) {
  * 
  * @param {number} authUserId
  * @param {number} quizId 
- * @returns {{quizId: number, name: string, timeCreated: number, timeLastEdited: number, description: string}}
+ * @returns {object} - returns quiz information 
  */
 function adminQuizInfo (authUserId, quizId) {
     return {
@@ -75,7 +75,7 @@ function adminQuizInfo (authUserId, quizId) {
  * @param {number} authUserId
  * @param {number} quizId
  * @param {string} name
- * @returns {{}} - empty object
+ * @returns {object} - empty object
  */
 function adminQuizNameUpdate (authUserId, quizId, name) {
     return {};
