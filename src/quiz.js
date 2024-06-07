@@ -11,7 +11,7 @@ function adminQuizList(authUserId) {
           name: 'My Quiz',
         }
       ]
-    }
+    };
 }
 
 /**
@@ -25,7 +25,7 @@ function adminQuizList(authUserId) {
 function adminQuizCreate( authUserId, name, description ) {
     return {
         quizId: 2
-    }
+    };
 }
 
 /**
@@ -36,7 +36,7 @@ function adminQuizCreate( authUserId, name, description ) {
  * @returns {object} - an empty object
  */
 function adminQuizRemove ( authUserId, quizId ) {
-    return {}
+    return {};
 }
 
 /**
@@ -48,7 +48,7 @@ function adminQuizRemove ( authUserId, quizId ) {
  * @returns {object} - an empty object
  */
 function adminQuizDescriptionUpdate (authUserId, quizId, description) {
-    return {}
+    return {};
 }
 
 /**
@@ -66,7 +66,7 @@ function adminQuizInfo (authUserId, quizId) {
         timeCreated: 1683125870,
         timeLastEdited: 1683125871,
         description: 'This is my quiz',
-    }
+    };
   }
 
     /**
