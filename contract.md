@@ -12,7 +12,7 @@ Group:
 - For any emergencies where we must meet in person: Tuesday after lab (4pm)
 
 2. Where will we record our meeting minutes (e.g. Teams documents, Gitlab Wiki, Gitlab markdown file)?
-- Gitlab Wiki
+- Google Docs posted to Gitlab
 
 3. Where will we communicate (e.g. Teams channel, Discord, Messenger)?
 - Discord
