@@ -1,0 +1,15 @@
+{
+    "scripts": {
+        "test": "jest",
+    },
+    "dependencies": {
+        "validator": "^13.7.0"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.22.5",
+        "@babel/core": "^7.22.5",
+        "@babel/preset-env": "^7.22.5",
+        "jest": "^28.1.0"
+    },
+    "type": "module"
+}
