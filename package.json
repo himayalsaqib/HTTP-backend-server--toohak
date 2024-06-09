@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "test": "jest",
+        "test": "jest"
     },
     "dependencies": {
         "validator": "^13.7.0"
