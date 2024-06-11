@@ -4,7 +4,7 @@
  * @param {number} authUserId
  * @returns {array} 
  */
-function adminQuizList(authUserId) {
+export function adminQuizList(authUserId) {
     return { quizzes: [
         {
           quizId: 1,
@@ -22,7 +22,7 @@ function adminQuizList(authUserId) {
  * @param {string} description 
  * @returns {object} - assigns a quizId
  */  
-function adminQuizCreate( authUserId, name, description ) {
+export function adminQuizCreate( authUserId, name, description ) {
     return {
         quizId: 2
     };
@@ -35,7 +35,7 @@ function adminQuizCreate( authUserId, name, description ) {
  * @param {number} quizId 
  * @returns {object} - an empty object
  */
-function adminQuizRemove ( authUserId, quizId ) {
+export function adminQuizRemove ( authUserId, quizId ) {
     return {};
 }
 
@@ -47,7 +47,7 @@ function adminQuizRemove ( authUserId, quizId ) {
  * @param {string} description
  * @returns {object} - an empty object
  */
-function adminQuizDescriptionUpdate (authUserId, quizId, description) {
+export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
     return {};
 }
 
@@ -59,7 +59,7 @@ function adminQuizDescriptionUpdate (authUserId, quizId, description) {
  * @param {number} quizId 
  * @returns {object} - returns quiz information 
  */
-function adminQuizInfo (authUserId, quizId) {
+export function adminQuizInfo (authUserId, quizId) {
     return {
         quizId: 1,
         name: 'My Quiz',
@@ -77,6 +77,6 @@ function adminQuizInfo (authUserId, quizId) {
  * @param {string} name
  * @returns {object} - empty object
  */
-function adminQuizNameUpdate (authUserId, quizId, name) {
+export function adminQuizNameUpdate (authUserId, quizId, name) {
     return {};
   }

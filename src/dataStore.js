@@ -1,5 +1,26 @@
 // YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
-let data = {};
+let data = {
+  users: [
+    {
+      nameFirst: "",
+      nameLast: "",
+      password: "",
+      userId: undefined,
+      email: "",
+      numFailedLogins: undefined,
+      numSuccessfulLogins: undefined,
+    }
+  ],
+  quizzes: [
+    {
+      quizId: undefined,
+      name: "",
+      timeCreated: undefined,
+      timeLastEdited: undefined,
+      description: "",
+    }
+  ],
+};
 
 // YOU SHOULD MODIFY THIS OBJECT ABOVE ONLY
 
