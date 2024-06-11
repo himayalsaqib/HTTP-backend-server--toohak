@@ -15,6 +15,13 @@ describe('adminAuthRegister', () => {
         expect(user).toStrictEqual({ authUserId: expect.any(Number) });
     });
 
+    test('can register users with the same firstname, lastname and password', () => {
+        const user1 = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
+        const user2 = adminAuthRegister('valid2@gmail.com', 'Password12', 'Jane', 'Doe');
+        expect(user2).toStrictEqual({ authUserId: expect.any(Number) });
+        expect(user1.authUserId).not.toStrictEqual(user2.authUserId);
+    })
+
     test('error when email address used by another user', () => {
         adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe');
         expect(adminAuthRegister('valid@gmail.com', 'Password12', 'John', 'Doe')).toStrictEqual({ error: expect.any(String) });
