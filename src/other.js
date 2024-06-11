@@ -3,6 +3,6 @@
  * @param {} - no parameters
  * @returns {object} - empty object
  */
-function clear () {
+export function clear () {
     return {};
   }
