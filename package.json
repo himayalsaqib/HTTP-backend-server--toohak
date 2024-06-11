@@ -3,9 +3,6 @@
         "test": "jest"
     },
     "dependencies": {
-        "is-alphabetical": "^2.0.1",
-        "is-alphanumerical": "^2.0.1",
-        "is-decimal": "^2.0.1",
         "validator": "^13.7.0"
     },
     "devDependencies": {

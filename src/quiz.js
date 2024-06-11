@@ -1,5 +1,3 @@
-import {isAlphanumerical} from 'is-alphanumerical';
-
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  * 
@@ -141,12 +139,11 @@ function authUserIdIsValid(authUserId) {
  *                    false if it does
  */
 function quizNameHasValidChars(name) {
-    for (const char of name) {
-        if (isAlphanumerical(char) === false && char !== ' ') {
-            return false;
-        }
+    if (/^[A-Za-z0-9 ]*$/.test(char) === false) {
+        return false;
+    } else {
+        return true;
     }
-    return true;
 }
 
 /**
