@@ -1,3 +1,5 @@
+import {isAlphanumerical} from 'is-alphanumerical'
+
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  * 
@@ -82,8 +84,8 @@ export function adminQuizNameUpdate (authUserId, quizId, name) {
 /////////////////////////////// Helper Functions ///////////////////////////////
 
 /**
- * Function if an authUserId is valid i.e. if the ID <= number of users since
- * the authUserId is just the order of user registration
+ * Function checks if an authUserId is valid i.e. if the ID <= number of users 
+ * since the authUserId is just the order of user registration
  *
  * @param {number} authUserId
  * @returns {boolean} true if ID is valid, false if not
@@ -93,4 +95,21 @@ function authUserIdIsValid(authUserId) {
         return true;
     }
     return false;
+}
+
+/**
+ * Function checks if a quiz name contains any invalid characters. Characters
+ * are considered invalid if they are not alphanumeric or spaces e.g. @
+ *
+ * @param {String} name
+ * @returns {boolean} true if name does not contain any invalid characters, 
+ *                    false if it does
+ */
+function quizNameHasValidChars(name) {
+    for (const char of name) {
+        if (isAlphanumerical(char) === false && char !== ' ') {
+            return false;
+        }
+    }
+    return true;
 }
