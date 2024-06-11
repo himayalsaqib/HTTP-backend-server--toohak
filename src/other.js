@@ -1,4 +1,4 @@
-import { getData } from './dataStore';
+import { getData, setData } from './dataStore';
 
 /**
  * Reset the state of the application back to the start.
@@ -6,10 +6,15 @@ import { getData } from './dataStore';
  * @returns {object} - empty object
  */
 export function clear () {
-  let data = getData();
+  
+  setData({
+    users: [],
+    quizzes: []
+  });
 
-  data.users = [];
-  data.quizzes = [];
-
+  // let data = getData();
+  // data.users = [];
+  // data.quizzes = [];
+  
   return {};
 }
