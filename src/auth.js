@@ -20,10 +20,10 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
   if (password.length < 8 || hasNumber(password) === false || hasLetter(password) === false) {
     return { error: 'invalid password does not meet requirements' };
   }
-  if (nameisvalid(nameFirst) === false || nameFirst.length < 2 || nameFirst.length > 20) {
+  if (nameIsValid(nameFirst) === false || nameFirst.length < 2 || nameFirst.length > 20) {
     return { error: 'invalid first name does not meet requirements' };
   }
-  if (nameisvalid(nameLast) === false || nameLast.length < 2 || nameLast.length > 20) {
+  if (nameIsValid(nameLast) === false || nameLast.length < 2 || nameLast.length > 20) {
     return { error: 'invalid last name does not meet requirements' };
   }
 
@@ -136,7 +136,7 @@ function emailInUse(email) {
  * @param {string} name
  * @returns {boolean} true if a name is valid otherwise false
  */
-function nameisvalid(name) {
+function nameIsValid(name) {
   const specialCharacters = /[!@#$%^&*()_+{}\[\]:;<>,.?\/\\~]/;
 
   if (specialCharacters.test(name) || hasNumber(name)) {
