@@ -25,7 +25,43 @@ export function adminQuizList(authUserId) {
  * @returns {object} - assigns a quizId | error
  */  
 export function adminQuizCreate( authUserId, name, description ) {
-    
+    if (authUserIdIsValid(authUserId) === false) {
+        return { error: 'AuthUserId is not a valid user.' };
+    }
+    if (quizNameHasValidChars(name) === false) {
+        return { error: 'Name contains invalid characters. \
+                Valid characters are alphanumeric and spaces.' 
+        };
+    }
+    if (name.length < 3 || name.length > 20) {
+        return { error: 'Name is either less than 3 characters long or \
+                more than 30 characters long.' 
+        };
+    }
+    if (quizNameInUse(authUserId, name) === true) {
+        return { error: 'Name is already used by the current \
+                logged in user for another quiz.'
+        };
+    }
+    if (description.length > 100) {
+        return { error: 'Description is more than 100 characters in length'};
+    }
+
+    let data = getData();
+    const newQuizId = data.quizzes.length;
+
+    const newQuiz = {
+        quizId: newQuizId,
+        timeCreated: Date.now(),
+        timeLastEdited: undefined,
+        description: description,
+    }
+
+    data.quizzes.push(newQuiz);
+    setData(data);
+
+    return { quizId: newQuizId};
+
 }
 
 /**
