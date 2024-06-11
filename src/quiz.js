@@ -20,12 +20,10 @@ export function adminQuizList(authUserId) {
  * @param {number} authUserId 
  * @param {string} name
  * @param {string} description 
- * @returns {object} - assigns a quizId
+ * @returns {object} - assigns a quizId | error
  */  
 export function adminQuizCreate( authUserId, name, description ) {
-    return {
-        quizId: 2
-    };
+    
 }
 
 /**
@@ -80,3 +78,19 @@ export function adminQuizInfo (authUserId, quizId) {
 export function adminQuizNameUpdate (authUserId, quizId, name) {
     return {};
   }
+
+/////////////////////////////// Helper Functions ///////////////////////////////
+
+/**
+ * Function if an authUserId is valid i.e. if the ID <= number of users since
+ * the authUserId is just the order of user registration
+ *
+ * @param {number} authUserId
+ * @returns {boolean} true if ID is valid, false if not
+ */
+function authUserIdIsValid(authUserId) {
+    if (authUserId <= data.users.length) {
+        return true;
+    }
+    return false;
+}
