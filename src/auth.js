@@ -32,11 +32,11 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
   const authUserId = data.users.length;
 
   const newUser = {
+    authUserId: authUserId,
+    email: email,
     nameFirst: nameFirst,
     nameLast: nameLast,
     password: password,
-    userId: authUserId,
-    email: email,
     numFailedLogins: 0,
     numSuccessfulLogins: 0,
   }
