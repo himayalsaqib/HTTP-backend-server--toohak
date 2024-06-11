@@ -5,7 +5,7 @@ let data = {
       nameFirst: "",
       nameLast: "",
       password: "",
-      userId: undefined,
+      authUserId: undefined,
       email: "",
       numFailedLogins: undefined,
       numSuccessfulLogins: undefined,
