@@ -56,7 +56,7 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
  * @returns {object} authUserId
  */
 
-function adminAuthLogin (email, password) {
+export function adminAuthLogin (email, password) {
     return {
         authUserId: 1,
     };
@@ -91,7 +91,7 @@ export function adminUserDetails (authUserId) {
  * @param {string} newPassword
  * @returns {object} empty
  */
-function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
+export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   return {};
 }
 
@@ -105,7 +105,7 @@ function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
  * @param {string} nameLast
  * @returns {object} empty
  */
-function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
+export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   return {};
 }
 
