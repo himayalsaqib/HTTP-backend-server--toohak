@@ -31,32 +31,34 @@ describe('Test: successful adminCreateQuiz', () => {
 
 describe('Test: invalid user ID', () => {
     expect(adminCreateQuiz(0, "Valid Quiz Name", 
-        "Valid quiz description.")).toStrictEqual(expect.any(string));
+        "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
 });
 
 describe('Test: quiz name contains invalid characters', () => {
     expect(adminCreateQuiz(currentUser.userId, "Invalid Name @#$%^&*", 
-        "Valid quiz description.")).toStrictEqual(expect.any(string));
+        "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
 });
 
 describe('Test: quiz name is less than 3 characters', () => {
     expect(adminCreateQuiz(currentUser.userId, "Hi", 
-        "Valid quiz description.")).toStrictEqual(expect.any(string));
+        "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
 });
 
 describe('Test: quiz name is more than 30 characters', () => {
     expect(adminCreateQuiz(currentUser.userId, 
         "1234567890 1234567890 1234567890",
-         "Valid quiz description.")).toStrictEqual(expect.any(string));
+         "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
 });
 
 describe('Test: quiz name already used by current user for another quiz', () => {
     expect(adminCreateQuiz(currentUser.userId, "Name In Use", 
-        "Valid quiz description.")).toStrictEqual(expect.any(string));
+        "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
 });
+
+const longString = "1234567890 1234567890 1234567890 1234567890 1234567890 \
+                    1234567890 1234567890 1234567890 1234567890 1234567890"
 
 describe('Test: quiz description is more than 100 characters', () => {
     expect(adminCreateQuiz(currentUser.userId, "Valid Quiz Name", 
-    "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 \
-    1234567890 1234567890 1234567890 1234567890 ")).toStrictEqual(expect.any(string));
+    longString)).toStrictEqual({ error: expect.any(string) });
 });
