@@ -1,9 +1,5 @@
-// contains the tests for all functions in auth.js
-
-import adminAuthRegister from '../auth';
-
-import clear from '../other';
-
+import { adminAuthRegister } from '../auth';
+import { clear } from '../other';
 
 beforeEach(() => {
     clear();
