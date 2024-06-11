@@ -1,13 +1,7 @@
 // contains the tests for all functions in quiz.js
 
-import {
-    adminQuizList,
-    adminQuizCreate,
-    adminQuizRemove,
-    adminQuizDescriptionUpdate,
-    adminQuizInfo,
-    adminQuizNameUpdate
-} from '../quiz';
+import {adminQuizCreate} from '../quiz';
+import {clear} from '../other';
 
 beforeEach(() => {
     clear();
@@ -24,41 +18,43 @@ beforeEach(() => {
     }];
 });
 
-describe('Test: successful adminCreateQuiz', () => {
-    expect(adminCreateQuiz(currentUser.userId, "Valid Quiz Name", 
+describe('adminCreateQuiz', () => {
+    test('Test: successful adminCreateQuiz', () => {
+        expect(adminCreateQuiz(currentUser.userId, "Valid Quiz Name", 
         "Valid quiz description.")).toStrictEqual(expect.any(Number));
-});
+    });
 
-describe('Test: invalid user ID', () => {
-    expect(adminCreateQuiz(0, "Valid Quiz Name", 
+    test('Test: invalid user ID', () => {
+        expect(adminCreateQuiz(0, "Valid Quiz Name", 
         "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
-});
+    });
 
-describe('Test: quiz name contains invalid characters', () => {
-    expect(adminCreateQuiz(currentUser.userId, "Invalid Name @#$%^&*", 
+    test('Test: quiz name contains invalid characters', () => {
+        expect(adminCreateQuiz(currentUser.userId, "Invalid Name @#$%^&*", 
         "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
-});
+    });
 
-describe('Test: quiz name is less than 3 characters', () => {
-    expect(adminCreateQuiz(currentUser.userId, "Hi", 
+    test('Test: quiz name is less than 3 characters', () => {
+        expect(adminCreateQuiz(currentUser.userId, "Hi", 
         "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
-});
+    });
 
-describe('Test: quiz name is more than 30 characters', () => {
-    expect(adminCreateQuiz(currentUser.userId, 
-        "1234567890 1234567890 1234567890",
-         "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
-});
+    test('Test: quiz name is more than 30 characters', () => {
+        expect(adminCreateQuiz(currentUser.userId, 
+            "1234567890 1234567890 1234567890",
+             "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
+    });
 
-describe('Test: quiz name already used by current user for another quiz', () => {
-    expect(adminCreateQuiz(currentUser.userId, "Name In Use", 
+    test('Test: quiz name already used by current user for another quiz', () => {
+        expect(adminCreateQuiz(currentUser.userId, "Name In Use", 
         "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
-});
+    });
 
-const longString = "1234567890 1234567890 1234567890 1234567890 1234567890 \
+    const longString = "1234567890 1234567890 1234567890 1234567890 1234567890 \
                     1234567890 1234567890 1234567890 1234567890 1234567890"
 
-describe('Test: quiz description is more than 100 characters', () => {
-    expect(adminCreateQuiz(currentUser.userId, "Valid Quiz Name", 
+    test('Test: quiz description is more than 100 characters', () => {
+        expect(adminCreateQuiz(currentUser.userId, "Valid Quiz Name", 
         longString)).toStrictEqual({ error: expect.any(string) });
+    });
 });
