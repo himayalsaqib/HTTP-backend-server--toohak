@@ -14,8 +14,8 @@ describe('clear function', () =>{
     });
 
     test('clear side effect successful', () => {
-        const idTest = adminAuthRegister('email@email.com', 'password', 'nameFirst', 'nameLast');
+        const idTest = adminAuthRegister('email@email.com', 'password123', 'nameFirst', 'nameLast');
         clear();
-        expect(adminUserDetails(idTest)).toStrictEqual({ error : expect.any(String)});
+        expect(adminUserDetails(idTest)).toStrictEqual({ error : expect.any(String) });
     });
 });
