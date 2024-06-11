@@ -1,4 +1,4 @@
-import { adminAuthRegister } from '../auth';
+import { adminAuthRegister, adminUserDetails } from '../auth';
 import { clear } from '../other';
 
 beforeEach(() => {
@@ -9,6 +9,19 @@ describe('adminAuthRegister', () => {
     test('has the correct return type', () => {
         const user = adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe');
         expect(user).toStrictEqual({ authUserId: expect.any(Number) });
+    });
+
+    test('has successful side effect (user is registered)', () => {
+        const user = adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe');
+        expect(adminUserDetails(user.authUserId)).toStrictEqual({ user:
+            {
+              userId: user.authUserId,
+              name: 'Jane Doe',
+              email: 'valid@gmail.com',
+              numSuccessfulLogins: 0,
+              numFailedPasswordsSinceLastLogin: 0,
+            }
+        });
     });
 
     test('can register users with the same firstname, lastname and password', () => {

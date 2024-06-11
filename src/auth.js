@@ -70,7 +70,7 @@ function adminAuthLogin (email, password) {
  * @param {number} authUserId
  * @returns {object} user 
  */
-function adminUserDetails (authUserId) {
+export function adminUserDetails (authUserId) {
     return { user:
         {
           userId: 1,
