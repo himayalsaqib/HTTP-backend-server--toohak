@@ -127,3 +127,24 @@ function quizNameIsValidLength(name) {
     }
     return true;
 }
+
+/**
+ * Function checks if a quiz name has already been used by the current logged
+ * in user
+ *
+ * @param {Number} authUserId
+ * @param {String} name
+ * @returns {boolean} true if name has been used, false if it has not
+ */
+function quizNameIsValidLength(authUserId, name) {
+    let data = getData();
+
+    for (const quiz of data.quizzes) {
+        if (quiz.authUserId === authUserId) {
+            if (quiz.name === name) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
