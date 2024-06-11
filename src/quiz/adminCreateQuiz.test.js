@@ -12,9 +12,17 @@ import {
 beforeEach(() => {
     clear();
     let users = [{nameFirst: "validFirstName", nameLast: "validLastName", 
-                password: "validPassword", userId: 1, 
+                password: "validPassword1", userId: 1, 
                 email: "validEmail@gmail.com", numFailedLogins: 0, 
                 numSuccessfulLogins: 0
     }];
     let currentUser = users[0];
+});
+
+describe('Test successful adminCreateQuiz', () => {
+    expect(adminCreateQuiz(currentUser.userId, "Valid Quiz Name", "Valid quiz description.")).toStrictEqual(expect.any(Number));
+});
+
+describe('Test unsuccessful adminCreateQuiz', () => {
+
 });
