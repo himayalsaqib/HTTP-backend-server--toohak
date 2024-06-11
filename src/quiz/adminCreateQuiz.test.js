@@ -47,3 +47,7 @@ describe('Test: quiz name is more than 30 characters', () => {
 describe('Test: quiz name already used by current user for another quiz', () => {
     expect(adminCreateQuiz(currentUser.userId, "Name In Use", "Valid quiz description.")).toStrictEqual(expect.any(string));
 });
+
+describe('Test: quiz description is more than 100 characters', () => {
+    expect(adminCreateQuiz(currentUser.userId, "Valid Quiz Name", "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 ")).toStrictEqual(expect.any(string));
+});
