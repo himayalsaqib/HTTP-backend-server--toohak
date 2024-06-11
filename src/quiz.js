@@ -1,4 +1,4 @@
-import { isAlphanumerical } from 'is-alphanumerical';
+import {isAlphanumerical} from 'is-alphanumerical';
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
