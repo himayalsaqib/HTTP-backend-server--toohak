@@ -2,11 +2,11 @@
 let data = {
   users: [
     {
+      authUserId: undefined,
+      email: "",
       nameFirst: "",
       nameLast: "",
       password: "",
-      authUserId: undefined,
-      email: "",
       numFailedLogins: undefined,
       numSuccessfulLogins: undefined,
     }
