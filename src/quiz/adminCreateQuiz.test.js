@@ -60,5 +60,5 @@ const longString = "1234567890 1234567890 1234567890 1234567890 1234567890 \
 
 describe('Test: quiz description is more than 100 characters', () => {
     expect(adminCreateQuiz(currentUser.userId, "Valid Quiz Name", 
-    longString)).toStrictEqual({ error: expect.any(string) });
+        longString)).toStrictEqual({ error: expect.any(string) });
 });
