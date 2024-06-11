@@ -11,10 +11,6 @@ export function clear () {
     users: [],
     quizzes: []
   });
-
-  // let data = getData();
-  // data.users = [];
-  // data.quizzes = [];
-  
+    
   return {};
-}
+};
