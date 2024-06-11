@@ -26,45 +26,84 @@ describe('adminAuthRegister', () => {
     });
     */
 
-    test('can register users with the same firstname, lastname and password', () => {
+    test.each([
+        {}
+    ]) ('can register users with the same firstname, lastname and/or password', () => {
         const user1 = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
         const user2 = adminAuthRegister('valid2@gmail.com', 'Password12', 'Jane', 'Doe');
         expect(user2).toStrictEqual({ authUserId: expect.any(Number) });
         expect(user1.authUserId).not.toStrictEqual(user2.authUserId);
     })
 
-    test('error when email address used by another user', () => {
+    test('returns error when email address used by another user', () => {
         adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe');
-        expect(adminAuthRegister('valid@gmail.com', 'Password12', 'John', 'Doe')).toStrictEqual({ error: expect.any(String) });
+        expect(adminAuthRegister('valid@gmail.com', 'Password12', 'John', 'Doe')).
+        toStrictEqual({ error: expect.any(String) });
     });
 
-    test('invalid email address does not meet requirements', () => {
-        expect(adminAuthRegister('invalid', 'Password12', 'Jane', 'Doe')).toStrictEqual({ error: expect.any(String) });
+    test('returns error when email address does not meet requirements', () => {
+        expect(adminAuthRegister('invalid', 'Password12', 'Jane', 'Doe')).
+        toStrictEqual({ error: expect.any(String) });
     });
 
-    test.each([
-        {email:'valid@gmail.com', password: 'Password12', nameFirst: 'Jane1', nameLast: 'Doe'},
-        {email:'valid@gmail.com', password: 'Password12', nameFirst: '@Jane', nameLast: 'Doe'},
-        {email:'valid@gmail.com', password: 'Password12', nameFirst: '', nameLast: 'Doe'},
-        {email:'valid@gmail.com', password: 'Password12', nameFirst: 'JaneJaneJaneJaneJaneJane', nameLast: 'Doe'},
-    ]) ('first name requirements not met', ({email, password, nameFirst, nameLast}) => {
-        expect(adminAuthRegister(email, password, nameFirst, nameLast)).toStrictEqual({ error: expect.any(String) });
+    describe ('returns error when first name requirements not met', () => {
+        test('first name contains a number', () => {
+            expect(adminAuthRegister('valid@gmail.com', 'Password12', 'Jane1', 'Doe')).
+            toStrictEqual({ error: expect.any(String) });
+        });
+
+        test('first name contains a special character (not space, apostrophe or hyphen)', () => {
+            expect(adminAuthRegister('valid@gmail.com', 'Password12', '@Jane', 'Doe')).
+            toStrictEqual({ error: expect.any(String) });
+        });
+
+        test('first name is less than 2 characters)', () => {
+            expect(adminAuthRegister('valid@gmail.com', 'Password12', '', 'Doe')).
+            toStrictEqual({ error: expect.any(String) });
+        });
+
+        test('first name is greater than 20 characters', () => {
+            expect(adminAuthRegister('valid@gmail.com', 'Password12', 'JaneJaneJaneJaneJaneJane', 'Doe')).
+            toStrictEqual({ error: expect.any(String) });
+        });
     });
 
-    test.each([
-        {email:'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe1'},
-        {email:'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe!'},
-        {email:'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: ''},
-        {email:'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'DoeDoeDoeDoeDoeDoeDoe'},
-    ]) ('last name requirements not met', ({email, password, nameFirst, nameLast}) => {
-        expect(adminAuthRegister(email, password, nameFirst, nameLast)).toStrictEqual({ error: expect.any(String) });
+    describe ('returns error when last name requirements not met', () => {
+        test('last name contains a number', () => {
+            expect(adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe1')).
+            toStrictEqual({ error: expect.any(String) });
+        });
+
+        test('last name contains a special character (not space, apostrophe or hyphen)', () => {
+            expect(adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe!')).
+            toStrictEqual({ error: expect.any(String) });
+        });
+
+        test('last name is less than 2 characters)', () => {
+            expect(adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', '')).
+            toStrictEqual({ error: expect.any(String) });
+        });
+
+        test('last name is greater than 20 characters', () => {
+            expect(adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'DoeDoeDoeDoeDoeDoeDoe')).
+            toStrictEqual({ error: expect.any(String) });
+        });
     });
 
-    test.each([
-        {email:'valid@gmail.com', password: 'invalid', nameFirst: 'Jane', nameLast: 'Doe'},
-        {email:'valid@gmail.com', password: 'Password', nameFirst: 'Jane', nameLast: 'Doe'},
-        {email:'valid@gmail.com', password: '12345678', nameFirst: 'Jane', nameLast: 'Doe'},
-    ]) ('password requirements not met', ({email, password, nameFirst, nameLast}) => {
-        expect(adminAuthRegister(email, password, nameFirst, nameLast)).toStrictEqual({ error: expect.any(String) });
+    describe ('returns error when password requirements not met', () => {
+        test('password does not contain at least one number', () => {
+            expect(adminAuthRegister('valid@gmail.com', 'Password', 'Jane', 'Doe')).
+            toStrictEqual({ error: expect.any(String) });
+        });
+
+        test('password does not contain at least one letter', () => {
+            expect(adminAuthRegister('valid@gmail.com', '12345678', 'Jane', 'Doe!')).
+            toStrictEqual({ error: expect.any(String) });
+        });
+
+        test('password is less than 8 characters)', () => {
+            expect(adminAuthRegister('valid@gmail.com', 'invalid', 'Jane', 'Doe')).
+            toStrictEqual({ error: expect.any(String) });
+        });
     });
 });
