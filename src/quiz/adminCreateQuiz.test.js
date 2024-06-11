@@ -19,14 +19,22 @@ beforeEach(() => {
     let currentUser = users[0];
 });
 
-describe('Test successful adminCreateQuiz', () => {
+describe('Test: successful adminCreateQuiz', () => {
     expect(adminCreateQuiz(currentUser.userId, "Valid Quiz Name", "Valid quiz description.")).toStrictEqual(expect.any(Number));
 });
 
-describe('Test invalid user ID', () => {
+describe('Test: invalid user ID', () => {
     expect(adminCreateQuiz(0, "Valid Quiz Name", "Valid quiz description.")).toStrictEqual(expect.any(string));
 });
 
-describe('Test quiz name contains invalid characters', () => {
+describe('Test: quiz name contains invalid characters', () => {
     expect(adminCreateQuiz(currentUser.userId, "Invalid Name @#$%^&*", "Valid quiz description.")).toStrictEqual(expect.any(string));
+});
+
+describe('Test: quiz name is less than 3 characters', () => {
+    expect(adminCreateQuiz(currentUser.userId, "Hi", "Valid quiz description.")).toStrictEqual(expect.any(string));
+});
+
+describe('Test: quiz name is more than 30 characters', () => {
+    expect(adminCreateQuiz(currentUser.userId, "1234567890 1234567890 1234567890", "Valid quiz description.")).toStrictEqual(expect.any(string));
 });
