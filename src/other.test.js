@@ -13,7 +13,7 @@ describe('clear function', () =>{
         expect(clear()).toStrictEqual({});
     });
 
-    test('clear successful', () => {
+    test('clear side effect successful', () => {
         const idTest = adminAuthRegister('email@email.com', 'password', 'nameFirst', 'nameLast');
         clear();
         expect(adminUserDetails(idTest)).toStrictEqual({ error : expect.any(String)});
