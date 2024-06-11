@@ -16,30 +16,30 @@ describe('adminQuizCreate', () => {
 
     test('Test: invalid user ID', () => {
         expect(adminQuizCreate(-1, "Valid Quiz Name", 
-        "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
+        "Valid quiz description.")).toStrictEqual({ error: expect.any(String) });
     });
 
     test('Test: quiz name contains invalid characters', () => {
         expect(adminQuizCreate(user.authUserId, "Invalid Name @#$%^&*", 
-        "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
+        "Valid quiz description.")).toStrictEqual({ error: expect.any(String) });
     });
 
     test('Test: quiz name is less than 3 characters', () => {
         expect(adminQuizCreate(user.authUserId, "Hi", 
-        "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
+        "Valid quiz description.")).toStrictEqual({ error: expect.any(String) });
     });
 
     test('Test: quiz name is more than 30 characters', () => {
         expect(adminQuizCreate(user.authUserId, 
             "1234567890 1234567890 1234567890",
-             "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
+             "Valid quiz description.")).toStrictEqual({ error: expect.any(String) });
     });
 
     test('Test: quiz name already used by current user for another quiz', () => {
         adminQuizCreate(user.Id, "Name In Use", "Pre existing quiz");
 
         expect(adminQuizCreate(user.authUserId, "Name In Use", 
-        "Valid quiz description.")).toStrictEqual({ error: expect.any(string) });
+        "Valid quiz description.")).toStrictEqual({ error: expect.any(String) });
     });
 
     const longString = "1234567890 1234567890 1234567890 1234567890 1234567890 \
@@ -47,6 +47,6 @@ describe('adminQuizCreate', () => {
 
     test('Test: quiz description is more than 100 characters', () => {
         expect(adminQuizCreate(user.authUserId, "Valid Quiz Name", 
-        longString)).toStrictEqual({ error: expect.any(string) });
+        longString)).toStrictEqual({ error: expect.any(String) });
     });
 });
