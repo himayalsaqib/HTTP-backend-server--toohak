@@ -57,7 +57,7 @@ describe('adminAuthRegister', () => {
             toStrictEqual({ error: expect.any(String) });
         });
 
-        test('first name is less than 2 characters)', () => {
+        test('first name is less than 2 characters', () => {
             expect(adminAuthRegister('valid@gmail.com', 'Password12', '', 'Doe')).
             toStrictEqual({ error: expect.any(String) });
         });
@@ -79,7 +79,7 @@ describe('adminAuthRegister', () => {
             toStrictEqual({ error: expect.any(String) });
         });
 
-        test('last name is less than 2 characters)', () => {
+        test('last name is less than 2 characters', () => {
             expect(adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', '')).
             toStrictEqual({ error: expect.any(String) });
         });
@@ -101,7 +101,7 @@ describe('adminAuthRegister', () => {
             toStrictEqual({ error: expect.any(String) });
         });
 
-        test('password is less than 8 characters)', () => {
+        test('password is less than 8 characters', () => {
             expect(adminAuthRegister('valid@gmail.com', 'invalid', 'Jane', 'Doe')).
             toStrictEqual({ error: expect.any(String) });
         });
