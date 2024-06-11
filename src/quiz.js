@@ -113,3 +113,17 @@ function quizNameHasValidChars(name) {
     }
     return true;
 }
+
+/**
+ * Function checks if a quiz name is an invalid length i.e. if it is less than
+ * 3 characters or more than 30 characters long
+ *
+ * @param {String} name
+ * @returns {boolean} true if name is a valid length, false if it is not
+ */
+function quizNameIsValidLength(name) {
+    if (name.length < 3 || name.length > 30) {
+        return false;
+    }
+    return true;
+}
