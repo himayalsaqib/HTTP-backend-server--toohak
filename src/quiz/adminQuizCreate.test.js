@@ -49,4 +49,10 @@ describe('adminQuizCreate', () => {
         expect(adminQuizCreate(user.authUserId, "Valid Quiz Name", 
         longString)).toStrictEqual({ error: expect.any(String) });
     });
+
+    // test('Test: check adminQuizList if newly created quizzes appear', () => {
+    //     adminQuizCreate(user.Id, "Quiz 1", "");
+    //     expect(adminQuizList(user.authUserId).toStrictEqual({ quizzes: 
+    //         [{quizId: expect.any(Number), name: "Quiz 1"}] }));
+    // });
 });
