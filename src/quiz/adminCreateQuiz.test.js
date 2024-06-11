@@ -23,6 +23,10 @@ describe('Test successful adminCreateQuiz', () => {
     expect(adminCreateQuiz(currentUser.userId, "Valid Quiz Name", "Valid quiz description.")).toStrictEqual(expect.any(Number));
 });
 
-describe('Test unsuccessful adminCreateQuiz', () => {
+describe('Test invalid user ID', () => {
+    expect(adminCreateQuiz(0, "Valid Quiz Name", "Valid quiz description.")).toStrictEqual(expect.any(string));
+});
 
+describe('Test quiz name contains invalid characters', () => {
+    expect(adminCreateQuiz(currentUser.userId, "Invalid Name @#$%^&*", "Valid quiz description.")).toStrictEqual(expect.any(string));
 });
