@@ -53,6 +53,7 @@ export function adminQuizCreate( authUserId, name, description ) {
     const newQuiz = {
         authUserId: authUserId,
         quizId: newQuizId,
+        name: name,
         timeCreated: Date.now(),
         timeLastEdited: undefined,
         description: description,
@@ -162,7 +163,7 @@ function quizNameInUse(authUserId, name) {
     let data = getData();
 
     for (const quiz of data.quizzes) {
-        if (quiz.authUserId === authUserId && quiz.name === name) {
+        if (quiz.authUserId === authUserId && quiz.name == name) {
             return true;
         }
     }
