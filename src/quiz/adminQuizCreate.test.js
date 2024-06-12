@@ -1,5 +1,6 @@
-// contains the tests for all functions in quiz.js
+// contains the tests adminQuizCreate from quiz.js
 
+import {adminAuthRegister} from '../auth';
 import {adminQuizCreate} from '../quiz';
 import {clear} from '../other';
 
