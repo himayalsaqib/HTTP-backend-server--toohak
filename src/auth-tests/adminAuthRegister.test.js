@@ -28,7 +28,7 @@ describe('adminAuthRegister', () => {
     });
     */
 
-    test.each('can register users with the same firstname, lastname and/or password', () => {
+    test('can register users with the same firstname, lastname and/or password', () => {
         const user1 = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
         const user2 = adminAuthRegister('valid2@gmail.com', 'Password12', 'Jane', 'Doe');
         expect(user2).toStrictEqual({ authUserId: expect.any(Number) });
