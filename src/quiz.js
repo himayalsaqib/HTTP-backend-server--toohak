@@ -1,3 +1,5 @@
+import { setData, getData } from './dataStore';
+
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  * 
@@ -124,7 +126,8 @@ export function adminQuizNameUpdate (authUserId, quizId, name) {
  * @returns {boolean} true if ID is valid, false if not
  */
 function authUserIdIsValid(authUserId) {
-    if (authUserId <= data.users.length) {
+    let data = getData();
+    if (authUserId <= data.users.length && authUserId >= 0) {
         return true;
     }
     return false;
@@ -139,7 +142,7 @@ function authUserIdIsValid(authUserId) {
  *                    false if it does
  */
 function quizNameHasValidChars(name) {
-    if (/^[A-Za-z0-9 ]*$/.test(char) === false) {
+    if (/^[A-Za-z0-9 ]*$/.test(name) === false) {
         return false;
     } else {
         return true;
@@ -158,10 +161,8 @@ function quizNameInUse(authUserId, name) {
     let data = getData();
 
     for (const quiz of data.quizzes) {
-        if (quiz.authUserId === authUserId) {
-            if (quiz.name === name) {
-                return true;
-            }
+        if (quiz.authUserId === authUserId && quiz.name === name) {
+            return true;
         }
     }
     return false;

@@ -42,7 +42,7 @@ describe('adminQuizCreate', () => {
 
     test('Test: quiz name already used by current user for another quiz', () => {
         const user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
-        adminQuizCreate(user.Id, "Name In Use", "Pre existing quiz");
+        adminQuizCreate(user.authUserId, "Name In Use", "Pre existing quiz");
 
         expect(adminQuizCreate(user.authUserId, "Name In Use", 
         "Valid quiz description.")).toStrictEqual({ error: expect.any(String) });
