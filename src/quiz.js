@@ -51,6 +51,7 @@ export function adminQuizCreate( authUserId, name, description ) {
     const newQuizId = data.quizzes.length;
 
     const newQuiz = {
+        authUserId: authUserId,
         quizId: newQuizId,
         timeCreated: Date.now(),
         timeLastEdited: undefined,
