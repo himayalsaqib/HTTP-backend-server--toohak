@@ -13,6 +13,7 @@ let data = {
   ],
   quizzes: [
     {
+      authUserId: undefined,
       quizId: undefined,
       name: "",
       timeCreated: undefined,
