@@ -2,7 +2,8 @@ import { setData, getData } from './dataStore';
 import validator from 'validator';
 
 /**
- * Register a user with an email, password, and names, then returns their authUserId value
+ * Register a user with an email, password, and names, then returns 
+ * their authUserId value
  * 
  * @param {string} email 
  * @param {string} password 
@@ -11,19 +12,30 @@ import validator from 'validator';
  * @returns {object} authUserId | error
  */
 export function adminAuthRegister (email, password, nameFirst, nameLast) {
-  if (emailInUse(email)) {
+  if (adminEmailInUse(email)) {
     return { error: 'email address is used by another user' };
   }  
   if (validator.isEmail(email) === false) {
     return { error: 'invalid email address' };
   }
-  if (password.length < 8 || hasNumber(password) === false || hasLetter(password) === false) {
+  if (password.length < 8) {
+    return { error: 'invalid password is less than 8 characters' };
+  }
+  if (adminStringHasNum(password) === false || adminStringHasLetter(password) === false) {
     return { error: 'invalid password does not meet requirements' };
   }
-  if (nameIsValid(nameFirst) === false || nameFirst.length < 2 || nameFirst.length > 20) {
+  if (nameFirst.length < 2 || nameFirst.length > 20) {
+    return { error: 'invalid first name is less than 2 characters or \
+            more than 20 characters' };
+  }
+  if (adminUserNameIsValid(nameFirst) === false) {
     return { error: 'invalid first name does not meet requirements' };
   }
-  if (nameIsValid(nameLast) === false || nameLast.length < 2 || nameLast.length > 20) {
+  if (nameLast.length < 2 || nameLast.length > 20) {
+    return { error: 'invalid last name is less than 2 characters or \
+            more than 20 characters' };
+  }
+  if (adminUserNameIsValid(nameLast) === false) {
     return { error: 'invalid last name does not meet requirements' };
   }
 
@@ -117,7 +129,7 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
  * @param {string} email
  * @returns {boolean} true if email exists, false if not
  */
-function emailInUse(email) {
+function adminEmailInUse(email) {
   let data = getData();
 
   for (const user of data.users) {
@@ -136,10 +148,12 @@ function emailInUse(email) {
  * @param {string} name
  * @returns {boolean} true if a name is valid otherwise false
  */
-function nameIsValid(name) {
-  const specialCharacters = /[!@#$%^&*()_+{}\[\]:;<>,.?\/\\~]/;
+function adminUserNameIsValid(name) {
+  // specialCharacters will match any string that includes a special 
+  // character except for space, hyphen or apostrophe
+  const specialCharacters = /[^\w\s'-]/;
 
-  if (specialCharacters.test(name) || hasNumber(name)) {
+  if (specialCharacters.test(name) || adminStringHasNum(name)) {
     return false;
   }
 
@@ -152,7 +166,7 @@ function nameIsValid(name) {
  * @param {string} string to check
  * @returns {boolean} true if string has a number otherwise false
  */
-function hasNumber(string) {
+function adminStringHasNum(string) {
   return /\d/.test(string);
 }
 
@@ -162,6 +176,6 @@ function hasNumber(string) {
  * @param {string} string to check
  * @returns {boolean} true if string has a letter otherwise false
  */
-function hasLetter(string) {
+function adminStringHasLetter(string) {
   return /[a-zA-Z]/.test(string);
 }
