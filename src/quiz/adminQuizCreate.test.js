@@ -9,7 +9,7 @@ beforeEach(() => {
 });
 
 describe('adminQuizCreate', () => {
-    test('Test: successful adminQuizCreate', () => {
+    test('Test: successful quiz creation with correct return type', () => {
         const user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
         expect(adminQuizCreate(user.authUserId, "Valid Quiz Name", 
         "Valid quiz description.")).toStrictEqual( {quizId: expect.any(Number)} );
