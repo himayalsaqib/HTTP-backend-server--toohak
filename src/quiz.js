@@ -1,3 +1,5 @@
+import { setData, getData } from './dataStore';
+
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  * 
@@ -20,12 +22,47 @@ export function adminQuizList(authUserId) {
  * @param {number} authUserId 
  * @param {string} name
  * @param {string} description 
- * @returns {object} - assigns a quizId
+ * @returns {object} - assigns a quizId | error
  */  
 export function adminQuizCreate( authUserId, name, description ) {
-    return {
-        quizId: 2
-    };
+    if (authUserIdIsValid(authUserId) === false) {
+        return { error: 'AuthUserId is not a valid user.' };
+    }
+    if (quizNameHasValidChars(name) === false) {
+        return { error: 'Name contains invalid characters. \
+                Valid characters are alphanumeric and spaces.' 
+        };
+    }
+    if (name.length < 3 || name.length > 20) {
+        return { error: 'Name is either less than 3 characters long or \
+                more than 30 characters long.' 
+        };
+    }
+    if (quizNameInUse(authUserId, name) === true) {
+        return { error: 'Name is already used by the current \
+                logged in user for another quiz.'
+        };
+    }
+    if (description.length > 100) {
+        return { error: 'Description is more than 100 characters in length'};
+    }
+
+    let data = getData();
+    const newQuizId = data.quizzes.length;
+
+    const newQuiz = {
+        authUserId: authUserId,
+        quizId: newQuizId,
+        name: name,
+        timeCreated: Date.now(),
+        timeLastEdited: undefined,
+        description: description,
+    }
+
+    data.quizzes.push(newQuiz);
+    setData(data);
+
+    return { quizId: newQuizId };
 }
 
 /**
@@ -80,3 +117,55 @@ export function adminQuizInfo (authUserId, quizId) {
 export function adminQuizNameUpdate (authUserId, quizId, name) {
     return {};
   }
+
+/////////////////////////////// Helper Functions ///////////////////////////////
+
+/**
+ * Function checks if an authUserId is valid i.e. if the ID <= number of users 
+ * since the authUserId is just the order of user registration
+ *
+ * @param {number} authUserId
+ * @returns {boolean} true if ID is valid, false if not
+ */
+function authUserIdIsValid(authUserId) {
+    let data = getData();
+    if (authUserId <= data.users.length && authUserId >= 0) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Function checks if a quiz name contains any invalid characters. Characters
+ * are considered invalid if they are not alphanumeric or spaces e.g. @
+ *
+ * @param {String} name
+ * @returns {boolean} true if name does not contain any invalid characters, 
+ *                    false if it does
+ */
+function quizNameHasValidChars(name) {
+    if (/^[A-Za-z0-9 ]*$/.test(name) === false) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+/**
+ * Function checks if a quiz name has already been used by the current logged
+ * in user
+ *
+ * @param {Number} authUserId
+ * @param {String} name
+ * @returns {boolean} true if name has been used, false if it has not
+ */
+function quizNameInUse(authUserId, name) {
+    let data = getData();
+
+    for (const quiz of data.quizzes) {
+        if (quiz.authUserId === authUserId && quiz.name == name) {
+            return true;
+        }
+    }
+    return false;
+}
