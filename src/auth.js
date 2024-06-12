@@ -149,7 +149,9 @@ function adminEmailInUse(email) {
  * @returns {boolean} true if a name is valid otherwise false
  */
 function adminUserNameIsValid(name) {
-  const specialCharacters = /[!@#$%^&*()_+{}\[\]:;<>,.?\/\\~]/;
+  // specialCharacters will match any string that includes a special 
+  // character except for space, hyphen or apostrophe
+  const specialCharacters = /[^\w\s'-]/;
 
   if (specialCharacters.test(name) || adminStringHasNum(name)) {
     return false;
