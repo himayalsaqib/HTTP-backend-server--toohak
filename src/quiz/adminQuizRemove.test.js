@@ -1,4 +1,4 @@
-// tests for adminQuizRemove.js 
+// tests for adminQuizRemove function 
 
 import {adminQuizCreate, adminQuizRemove} from '../quiz';
 import {adminAuthRegister} from '../auth';
