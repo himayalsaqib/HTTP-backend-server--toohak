@@ -1,13 +1,13 @@
 import { adminAuthRegister, adminUserDetails } from '../auth';
 import { clear } from '../other';
 
-const ERROR = { error: expect.any(String) };
-
 beforeEach(() => {
   clear();
 });
 
 describe('adminUserDetails', () => {
+	const ERROR = { error: expect.any(String) };
+
   test('returns error when no users are registered', () => {
     expect(adminUserDetails(1)).toStrictEqual(ERROR);
   });
