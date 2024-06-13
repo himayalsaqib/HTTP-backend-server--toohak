@@ -12,17 +12,24 @@ beforeEach(()=> {
 describe('adminQuizRemove', () => {
 
     describe('Remove quiz from invalid ids', () => {
-        test('Invalid authUserId', () => {
-            const invalidUserId = -1;
+        test('Invalid authUserId, valid quizId', () => {
+            const invalidUser = -1;
             const quiz = adminQuizRemove(invalidUserId, 1);
-            expect(quiz.strictEqual({error: 'Invalid user Id'}));
+            expect(quiz.strictEqual({error: 'Invalid User Id'}));
         });
 
         test('Valid user, invalid quizId', () => {
             const user = adminAuthRegister('user@gmail.com', 'Password01', 'First', 'Last');
-            const invalidQuizId = -1;
-            expect(adminQuizRemove(user, invalidQuizId).toStrictEqual({error: 'Invalid Quiz Id'}));
+            const invalidQuiz = -1;
+            expect(adminQuizRemove(user.authUserId, invalidQuizId).toStrictEqual({error: 'Invalid Quiz Id'}));
         });
+
+        test('Invalid user, invalid quizId', () => {
+            const invalidUser = -1
+            const invalidQuiz = -1;
+            expect(adminQuizRemove(invalidUser, invalidQuiz).toStrictEqual({error: 'Invalid User and Quiz Id'}));
+        });
+
     });
     
 
@@ -39,6 +46,7 @@ describe('adminQuizRemove', () => {
 
 
     describe('Successful adminQuizRemove', () => {
+
         test('Successfully remove a quiz', () => {
             const user = adminAuthRegister('user@gmail.com', 'Password01', 'userfirst', 'userlast');
             const quiz = adminQuizCreate(user.authUserId, 'Quiz', 'Description');
@@ -49,6 +57,7 @@ describe('adminQuizRemove', () => {
             const user = adminAuthRegister('user@gmail.com', 'Password01', 'userfirst', 'userlast');
             const quiz = adminQuizCreate(user.authUserId, 'Quiz', 'Description');
             adminQuizRemove(user.authUserId, quiz.quizId);
+
             expect(adminQuizRemove(user.authUserId, quiz.quizId)).toStrictEqual({error: "Quiz does not exist"});
 
 
