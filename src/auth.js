@@ -92,7 +92,7 @@ export function adminUserDetails (authUserId) {
       return { user:
         {
           userId: user.authUserId,
-          name: user.nameFirst + user.nameLast,
+          name: `${user.nameFirst} ${user.nameLast}`,
           email: user.email,
           numSuccessfulLogins: user.numSuccessfulLogins,
           numFailedPasswordsSinceLastLogin: user.numFailedLogins,
