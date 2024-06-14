@@ -16,21 +16,30 @@ describe('adminAuthRegister', () => {
   test('has successful side effect (user is registered)', () => {
     const user = adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe');
     expect(adminUserDetails(user.authUserId)).toStrictEqual({ 
-			user: {
-        userId: user.authUserId,
-        name: 'Jane Doe',
-        email: 'valid@gmail.com',
-        numSuccessfulLogins: 1,
-        numFailedPasswordsSinceLastLogin: 0,
-      }
+		user: {
+			userId: user.authUserId,
+			name: 'Jane Doe',
+			email: 'valid@gmail.com',
+			numSuccessfulLogins: 1,
+			numFailedPasswordsSinceLastLogin: 0,
+		}
     });
   });
   
-  test('can register users with the same firstname, lastname and/or password', () => {
+  test('can register users with the same password, firstname or lastname', () => {
     const user1 = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
-    const user2 = adminAuthRegister('valid2@gmail.com', 'Password12', 'Jane', 'Doe');
+
+    const user2 = adminAuthRegister('valid2@gmail.com', 'Password12', 'John', 'Day');
     expect(user2).toStrictEqual({ authUserId: expect.any(Number) });
 		expect(user1.authUserId).not.toStrictEqual(user2.authUserId);
+
+		const user3 = adminAuthRegister('valid3@gmail.com', 'Password34', 'Jane', 'Day');
+		expect(user3).toStrictEqual({ authUserId: expect.any(Number) });
+		expect(user1.authUserId).not.toStrictEqual(user3.authUserId);
+
+		const user4 = adminAuthRegister('valid4@gmail.com', 'Password56', 'John', 'Doe');
+		expect(user4).toStrictEqual({ authUserId: expect.any(Number) });
+		expect(user1.authUserId).not.toStrictEqual(user4.authUserId);
   });
 
 	test('returns error when email address used by another user', () => {
