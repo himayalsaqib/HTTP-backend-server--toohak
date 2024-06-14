@@ -50,7 +50,7 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
     nameLast: nameLast,
     password: password,
     numFailedLogins: 0,
-    numSuccessfulLogins: 0,
+    numSuccessfulLogins: 1,
   }
 
   data.users.push(newUser);
@@ -148,7 +148,7 @@ function adminEmailInUse(email) {
  * @param {string} name
  * @returns {boolean} true if a name is valid otherwise false
  */
-function adminUserNameIsValid(name) {
+function adminNameIsValid(name) {
   // specialCharacters will match any string that includes a special 
   // character except for space, hyphen or apostrophe
   const specialCharacters = /[^\w\s'-]/;
