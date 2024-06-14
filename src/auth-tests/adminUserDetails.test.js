@@ -29,8 +29,8 @@ describe('adminUserDetails', () => {
           userId: user.authUserId,
           name: 'Jane Doe',
           email: 'valid@gmail.com',
-          numSuccessfulLogins: expect.any(number),
-          numFailedPasswordsSinceLastLogin: expect.any(number),
+          numSuccessfulLogins: expect.any(Number),
+          numFailedPasswordsSinceLastLogin: expect.any(Number),
         }
       });
     });
@@ -42,8 +42,8 @@ describe('adminUserDetails', () => {
           userId: user.authUserId,
           name: 'Jane Doe',
           email: 'valid@gmail.com',
-          numSuccessfulLogins: expect.any(number),
-          numFailedPasswordsSinceLastLogin: expect.any(number),
+          numSuccessfulLogins: expect.any(Number),
+          numFailedPasswordsSinceLastLogin: expect.any(Number),
         }
       });
     });
@@ -55,8 +55,8 @@ describe('adminUserDetails', () => {
           userId: user.authUserId,
           name: 'Jane Doe',
           email: 'valid@gmail.com',
-          numSuccessfulLogins: expect.any(number),
-          numFailedPasswordsSinceLastLogin: expect.any(number),
+          numSuccessfulLogins: expect.any(Number),
+          numFailedPasswordsSinceLastLogin: expect.any(Number),
         }
       });
 			expect(adminUserDetails(user1.authUserId)).toStrictEqual({
@@ -64,8 +64,8 @@ describe('adminUserDetails', () => {
           userId: user1.authUserId,
           name: 'John Doe',
           email: 'valid1@gmail.com',
-          numSuccessfulLogins: expect.any(number),
-          numFailedPasswordsSinceLastLogin: expect.any(number),
+          numSuccessfulLogins: expect.any(Number),
+          numFailedPasswordsSinceLastLogin: expect.any(Number),
         }
       });
     });
