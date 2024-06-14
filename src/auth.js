@@ -28,14 +28,14 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
     return { error: 'invalid first name is less than 2 characters or \
             more than 20 characters' };
   }
-  if (adminUserNameIsValid(nameFirst) === false) {
+  if (adminNameIsValid(nameFirst) === false) {
     return { error: 'invalid first name does not meet requirements' };
   }
   if (nameLast.length < 2 || nameLast.length > 20) {
     return { error: 'invalid last name is less than 2 characters or \
             more than 20 characters' };
   }
-  if (adminUserNameIsValid(nameLast) === false) {
+  if (adminNameIsValid(nameLast) === false) {
     return { error: 'invalid last name does not meet requirements' };
   }
 
