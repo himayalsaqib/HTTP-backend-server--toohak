@@ -81,7 +81,7 @@ export function adminAuthLogin (email, password) {
  * @returns {object} user 
  */
 export function adminUserDetails (authUserId) {
-  if (!authUserIdIsValid(authUserId)) {
+  if (!adminUserIdIsValid(authUserId)) {
     return { error: 'AuthUserId is not a valid user.' };
   }
 
@@ -194,7 +194,7 @@ function adminStringHasLetter(string) {
  * @param {number} authUserId 
  * @returns {boolean} true if authUserId is valid otherwise false
  */
-function authUserIdIsValid(authUserId) {
+function adminUserIdIsValid(authUserId) {
   let data = getData();
 
   for (const user of data.users) {
