@@ -2,8 +2,8 @@ import { setData, getData } from './dataStore';
 import validator from 'validator';
 
 /**
- * Register a user with an email, password, and names, then returns 
- * their authUserId value
+ * Register a user with an email, password, and names, then returns their 
+ * authUserId value
  * 
  * @param {string} email 
  * @param {string} password 
@@ -75,23 +75,31 @@ export function adminAuthLogin (email, password) {
 }
 
 /**
- * Given an admin user's authUserId, return details about the user.
- * "name" is the first and last name concatenated with a single space 
- * between them.
+ * Given an admin user's authUserId, return details about the user. 
  * 
  * @param {number} authUserId
  * @returns {object} user 
  */
 export function adminUserDetails (authUserId) {
-    return { user:
+  if (!authUserIdIsValid(authUserId)) {
+    return { error: 'AuthUserId is not a valid user.' };
+  }
+
+  let data = getData();
+
+  for (const user of data.users) {
+    if (user.authUserId === authUserId) {
+      return { user:
         {
-          userId: 1,
-          name: 'Hayden Smith',
-          email: 'hayden.smith@unsw.edu.au',
-          numSuccessfulLogins: 3,
-          numFailedPasswordsSinceLastLogin: 1,
+          userId: user.authUserId,
+          name: user.nameFirst + user.nameLast,
+          email: user.email,
+          numSuccessfulLogins: user.numSuccessfulLogins,
+          numFailedPasswordsSinceLastLogin: user.numFailedLogins,
         }
       };
+    }
+  }
 }
 
 /**
@@ -178,4 +186,22 @@ function adminStringHasNum(string) {
  */
 function adminStringHasLetter(string) {
   return /[a-zA-Z]/.test(string);
+}
+
+/**
+ * Function checks if an authUserId exists in the dataStore and is valid
+ *
+ * @param {number} authUserId 
+ * @returns {boolean} true if authUserId is valid otherwise false
+ */
+function authUserIdIsValid(authUserId) {
+  let data = getData();
+
+  for (const user of data.users) {
+    if (user.authUserId === authUserId) {
+      return true;
+    }
+  }
+
+  return false;
 }
