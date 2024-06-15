@@ -33,6 +33,12 @@ describe('adminQuizCreate', () => {
         'Jane', 'Doe')).toStrictEqual( error );
     });
 
+    test('Returns error when email is currently used by another user', () => {
+        adminAuthRegister('valid2@gmail.com', 'Password12', 'Jane', 'Doe');
+        expect(adminUserDetailsUpdate(user.authUserId, 'valid2.com', 
+        'Jane', 'Doe')).toStrictEqual( error );
+    });
+
     test('Returns error when email is not valid', () => {
         expect(adminUserDetailsUpdate(user.authUserId, 'invalid1.com', 
         'Jane', 'Doe')).toStrictEqual( error );
