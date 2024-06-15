@@ -15,8 +15,8 @@ describe('adminQuizCreate', () => {
     });
 
     test('Successful update has the correct return type', () => {
-        expect(adminUserDetailsUpdate(user.authUserId, 'valid1@gmail.com', 
-        'Jane', 'Doe')).toStrictEqual({});
+        expect(adminUserDetailsUpdate(user.authUserId, 'newEmail@gmail.com', 
+        'Jamie', 'David')).toStrictEqual({});
     });
 
     test('Successful side effect: adminUserDetails returns newly updated properties', () => {
