@@ -44,7 +44,8 @@ describe('adminQuizCreate', () => {
         'Jane', 'Doe')).toStrictEqual( error );
     });
 
-    test('Returns error when nameFirst contains invalid characters', () => {
+    test('Returns error when nameFirst contains invalid characters (not space, ' +
+        'apostrophe or hyphen)', () => {
         expect(adminUserDetailsUpdate(user.authUserId, 'valid1@gmail.com', 
         'Jane1', 'Doe')).toStrictEqual( error );
         expect(adminUserDetailsUpdate(user.authUserId, 'valid1@gmail.com', 
@@ -61,7 +62,8 @@ describe('adminQuizCreate', () => {
         'JamieJamieJamieJamieJamie', 'Doe')).toStrictEqual( error );
     });
 
-    test('Returns error when nameLast contains invalid characters', () => {
+    test('Returns error when nameLast contains invalid characters (not space, ' +
+        'apostrophe or hyphen)', () => {
         expect(adminUserDetailsUpdate(user.authUserId, 'valid1@gmail.com', 
         'Jane', 'Doe1')).toStrictEqual( error );
         expect(adminUserDetailsUpdate(user.authUserId, 'valid1@gmail.com', 
