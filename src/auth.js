@@ -15,27 +15,27 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
   if (adminEmailInUse(email)) {
     return { error: 'email address is used by another user' };
   }  
-  if (validator.isEmail(email) === false) {
+  if (!validator.isEmail(email)) {
     return { error: 'invalid email address' };
   }
   if (password.length < 8) {
     return { error: 'invalid password is less than 8 characters' };
   }
-  if (adminStringHasNum(password) === false || adminStringHasLetter(password) === false) {
+  if (!adminStringHasNum(password) || !adminStringHasLetter(password)) {
     return { error: 'invalid password does not meet requirements' };
   }
   if (nameFirst.length < 2 || nameFirst.length > 20) {
     return { error: 'invalid first name is less than 2 characters or \
             more than 20 characters' };
   }
-  if (adminNameIsValid(nameFirst) === false) {
+  if (!adminUserNameIsValid(nameFirst)) {
     return { error: 'invalid first name does not meet requirements' };
   }
   if (nameLast.length < 2 || nameLast.length > 20) {
     return { error: 'invalid last name is less than 2 characters or \
             more than 20 characters' };
   }
-  if (adminNameIsValid(nameLast) === false) {
+  if (!adminUserNameIsValid(nameLast)) {
     return { error: 'invalid last name does not meet requirements' };
   }
 
@@ -156,7 +156,7 @@ function adminEmailInUse(email) {
  * @param {string} name
  * @returns {boolean} true if a name is valid otherwise false
  */
-function adminNameIsValid(name) {
+function adminUserNameIsValid(name) {
   // specialCharacters will match any string that includes a special 
   // character except for space, hyphen or apostrophe
   const specialCharacters = /[^\w\s'-]/;
