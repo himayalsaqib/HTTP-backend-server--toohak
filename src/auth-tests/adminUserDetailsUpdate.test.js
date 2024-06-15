@@ -14,5 +14,15 @@ describe('adminQuizCreate', () => {
         user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
     });
 
+    test('Successful update has the correct return type', () => {
+        expect(adminUserDetailsUpdate(user.authUserId + 1, 'valid1@gmail.com', 
+        'Jane', 'Doe')).toStrictEqual({});
+    });
+
+    test('Returns error when authUserId is not a valid user', () => {
+        expect(adminUserDetailsUpdate(user.authUserId + 1, 'valid1@gmail.com', 
+        'Jane', 'Doe')).toStrictEqual( error );
+    });
+
     
 });
