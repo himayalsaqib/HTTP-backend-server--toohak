@@ -123,9 +123,50 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
  * @param {string} email
  * @param {string} nameFirst
  * @param {string} nameLast
- * @returns {object} empty
+ * @returns {object} empty | error
  */
 export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
+  if (adminUserIdIsValid(authUserId) == false) {
+    return { error: 'AuthUserId is not a valid user' };
+  }
+
+  let data = getData();
+
+  for (const user of data.users) {
+    if (user.authUserId === authUserId) {
+      user.email === email;
+      break;
+    } else if (adminEmailInUse(email) === true) {
+      return { error: 'Email is currently used by another user' };
+    } 
+  }
+
+  if (validator.isEmail(email) === false) {
+    return { error: 'Invalid email address' };
+  }
+  if (adminUserNameIsValid(nameFirst) === false) {
+    return { error: 'First name contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes' };
+  }
+  if (nameFirst.length < 2 || nameFirst.length > 20) {
+    return { error: 'First name is less than 2 characters or more than 20 characters' };
+  }
+  if (adminUserNameIsValid(nameLast) === false) {
+    return { error: 'Last name contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes' };
+  }
+  if (nameLast.length < 2 || nameLast.length > 20) {
+    return { error: 'Last name is less than 2 characters or more than 20 characters' };
+  }
+
+  for (const user of data.users) {
+    if (user.authUserId === authUserId) {
+      user.email = email;
+      user.nameFirst = nameFirst;
+      user.nameLast = nameLast;
+    }
+  }
+
+  setData(data);
+  
   return {};
 }
 
