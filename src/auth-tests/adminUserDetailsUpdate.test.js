@@ -15,8 +15,17 @@ describe('adminQuizCreate', () => {
     });
 
     test('Successful update has the correct return type', () => {
-        expect(adminUserDetailsUpdate(user.authUserId + 1, 'valid1@gmail.com', 
+        expect(adminUserDetailsUpdate(user.authUserId, 'valid1@gmail.com', 
         'Jane', 'Doe')).toStrictEqual({});
+    });
+
+    test('Successful side effect: adminUserDetails returns newly updated properties', () => {
+        adminUserDetailsUpdate(user.authUserId, 'valid2@gmail.com', 'Not Jane', 'Not Doe');
+        expect(adminUserDetails(user.authUserId)).toStrictEqual({ user: 
+            { userId: user.authUserId, name: 'Not Jane', 
+            email: 'valid2@gmail.com', numSuccessfulLogins: expect.any(Number), 
+            numFailedPasswordsSinceLastLogin: expect.any(Number) }
+        });
     });
 
     test('Returns error when authUserId is not a valid user', () => {
