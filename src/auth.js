@@ -129,9 +129,18 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   if (adminUserIdIsValid(authUserId) == false) {
     return { error: 'AuthUserId is not a valid user' };
   }
-  if (adminEmailInUse(email) === true) {
-    return { error: 'Email is currently used by another user' };
-  } 
+
+  let data = getData();
+
+  for (const user of data.users) {
+    if (user.authUserID === authUserId) {
+      user.email === email;
+      break;
+    } else if (adminEmailInUse(email) === true) {
+      return { error: 'Email is currently used by another user' };
+    } 
+  }
+
   if (validator.isEmail(email) === false) {
     return { error: 'Invalid email address' };
   }
@@ -148,10 +157,8 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
     return { error: 'Last name is less than 2 characters or more than 20 characters' };
   }
 
-  let data = getData();
-
   for (const user of data.users) {
-    if (user.authUserID === authUserId) {
+    if (user.authUserId === authUserId) {
       user.email = email;
       user.nameFirst = nameFirst;
       user.nameLast = nameLast;
