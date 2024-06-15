@@ -3,14 +3,11 @@
 import { adminAuthRegister, adminUserDetails, adminUserDetailsUpdate } from '../auth';
 import { clear } from '../other';
 
-beforeEach(() => {
-    clear();
-});
-
-describe('adminQuizCreate', () => {
+describe('adminUserDetailsUpdate', () => {
     const error = { error: expect.any(String) };
     let user;
     beforeEach(() => {
+        clear();
         user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
     });
 
