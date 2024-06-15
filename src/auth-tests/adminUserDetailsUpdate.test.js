@@ -1,7 +1,7 @@
 // contains the tests adminUserDetailsUpdate from auth.js
 
-import {adminAuthRegister, adminUserDetails, adminUserDetailsUpdate} from '../auth';
-import {clear} from '../other';
+import { adminAuthRegister, adminUserDetails, adminUserDetailsUpdate } from '../auth';
+import { clear } from '../other';
 
 beforeEach(() => {
     clear();
