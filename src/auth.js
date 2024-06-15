@@ -136,16 +136,16 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
     return { error: 'Invalid email address' };
   }
   if (adminUserNameIsValid(nameFirst) === false) {
-    return { error: 'NameFirst contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes' };
+    return { error: 'First name contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes' };
   }
   if (nameFirst.length < 2 || nameFirst.length > 20) {
-    return { error: 'NameFirst is less than 2 characters or more than 20 characters' };
+    return { error: 'First name is less than 2 characters or more than 20 characters' };
   }
   if (adminUserNameIsValid(nameLast) === false) {
-    return { error: 'NameLast contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes' };
+    return { error: 'Last name contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes' };
   }
   if (nameLast.length < 2 || nameLast.length > 20) {
-    return { error: 'NameLast is less than 2 characters or more than 20 characters' };
+    return { error: 'Last name is less than 2 characters or more than 20 characters' };
   }
 
   let data = getData();
