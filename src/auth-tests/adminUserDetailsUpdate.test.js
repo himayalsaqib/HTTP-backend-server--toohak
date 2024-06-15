@@ -22,7 +22,7 @@ describe('adminQuizCreate', () => {
     test('Successful side effect: adminUserDetails returns newly updated properties', () => {
         adminUserDetailsUpdate(user.authUserId, 'valid2@gmail.com', 'Not Jane', 'Not Doe');
         expect(adminUserDetails(user.authUserId)).toStrictEqual({ user: 
-            { userId: user.authUserId, name: 'Not Jane', 
+            { userId: user.authUserId, name: 'Not Jane Not Doe', 
             email: 'valid2@gmail.com', numSuccessfulLogins: expect.any(Number), 
             numFailedPasswordsSinceLastLogin: expect.any(Number) }
         });
