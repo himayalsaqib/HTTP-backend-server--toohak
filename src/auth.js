@@ -123,7 +123,7 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
  * @param {string} email
  * @param {string} nameFirst
  * @param {string} nameLast
- * @returns {object} empty
+ * @returns {object} empty | error
  */
 export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   if (adminUserIdIsValid(authUserId) == false) {
