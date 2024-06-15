@@ -133,7 +133,7 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   let data = getData();
 
   for (const user of data.users) {
-    if (user.authUserID === authUserId) {
+    if (user.authUserId === authUserId) {
       user.email === email;
       break;
     } else if (adminEmailInUse(email) === true) {
