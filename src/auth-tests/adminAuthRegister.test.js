@@ -59,7 +59,7 @@ describe('adminAuthRegister', () => {
 			toStrictEqual(ERROR);
 		});
 
-		test('first name contains a special character (not space, apostrophe or hyphen)', () => {
+		test('first name contains special character (not space, apostrophe or hyphen)', () => {
 			expect(adminAuthRegister('valid@gmail.com', 'Password12', '@Jane', 'Doe')).
 			toStrictEqual(ERROR);
 		});
@@ -70,8 +70,8 @@ describe('adminAuthRegister', () => {
 		});
 
 		test('first name is greater than 20 characters', () => {
-			expect(adminAuthRegister('valid@gmail.com', 'Password12', 'JaneJaneJaneJaneJaneJane', 'Doe')).
-			toStrictEqual(ERROR);
+			expect(adminAuthRegister('valid@gmail.com', 'Password12', 
+			'JaneJaneJaneJaneJaneJane', 'Doe')).toStrictEqual(ERROR);
 		});
 	});
 
@@ -81,7 +81,7 @@ describe('adminAuthRegister', () => {
 			toStrictEqual(ERROR);
 		});
 
-		test('last name contains a special character (not space, apostrophe or hyphen)', () => {
+		test('last name contains special character (not space, apostrophe or hyphen)', () => {
 			expect(adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe!')).
 			toStrictEqual(ERROR);
 		});
@@ -92,8 +92,8 @@ describe('adminAuthRegister', () => {
 		});
 
 		test('last name is greater than 20 characters', () => {
-			expect(adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'DoeDoeDoeDoeDoeDoeDoe')).
-			toStrictEqual(ERROR);
+			expect(adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 
+			'DoeDoeDoeDoeDoeDoeDoe')).toStrictEqual(ERROR);
 		});
 	});
 
