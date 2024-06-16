@@ -7,14 +7,31 @@ beforeEach(() => {
     clear();
 });
 
-test.todo('when authUserId is not a valid user, from adminAuthRegister & adminAuthLogin');
+describe('testing for return type', () => {
+    test.todo('has correct return type');
+});
 
-test.todo('old password is not the correct old password');
+describe('testing authUserId in adminPasswordUpdate', () => {
+    test.todo('when authUserId is not a valid user, from adminAuthRegister');
+    test.todo('when authUserId is not a valid user, from adminAuthLogin');
 
-test.todo('old password and new password match exactly');
+    test.todo('when authUserId is a valid user from adminAuthRegister');
+    test.todo('when authUserIs is a valid user from adminAuthLogin');
+});
 
-test.todo('new password has already been used before by the user');
+descirbe('testing oldPassword in adminPasswordUpdate', () => {
+    test.todo('old password is not the correct old password');
+    test.todo('old password and new password match exactly');
+    test.todo('old password is the correct old password');
+});
 
-test.todo('new password is less than 8 characters');
+describe('testing newPassword in adminPasswordUpdate', () => {
+    test.todo('new password has already been used before by the user');
+    test.todo('new password is less than 8 characters');
+    test.todo('new password does not contain at least one number and at least one letter');
+    test.todo('new password meets all criteria');
+});
 
-test.todo('new password does not contain at least one number and at least one letter');
+describe('testing side-effects from adminPasswordUpdate', () => {
+    test.todo('successful login (adminAuthLogin) with newPassword');
+});
