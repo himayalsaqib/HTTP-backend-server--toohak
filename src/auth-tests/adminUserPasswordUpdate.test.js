@@ -8,30 +8,107 @@ beforeEach(() => {
 });
 
 describe('testing for return type', () => {
-    test.todo('has correct return type');
+    test('has correct return type', () => {
+        const originalPassword = 'validpa55word';
+        const user = adminAuthRegister('valid@gmail.com', originalPassword, 'Jane', 'Doe');
+        const changedPassword = 'password123';
+        
+        expect(adminUserPasswordUpdate(user.authUserId, originalPassword, changedPassword)).
+        toStrictEqual({ });
+    });
 });
 
 describe('testing authUserId in adminPasswordUpdate', () => {
-    test.todo('when authUserId is not a valid user, from adminAuthRegister');
-    test.todo('when authUserId is not a valid user, from adminAuthLogin');
+    test('when authUserId is not a valid user, from adminAuthRegister', () => {
+        const ogPassword = 'validpa55w0rd';
+        const user = adminAuthRegister('valid123@gmail.com', ogPassword, 'John', 'Smith');
+        const changedPassword = 'an0thervalid0ne';
 
-    test.todo('when authUserId is a valid user from adminAuthRegister');
-    test.todo('when authUserIs is a valid user from adminAuthLogin');
+        expect(adminUserPasswordUpdate(user.authUserId + 1, ogPassword, changedPassword)).
+        toStrictEqual(ERROR);
+    });
 });
 
 descirbe('testing oldPassword in adminPasswordUpdate', () => {
-    test.todo('old password is not the correct old password');
-    test.todo('old password and new password match exactly');
-    test.todo('old password is the correct old password');
+    test('oldPassword is not the correct oldPassword', () => {
+        const ogPassword = 'val1dpassword';
+        const user = adminAuthRegister('valid@gmail.com', ogPassword, 'Jane', 'Smith');
+        const incorretOgPassword = 'validpassw0rd';
+        const alteredPassword = 'newvalidpa55word';
+
+        expect(adminUserPasswordUpdate(user.authUserId, incorretOgPassword, alteredPassword)).
+        toStrictEqual(ERROR);
+    });
+
+    test('oldPassword and newPassword match exactly', () => {
+        const originalPassword = 'validpa55word';
+        const user = adminAuthRegister('valid@gmail.com', originalPassword, 'Jake', 'Smith');
+        const changedPassword = 'validpa55word';
+        
+        expect(adminUserPasswordUpdate(user.authUserId, originalPassword, changedPassword)).
+        toStrictEqual(ERROR);
+    });
 });
 
 describe('testing newPassword in adminPasswordUpdate', () => {
-    test.todo('new password has already been used before by the user');
-    test.todo('new password is less than 8 characters');
-    test.todo('new password does not contain at least one number and at least one letter');
-    test.todo('new password meets all criteria');
+    test.todo('newPassword has already been used before by the user');
+
+    test('newPassword is less than 8 characters', () => {
+        const originalPassword = 'validpa55word';
+        const changedPassword = 'inva1d';
+        const user = adminAuthRegister('valid@gmail.com', originalPassword, 'John', "Smith");
+        
+        expect(adminUserPasswordUpdate(user.authUserId, originalPassword, changedPassword)).
+        toStrictEqual({ERROR});
+    });
+
+    test('newPassword does not contain at least one number and at least one letter', () => {
+        test('newPassword does not contain at least one number', () => {
+            const ogPassword = 'Avalidpa55word';
+            const badNewPassword = 'invalidpassword';
+            const user = adminAuthRegister('valid@gmail.com', ogPassword, 'Jane', 'Doe');
+
+            expect(adminUserPasswordUpdate(user.authUserId, ogPassword, badNewPassword)).
+            toStrictEqual(ERROR);
+        });
+        
+        test('newPassword does not contain at least one letter', () => {
+            const ogPassword = 'Avalidpa55word';
+            const badNewPassword = '123456789';
+            const user = adminAuthRegister('valid@gmail.com', ogPassword, 'John', 'Doe');
+
+            expect(adminUserPasswordUpdate(user.authUserId, ogPassword, badNewPassword)).
+            toStrictEqual(ERROR);
+        });
+    });
+
+    test('newPassword meets all criteria', () => {
+        const originalPassword = 'validpa55word';
+        const changedPassword = 'veryvalidpassw0rd';
+        const user = adminAuthRegister('valid@gmail.com', originalPassword, 'John', "Smith");
+        
+        expect(adminUserPasswordUpdate(user.authUserId, originalPassword, changedPassword)).
+        toStrictEqual({ });
+    });
 });
 
 describe('testing side-effects from adminPasswordUpdate', () => {
-    test.todo('successful login (adminAuthLogin) with newPassword');
+    test('successful login (adminAuthLogin) with newPassword', () => {
+        const originalPassword = 'validpa55w0rd';
+        const user = adminAuthRegister('valid123@gmail.com', originalPassword, 'Jane', 'Smith');
+        
+        test('successful login before updating password', () => {
+            expect(adminAuthLogin('valid123@gmail.com', originalPassword)).
+            toStrictEqual({ authUserId: user.authUserId });
+        });
+        
+        const alteredPassword = 'newpa55word';
+        
+        test('successful login after updating password', () => {
+            adminUserPasswordUpdate(user.authUserId, originalPassword, alteredPassword);
+
+            expect(adminAuthLogin('valid123@gmail.com', alteredPassword)).
+            toStrictEqual({ authUserId: user.authUserId });
+        });
+    });
 });
