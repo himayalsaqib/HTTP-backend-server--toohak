@@ -9,6 +9,7 @@ let data = {
       password: "",
       numFailedLogins: undefined,
       numSuccessfulLogins: undefined,
+      previousPasswords: [],
     }
   ],
   quizzes: [
