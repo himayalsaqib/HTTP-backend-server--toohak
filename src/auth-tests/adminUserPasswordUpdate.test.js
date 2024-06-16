@@ -57,15 +57,16 @@ describe('testing newPassword in adminPasswordUpdate', () => {
 
         const changedPassword = 'an0therpassw0rd';
         const alternatePassword = 'passw0rd123';
-
         
+        // first password update
         adminUserPasswordUpdate(user.authUserId, originalPassword, changedPassword).
         toStrictEqual({});
 
+        // second password update
         adminUserPasswordUpdate(user.authUserId, changedPassword, alternatePassword).
         toStrictEqual({});
         
-        
+        // update to a password that was used previously by the user
         adminUserPasswordUpdate(user.authUserId, alternatePassword, originalPassword).
         toStrictEqual(ERROR);
     });
