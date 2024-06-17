@@ -154,11 +154,13 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
 
   // update password for user
   for (const user of data.users) {
-    if (user.authUserId === userId) {
-      for (const password of user.previousPasswords) {
-        user.password = newPassword;
-        user.previousPasswords.push(oldPassword);
+    if (user.authUserId === authUserId) {
+
+      for (const password in user.previousPasswords) {
+        password.password = newPassword;
+        password.previousPasswords.push(oldPassword);
       }
+
     }
   }
 
@@ -311,7 +313,7 @@ function checkPasswordHistory(authUserId, newPassword) {
 
   for (const user of data.users) {
     if (user.authUserId === authUserId) {
-      for (const password of user.previousPasswords) {
+      for (const password in user.previousPasswords) {
         if (password === newPassword) {
           return true;
         }
