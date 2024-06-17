@@ -4,14 +4,17 @@ import {adminAuthRegister} from '../auth';
 import {adminQuizCreate} from '../quiz';
 import {clear} from '../other';
 
-let user; 
-const error = { error: expect.any(String) };
 beforeEach(() => {
     clear();
-    user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
 });
 
 describe('adminQuizCreate', () => {
+    const error = { error: expect.any(String) };
+    let user;
+    beforeEach(() => {
+        user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
+    });
+
     test('Test: successful quiz creation with correct return type', () => {
         expect(adminQuizCreate(user.authUserId, "Valid Quiz Name", 
         "Valid quiz description.")).toStrictEqual( {quizId: expect.any(Number)} );
