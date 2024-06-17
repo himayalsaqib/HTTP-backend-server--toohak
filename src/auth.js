@@ -79,12 +79,12 @@ export function adminAuthLogin (email, password) {
     if (user.email === email) {
       if (user.password === password) {
         user.numFailedLogins = 0;
-        user.numSuccessfulLogins += 1;
+        user.numSuccessfulLogins++;
         setData(data);
 
         return { authUserId: user.authUserId };
       } else {
-        user.numFailedLogins += 1;
+        user.numFailedLogins++;
         setData(data);
         
         return { error: 'password is not correct for the given email' };
