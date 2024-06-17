@@ -112,6 +112,56 @@ export function adminUserDetails (authUserId) {
  * @returns {object} empty
  */
 export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
+
+  let data = getData();
+
+  // check for valid user
+  if (!adminUserIdIsValid(authUserId)) {
+    return { error : 'authUserId is not a valid user'};
+  }
+
+  // check oldPassword
+  for (const user of data.users) {
+    if (user.authUserId === authUserId) {
+      if (oldPassword !== user.password) {
+        return { error : 'oldPassword is not the correct old password'}
+      }
+    }
+  }
+
+  // check for match
+  if (oldPassword === newPassword) {
+    return { error : 'oldPassword matches newPassword exactly'};
+  }
+
+  // check newPassword
+  for (const user of data.users) {
+    if (user.authUserIduserId === authUserId) {
+      // check previousPassword
+      if (checkPasswordHistory(authUserId, newPassword)) {
+        return { error : 'newPassword has already been used before by this user'};
+      }
+    }
+  }
+
+  if (newPassword.length < 8) {
+    return { error : 'invalid newPassword is less than 8 charactes'};
+  }
+
+  if (!adminStringHasNum(newPassword) || !adminStringHasLetter(newPassword)) {
+    return { error : 'newPassword must contain at least one number and one letter'};
+  }
+
+  // update password for user
+  for (const user of data.users) {
+    if (user.authUserId === userId) {
+      for (const password of user.previousPasswords) {
+        user.password = newPassword;
+        user.previousPasswords.push(oldPassword);
+      }
+    }
+  }
+
   return {};
 }
 
@@ -241,6 +291,31 @@ function adminUserIdIsValid(authUserId) {
   for (const user of data.users) {
     if (user.authUserId === authUserId) {
       return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Function checks previousPassword array to determine whether a user has already
+ * used a password when updating the password
+ * 
+ * @param {number} authUserId
+ * @param {number} newPassword
+ * 
+ * @returns {boolean} true if newPassword matches any previous passwords
+ */
+function checkPasswordHistory(authUserId, newPassword) {
+  let data = getData();
+
+  for (const user of data.users) {
+    if (user.authUserId === authUserId) {
+      for (const password of user.previousPasswords) {
+        if (password === newPassword) {
+          return true;
+        }
+      }
     }
   }
 
