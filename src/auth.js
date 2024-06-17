@@ -164,6 +164,8 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
     }
   }
 
+  setData(data);
+
   return {};
 }
 
