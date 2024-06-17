@@ -89,21 +89,34 @@ export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
 }
 
 /**
- * Provide a list of all quizzes that are owned by the 
- * currently logged in user.
+ * Get all of the relevant information about the current quiz.
  * 
  * @param {number} authUserId
  * @param {number} quizId 
  * @returns {object} - returns quiz information 
  */
 export function adminQuizInfo (authUserId, quizId) {
+    if (authUserIdIsValid(authUserId) === false) {
+        return { error: 'AuthUserId is not a valid user.' };
+    }
+    if (quizIdIsValid(quizId) === false) {
+        return { error: 'Quiz ID does not refer to a valid quiz.' };
+    }
+    let data = getData();
+    const quiz = data.quizzes[quizId];
+
+    if (quiz.authUserId !== authUserId) {
+        return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
+    }
+
     return {
-        quizId: 1,
-        name: 'My Quiz',
-        timeCreated: 1683125870,
-        timeLastEdited: 1683125871,
-        description: 'This is my quiz',
+        quizId: quiz.quizId,
+        name: quiz.name,
+        timeCreated: new Date(quiz.timeCreated).toISOString(),
+        timeLastEdited: quiz.timeLastEdited ? new Date(quiz.timeLastEdited).toISOString() : undefined,
+        description: quiz.description,
     };
+    
   }
 
     /**
@@ -169,3 +182,8 @@ function quizNameInUse(authUserId, name) {
     }
     return false;
 }
+
+function quizIdIsValid(quizId) {
+    let data = getData();
+    return quizId < data.quizzes.length && quizId >= 0;
+  }
