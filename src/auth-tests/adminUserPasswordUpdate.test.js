@@ -59,16 +59,13 @@ describe('testing newPassword in adminPasswordUpdate', () => {
         const alternatePassword = 'passw0rd123';
         
         // first password update
-        adminUserPasswordUpdate(user.authUserId, originalPassword, changedPassword).
-        toStrictEqual({});
+        adminUserPasswordUpdate(user.authUserId, originalPassword, changedPassword);
 
         // second password update
-        adminUserPasswordUpdate(user.authUserId, changedPassword, alternatePassword).
-        toStrictEqual({});
+        adminUserPasswordUpdate(user.authUserId, changedPassword, alternatePassword);
         
         // update to a password that was used previously by the user
-        adminUserPasswordUpdate(user.authUserId, alternatePassword, originalPassword).
-        toStrictEqual(ERROR);
+        expect(adminUserPasswordUpdate(user.authUserId, alternatePassword, originalPassword)).toStrictEqual(ERROR);
     });
 
     test('newPassword is less than 8 characters', () => {
