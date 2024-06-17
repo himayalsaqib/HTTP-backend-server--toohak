@@ -5,7 +5,7 @@ beforeEach(() => {
   clear();
 });
 
-describe('adminUserDetails', () => {
+describe('adminAuthLogin', () => {
 	const ERROR = { error: expect.any(String) };
 
   test('returns error when no users are registered', () => {
@@ -59,7 +59,6 @@ describe('adminUserDetails', () => {
       });
 		});
 	});
-	//for when multiple users are registered
 
 	describe('when multiple users are registered', () => {
 		let user, user2;
@@ -75,7 +74,7 @@ describe('adminUserDetails', () => {
 		test.each([
 			{email: 'valid@gmail.com', password: 'Password34'},
 			{email: 'valid2@gmail.com', password: 'Password12'}
-		]) ('returns error when password does not match given email', (email, password) => {
+		]) ('returns error when password does not match given email', ({ email, password }) => {
 			expect(adminAuthLogin(email, password)).toStrictEqual(ERROR);
 		});
 		
