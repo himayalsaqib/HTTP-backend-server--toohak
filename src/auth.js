@@ -219,9 +219,8 @@ function adminEmailInUse(email) {
 function adminUserNameIsValid(name) {
   // specialCharacters will match any string that includes a special 
   // character except for space, hyphen or apostrophe
-  const specialCharacters = /[^\w\s'-]/;
-
-  if (specialCharacters.test(name) || adminStringHasNum(name)) {
+  const specialCharacters = /[^A-Za-z\s'-]/;
+  if (specialCharacters.test(name)) {
     return false;
   }
 
