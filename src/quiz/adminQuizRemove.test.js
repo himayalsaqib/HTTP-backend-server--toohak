@@ -8,8 +8,20 @@ beforeEach(()=> {
     clear();
 });
 
+describe('clear', () => {
+    test('has the correct return type, {}', () => {
+      expect(clear()).toStrictEqual({});
+    });
+  });
 
 describe('adminQuizRemove', () => {
+
+  test('has the correct return type', () => {
+    const user = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One');
+    const quiz = adminQuizCreate(user.authUserId, 'Quiz 1', 'Description 1');
+    const remove = adminQuizRemove(user.authUserId, quiz.quizId);
+    expect(remove).toStrictEqual({});
+  });
 
     describe('Remove quiz from invalid ids returns error', () => {
         test('Invalid authUserId, valid quizId', () => {
