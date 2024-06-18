@@ -153,12 +153,13 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   let data = getData();
 
   for (const user of data.users) {
-    if (user.authUserId === authUserId) {
-      user.email === email;
-      break;
-    } else if (adminEmailInUse(email) === true) {
-      return { error: 'Email is currently used by another user' };
-    } 
+    if (user.email === email) {
+      if (user.authUserId === authUserId) {
+        break;
+      } else {
+        return { error: 'Email currently in use by another user'};
+      }
+    }
   }
 
   if (validator.isEmail(email) === false) {
