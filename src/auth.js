@@ -65,7 +65,7 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
  * 
  * @param {string} email 
  * @param {string} password 
- * @returns {object} authUserId
+ * @returns {{ authUserId: number } | { error: string }} 
  */
 
 export function adminAuthLogin (email, password) {
