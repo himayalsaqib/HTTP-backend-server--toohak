@@ -49,7 +49,7 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
     nameFirst: nameFirst,
     nameLast: nameLast,
     password: password,
-    previousPasswords: [],
+    previousPasswords: [password],
     numFailedLogins: 0,
     numSuccessfulLogins: 1,
   }
@@ -156,9 +156,9 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
 
   // check newPassword
   for (const user of data.users) {
-    if (user.authUserIduserId === authUserId) {
+    if (user.authUserId === authUserId) {
       // check previousPassword
-      if (checkPasswordHistory(authUserId, newPassword)) {
+      if (checkPasswordHistory(authUserId, newPassword) === true) {
         return { error : 'newPassword has already been used before by this user'};
       }
     }
@@ -175,10 +175,8 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   // update password for user
   for (const user of data.users) {
     if (user.authUserId === authUserId) {
+      user.previousPasswords.push(newPassword);
       user.password = newPassword;
-      //for (const password in user.previousPasswords) {
-      user.previousPasswords.push(oldPassword);
-      //}
     }
   }
 
@@ -239,7 +237,7 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
 
   setData(data);
   
-  return {};
+  return data.users.previousPasswords;
 }
 
 /////////////////////////////// Helper Functions ///////////////////////////////
@@ -332,10 +330,10 @@ function checkPasswordHistory(authUserId, newPassword) {
 
   for (const user of data.users) {
     if (user.authUserId === authUserId) {
-      for (const password in user.previousPasswords) {
+      for (const password of user.previousPasswords) {
         if (password === newPassword) {
           return true;
-        }
+        } 
       }
     }
   }
