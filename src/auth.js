@@ -174,12 +174,10 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   // update password for user
   for (const user of data.users) {
     if (user.authUserId === authUserId) {
-
       for (const password in user.previousPasswords) {
         password.password = newPassword;
         password.previousPasswords.push(oldPassword);
       }
-
     }
   }
 
