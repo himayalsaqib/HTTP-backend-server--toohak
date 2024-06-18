@@ -75,21 +75,19 @@ export function adminAuthLogin (email, password) {
 
   let data = getData();
 
-  for (const user of data.users) {
-    if (user.email === email) {
-      if (user.password === password) {
-        user.numFailedLogins = 0;
-        user.numSuccessfulLogins++;
-        setData(data);
+  const user = data.users.find(current => current.email === email);
+  
+  if (user.password === password) {
+    user.numFailedLogins = 0;
+    user.numSuccessfulLogins++;
+    setData(data);
 
-        return { authUserId: user.authUserId };
-      } else {
-        user.numFailedLogins++;
-        setData(data);
-        
-        return { error: 'password is not correct for the given email' };
-      }
-    }
+    return { authUserId: user.authUserId };
+  } else {
+    user.numFailedLogins++;
+    setData(data);
+    
+    return { error: 'password is not correct for the given email' };
   }
 }
 
