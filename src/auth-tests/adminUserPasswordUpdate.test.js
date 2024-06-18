@@ -68,36 +68,28 @@ describe('adminUserPasswordUpdate', () => {
         });
     
         test('newPassword is less than 8 characters', () => {
-            //const originalPassword = 'validpa55word';
             const changedPassword = 'inva1d';
-            //const user = adminAuthRegister('valid@gmail.com', originalPassword, 'John', "Smith");
             
             expect(adminUserPasswordUpdate(user.authUserId, originalPassword, changedPassword)).
             toStrictEqual(ERROR);
         });
     
         test('newPassword does not contain at least one number', () => {
-            //const ogPassword = 'Avalidpa55word';
             const badNewPassword = 'invalidpassword';
-            //const user = adminAuthRegister('valid@gmail.com', ogPassword, 'Jane', 'Doe');
     
             expect(adminUserPasswordUpdate(user.authUserId, originalPassword, badNewPassword)).
             toStrictEqual(ERROR);
         });
     
         test('newPassword does not contain at least one letter', () => {
-            //const ogPassword = 'Avalidpa55word';
             const badNewPassword = '123456789';
-            //const user = adminAuthRegister('valid@gmail.com', ogPassword, 'John', 'Doe');
     
             expect(adminUserPasswordUpdate(user.authUserId, originalPassword, badNewPassword)).
             toStrictEqual(ERROR);
         });
     
         test('newPassword meets all criteria', () => {
-            //const originalPassword = 'validpa55word';
             const changedPassword = 'veryvalidpassw0rd';
-            //const user = adminAuthRegister('valid@gmail.com', originalPassword, 'John', "Smith");
             
             expect(adminUserPasswordUpdate(user.authUserId, originalPassword, changedPassword)).
             toStrictEqual({});
@@ -105,16 +97,6 @@ describe('adminUserPasswordUpdate', () => {
     });
     
     describe('testing side-effects from adminPasswordUpdate', () => {
-        // let user, originalPassword;
-        // beforeEach(() => {
-        //     originalPassword = 'validpa55w0rd';
-        //     user = adminAuthRegister('valid123@gmail.com', originalPassword, 'Jane', 'Smith');
-        // });
-            
-        // test('testign authregister', () =>{
-        //     expect(adminAuthRegister('valid123@gmail.com', originalPassword, 'Jane', 'Smith')).toStrictEqual({ authUserId : expect.any(Number)});
-        // })
-
         test('successful login before updating password', () => {
             expect(adminAuthLogin('valid123@gmail.com', originalPassword)).
             toStrictEqual({ authUserId : user.authUserId });
@@ -123,6 +105,7 @@ describe('adminUserPasswordUpdate', () => {
         test('successful login after updating password', () => {
             expect(adminAuthLogin('valid123@gmail.com', originalPassword)).
             toStrictEqual({ authUserId : user.authUserId });
+
             const alteredPassword = 'newpa55word';
             adminUserPasswordUpdate(user.authUserId, originalPassword, alteredPassword);
             
