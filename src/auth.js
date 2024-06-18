@@ -49,6 +49,7 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
     nameFirst: nameFirst,
     nameLast: nameLast,
     password: password,
+    previousPasswords: [],
     numFailedLogins: 0,
     numSuccessfulLogins: 1,
   }
