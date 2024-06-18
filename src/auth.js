@@ -69,9 +69,28 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
  */
 
 export function adminAuthLogin (email, password) {
-    return {
-        authUserId: 1,
-    };
+  if (!adminEmailInUse(email)) {
+    return { error: 'email address does not exist' };
+  }
+
+  let data = getData();
+
+  for (const user of data.users) {
+    if (user.email === email) {
+      if (user.password === password) {
+        user.numFailedLogins = 0;
+        user.numSuccessfulLogins++;
+        setData(data);
+
+        return { authUserId: user.authUserId };
+      } else {
+        user.numFailedLogins++;
+        setData(data);
+        
+        return { error: 'password is not correct for the given email' };
+      }
+    }
+  }
 }
 
 /**
@@ -85,7 +104,7 @@ export function adminUserDetails (authUserId) {
     return { error: 'AuthUserId is not a valid user.' };
   }
 
-  let data = getData();
+  const data = getData();
 
   for (const user of data.users) {
     if (user.authUserId === authUserId) {
@@ -200,9 +219,8 @@ function adminEmailInUse(email) {
 function adminUserNameIsValid(name) {
   // specialCharacters will match any string that includes a special 
   // character except for space, hyphen or apostrophe
-  const specialCharacters = /[^\w\s'-]/;
-
-  if (specialCharacters.test(name) || adminStringHasNum(name)) {
+  const specialCharacters = /[^A-Za-z\s'-]/;
+  if (specialCharacters.test(name)) {
     return false;
   }
 
