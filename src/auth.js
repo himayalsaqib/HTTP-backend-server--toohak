@@ -87,19 +87,18 @@ export function adminUserDetails (authUserId) {
 
   let data = getData();
 
-  for (const user of data.users) {
-    if (user.authUserId === authUserId) {
-      return { user:
-        {
-          userId: user.authUserId,
-          name: `${user.nameFirst} ${user.nameLast}`,
-          email: user.email,
-          numSuccessfulLogins: user.numSuccessfulLogins,
-          numFailedPasswordsSinceLastLogin: user.numFailedLogins,
-        }
-      };
+  const user = data.users.find(current => current.authUserId == authUserId);
+  
+  return { user:
+    {
+      userId: user.authUserId,
+      name: `${user.nameFirst} ${user.nameLast}`,
+      email: user.email,
+      numSuccessfulLogins: user.numSuccessfulLogins,
+      numFailedPasswordsSinceLastLogin: user.numFailedLogins,
     }
-  }
+  };
+    
 }
 
 /**
