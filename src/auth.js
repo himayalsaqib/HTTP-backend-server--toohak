@@ -9,7 +9,7 @@ import validator from 'validator';
  * @param {string} password 
  * @param {string} nameFirst 
  * @param {string} nameLast 
- * @returns {object} authUserId | error
+ * @returns {{ authUserId: number } | { error: string }} 
  */
 export function adminAuthRegister (email, password, nameFirst, nameLast) {
   if (adminEmailInUse(email)) {
