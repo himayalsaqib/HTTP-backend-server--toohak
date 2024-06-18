@@ -2,6 +2,15 @@ import { setData, getData } from './dataStore';
 import validator from 'validator';
 
 /**
+ * @typedef {Object} userDetails
+ *  @property {number} userId 
+ *  @property {string} name 
+ *  @property {string} email 
+ *  @property {number} numSuccessfulLogins
+ *  @property {number} numFailedPasswordsSinceLastLogin
+ */
+
+/**
  * Register a user with an email, password, and names, then returns their 
  * authUserId value
  * 
@@ -97,7 +106,7 @@ export function adminAuthLogin (email, password) {
  * Given an admin user's authUserId, return details about the user. 
  * 
  * @param {number} authUserId
- * @returns {object} user 
+ * @returns {{ user: userDetails } | { error: string }}  
  */
 export function adminUserDetails (authUserId) {
   if (!adminUserIdIsValid(authUserId)) {
