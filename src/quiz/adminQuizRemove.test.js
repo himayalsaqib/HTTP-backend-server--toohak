@@ -4,6 +4,7 @@ import { adminQuizCreate, adminQuizRemove } from '../quiz';
 import { adminAuthRegister } from '../auth';
 import { clear } from '../other';
 
+const error = { error: expect.any(String) };
 beforeEach(()=> {
     clear();
 });
@@ -37,7 +38,7 @@ describe('adminQuizRemove', () => {
             const quizId = adminQuizCreate(user.authUserId, 'Quiz 1', 'Description 1').quizId;
             const quiz = adminQuizRemove(invalidUserId, quizId);
             
-            expect(quiz).toStrictEqual({error: expect.any(String)});
+            expect(quiz).toStrictEqual(error);
         });
 
         test('Valid authUserId, invalid quizId', () => {
@@ -45,7 +46,7 @@ describe('adminQuizRemove', () => {
             const invalidQuizId = -1;
 
             expect(adminQuizRemove(user.authUserId, invalidQuizId)).
-            toStrictEqual({error: expect.any(String)});
+            toStrictEqual(error);
         });
 
         test('Invalid authUserId, invalid quizId', () => {
@@ -53,7 +54,7 @@ describe('adminQuizRemove', () => {
             const invalidQuizId = -1;
 
             expect(adminQuizRemove(invalidUser, invalidQuizId)).
-            toStrictEqual({error: expect.any(String)});
+            toStrictEqual(error);
         });
 
     });
@@ -65,7 +66,7 @@ describe('adminQuizRemove', () => {
             const user2 = adminAuthRegister('user2@gmail.com', 'Password02', 'User', 'Two').authUserId;
             const quiz1 = adminQuizCreate(user1, 'Quiz 1', 'Description 1').quizId;
             
-            expect(adminQuizRemove(user2, quiz1)).toStrictEqual({error: expect.any(String)});
+            expect(adminQuizRemove(user2, quiz1)).toStrictEqual(error);
         }); 
 
         test('Remove a quiz that has already been successfully removed', () => {
@@ -75,7 +76,7 @@ describe('adminQuizRemove', () => {
             adminQuizRemove(user, quiz);
 
             expect(adminQuizRemove(user, quiz)).
-            toStrictEqual({error: expect.any(String)});
+            toStrictEqual(error);
         });
     });
 

@@ -84,18 +84,18 @@ export function adminQuizRemove ( authUserId, quizId ) {
     let data = getData();
 
     if (authUserIdIsValid(authUserId) === false && quizIdInUse(quizId) === false) {
-        return {error: 'Invalid User and Quiz Id'};
+        return { error: 'Invalid User and Quiz Id' };
     } else if (authUserIdIsValid(authUserId) === false) {
-        return {error: 'AuthUserId does not refer to a valid user id.'};
+        return { error: 'AuthUserId does not refer to a valid user id.' };
     } else if (quizIdInUse(quizId) === false) {
-        return {error: 'Quiz Id does not refer to a valid quiz.'};
+        return { error: 'Quiz Id does not refer to a valid quiz.' };
     } 
 
     const quizIndex = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
     const quiz = data.quizzes[quizIndex];
 
     if (quiz.authUserId !== authUserId) {
-        return {error: 'Quiz does not belong to user'};
+        return { error: 'Quiz does not belong to user' };
     }
 
     data.quizzes.splice(quizIndex, 1);
