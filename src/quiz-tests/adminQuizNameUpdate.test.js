@@ -44,11 +44,11 @@ describe('adminQuizNameUpdate', () => {
         expect(adminQuizCreate(user.authUserId, "Invalid Name @#$%^&*")).toStrictEqual(error);
     });
 
-    test('Test: quiz name is less than 3 characters', () => {
+    test('Quiz name is less than 3 characters', () => {
         expect(adminQuizCreate(user.authUserId, "Ab")).toStrictEqual(error);
     });
 
-    test('Test: quiz name is more than 30 characters', () => {
+    test('Quiz name is more than 30 characters', () => {
         expect(adminQuizCreate(user.authUserId, 
             "This is a really long quiz name way too long123")).toStrictEqual(error);
     });
