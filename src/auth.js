@@ -28,7 +28,7 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
   if (password.length < MIN_PASSWORD_LENGTH) {
     return { error: 'invalid password is less than 8 characters' };
   }
-  if (!adminStringHasNum(password) || !adminStringHasLetter(password)) {
+  if (!adminPasswordHasValidChars(password)) {
     return { error: 'invalid password does not meet requirements' };
   }
   if (nameFirst.length < MIN_NAME_LENGTH || nameFirst.length > MAX_NAME_LENGTH) {
@@ -178,7 +178,7 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
     return { error : 'invalid newPassword is less than 8 charactes'};
   }
 
-  if (!adminStringHasNum(newPassword) || !adminStringHasLetter(newPassword)) {
+  if (!adminPasswordHasValidChars(newPassword)) {
     return { error : 'newPassword must contain at least one number and one letter'};
   }
 
@@ -290,23 +290,18 @@ function adminUserNameIsValid(name) {
 }
 
 /**
- * Function returns true if string contains a number otherwise it returns false
- *
- * @param {string} string to check
- * @returns {boolean} true if string has a number otherwise false
+ * Function checks whether the given password contains atleast one number and 
+ * atleast one letter
+ * 
+ * @param {string} password to check
+ * @returns {boolean} true if password has neccessary chars otherwise false
  */
-function adminStringHasNum(string) {
-  return /\d/.test(string);
-}
-
-/**
- * Function returns true if string contains a letter otherwise it returns false
- *
- * @param {string} string to check
- * @returns {boolean} true if string has a letter otherwise false
- */
-function adminStringHasLetter(string) {
-  return /[a-zA-Z]/.test(string);
+function adminPasswordHasValidChars(password) {
+  if (/\d/.test(password) && /[a-zA-Z]/.test(password)) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 /**
