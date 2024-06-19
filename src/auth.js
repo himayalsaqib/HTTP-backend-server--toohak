@@ -48,7 +48,10 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
 
   let data = getData();
 
-  const authUserId = data.users.length;
+  const authUserId = Math.random();
+  while (adminUserIdExists(authUserId)) {
+      authUserId = Math.random();
+  }
 
   const newUser = {
     authUserId: authUserId,
@@ -108,7 +111,7 @@ export function adminAuthLogin (email, password) {
  * @returns {object} user 
  */
 export function adminUserDetails (authUserId) {
-  if (!adminUserIdIsValid(authUserId)) {
+  if (!adminUserIdExists(authUserId)) {
     return { error: 'AuthUserId is not a valid user.' };
   }
 
@@ -143,7 +146,7 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   let data = getData();
 
   // check for valid user
-  if (!adminUserIdIsValid(authUserId)) {
+  if (!adminUserIdExists(authUserId)) {
     return { error : 'authUserId is not a valid user'};
   }
 
@@ -203,7 +206,7 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
  * @returns {object} empty | error
  */
 export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
-  if (adminUserIdIsValid(authUserId) == false) {
+  if (adminUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user' };
   }
 
@@ -307,12 +310,12 @@ function adminStringHasLetter(string) {
 }
 
 /**
- * Function checks if an authUserId exists in the dataStore and is valid
+ * Function checks if an authUserId exists in the dataStore 
  *
  * @param {number} authUserId 
- * @returns {boolean} true if authUserId is valid otherwise false
+ * @returns {boolean} true if authUserId is valid otherwise false 
  */
-function adminUserIdIsValid(authUserId) {
+function adminUserIdExists(authUserId) {
   let data = getData();
 
   for (const user of data.users) {
