@@ -3,7 +3,10 @@ import validator from 'validator';
 
 /////////////////////////////// Global Variables ///////////////////////////////
 const MIN_PASSWORD_LENGTH = 8;
-
+const MIN_NAME_LENGTH = 2;
+const MAX_NAME_LENGTH = 20;
+const INITIAL_NUM_FAILED_LOGINS = 0;
+const INITIAL_NUM_SUCCESSFUL_LOGINS = 1;
 
 /**
  * Register a user with an email, password, and names, then returns their 
@@ -22,20 +25,20 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
   if (!validator.isEmail(email)) {
     return { error: 'invalid email address' };
   }
-  if (password.length < 8) {
+  if (password.length < MIN_PASSWORD_LENGTH) {
     return { error: 'invalid password is less than 8 characters' };
   }
   if (!adminStringHasNum(password) || !adminStringHasLetter(password)) {
     return { error: 'invalid password does not meet requirements' };
   }
-  if (nameFirst.length < 2 || nameFirst.length > 20) {
+  if (nameFirst.length < MIN_NAME_LENGTH || nameFirst.length > MAX_NAME_LENGTH) {
     return { error: 'invalid first name is less than 2 characters or \
             more than 20 characters' };
   }
   if (!adminUserNameIsValid(nameFirst)) {
     return { error: 'invalid first name does not meet requirements' };
   }
-  if (nameLast.length < 2 || nameLast.length > 20) {
+  if (nameLast.length < MIN_NAME_LENGTH || nameLast.length > MAX_NAME_LENGTH) {
     return { error: 'invalid last name is less than 2 characters or \
             more than 20 characters' };
   }
@@ -54,8 +57,8 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
     nameLast: nameLast,
     password: password,
     previousPasswords: [password],
-    numFailedLogins: 0,
-    numSuccessfulLogins: 1,
+    numFailedLogins: INITIAL_NUM_FAILED_LOGINS,
+    numSuccessfulLogins: INITIAL_NUM_SUCCESSFUL_LOGINS,
   }
 
   data.users.push(newUser);
@@ -83,7 +86,7 @@ export function adminAuthLogin (email, password) {
   for (const user of data.users) {
     if (user.email === email) {
       if (user.password === password) {
-        user.numFailedLogins = 0;
+        user.numFailedLogins = INITIAL_NUM_FAILED_LOGINS;
         user.numSuccessfulLogins++;
         setData(data);
 
