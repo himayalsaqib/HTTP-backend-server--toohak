@@ -95,7 +95,7 @@ export function adminQuizRemove ( authUserId, quizId ) {
     const quiz = data.quizzes[quizIndex];
 
     if (quiz.authUserId !== authUserId) {
-        return {error: 'Quiz does not belong to user' };
+        return {error: 'Quiz does not belong to user'};
     }
 
     data.quizzes.splice(quizIndex, 1);
