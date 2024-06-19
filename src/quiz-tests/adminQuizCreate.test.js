@@ -1,7 +1,7 @@
 // contains the tests adminQuizCreate from quiz.js
 
 import {adminAuthRegister} from '../auth';
-import {adminQuizCreate} from '../quiz';
+import {adminQuizCreate} from '.';
 import {clear} from '../other';
 
 beforeEach(() => {
@@ -21,7 +21,7 @@ describe('adminQuizCreate', () => {
     });
 
     test('Test: invalid user ID', () => {
-        expect(adminQuizCreate(-1, "Valid Quiz Name", 
+        expect(adminQuizCreate(user.authUserId + 1, "Valid Quiz Name", 
         "Valid quiz description.")).toStrictEqual(error);
     });
 
