@@ -1,6 +1,10 @@
 import { setData, getData } from './dataStore';
 import validator from 'validator';
 
+/////////////////////////////// Global Variables ///////////////////////////////
+const MIN_PASSWORD_LENGTH = 8;
+
+
 /**
  * Register a user with an email, password, and names, then returns their 
  * authUserId value
@@ -164,7 +168,7 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
     }
   }
 
-  if (newPassword.length < 8) {
+  if (newPassword.length < MIN_PASSWORD_LENGTH) {
     return { error : 'invalid newPassword is less than 8 charactes'};
   }
 
@@ -238,7 +242,7 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
 
   setData(data);
   
-  return data.users.previousPasswords;
+  return {};
 }
 
 /////////////////////////////// Helper Functions ///////////////////////////////
