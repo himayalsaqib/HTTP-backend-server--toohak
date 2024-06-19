@@ -1,5 +1,6 @@
 import { setData, getData } from './dataStore';
 
+/////////////////////////////// Global Variables ///////////////////////////////
 const MIN_QUIZ_NAME_LEN = 3;
 const MAX_QUIZ_NAME_LEN = 30;
 const MAX_DESCRIPTION_LEN = 100;
