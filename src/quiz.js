@@ -1,5 +1,10 @@
 import { setData, getData } from './dataStore';
 
+/////////////////////////////// Global Variables ///////////////////////////////
+const MIN_QUIZ_NAME_LEN = 3;
+const MAX_QUIZ_NAME_LEN = 30;
+const MAX_DESCRIPTION_LEN = 100;
+
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  * 
@@ -33,7 +38,7 @@ export function adminQuizCreate( authUserId, name, description ) {
                 Valid characters are alphanumeric and spaces.' 
         };
     }
-    if (name.length < 3 || name.length > 20) {
+    if (name.length < MIN_QUIZ_NAME_LEN || name.length > MAX_QUIZ_NAME_LEN) {
         return { error: 'Name is either less than 3 characters long or \
                 more than 30 characters long.' 
         };
@@ -43,12 +48,15 @@ export function adminQuizCreate( authUserId, name, description ) {
                 logged in user for another quiz.'
         };
     }
-    if (description.length > 100) {
+    if (description.length > MAX_DESCRIPTION_LEN) {
         return { error: 'Description is more than 100 characters in length'};
     }
 
     let data = getData();
-    const newQuizId = data.quizzes.length;
+    const newQuizId = Math.random();
+    while (quizIdInUse(newQuizId) === true) {
+        newQuizId = Math.random();
+    }
 
     const newQuiz = {
         authUserId: authUserId,
@@ -128,24 +136,54 @@ export function adminQuizInfo (authUserId, quizId) {
  * @returns {object} - empty object
  */
 export function adminQuizNameUpdate (authUserId, quizId, name) {
+    if (authUserIdIsValid(authUserId) === false) {
+        return { error: 'AuthUserId is not a valid user.' };
+    }
+    if (quizIdInUse(quizId) === false) {
+        return { error: 'Quiz ID does not refer to a valid quiz.' };
+    }
+    if (quizNameHasValidChars(name) === false) {
+        return { error: 'Name contains invalid characters. Valid characters are alphanumeric and spaces.' };
+    }
+    if (name.length < MIN_QUIZ_NAME_LEN || name.length > MAX_QUIZ_NAME_LEN) {
+        return { error: 'Name is either less than 3 characters long or more than 30 characters long.' };
+    }
+    if (quizNameInUse(authUserId, name)) {
+        return { error: 'Name is already used by the current logged in user for another quiz.' };
+    }
+
+    const data = getData();
+    const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
+    const quizIndex = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
+
+    if (quiz.authUserId !== authUserId) {
+        return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
+    }
+
+    data.quizzes[quizIndex].name = name;
+    data.quizzes[quizIndex].timeLastEdited = Date.now();
+    setData(data);
+
     return {};
   }
 
 /////////////////////////////// Helper Functions ///////////////////////////////
 
 /**
- * Function checks if an authUserId is valid i.e. if the ID <= number of users 
- * since the authUserId is just the order of user registration
+ * Function checks if an authUserId is valid i.e. if there is a matching ID in 
+ * the users array 
  *
  * @param {number} authUserId
  * @returns {boolean} true if ID is valid, false if not
  */
 function authUserIdIsValid(authUserId) {
     let data = getData();
-    if (authUserId <= data.users.length && authUserId >= 0) {
-        return true;
+
+    const user = data.users.find(user => user.authUserId === authUserId);
+    if (user === undefined) {
+        return false;
     }
-    return false;
+    return true;
 }
 
 /**
@@ -183,7 +221,18 @@ function quizNameInUse(authUserId, name) {
     return false;
 }
 
-function quizIdIsValid(quizId) {
+/**
+ * Function checks if a quiz ID has already been used by another quiz
+ *
+ * @param {Number} quizId
+ * @returns {boolean} true if quiz ID has been used, false if it has not
+ */
+function quizIdInUse(quizId) {
     let data = getData();
-    return quizId < data.quizzes.length && quizId >= 0;
-  }
+
+    const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
+    if (quiz === undefined) {
+        return false;
+    }
+    return true;
+}
