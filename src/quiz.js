@@ -77,18 +77,12 @@ export function adminQuizRemove ( authUserId, quizId ) {
 
     if (authUserIdIsValid(authUserId) === false && quizIdExists(quizId) === false) {
         return {error: 'Invalid User and Quiz Id'};
-    }
-    
-    if (authUserIdIsValid(authUserId) === false) {
+    } else if (authUserIdIsValid(authUserId) === false) {
         return {error: 'AuthUserId does not refer to a valid user id.'};
-    }
-    
-    if (quizIdExists(quizId) === false) {
+    } else if (quizIdExists(quizId) === false) {
         return {error: 'Quiz Id does not refer to a valid quiz.'};
     } 
 
-    
-    
     const quizIndex = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
     const quiz = data.quizzes[quizIndex];
 
@@ -96,11 +90,8 @@ export function adminQuizRemove ( authUserId, quizId ) {
         return {error: 'Quiz does not belong to user' };
     }
 
-    
-
     data.quizzes.splice(quizIndex, 1);
     setData(data);
-
 
     return {};
 }
@@ -200,25 +191,10 @@ function quizNameInUse(authUserId, name) {
 }
 
 /**
- * Function checks if quizId is valid
+ * Function checks if the quizId exists within the quizzes array 
  * 
  * @param {number} quizId
- * @returns {boolean}
- */
-function quizIdIsValid(quizId) {
-    let data = getData();
-    if (quizId >= 0 && quizId < data.quizzes.length) {
-        return true;
-    }
-    
-    return false;
-}
-
-/**
- * Function checks if quizId exists
- * 
- * @param {number} quizId
- * @returns {boolean}
+ * @returns {boolean} true is the quizId exists within the quizzes array
  */
 function quizIdExists(quizId) {
     let data = getData();
@@ -228,13 +204,4 @@ function quizIdExists(quizId) {
     }
     
     return true;
-
-
-    // const found = undefined;
-    // for (const quiz of data.quizzes) {
-    //     if (quiz.quizId === quizId) {
-    //         found = quiz;
-    //         break;
-    //     }
-    // }
 }
