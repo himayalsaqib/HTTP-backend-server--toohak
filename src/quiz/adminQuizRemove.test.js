@@ -66,16 +66,13 @@ describe('adminQuizRemove', () => {
         });
 
         test('Remove a quiz that has already been successfully removed', () => {
-            // idk how to implement this 
-            // how to differentiate between quizIdExists(quizId) === false condition
-            // and a quiz that existed but got removed
             const user = adminAuthRegister('user@gmail.com', 'Password01', 'userfirst', 'userlast').authUserId;
             const quiz = adminQuizCreate(user, 'Quiz', 'Description').quizId;
 
             adminQuizRemove(user, quiz);
 
             expect(adminQuizRemove(user, quiz)).
-            toStrictEqual({error: "Quiz does not exist"});
+            toStrictEqual({error: "Quiz Id does not refer to a valid quiz."});
         });
 
         test('Remove mulitple quizzes', () => {
