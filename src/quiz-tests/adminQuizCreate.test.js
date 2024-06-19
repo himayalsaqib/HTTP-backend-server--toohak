@@ -1,7 +1,7 @@
 // contains the tests adminQuizCreate from quiz.js
 
 import {adminAuthRegister} from '../auth';
-import {adminQuizCreate} from '.';
+import {adminQuizCreate} from '../quiz';
 import {clear} from '../other';
 
 beforeEach(() => {
