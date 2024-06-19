@@ -124,16 +124,19 @@ export function adminQuizNameUpdate (authUserId, quizId, name) {
 /////////////////////////////// Helper Functions ///////////////////////////////
 
 /**
- * Function checks if an authUserId is valid i.e. if the ID <= number of users 
- * since the authUserId is just the order of user registration
+ * Function checks if an authUserId is valid i.e. if there is a matching ID in 
+ * the users array 
  *
  * @param {number} authUserId
  * @returns {boolean} true if ID is valid, false if not
  */
 function authUserIdIsValid(authUserId) {
     let data = getData();
-    if (authUserId <= data.users.length && authUserId >= 0) {
-        return true;
+
+    for (const user of data.users) {
+        if (user.authUserId === authUserId) {
+            return true;
+        }
     }
     return false;
 }
