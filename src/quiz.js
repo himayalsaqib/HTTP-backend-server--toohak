@@ -123,6 +123,34 @@ export function adminQuizInfo (authUserId, quizId) {
  * @returns {object} - empty object
  */
 export function adminQuizNameUpdate (authUserId, quizId, name) {
+    if (authUserIdIsValid(authUserId) === false) {
+        return { error: 'AuthUserId is not a valid user.' };
+    }
+    if (quizIdInUse(quizId) === false) {
+        return { error: 'Quiz ID does not refer to a valid quiz.' };
+    }
+    if (quizNameHasValidChars(name) === false) {
+        return { error: 'Name contains invalid characters. Valid characters are alphanumeric and spaces.' };
+    }
+    if (name.length < MIN_QUIZ_NAME_LEN || name.length > MAX_QUIZ_NAME_LEN) {
+        return { error: 'Name is either less than 3 characters long or more than 30 characters long.' };
+    }
+    if (quizNameInUse(authUserId, name)) {
+        return { error: 'Name is already used by the current logged in user for another quiz.' };
+    }
+
+    const data = getData();
+    const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
+    const quizIndex = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
+
+    if (quiz.authUserId !== authUserId) {
+        return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
+    }
+
+    data.quizzes[quizIndex].name = name;
+    data.quizzes[quizIndex].timeLastEdited = Date.now();
+    setData(data);
+
     return {};
   }
 
