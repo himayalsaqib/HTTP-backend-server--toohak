@@ -183,7 +183,7 @@ function quizNameInUse(authUserId, name) {
  * Function checks if a quiz ID has already been used by another quiz
  *
  * @param {Number} quizId
- * @returns {boolean} true if name has been used, false if it has not
+ * @returns {boolean} true if quiz ID has been used, false if it has not
  */
 function quizIdInUse(quizId) {
     let data = getData();
