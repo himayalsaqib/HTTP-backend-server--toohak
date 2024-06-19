@@ -112,10 +112,11 @@ export function adminQuizInfo (authUserId, quizId) {
     return {
         quizId: quiz.quizId,
         name: quiz.name,
-        timeCreated: new Date(quiz.timeCreated).toISOString(),
-        timeLastEdited: quiz.timeLastEdited ? new Date(quiz.timeLastEdited).toISOString() : undefined,
+        timeCreated: quiz.timeCreated,
+        timeLastEdited: quiz.timeLastEdited,
         description: quiz.description,
     };
+    
     
   }
 
