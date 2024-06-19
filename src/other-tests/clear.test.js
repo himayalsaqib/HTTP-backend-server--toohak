@@ -20,11 +20,11 @@ describe('clear', () =>{
             user = adminAuthRegister('email@gmail.com', 'password123', 'Jane', 'Doe');
         });
         
-        test('successful registration of user via logging in', () => {
-
+        test('successful registration of user', () => {
+            expect(user).toStrictEqual({ authUserId : user.authUserId });
         });
 
-        test('successful access of user details in adminUserDetails', () => {
+        test('successful access of user details in adminUserDetails after logging in once', () => {
             let newUser = adminAuthRegister('valid@gmail.com', 'validpa55word', 'John', 'Smith');
             expect(adminAuthLogin('valid@gmail.com', 'validpa55word')).toStrictEqual({ authUserId : newUser.authUserId });
             
