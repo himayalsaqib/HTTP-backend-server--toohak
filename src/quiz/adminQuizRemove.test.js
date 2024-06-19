@@ -15,6 +15,7 @@ describe('adminQuizRemove', () => {
     const user = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One');
     const quiz = adminQuizCreate(user.authUserId, 'Quiz 1', 'Description 1');
     const remove = adminQuizRemove(user.authUserId, quiz.quizId);
+    
     expect(remove).toStrictEqual({});
   });
 
@@ -24,6 +25,7 @@ describe('adminQuizRemove', () => {
             const user = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One');
             const quizId = adminQuizCreate(user.authUserId, 'Quiz 1', 'Description 1').quizId;
             const quiz = adminQuizRemove(invalidUserId, quizId);
+            
             expect(quiz).toStrictEqual({error: 'AuthUserId does not refer to a valid user id.'});
         });
 
@@ -51,6 +53,7 @@ describe('adminQuizRemove', () => {
             const user1 = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One').authUserId;
             const user2 = adminAuthRegister('user2@gmail.com', 'Password02', 'User', 'Two').authUserId;
             const quiz1 = adminQuizCreate(user1, 'Quiz 1', 'Description 1').quizId;
+            
             expect(adminQuizRemove(user2, quiz1)).toStrictEqual({error: 'Quiz does not belong to user'});
         }); 
     });
@@ -80,16 +83,8 @@ describe('adminQuizRemove', () => {
             const quiz01 = adminQuizCreate(user, 'Quiz 01', 'Description 01').quizId;
             const quiz02 = adminQuizCreate(user, 'Quiz 02', 'Description 02').quizId;
 
-            // adminQuizRemove(user, quiz01);
-            //expect(adminQuizRemove(user, quiz01)).toStrictEqual({});
-            // adminQuizRemove(user, quiz02);
-
             expect(adminQuizRemove(user, quiz01)).toStrictEqual({});
-            // shoud it print the remaining quiz02
             expect(adminQuizRemove(user, quiz02)).toStrictEqual({});
-
-            // expect(user, quiz01).toStrictEqual({});
-            // expect(user, quiz02).toStrictEqual({});
         });
 
     });
