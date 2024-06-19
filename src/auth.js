@@ -238,7 +238,7 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
 
   setData(data);
   
-  return data.users.previousPasswords;
+  return {};
 }
 
 /////////////////////////////// Helper Functions ///////////////////////////////
