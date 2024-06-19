@@ -49,7 +49,9 @@ export function adminQuizCreate( authUserId, name, description ) {
 
     let data = getData();
     const newQuizId = math.random();
-    while ()
+    while (quizIdInUse(newQuizId) === true) {
+        newQuizId = math.random();
+    }
 
     const newQuiz = {
         authUserId: authUserId,
@@ -177,7 +179,7 @@ function quizNameInUse(authUserId, name) {
  * @param {Number} quizId
  * @returns {boolean} true if name has been used, false if it has not
  */
-function quizNameInUse(quizId) {
+function quizIdInUse(quizId) {
     let data = getData();
 
     for (const quiz of data.quizzes) {
