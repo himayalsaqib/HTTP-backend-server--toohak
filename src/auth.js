@@ -260,15 +260,15 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
  * @returns {boolean} true if email exists, false if not
  */
 function adminEmailInUse(email) {
-  let data = getData();
+  const data = getData();
 
-  for (const user of data.users) {
-    if (user.email === email) {
-      return true;
-    }
+  const user = data.users.find(user => user.email === email);
+
+  if (user === undefined) {
+    return false;
+  } else {
+    return true;
   }
-
-  return false;
 }
 
 /**
@@ -311,15 +311,15 @@ function adminPasswordHasValidChars(password) {
  * @returns {boolean} true if authUserId is valid otherwise false 
  */
 function adminUserIdExists(authUserId) {
-  let data = getData();
+  const data = getData();
 
-  for (const user of data.users) {
-    if (user.authUserId === authUserId) {
-      return true;
-    }
+  const user = data.users.find(user => user.authUserId === authUserId);
+
+  if (user === undefined) {
+    return false;
+  } else {
+    return true;
   }
-
-  return false;
 }
 
 /**
