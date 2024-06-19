@@ -4,51 +4,54 @@ import {adminAuthRegister} from '../auth';
 import {adminQuizCreate} from '../quiz';
 import {clear} from '../other';
 
-let user; 
-const error = { error: expect.any(String) };
 beforeEach(() => {
     clear();
-    user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
 });
 
 describe('adminQuizCreate', () => {
-    test('Test: successful quiz creation with correct return type', () => {
+    const error = { error: expect.any(String) };
+    let user;
+    beforeEach(() => {
+        user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
+    });
+
+    test('Successful quiz creation with correct return type', () => {
         expect(adminQuizCreate(user.authUserId, "Valid Quiz Name", 
         "Valid quiz description.")).toStrictEqual( {quizId: expect.any(Number)} );
     });
 
-    test('Test: invalid user ID', () => {
-        expect(adminQuizCreate(-1, "Valid Quiz Name", 
+    test('Invalid user ID', () => {
+        expect(adminQuizCreate(user.authUserId + 1, "Valid Quiz Name", 
         "Valid quiz description.")).toStrictEqual(error);
     });
 
-    test('Test: quiz name contains invalid characters', () => {
+    test('Quiz name contains invalid characters', () => {
         expect(adminQuizCreate(user.authUserId, "Invalid Name @#$%^&*", 
         "Valid quiz description.")).toStrictEqual(error);
     });
 
-    test('Test: quiz name is less than 3 characters', () => {
+    test('Quiz name is less than 3 characters', () => {
         expect(adminQuizCreate(user.authUserId, "Hi", 
         "Valid quiz description.")).toStrictEqual(error);
     });
 
-    test('Test: quiz name is more than 30 characters', () => {
+    test('Quiz name is more than 30 characters', () => {
         expect(adminQuizCreate(user.authUserId, 
             "1234567890 1234567890 1234567890",
              "Valid quiz description.")).toStrictEqual(error);
     });
 
-    test('Test: quiz name already used by current user for another quiz', () => {
+    test('Quiz name already used by current user for another quiz', () => {
         adminQuizCreate(user.authUserId, "Name In Use", "Pre existing quiz");
 
         expect(adminQuizCreate(user.authUserId, "Name In Use", 
         "Valid quiz description.")).toStrictEqual(error);
     });
 
-    const longString = "1234567890 1234567890 1234567890 1234567890 1234567890 \
-                    1234567890 1234567890 1234567890 1234567890 1234567890"
+    const longString = "1234567890 1234567890 1234567890 1234567890 \
+                    1234567890 1234567890 1234567890 1234567890 1234567890 1234567890"
 
-    test('Test: quiz description is more than 100 characters', () => {
+    test('Quiz description is more than 100 characters', () => {
         expect(adminQuizCreate(user.authUserId, "Valid Quiz Name", 
         longString)).toStrictEqual(error);
     });
