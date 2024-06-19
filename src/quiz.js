@@ -133,12 +133,11 @@ export function adminQuizNameUpdate (authUserId, quizId, name) {
 function authUserIdIsValid(authUserId) {
     let data = getData();
 
-    for (const user of data.users) {
-        if (user.authUserId === authUserId) {
-            return true;
-        }
+    const user = data.users.find(user => user.authUserId === authUserId);
+    if (user === undefined) {
+        return false;
     }
-    return false;
+    return true;
 }
 
 /**
@@ -185,10 +184,9 @@ function quizNameInUse(authUserId, name) {
 function quizIdInUse(quizId) {
     let data = getData();
 
-    for (const quiz of data.quizzes) {
-        if (quiz.quizId === quizId) {
-            return true;
-        }
+    const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
+    if (quiz === undefined) {
+        return false;
     }
-    return false;
+    return true;
 }
