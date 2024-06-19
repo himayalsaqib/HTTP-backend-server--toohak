@@ -48,7 +48,8 @@ export function adminQuizCreate( authUserId, name, description ) {
     }
 
     let data = getData();
-    const newQuizId = data.quizzes.length;
+    const newQuizId = math.random();
+    while ()
 
     const newQuiz = {
         authUserId: authUserId,
@@ -164,6 +165,23 @@ function quizNameInUse(authUserId, name) {
 
     for (const quiz of data.quizzes) {
         if (quiz.authUserId === authUserId && quiz.name == name) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Function checks if a quiz ID has already been used by another quiz
+ *
+ * @param {Number} quizId
+ * @returns {boolean} true if name has been used, false if it has not
+ */
+function quizNameInUse(quizId) {
+    let data = getData();
+
+    for (const quiz of data.quizzes) {
+        if (quiz.quizId === quizId) {
             return true;
         }
     }
