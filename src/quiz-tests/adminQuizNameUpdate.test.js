@@ -8,32 +8,38 @@ let quizId;
 const error = { error: expect.any(String) };
 
 beforeEach(() => {
-    clear();
-    user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
-    const quiz = adminQuizCreate(user.authUserId, 'OG Quiz Name', 'Valid quiz description');
-    quizId = quiz.quizId;
+  clear();
+  user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
+  const quiz = adminQuizCreate(user.authUserId, 'OG Quiz Name', 'Valid quiz description');
+  quizId = quiz.quizId;
 });
 
 describe('adminQuizNameUpdate', () => {
+  describe('Testing for correct return type', () => {
     test('Update quiz name successfully', () => {
         const newName = 'New Quiz Name';
         expect(adminQuizNameUpdate(user.authUserId, quizId, newName)).not.toStrictEqual(error);
     });
+  });
 
+  describe('Testing authUserId in adminQuizNameUpdate', () => {
     test('Invalid authUserId', () => {
         expect(adminQuizNameUpdate('invalidUser123', quizId, 'New Name')).toStrictEqual(error);
     });
+  });
 
+  describe('Testing quizId in adminQuizNameUpdate', () => {
     test('Invalid quizUserId', () => {
         expect(adminQuizNameUpdate(user.authUserId, 'invalidQuiz123', 'New Name')).toStrictEqual(error);
     });
-
     test('Quiz not owned by user', () => {
         const otherUser = adminAuthRegister('otheruser@gmail.com', 'Password12', 'Joe', 'Mama');
         const otherQuiz = adminQuizCreate(otherUser.authUserId, "Other User's Quiz", 'Description');
         expect(adminQuizNameUpdate(user.authUserId, otherQuiz.quizId, 'New Name')).toStrictEqual(error);
     });
+  });
 
+  describe('Testing name in adminQuizNameUpdate', () => {
     test('Quiz name contains invalid characters', () => {
         expect(adminQuizCreate(user.authUserId, "Invalid Name @#$%^&*")).toStrictEqual(error);
     });
@@ -51,5 +57,6 @@ describe('adminQuizNameUpdate', () => {
         const anotherQuiz = adminQuizCreate(user.authUserId, 'Another Quiz', 'Description');
         expect(adminQuizNameUpdate(user.authUserId, quizId, 'Another Quiz')).toStrictEqual(error);
     });
+  });
 
 });
