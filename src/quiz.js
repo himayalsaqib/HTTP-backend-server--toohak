@@ -29,8 +29,6 @@ export function adminQuizList(authUserId) {
     }
 
     return { quizzes: quizList };
-
-	
 }
 
 /**
