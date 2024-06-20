@@ -12,13 +12,23 @@ const MAX_DESCRIPTION_LEN = 100;
  * @returns {array} 
  */
 export function adminQuizList(authUserId) {
-    return { quizzes: [
-        {
-          quizId: 1,
-          name: 'My Quiz',
-        }
-      ]
-    };
+    let data = getData();
+    
+    if (!authUserIdIsValid(authUserId)) {
+        return { error: 'AuthUserId does not refer to a valid user id.' };
+    }
+
+    for (const quiz of data.users) {
+        if (quiz.authUserId === authUserId) {
+            return { quizzes: [
+                {
+                  quizId: quiz.quizId,
+                  name: quiz.name,
+                }
+              ]
+            };
+        } else return { }
+    }
 }
 
 /**
