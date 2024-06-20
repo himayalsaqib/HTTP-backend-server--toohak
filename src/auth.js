@@ -144,7 +144,7 @@ export function adminUserDetails (authUserId) {
  * @param {number} authUserId
  * @param {string} oldPassword
  * @param {string} newPassword
- * @returns {object} empty
+ * @returns {{} | { error: string }} empty
  */
 export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
 
@@ -208,7 +208,7 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
  * @param {string} email
  * @param {string} nameFirst
  * @param {string} nameLast
- * @returns {object} empty | error
+ * @returns {{} | { error: string }} empty | error
  */
 export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   if (adminUserIdExists(authUserId) === false) {
@@ -335,7 +335,6 @@ function adminUserIdExists(authUserId) {
  * 
  * @param {number} authUserId
  * @param {number} newPassword
- * 
  * @returns {boolean} true if newPassword matches any previous passwords
  */
 function checkPasswordHistory(authUserId, newPassword) {
