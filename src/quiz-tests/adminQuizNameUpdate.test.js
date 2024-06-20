@@ -11,7 +11,8 @@ describe('adminQuizNameUpdate', () => {
 	beforeEach(() => {
 		clear();
 		user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
-		const quiz = adminQuizCreate(user.authUserId, 'Original Quiz Name', 'Valid quiz description');
+		const quiz = adminQuizCreate(user.authUserId, 'Original Quiz Name', 
+																'Valid quiz description');
 		quizId = quiz.quizId;
 	});
 
@@ -44,24 +45,30 @@ describe('adminQuizNameUpdate', () => {
 
 	describe('Testing authUserId in adminQuizNameUpdate', () => {
 		test('Invalid authUserId', () => {
-				expect(adminQuizNameUpdate('invalidUser123', quizId, 'New Name')).toStrictEqual(error);
+				expect(adminQuizNameUpdate('invalidUser123', quizId, 
+							'New Name')).toStrictEqual(error);
 		});
 	});
 
 	describe('Testing quizId in adminQuizNameUpdate', () => {
 		test('Invalid quizUserId', () => {
-				expect(adminQuizNameUpdate(user.authUserId, 'invalidQuiz123', 'New Name')).toStrictEqual(error);
+				expect(adminQuizNameUpdate(user.authUserId, 'invalidQuiz123', 
+							'New Name')).toStrictEqual(error);
 		});
 		test('Quiz not owned by user', () => {
-				const otherUser = adminAuthRegister('otheruser@gmail.com', 'Password12', 'Joe', 'Mama');
-				const otherQuiz = adminQuizCreate(otherUser.authUserId, "Other User's Quiz", 'Description');
-				expect(adminQuizNameUpdate(user.authUserId, otherQuiz.quizId, 'New Name')).toStrictEqual(error);
+				const otherUser = adminAuthRegister('otheruser@gmail.com', 'Password12',
+																						'Joe', 'Mama');
+				const otherQuiz = adminQuizCreate(otherUser.authUserId, "Other User's Quiz",
+																					'Description');
+				expect(adminQuizNameUpdate(user.authUserId, otherQuiz.quizId, 
+																	'New Name')).toStrictEqual(error);
 		});
 	});
 
 	describe('Testing updated name in adminQuizNameUpdate', () => {
 		test('Quiz name contains invalid characters', () => {
-				expect(adminQuizNameUpdate(user.authUserId, quizId, "Invalid Name @#$%^&*")).toStrictEqual(error);
+				expect(adminQuizNameUpdate(user.authUserId, quizId, 
+																	"Invalid Name @#$%^&*")).toStrictEqual(error);
 		});
 		test('Quiz name is less than 3 characters', () => {
 				expect(adminQuizNameUpdate(user.authUserId, quizId, "Ab")).toStrictEqual(error);
@@ -72,7 +79,8 @@ describe('adminQuizNameUpdate', () => {
 		});
 		test('Name already used by user', () => {
 				const anotherQuiz = adminQuizCreate(user.authUserId, 'Another Quiz', 'Description');
-				expect(adminQuizNameUpdate(user.authUserId, quizId, 'Another Quiz')).toStrictEqual(error);
+				expect(adminQuizNameUpdate(user.authUserId, quizId, 
+																	'Another Quiz')).toStrictEqual(error);
 		});
 	});
 });
