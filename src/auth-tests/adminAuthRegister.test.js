@@ -6,7 +6,7 @@ beforeEach(() => {
 });
 
 describe('adminAuthRegister', () => {
-	const ERROR = { error: expect.any(String) };
+	const error = { error: expect.any(String) };
 
 	describe('testing for return type', () => {
 		test('has the correct return type', () => {
@@ -48,73 +48,73 @@ describe('adminAuthRegister', () => {
 		test('returns error when email address used by another user', () => {
 			adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe');
 			expect(adminAuthRegister('valid@gmail.com', 'Password12', 'John', 'Doe')).
-			toStrictEqual(ERROR);
+			toStrictEqual(error);
 		});
 
 		test('returns error when email address does not meet requirements', () => {
 			expect(adminAuthRegister('invalid', 'Password12', 'Jane', 'Doe')).
-			toStrictEqual(ERROR);
+			toStrictEqual(error);
 		});
 	});
 
 	describe ('testing password given to adminAuthRegister', () => {
 		test('returns error when password does not contain at least one number', () => {
 			expect(adminAuthRegister('valid@gmail.com', 'Password', 'Jane', 'Doe')).
-			toStrictEqual(ERROR);
+			toStrictEqual(error);
 		});
 
 		test('returns error when password does not contain at least one letter', () => {
 			expect(adminAuthRegister('valid@gmail.com', '12345678', 'Jane', 'Doe!')).
-			toStrictEqual(ERROR);
+			toStrictEqual(error);
 		});
 
 		test('returns error when password is less than 8 characters', () => {
 			expect(adminAuthRegister('valid@gmail.com', 'invalid', 'Jane', 'Doe')).
-			toStrictEqual(ERROR);
+			toStrictEqual(error);
 		});
 	});
 
 	describe ('testing nameFirst given to adminAuthregister', () => {
 		test('returns error when first name contains a number', () => {
 			expect(adminAuthRegister('valid@gmail.com', 'Password12', 'Jane1', 'Doe')).
-			toStrictEqual(ERROR);
+			toStrictEqual(error);
 		});
 
 		test('returns error when first name contains invalid special characters', () => {
 			expect(adminAuthRegister('valid@gmail.com', 'Password12', '@Jane', 'Doe')).
-			toStrictEqual(ERROR);
+			toStrictEqual(error);
 		});
 
 		test('returns error when first name is less than 2 characters', () => {
 			expect(adminAuthRegister('valid@gmail.com', 'Password12', '', 'Doe')).
-			toStrictEqual(ERROR);
+			toStrictEqual(error);
 		});
 
 		test('returns error when first name is greater than 20 characters', () => {
 			expect(adminAuthRegister('valid@gmail.com', 'Password12', 
-			'JaneJaneJaneJaneJaneJane', 'Doe')).toStrictEqual(ERROR);
+			'JaneJaneJaneJaneJaneJane', 'Doe')).toStrictEqual(error);
 		});
 	});
 
 	describe ('testing nameLast given to adminAuthRegister', () => {
 		test('returns error when last name contains a number', () => {
 			expect(adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe1')).
-			toStrictEqual(ERROR);
+			toStrictEqual(error);
 		});
 
 		test('returns error when last name contains invalid special characters', () => {
 			expect(adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe!')).
-			toStrictEqual(ERROR);
+			toStrictEqual(error);
 		});
 
 		test('returns error when last name is less than 2 characters', () => {
 			expect(adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', '')).
-			toStrictEqual(ERROR);
+			toStrictEqual(error);
 		});
 
 		test('returns error when last name is greater than 20 characters', () => {
 			expect(adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 
-			'DoeDoeDoeDoeDoeDoeDoe')).toStrictEqual(ERROR);
+			'DoeDoeDoeDoeDoeDoeDoe')).toStrictEqual(error);
 		});
 	});
 });
