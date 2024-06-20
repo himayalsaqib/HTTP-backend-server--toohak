@@ -1,11 +1,12 @@
+// contains the tests for adminQuizDescriptionUpdate from quiz.js
 import { adminAuthRegister } from '../auth';
 import { adminQuizCreate, adminQuizDescriptionUpdate } from '../quiz';
 import { clear } from '../other';
 
 describe('adminQuizDescriptionUpdate', () => {
+  const error = { error: expect.any(String) };
   let user;
   let quizId;
-  const error = { error: expect.any(String) };
 
   beforeEach(() => {
     clear();
@@ -21,9 +22,9 @@ describe('adminQuizDescriptionUpdate', () => {
   });
 
   describe('Testing authUserId in adminQuizDescriptionUpdate', () => {
-      test('Invalid authUserId', () => {
-        expect(adminQuizDescriptionUpdate('invalidUser123', quizId, 'New Description')).toStrictEqual(error);
-      });
+    test('Invalid authUserId', () => {
+      expect(adminQuizDescriptionUpdate('invalidUser123', quizId, 'New Description')).toStrictEqual(error);
+    });
     });
 
   describe('Testing quizId in adminQuizDescriptionUpdate', () => {
@@ -47,4 +48,18 @@ describe('adminQuizDescriptionUpdate', () => {
       expect(adminQuizDescriptionUpdate(user.authUserId, quizId, description)).not.toStrictEqual(error);
     });
   });
+
+  describe('Testing side-effects on adminQuizInfo', () => {
+    test('Quiz info with updated description was successful and has correct return type', () => {
+      adminQuizDescriptionUpdate(user.authUserId, quizId, 'Updated quiz description');
+      expect(adminQuizInfo(user.authUserId, quizId)).toStrictEqual({
+        quizId: quizId,
+        name: 'Valid Quiz Name',
+        timeCreated: expect.any(Number),
+        timeLastEdited: expect.any(Number),
+        description: 'Updated quiz description'
+      });
+    });      
+  });
+  
 });
