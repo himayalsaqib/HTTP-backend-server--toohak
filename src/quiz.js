@@ -110,6 +110,28 @@ export function adminQuizRemove ( authUserId, quizId ) {
  * @returns {object} - an empty object
  */
 export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
+  if (authUserIdIsValid(authUserId) === false) {
+    return { error: 'AuthUserId is not a valid user.' };
+  }
+  if (quizIdInUse(quizId) === false) {
+    return { error: 'Quiz ID does not refer to a valid quiz.' };
+  }
+  if (description.length > MAX_DESCRIPTION_LEN) {
+    return { error: 'Description cannot be more than 100 characters.' };
+  }
+
+  let data = getData();
+  const quiz = data.quizzes.find(q => q.quizId === quizId);
+
+  if (quiz.authUserId !== authUserId) {
+    return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
+  }
+
+  quiz.description = description;
+  quiz.timeLastEdited = Date.now();
+   
+  setData(data);
+
   return {};
 }
 
