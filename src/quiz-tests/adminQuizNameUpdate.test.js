@@ -11,16 +11,36 @@ describe('adminQuizNameUpdate', () => {
 	beforeEach(() => {
 		clear();
 		user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
-		const quiz = adminQuizCreate(user.authUserId, 'OG Quiz Name', 'Valid quiz description');
+		const quiz = adminQuizCreate(user.authUserId, 'Original Quiz Name', 'Valid quiz description');
 		quizId = quiz.quizId;
 	});
 
 	describe('Testing for correct return type', () => {
 		test('Update quiz name successfully', () => {
-				const newName = 'New Quiz Name';
-				expect(adminQuizNameUpdate(user.authUserId, quizId, newName)).toStrictEqual({});
+			const newName = 'New Quiz Name';
+			expect(adminQuizNameUpdate(user.authUserId, quizId, newName)).toStrictEqual({});
 		});
 	});
+
+	describe('Testing side-effects on adminQuizInfo', () => {
+    test('Quiz info with updated name was successful and has correct return type', () => {
+      adminQuizDescriptionUpdate(user.authUserId, quizId, 'Updated quiz name');
+      expect(adminQuizInfo(user.authUserId, quizId)).not.toStrictEqual({
+        quizId: quizId,
+        name: 'Original Quiz Name',
+        timeCreated: expect.any(Number),
+        timeLastEdited: undefined,
+        description: 'Valid quiz description'
+      });
+      expect(adminQuizInfo(user.authUserId, quizId)).toStrictEqual({
+        quizId: quizId,
+        name: 'Updated Quiz Name',
+        timeCreated: expect.any(Number),
+        timeLastEdited: expect.any(Number),
+        description: 'Valid quiz description'
+      });      
+    });
+  });
 
 	describe('Testing authUserId in adminQuizNameUpdate', () => {
 		test('Invalid authUserId', () => {
