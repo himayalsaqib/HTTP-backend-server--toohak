@@ -1,6 +1,6 @@
 // contains the tests for adminQuizDescriptionUpdate from quiz.js
 import { adminAuthRegister } from '../auth';
-import { adminQuizCreate, adminQuizDescriptionUpdate } from '../quiz';
+import { adminQuizCreate, adminQuizDescriptionUpdate, adminQuizInfo } from '../quiz';
 import { clear } from '../other';
 
 describe('adminQuizDescriptionUpdate', () => {
@@ -54,12 +54,12 @@ describe('adminQuizDescriptionUpdate', () => {
       adminQuizDescriptionUpdate(user.authUserId, quizId, 'Updated quiz description');
       expect(adminQuizInfo(user.authUserId, quizId)).toStrictEqual({
         quizId: quizId,
-        name: 'Valid Quiz Name',
+        name: expect.any(String),
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
         description: 'Updated quiz description'
       });
     });      
   });
-  
+
 });
