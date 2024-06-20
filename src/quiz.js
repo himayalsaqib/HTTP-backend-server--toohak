@@ -103,13 +103,27 @@ export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
  * @returns {object} - returns quiz information 
  */
 export function adminQuizInfo (authUserId, quizId) {
-  return {
-    quizId: 1,
-    name: 'My Quiz',
-    timeCreated: 1683125870,
-    timeLastEdited: 1683125871,
-    description: 'This is my quiz',
-  };
+      if (authUserIdIsValid(authUserId) === false) {
+        return { error: 'AuthUserId is not a valid user.' };
+      }
+      if (quizIdInUse(quizId) === false) {
+          return { error: 'Quiz ID does not refer to a valid quiz.' };
+      }
+
+      let data = getData();
+      const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
+
+      if (quiz.authUserId !== authUserId) {
+          return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
+      }
+
+      return {
+          quizId: quiz.quizId,
+          name: quiz.name,
+          timeCreated: quiz.timeCreated,
+          timeLastEdited: quiz.timeLastEdited,
+          description: quiz.description,
+      };    
 }
 
     /**
