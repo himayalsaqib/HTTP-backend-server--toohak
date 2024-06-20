@@ -11,13 +11,13 @@ describe('adminQuizDescriptionUpdate', () => {
   beforeEach(() => {
     clear();
     user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
-    const quiz = adminQuizCreate(user.authUserId, 'OG Quiz Name', 'Valid quiz description');
+    const quiz = adminQuizCreate(user.authUserId, 'Original Quiz Name', 'Valid quiz description');
     quizId = quiz.quizId;
   });
 
   describe('Testing for correct return type', () => {
     test('Update quiz description successfully', () => {
-      expect(adminQuizDescriptionUpdate(user.authUserId, quizId, 'New quiz description')).not.toStrictEqual(error);
+      expect(adminQuizDescriptionUpdate(user.authUserId, quizId, 'New quiz description')).toStrictEqual({});
     });
   });
 
@@ -25,7 +25,7 @@ describe('adminQuizDescriptionUpdate', () => {
     test('Invalid authUserId', () => {
       expect(adminQuizDescriptionUpdate('invalidUser123', quizId, 'New Description')).toStrictEqual(error);
     });
-    });
+  });
 
   describe('Testing quizId in adminQuizDescriptionUpdate', () => {
     test('Invalid quizId', () => {
@@ -52,14 +52,20 @@ describe('adminQuizDescriptionUpdate', () => {
   describe('Testing side-effects on adminQuizInfo', () => {
     test('Quiz info with updated description was successful and has correct return type', () => {
       adminQuizDescriptionUpdate(user.authUserId, quizId, 'Updated quiz description');
+      expect(adminQuizInfo(user.authUserId, quizId)).not.toStrictEqual({
+        quizId: quizId,
+        name: 'Original Quiz Name',
+        timeCreated: expect.any(Number),
+        timeLastEdited: undefined,
+        description: 'Valid quiz description'
+      });
       expect(adminQuizInfo(user.authUserId, quizId)).toStrictEqual({
         quizId: quizId,
-        name: expect.any(String),
+        name: 'Original Quiz Name',
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
         description: 'Updated quiz description'
-      });
-    });      
+      });      
+    });
   });
-
 });
