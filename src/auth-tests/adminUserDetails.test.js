@@ -6,24 +6,26 @@ beforeEach(() => {
 });
 
 describe('adminUserDetails', () => {
-	const ERROR = { error: expect.any(String) };
+	const error = { error: expect.any(String) };
 
-  test('returns error when no users are registered', () => {
-    expect(adminUserDetails(1)).toStrictEqual(ERROR);
+  describe('Testing authUserId given to adminUserDetails', () => {
+    test('Returns error when no users are registered', () => {
+      expect(adminUserDetails(1)).toStrictEqual(error);
+    });
+
+    test('Returns error when authUserId is not a valid user', () => {
+      const user = adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe');
+      expect(adminUserDetails(user.authUserId + 1)).toStrictEqual(error);
+    });
   });
 
-  test('returns error when  authUserId is not a valid user', () => {
-    const user = adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe');
-    expect(adminUserDetails(user.authUserId + 1)).toStrictEqual(ERROR);
-  });
-
-  describe('successfully returns user details', () => {
+  describe('Testing successful return of user details', () => {
     let user;
     beforeEach(() => {
       user = adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe');
     });
 
-  	test('when only one user is registered', () => {
+  	test('When only one user is registered', () => {
       expect(adminUserDetails(user.authUserId)).toStrictEqual({
         user: {
           userId: user.authUserId,
@@ -35,7 +37,7 @@ describe('adminUserDetails', () => {
       });
     });
 
-		test('when multiple users are registered', () => {
+		test('When multiple users are registered', () => {
 			const user1 = adminAuthRegister('valid1@gmail.com', 'Password12', 'John', 'Doe');
       expect(adminUserDetails(user.authUserId)).toStrictEqual({
         user: {
@@ -48,7 +50,7 @@ describe('adminUserDetails', () => {
       });
     });
 
-		test('can view multiple user details correctly', () => {
+		test('Can view multiple user details correctly', () => {
 			const user1 = adminAuthRegister('valid1@gmail.com', 'Password12', 'John', 'Doe');
       expect(adminUserDetails(user.authUserId)).toStrictEqual({
         user: {

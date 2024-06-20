@@ -9,6 +9,15 @@ const INITIAL_NUM_FAILED_LOGINS = 0;
 const INITIAL_NUM_SUCCESSFUL_LOGINS = 1;
 
 /**
+ * @typedef {Object} userDetails
+ *  @property {number} userId 
+ *  @property {string} name 
+ *  @property {string} email 
+ *  @property {number} numSuccessfulLogins
+ *  @property {number} numFailedPasswordsSinceLastLogin
+ */
+
+/**
  * Register a user with an email, password, and names, then returns their 
  * authUserId value
  * 
@@ -106,7 +115,7 @@ export function adminAuthLogin (email, password) {
  * Given an admin user's authUserId, return details about the user. 
  * 
  * @param {number} authUserId
- * @returns {object} user 
+ * @returns {{ user: userDetails } | { error: string }}  
  */
 export function adminUserDetails (authUserId) {
   if (!adminUserIdExists(authUserId)) {
@@ -114,20 +123,18 @@ export function adminUserDetails (authUserId) {
   }
 
   const data = getData();
-
-  for (const user of data.users) {
-    if (user.authUserId === authUserId) {
-      return { user:
-        {
-          userId: user.authUserId,
-          name: `${user.nameFirst} ${user.nameLast}`,
-          email: user.email,
-          numSuccessfulLogins: user.numSuccessfulLogins,
-          numFailedPasswordsSinceLastLogin: user.numFailedLogins,
-        }
-      };
+  const user = data.users.find(current => current.authUserId == authUserId);
+  
+  return { user:
+    {
+      userId: user.authUserId,
+      name: `${user.nameFirst} ${user.nameLast}`,
+      email: user.email,
+      numSuccessfulLogins: user.numSuccessfulLogins,
+      numFailedPasswordsSinceLastLogin: user.numFailedLogins,
     }
-  }
+  };
+    
 }
 
 /**
