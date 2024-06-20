@@ -139,29 +139,19 @@ export function adminQuizNameUpdate (authUserId, quizId, name) {
   }
 
   let data = getData();
-  let quiz = null;
-  for (const q of data.quizzes) {
-      if (q.quizId === quizId) {
-          quiz = q;
-          break;
-      }
-  }
+  let quiz = data.quizzes.find(q => q.quizId === quizId);
 
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
   }
 
-  for (const user of data.users) {
-    if (user.authUserId === authUserId) {
-      quiz.name = name;
-      quiz.timeLastEdited = Date.now();
-    }
-  }
-  
+  quiz.name = name;
+  quiz.timeLastEdited = Date.now();
+   
   setData(data);
 
   return {};
-  }
+}
 
 /////////////////////////////// Helper Functions ///////////////////////////////
 
