@@ -34,7 +34,6 @@ describe('adminQuizRemove', () => {
     });
   });
   
-
   describe('Returns error when quiz does not belong to user', () => {
     test('Should not remove valid quiz that does not belong to user ', () => {
       const user2 = adminAuthRegister('user2@gmail.com', 'Password02', 'User', 'Two').authUserId;            
@@ -42,7 +41,6 @@ describe('adminQuizRemove', () => {
     }); 
   });
 
-  
   describe('Successful adminQuizRemove', () => {
     test('Successfully remove a quiz', () => {
       expect(adminQuizRemove(user, quiz)).toStrictEqual({});
