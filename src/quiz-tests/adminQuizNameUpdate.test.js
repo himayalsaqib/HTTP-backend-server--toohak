@@ -24,7 +24,7 @@ describe('adminQuizNameUpdate', () => {
 
 	describe('Testing side-effects on adminQuizInfo', () => {
     test('Quiz info with updated name was successful and has correct return type', () => {
-      adminQuizDescriptionUpdate(user.authUserId, quizId, 'Updated quiz name');
+      adminQuizNameUpdate(user.authUserId, quizId, 'Updated Quiz Name');
       expect(adminQuizInfo(user.authUserId, quizId)).not.toStrictEqual({
         quizId: quizId,
         name: 'Original Quiz Name',
