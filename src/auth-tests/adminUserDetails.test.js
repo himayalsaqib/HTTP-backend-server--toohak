@@ -38,7 +38,7 @@ describe('adminUserDetails', () => {
     });
 
 		test('When multiple users are registered', () => {
-			const user1 = adminAuthRegister('valid1@gmail.com', 'Password12', 'John', 'Doe');
+			adminAuthRegister('valid1@gmail.com', 'Password12', 'John', 'Doe');
       expect(adminUserDetails(user.authUserId)).toStrictEqual({
         user: {
           userId: user.authUserId,
