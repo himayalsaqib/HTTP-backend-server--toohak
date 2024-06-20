@@ -52,7 +52,7 @@ export function adminQuizCreate( authUserId, name, description ) {
   }
 
   let data = getData();
-  const newQuizId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  let newQuizId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   while (quizIdInUse(newQuizId) === true) {
     newQuizId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
