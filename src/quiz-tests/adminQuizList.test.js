@@ -7,80 +7,79 @@ beforeEach(() => {
     clear();
 });
 
-describe('adminQuizList', () => {
-  describe('has the correct return type', () => {
-    test('correctly returns quiz list that contains 1 quiz', () => {
-      const user = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One').authUserId;
-      const quiz = adminQuizCreate(user, 'Quiz 1', 'Description 1').quizId;
-      const list = adminQuizList(user);
+describe('AdminQuizList', () => {
+	let user;
+  let quiz;
+  beforeEach(() => {
+		user = adminAuthRegister('user@gmail.com', 'Password01', 'User', 'One').authUserId;
+		quiz = adminQuizCreate(user, 'Quiz 1', 'Description 1').quizId;
+      
+  });
 
-      expect(list).toStrictEqual({
-        quizzes: [
-            {
-              quizId: quiz,
-              name: 'Quiz 1'
-            }
-        ]
-      });
-    });
+  describe('Has the correct return type', () => {
+    test('Correctly returns quiz list that contains 1 quiz', () => {
+			const list = adminQuizList(user);
 
-        test('correctly returns quiz list that contains multiple quizzes', () => {
-            const user = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One').authUserId;
-            const quiz1 = adminQuizCreate(user, 'Quiz 1', 'Description 1').quizId;
-            const quiz2 = adminQuizCreate(user, 'Quiz 2', 'Description 2').quizId;
-            const list = adminQuizList(user);
+			expect(list).toStrictEqual({
+			quizzes: [
+					{
+							quizId: quiz,
+							name: 'Quiz 1'
+					}
+			]
+			});
+		});
 
-            expect(list).toStrictEqual({
-                quizzes: [
-                    {
-                        quizId: quiz1,
-                        name: 'Quiz 1'
-                    },
-                    {
-                        quizId: quiz2,
-                        name: 'Quiz 2'
-                    }
-                ]
-            });
-        });
+		test('Correctly returns quiz list that contains multiple quizzes', () => {
+			const quiz2 = adminQuizCreate(user, 'Quiz 2', 'Description 2').quizId;
+			const list = adminQuizList(user);
 
-        test.only('correctly returns quiz list after a quiz has been removed', () => {
-            const user = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One').authUserId;
-            const quiz1 = adminQuizCreate(user, 'Quiz 1', 'Description 1').quizId;
-            const quiz2 = adminQuizCreate(user, 'Quiz 2', 'Description 2').quizId;
-            adminQuizRemove(user, quiz2);
-            const list = adminQuizList(user);
-            console.log(list);
-            expect(list).toStrictEqual({
-                quizzes: [
-                    {
-                        quizId: quiz1,
-                        name: 'Quiz 1'
-                    }
-                ]
-            });
-        });
+			expect(list).toStrictEqual({
+					quizzes: [
+							{
+									quizId: quiz,
+									name: 'Quiz 1'
+							},
+							{
+									quizId: quiz,
+									name: 'Quiz 2'
+							}
+					]
+			});
+		});
 
-        test('correctly returns quiz list that contains no quizzes', () => {
-            const user = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One').authUserId;
-            const list = adminQuizList(user);
+		test('Correctly returns quiz list after a quiz has been removed', () => {
+			const quiz2 = adminQuizCreate(user, 'Quiz 2', 'Description 2').quizId;
+			adminQuizRemove(user, quiz2);
+			const list = adminQuizList(user);
+			expect(list).toStrictEqual({
+					quizzes: [
+							{
+									quizId: quiz,
+									name: 'Quiz 1'
+							}
+					]
+			});
+		});
 
-            expect(list).toStrictEqual({
-                quizzes: []
-            });
-        });
-    });
+		test('Correctly returns quiz list that contains no quizzes', () => {
+				const list = adminQuizList(user);
+
+				expect(list).toStrictEqual({
+						quizzes: []
+				});
+		});
+	});
 
     describe('Returns error when authUserId is not a valid user', () => {
-        test('invalid authUserId', () => {
-            const user = -1;
+        test('Invalid authUserId', () => {
+            const user1 = user + 1;
             expect(adminQuizList(user)).toStrictEqual({ error: 'AuthUserId does not refer to a valid user id.' });
         });
 
-        test('authUserId is not a registered user', () => {
-            const user1 = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One').authUserId;
+        test('AuthUserId is not a registered user', () => {
             const user2 = adminAuthRegister('user2@gmail.com', 'Password02', 'User', 'Two').authUserId;
-            const quiz1 = adminQuizCreate(user1, 'Quiz 1', 'Description 1').quizId;
+            const quiz1 = adminQuizCreate(user, 'Quiz 1', 'Description 1').quizId;
             expect(adminQuizList(user2)).toStrictEqual({ error: 'AuthUserId does not refer to a valid user id.' });
         });
     });
