@@ -21,6 +21,26 @@ describe('adminQuizDescriptionUpdate', () => {
     });
   });
 
+  describe('Testing side-effects on adminQuizInfo', () => {
+    test('Quiz info with updated description was successful and has correct return type', () => {
+      adminQuizDescriptionUpdate(user.authUserId, quizId, 'Updated quiz description');
+      expect(adminQuizInfo(user.authUserId, quizId)).not.toStrictEqual({
+        quizId: quizId,
+        name: 'Original Quiz Name',
+        timeCreated: expect.any(Number),
+        timeLastEdited: undefined,
+        description: 'Valid quiz description'
+      });
+      expect(adminQuizInfo(user.authUserId, quizId)).toStrictEqual({
+        quizId: quizId,
+        name: 'Original Quiz Name',
+        timeCreated: expect.any(Number),
+        timeLastEdited: expect.any(Number),
+        description: 'Updated quiz description'
+      });      
+    });
+  });
+
   describe('Testing authUserId in adminQuizDescriptionUpdate', () => {
     test('Invalid authUserId', () => {
       expect(adminQuizDescriptionUpdate('invalidUser123', quizId, 'New Description')).toStrictEqual(error);
@@ -45,27 +65,7 @@ describe('adminQuizDescriptionUpdate', () => {
     });
     test('Description exactly 100 characters', () => {
       const description = "This description is exactly 100 characters long and it's used to test the edge case of the function.";
-      expect(adminQuizDescriptionUpdate(user.authUserId, quizId, description)).not.toStrictEqual(error);
-    });
-  });
-
-  describe('Testing side-effects on adminQuizInfo', () => {
-    test('Quiz info with updated description was successful and has correct return type', () => {
-      adminQuizDescriptionUpdate(user.authUserId, quizId, 'Updated quiz description');
-      expect(adminQuizInfo(user.authUserId, quizId)).not.toStrictEqual({
-        quizId: quizId,
-        name: 'Original Quiz Name',
-        timeCreated: expect.any(Number),
-        timeLastEdited: undefined,
-        description: 'Valid quiz description'
-      });
-      expect(adminQuizInfo(user.authUserId, quizId)).toStrictEqual({
-        quizId: quizId,
-        name: 'Original Quiz Name',
-        timeCreated: expect.any(Number),
-        timeLastEdited: expect.any(Number),
-        description: 'Updated quiz description'
-      });      
+      expect(adminQuizDescriptionUpdate(user.authUserId, quizId, description)).toStrictEqual({});
     });
   });
 });
