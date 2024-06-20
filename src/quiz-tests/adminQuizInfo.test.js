@@ -17,7 +17,7 @@ describe('adminQuizInfo', () => {
 	});
 
 	describe('Testing for correct return type', () => {
-    test('Quiz info with updated name was successful and has correct return type', () => {
+    test('Quiz info of an edited quiz was successful and has correct return type', () => {
 			adminQuizNameUpdate(user.authUserId, quizId, 'Updated Quiz Name');
 			expect(adminQuizInfo(user.authUserId, quizId)).toStrictEqual({
 				quizId: quizId,
@@ -27,19 +27,8 @@ describe('adminQuizInfo', () => {
 				description: 'Valid quiz description'
 			});
 		});
-		/*
-    test('Quiz info with updated description was successful and has correct return type', () => {
-			adminQuizDescriptionUpdate(user.authUserId, quizId, 'Updated quiz description');
-			expect(adminQuizInfo(user.authUserId, quizId)).toStrictEqual({
-				quizId: quizId,
-				name: 'Valid Quiz Name',
-				timeCreated: expect.any(Number),
-				timeLastEdited: expect.any(Number),
-				description: 'Updated quiz description'
-			});
-		});
-		*/
-    test('Quiz info for new quiz was successful and has correct return type', () => {
+		
+    test('Quiz info for a new quiz was successful and has correct return type', () => {
 			expect(adminQuizInfo(user.authUserId, quizId)).toStrictEqual({
 				quizId: quizId,
 				name: 'Valid Quiz Name',
@@ -64,9 +53,6 @@ describe('adminQuizInfo', () => {
 			const otherUser = adminAuthRegister('otheruser@gmail.com', 'Password12', 'Joe', 'Mama');
 			const otherQuiz = adminQuizCreate(otherUser.authUserId, "Other User's Quiz", "Description");
 			expect(adminQuizInfo(user.authUserId, otherQuiz.quizId)).toStrictEqual(error);
-    });
-    test('Quiz owned by user', () => {
-			expect(adminQuizInfo(user.authUserId, quizId)).not.toStrictEqual(error);
     });
 	});
 });
