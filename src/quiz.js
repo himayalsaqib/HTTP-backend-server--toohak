@@ -80,7 +80,25 @@ export function adminQuizCreate( authUserId, name, description ) {
  * @returns {object} - an empty object
  */
 export function adminQuizRemove ( authUserId, quizId ) {
-  return {};
+	let data = getData();
+
+	if (authUserIdIsValid(authUserId) === false) {
+		return { error: 'AuthUserId does not refer to a valid user id.' };
+	} else if (quizIdInUse(quizId) === false) {
+		return { error: 'Quiz Id does not refer to a valid quiz.' };
+	} 
+
+	const quizIndex = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
+	const quiz = data.quizzes[quizIndex];
+
+	if (quiz.authUserId !== authUserId) {
+		return { error: 'Quiz does not belong to user' };
+	}
+
+	data.quizzes.splice(quizIndex, 1);
+	setData(data);
+
+	return {};
 }
 
 /**
@@ -148,7 +166,7 @@ export function adminQuizInfo (authUserId, quizId) {
       };    
 }
 
-    /**
+	/**
  * Update the name of the relevant quiz.
  * 
  * @param {number} authUserId
