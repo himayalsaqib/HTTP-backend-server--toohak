@@ -46,21 +46,20 @@ describe('AdminQuizList', () => {
 				]
 			});
 		});
-// uncomment after merging adminQuizRemoveS
-		// test('Correctly returns quiz list after a quiz has been removed', () => {
-		// 	const quiz2 = adminQuizCreate(user, 'Quiz 2', 'Description 2').quizId;
-		// 	adminQuizRemove(user, quiz2);
-		// 	const list = adminQuizList(user);
-		// 	expect(list).toStrictEqual({
-		// 		quizzes: [
-		// 				{
-		// 						quizId: quiz,
-		// 						name: 'Quiz 1'
-		// 				}
-		// 		]
-		// 	});
-		// });
-
+		test('Correctly returns quiz list after a quiz has been removed', () => {
+			const quiz2 = adminQuizCreate(user, 'Quiz 2', 'Description 2').quizId;
+			adminQuizRemove(user, quiz2);
+			const list = adminQuizList(user);
+			expect(list).toStrictEqual({
+				quizzes: [
+					{
+						quizId: quiz,
+						name: 'Quiz 1'
+					}
+				]
+			});
+		});
+		
 		test('Correctly returns quiz list that contains no quizzes', () => {
 			clear(); 
 			user = adminAuthRegister('user@gmail.com', 'Password01', 'User', 'One').authUserId;
