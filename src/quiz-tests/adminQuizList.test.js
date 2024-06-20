@@ -12,7 +12,6 @@ describe('AdminQuizList', () => {
   beforeEach(() => {
 		user = adminAuthRegister('user@gmail.com', 'Password01', 'User', 'One').authUserId;
 		quiz = adminQuizCreate(user, 'Quiz 1', 'Description 1').quizId;
-      
   });
 
   describe('Has the correct return type', () => {
