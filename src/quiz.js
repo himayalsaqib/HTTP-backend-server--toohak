@@ -1,5 +1,6 @@
 import { setData, getData } from './dataStore';
 
+/////////////////////////////// Global Variables ///////////////////////////////
 const MIN_QUIZ_NAME_LEN = 3;
 const MAX_QUIZ_NAME_LEN = 30;
 const MAX_DESCRIPTION_LEN = 100;
@@ -96,8 +97,7 @@ export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
 }
 
 /**
- * Provide a list of all quizzes that are owned by the 
- * currently logged in user.
+ * Get all of the relevant information about the current quiz.
  * 
  * @param {number} authUserId
  * @param {number} quizId 
@@ -105,11 +105,11 @@ export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
  */
 export function adminQuizInfo (authUserId, quizId) {
     return {
-        quizId: 1,
-        name: 'My Quiz',
-        timeCreated: 1683125870,
-        timeLastEdited: 1683125871,
-        description: 'This is my quiz',
+      quizId: 1,
+      name: 'My Quiz',
+      timeCreated: 1683125870,
+      timeLastEdited: 1683125871,
+      description: 'This is my quiz',
     };
   }
 
@@ -122,8 +122,36 @@ export function adminQuizInfo (authUserId, quizId) {
  * @returns {object} - empty object
  */
 export function adminQuizNameUpdate (authUserId, quizId, name) {
-    return {};
+  if (authUserIdIsValid(authUserId) === false) {
+      return { error: 'AuthUserId is not a valid user.' };
   }
+  if (quizIdInUse(quizId) === false) {
+      return { error: 'Quiz ID does not refer to a valid quiz.' };
+  }
+  if (quizNameHasValidChars(name) === false) {
+      return { error: 'Name contains invalid characters. Valid characters are alphanumeric and spaces.' };
+  }
+  if (name.length < MIN_QUIZ_NAME_LEN || name.length > MAX_QUIZ_NAME_LEN) {
+      return { error: 'Name is either less than 3 characters long or more than 30 characters long.' };
+  }
+  if (quizNameInUse(authUserId, name)) {
+      return { error: 'Name is already used by the current logged in user for another quiz.' };
+  }
+
+  let data = getData();
+  let quiz = data.quizzes.find(q => q.quizId === quizId);
+
+  if (quiz.authUserId !== authUserId) {
+    return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
+  }
+
+  quiz.name = name;
+  quiz.timeLastEdited = Date.now();
+   
+  setData(data);
+
+  return {};
+}
 
 /////////////////////////////// Helper Functions ///////////////////////////////
 
