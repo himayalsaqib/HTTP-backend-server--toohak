@@ -82,7 +82,7 @@ export function adminQuizCreate( authUserId, name, description ) {
 export function adminQuizRemove ( authUserId, quizId ) {
 	let data = getData();
 
-if (authUserIdIsValid(authUserId) === false) {
+	if (authUserIdIsValid(authUserId) === false) {
 		return { error: 'AuthUserId does not refer to a valid user id.' };
 	} else if (quizIdInUse(quizId) === false) {
 		return { error: 'Quiz Id does not refer to a valid quiz.' };
