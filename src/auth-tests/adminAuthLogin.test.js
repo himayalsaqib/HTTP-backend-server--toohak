@@ -6,7 +6,7 @@ beforeEach(() => {
 });
 
 describe('adminAuthLogin', () => {
-	const ERROR = { error: expect.any(String) };
+	const error = { error: expect.any(String) };
 
 	let user;
 	beforeEach(() => {
@@ -21,7 +21,7 @@ describe('adminAuthLogin', () => {
 	});
 
 	describe('Testing failed login', () => {
-		test('correctly updates user details after a failed login', () => {
+		test('Correctly updates user details after a failed login', () => {
 			adminAuthLogin('valid@gmail.com', 'Password34');
 			expect(adminUserDetails(user.authUserId)).toStrictEqual({
         user: {
@@ -54,13 +54,13 @@ describe('adminAuthLogin', () => {
 
 	describe('Testing email given to adminAuthLogin', () => {
 		test('Returns error when email address does not exist', () => {
-			expect(adminAuthLogin('valid1@gmail.com', 'Password12')).toStrictEqual(ERROR);
+			expect(adminAuthLogin('valid1@gmail.com', 'Password12')).toStrictEqual(error);
 		});
 	});
 
 	describe ('Testing password given to adminAuthRegister', () => {
 		test('Returns error when password does not match given email', () => {
-			expect(adminAuthLogin('valid@gmail.com', 'Password34')).toStrictEqual(ERROR);
+			expect(adminAuthLogin('valid@gmail.com', 'Password34')).toStrictEqual(error);
 		});
 	});
 });
