@@ -15,20 +15,20 @@ export function adminQuizList(authUserId) {
 	let data = getData();
 	let quizList = [];
 
-    if (authUserIdIsValid(authUserId) === false) {
-        return { error: 'AuthUserId does not refer to a valid user id.' };
-    }
+	if (authUserIdIsValid(authUserId) === false) {
+		return { error: 'AuthUserId does not refer to a valid user id.' };
+	}
 
-    for (const quiz of data.quizzes) {
-        if (quiz.authUserId === authUserId) {
-            quizList.push({
-                quizId: quiz.quizId,
-                name: quiz.name,
-            });
-        }
-    }
+	for (const quiz of data.quizzes) {
+		if (quiz.authUserId === authUserId) {
+			quizList.push({
+				quizId: quiz.quizId,
+				name: quiz.name,
+			});
+		}
+	}
 
-    return { quizzes: quizList };
+  return { quizzes: quizList };
 }
 
 /**
