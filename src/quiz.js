@@ -45,21 +45,18 @@ export function adminQuizCreate( authUserId, name, description ) {
   }
   if (quizNameHasValidChars(name) === false) {
     return { error: 'Name contains invalid characters. \
-            Valid characters are alphanumeric and spaces.' 
-    };
+            Valid characters are alphanumeric and spaces.' };
   }
   if (name.length < MIN_QUIZ_NAME_LEN || name.length > MAX_QUIZ_NAME_LEN) {
     return { error: 'Name is either less than 3 characters long or \
-            more than 30 characters long.' 
-    };
+            more than 30 characters long.' };
   }
   if (quizNameInUse(authUserId, name) === true) {
     return { error: 'Name is already used by the current \
-            logged in user for another quiz.'
-    };
+            logged in user for another quiz.' };
   }
   if (description.length > MAX_DESCRIPTION_LEN) {
-    return { error: 'Description is more than 100 characters in length'};
+    return { error: 'Description is more than 100 characters in length.' };
   }
 
   let data = getData();
@@ -103,7 +100,7 @@ export function adminQuizRemove ( authUserId, quizId ) {
 	const quiz = data.quizzes[quizIndex];
 
 	if (quiz.authUserId !== authUserId) {
-		return { error: 'Quiz does not belong to user' };
+		return { error: 'Quiz does not belong to user.' };
 	}
 
 	data.quizzes.splice(quizIndex, 1);
@@ -128,7 +125,7 @@ export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
     return { error: 'Quiz ID does not refer to a valid quiz.' };
   }
   if (description.length > MAX_DESCRIPTION_LEN) {
-    return { error: 'Description cannot be more than 100 characters.' };
+    return { error: 'Description is more than 100 characters in length.' };
   }
 
   let data = getData();
@@ -193,13 +190,16 @@ export function adminQuizNameUpdate (authUserId, quizId, name) {
     return { error: 'Quiz ID does not refer to a valid quiz.' };
   }
   if (quizNameHasValidChars(name) === false) {
-    return { error: 'Name contains invalid characters. Valid characters are alphanumeric and spaces.' };
+    return { error: 'Name contains invalid characters. Valid characters are \
+            alphanumeric and spaces.' };
   }
   if (name.length < MIN_QUIZ_NAME_LEN || name.length > MAX_QUIZ_NAME_LEN) {
-    return { error: 'Name is either less than 3 characters long or more than 30 characters long.' };
+    return { error: 'Name is either less than 3 characters long or more than \
+            30 characters long.' };
   }
   if (quizNameInUse(authUserId, name)) {
-    return { error: 'Name is already used by the current logged in user for another quiz.' };
+    return { error: 'Name is already used by the current logged in user for \
+            another quiz.' };
   }
 
   let data = getData();
