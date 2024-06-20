@@ -1,7 +1,7 @@
 // contains the tests adminQuizInfo from quiz.js
 
 import { adminAuthRegister } from '../auth';
-import { adminQuizCreate, adminQuizDescriptionUpdate, adminQuizInfo, adminQuizNameUpdate } from '../quiz';
+import { adminQuizCreate, adminQuizInfo, adminQuizNameUpdate } from '../quiz';
 import { clear } from '../other';
 
 describe('adminQuizInfo', () => {

@@ -1,8 +1,8 @@
 // contains the tests adminQuizCreate from quiz.js
 
-import {adminAuthRegister} from '../auth';
-import {adminQuizCreate} from '../quiz';
-import {clear} from '../other';
+import { adminAuthRegister } from '../auth';
+import { adminQuizCreate, adminQuizList } from '../quiz';
+import { clear } from '../other';
 
 beforeEach(() => {
   clear();
@@ -64,11 +64,15 @@ describe('adminQuizCreate', () => {
     });
   });
     
-  // describe('Testing side effect in adminQuizList', () => {
-  //   test('Check if adminQuizList has newly created quizzes', () => {
-  //     adminQuizCreate(user.Id, "Quiz 1", "");
-  //     expect(adminQuizList(user.authUserId).toStrictEqual({ quizzes: 
-  //       [{quizId: expect.any(Number), name: "Quiz 1"}] }));
-  //   });
-  // });
+  describe('Testing side effect in adminQuizList', () => {
+    test('Check if adminQuizList has newly created quizzes', () => {
+      adminQuizCreate(user.authUserId, "Quiz 1", "");
+      expect(adminQuizList(user.authUserId)).toStrictEqual({ 
+        quizzes: [{
+          quizId: expect.any(Number), 
+          name: "Quiz 1"
+        }] 
+      });
+     });
+  });
 });

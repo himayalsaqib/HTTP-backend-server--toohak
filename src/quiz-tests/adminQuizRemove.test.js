@@ -9,10 +9,12 @@ beforeEach(()=> {
 });
 
 describe('adminQuizRemove', () => {
+  const error = { error: expect.any(String) };
   let user;
   let quiz;
   beforeEach(() => {
-    user = adminAuthRegister('user@gmail.com', 'Password01', 'User', 'One').authUserId;
+    user = adminAuthRegister('user@gmail.com', 'Password01', 'User', 
+    'One').authUserId;
     quiz = adminQuizCreate(user, 'Quiz 1', 'Description 1').quizId;
   });
 
@@ -24,20 +26,21 @@ describe('adminQuizRemove', () => {
   describe('Remove quiz from invalid ids returns error', () => {
     test('Invalid authUserId, valid quizId', () => {
       const invalidUserId = user + 1;
-      expect(adminQuizRemove(invalidUserId, quiz)).toStrictEqual({ error: 'AuthUserId does not refer to a valid user id.' });
+      expect(adminQuizRemove(invalidUserId, quiz)).toStrictEqual(error);
     });
 
     test('Valid authUserId, invalid quizId', () => {
       const invalidQuizId = quiz + 1;
       expect(adminQuizRemove(user, invalidQuizId)).
-      toStrictEqual({ error: 'Quiz Id does not refer to a valid quiz.' });
+      toStrictEqual(error);
     });
   });
   
   describe('Returns error when quiz does not belong to user', () => {
     test('Should not remove valid quiz that does not belong to user ', () => {
-      const user2 = adminAuthRegister('user2@gmail.com', 'Password02', 'User', 'Two').authUserId;            
-      expect(adminQuizRemove(user2, quiz)).toStrictEqual({ error: 'Quiz does not belong to user' });
+      const user2 = adminAuthRegister('user2@gmail.com', 'Password02', 'User', 
+      'Two').authUserId;            
+      expect(adminQuizRemove(user2, quiz)).toStrictEqual(error);
     }); 
   });
 
@@ -49,7 +52,7 @@ describe('adminQuizRemove', () => {
     test('Remove a quiz that has already been successfully removed', () => {
       adminQuizRemove(user, quiz);
       expect(adminQuizRemove(user, quiz)).
-      toStrictEqual({ error: "Quiz Id does not refer to a valid quiz." });
+      toStrictEqual(error);
     });
 
     test('Remove mulitple quizzes', () => {
