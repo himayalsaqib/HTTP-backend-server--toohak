@@ -70,7 +70,6 @@ export function adminQuizCreate( authUserId, name, description ) {
 
 	data.quizzes.push(newQuiz);
 	setData(data);
-
 	return { quizId: newQuizId };
 }
 
@@ -84,9 +83,7 @@ export function adminQuizCreate( authUserId, name, description ) {
 export function adminQuizRemove ( authUserId, quizId ) {
 	let data = getData();
 
-	if (authUserIdIsValid(authUserId) === false && quizIdInUse(quizId) === false) {
-		return { error: 'Invalid User and Quiz Id' };
-	} else if (authUserIdIsValid(authUserId) === false) {
+if (authUserIdIsValid(authUserId) === false) {
 		return { error: 'AuthUserId does not refer to a valid user id.' };
 	} else if (quizIdInUse(quizId) === false) {
 		return { error: 'Quiz Id does not refer to a valid quiz.' };
