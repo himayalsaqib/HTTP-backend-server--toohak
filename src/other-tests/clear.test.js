@@ -7,24 +7,24 @@ import {
 
 
 describe('clear', () =>{
-    describe('test for the return type of clear', () => {
-        test('has correct return type', () => {
+    describe('Test for the return type of clear', () => {
+        test('Has correct return type', () => {
             expect(clear()).toStrictEqual({});
         });
     });
     
 
-    describe('testing side-effects of clear', () => {
+    describe('Testing side-effects of clear', () => {
         let user;
         beforeEach(() => {
             user = adminAuthRegister('email@gmail.com', 'password123', 'Jane', 'Doe');
         });
         
-        test('successful registration of user', () => {
+        test('Successful registration of user', () => {
             expect(user).toStrictEqual({ authUserId : user.authUserId });
         });
 
-        test('successful access of user details in adminUserDetails after logging in once', () => {
+        test('Successful access of user details in adminUserDetails after logging in once', () => {
             let newUser = adminAuthRegister('valid@gmail.com', 'validpa55word', 'John', 'Smith');
             expect(adminAuthLogin('valid@gmail.com', 'validpa55word')).toStrictEqual({ authUserId : newUser.authUserId });
             
@@ -39,7 +39,7 @@ describe('clear', () =>{
             });
         });
         
-        test('error returned by adminUserDetails after calling clear', () => {
+        test('Error returned by adminUserDetails after calling clear', () => {
             clear();
             expect(adminUserDetails(user.authUserId)).toStrictEqual({ error : expect.any(String) });
         });
