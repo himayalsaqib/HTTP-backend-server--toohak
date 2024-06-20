@@ -68,10 +68,10 @@ describe('AdminQuizList', () => {
 		});
 	});
 
-    describe('Returns error when authUserId is not a valid user', () => {
-			test('Invalid authUserId', () => {
-				const user1 = user + 1;
-				expect(adminQuizList(user1)).toStrictEqual({ error: 'AuthUserId does not refer to a valid user id.' });
-			});
-    });
+	describe('Returns error when authUserId is not a valid user', () => {
+		test('Invalid authUserId', () => {
+			const user1 = user + 1;
+			expect(adminQuizList(user1)).toStrictEqual({ error: 'AuthUserId does not refer to a valid user id.' });
+		});
+	});
 });
