@@ -32,7 +32,6 @@ describe('AdminQuizList', () => {
 		test('Correctly returns quiz list that contains multiple quizzes', () => {
 			const quiz2 = adminQuizCreate(user, 'Quiz 2', 'Description 2').quizId;
 			const list = adminQuizList(user);
-
 			expect(list).toStrictEqual({
 				quizzes: [
 					{
@@ -46,6 +45,7 @@ describe('AdminQuizList', () => {
 				]
 			});
 		});
+
 		test('Correctly returns quiz list after a quiz has been removed', () => {
 			const quiz2 = adminQuizCreate(user, 'Quiz 2', 'Description 2').quizId;
 			adminQuizRemove(user, quiz2);
