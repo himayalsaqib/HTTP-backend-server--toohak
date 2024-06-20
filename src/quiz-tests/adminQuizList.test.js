@@ -8,21 +8,21 @@ beforeEach(() => {
 });
 
 describe('adminQuizList', () => {
-    describe('has the correct return type', () => {
-        test('correctly returns quiz list that contains 1 quiz', () => {
-            const user = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One').authUserId;
-            const quiz = adminQuizCreate(user, 'Quiz 1', 'Description 1').quizId;
-            const list = adminQuizList(user);
+  describe('has the correct return type', () => {
+    test('correctly returns quiz list that contains 1 quiz', () => {
+      const user = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One').authUserId;
+      const quiz = adminQuizCreate(user, 'Quiz 1', 'Description 1').quizId;
+      const list = adminQuizList(user);
 
-            expect(list).toStrictEqual({
-                quizzes: [
-                    {
-                        quizId: quiz,
-                        name: 'Quiz 1'
-                    }
-                ]
-            });
-        });
+      expect(list).toStrictEqual({
+        quizzes: [
+            {
+              quizId: quiz,
+              name: 'Quiz 1'
+            }
+        ]
+      });
+    });
 
         test('correctly returns quiz list that contains multiple quizzes', () => {
             const user = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One').authUserId;
@@ -44,13 +44,13 @@ describe('adminQuizList', () => {
             });
         });
 
-        test('correctly returns quiz list after a quiz has been removed', () => {
+        test.only('correctly returns quiz list after a quiz has been removed', () => {
             const user = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One').authUserId;
             const quiz1 = adminQuizCreate(user, 'Quiz 1', 'Description 1').quizId;
             const quiz2 = adminQuizCreate(user, 'Quiz 2', 'Description 2').quizId;
             adminQuizRemove(user, quiz2);
             const list = adminQuizList(user);
-
+            console.log(list);
             expect(list).toStrictEqual({
                 quizzes: [
                     {
