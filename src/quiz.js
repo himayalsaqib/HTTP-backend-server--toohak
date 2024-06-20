@@ -12,6 +12,7 @@ const MAX_DESCRIPTION_LEN = 100;
  * @returns {array} 
  */
 export function adminQuizList(authUserId) {
+
     return { quizzes: [
         {
           quizId: 1,
