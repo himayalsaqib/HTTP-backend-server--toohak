@@ -114,7 +114,6 @@ export function adminUserDetails (authUserId) {
   }
 
   const data = getData();
-
   const user = data.users.find(current => current.authUserId == authUserId);
   
   return { user:

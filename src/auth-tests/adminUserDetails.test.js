@@ -6,15 +6,15 @@ beforeEach(() => {
 });
 
 describe('adminUserDetails', () => {
-	const ERROR = { error: expect.any(String) };
+	const error = { error: expect.any(String) };
 
   test('returns error when no users are registered', () => {
-    expect(adminUserDetails(1)).toStrictEqual(ERROR);
+    expect(adminUserDetails(1)).toStrictEqual(error);
   });
 
   test('returns error when  authUserId is not a valid user', () => {
     const user = adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe');
-    expect(adminUserDetails(user.authUserId + 1)).toStrictEqual(ERROR);
+    expect(adminUserDetails(user.authUserId + 1)).toStrictEqual(error);
   });
 
   describe('successfully returns user details', () => {
