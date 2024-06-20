@@ -64,7 +64,7 @@ describe('AdminQuizList', () => {
       const list = adminQuizList(user);
       expect(list).toStrictEqual({
         quizzes: []
-				});
+			});
 		});
 	});
 
