@@ -1,10 +1,8 @@
 import { adminQuizCreate, adminQuizList, adminQuizRemove } from '../quiz';
 import { adminAuthRegister } from '../auth';
 import { clear } from '../other';
-import { describe, expect, test, beforeEach } from '@jest/globals';
 
 const error = { error: expect.any(String) };
-
 beforeEach(() => {
     clear();
 });
@@ -46,6 +44,23 @@ describe('adminQuizList', () => {
             });
         });
 
+        test('correctly returns quiz list after a quiz has been removed', () => {
+            const user = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One').authUserId;
+            const quiz1 = adminQuizCreate(user, 'Quiz 1', 'Description 1').quizId;
+            const quiz2 = adminQuizCreate(user, 'Quiz 2', 'Description 2').quizId;
+            adminQuizRemove(user, quiz2);
+            const list = adminQuizList(user);
+
+            expect(list).toStrictEqual({
+                quizzes: [
+                    {
+                        quizId: quiz1,
+                        name: 'Quiz 1'
+                    }
+                ]
+            });
+        });
+
         test('correctly returns quiz list that contains no quizzes', () => {
             const user = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One').authUserId;
             const list = adminQuizList(user);
@@ -56,7 +71,7 @@ describe('adminQuizList', () => {
         });
     });
 
-    describe('AuthUserId is not a valid user', () => {
+    describe('Returns error when authUserId is not a valid user', () => {
         test('invalid authUserId', () => {
             const user = -1;
             expect(adminQuizList(user)).toStrictEqual({ error: 'AuthUserId does not refer to a valid user id.' });
