@@ -57,13 +57,13 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
 
   let data = getData();
 
-  const authUserId = Math.random();
-  while (adminUserIdExists(authUserId)) {
-      authUserId = Math.random();
+  let newAuthUserId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  while (adminUserIdExists(newAuthUserId)) {
+    newAuthUserId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
   const newUser = {
-    authUserId: authUserId,
+    authUserId: newAuthUserId,
     email: email,
     nameFirst: nameFirst,
     nameLast: nameLast,
@@ -77,7 +77,7 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
 
   setData(data);
 
-  return { authUserId: authUserId };
+  return { authUserId: newAuthUserId };
 }
 
 /**
