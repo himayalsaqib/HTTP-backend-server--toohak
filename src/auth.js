@@ -1,6 +1,13 @@
 import { setData, getData } from './dataStore';
 import validator from 'validator';
 
+/////////////////////////////// Global Variables ///////////////////////////////
+const MIN_PASSWORD_LENGTH = 8;
+const MIN_NAME_LENGTH = 2;
+const MAX_NAME_LENGTH = 20;
+const INITIAL_NUM_FAILED_LOGINS = 0;
+const INITIAL_NUM_SUCCESSFUL_LOGINS = 1;
+
 /**
  * Register a user with an email, password, and names, then returns their 
  * authUserId value
@@ -9,7 +16,7 @@ import validator from 'validator';
  * @param {string} password 
  * @param {string} nameFirst 
  * @param {string} nameLast 
- * @returns {object} authUserId | error
+ * @returns {{ authUserId: number } | { error: string }} 
  */
 export function adminAuthRegister (email, password, nameFirst, nameLast) {
   if (adminEmailInUse(email)) {
@@ -18,20 +25,20 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
   if (!validator.isEmail(email)) {
     return { error: 'invalid email address' };
   }
-  if (password.length < 8) {
+  if (password.length < MIN_PASSWORD_LENGTH) {
     return { error: 'invalid password is less than 8 characters' };
   }
-  if (!adminStringHasNum(password) || !adminStringHasLetter(password)) {
+  if (!adminPasswordHasValidChars(password)) {
     return { error: 'invalid password does not meet requirements' };
   }
-  if (nameFirst.length < 2 || nameFirst.length > 20) {
+  if (nameFirst.length < MIN_NAME_LENGTH || nameFirst.length > MAX_NAME_LENGTH) {
     return { error: 'invalid first name is less than 2 characters or \
             more than 20 characters' };
   }
   if (!adminUserNameIsValid(nameFirst)) {
     return { error: 'invalid first name does not meet requirements' };
   }
-  if (nameLast.length < 2 || nameLast.length > 20) {
+  if (nameLast.length < MIN_NAME_LENGTH || nameLast.length > MAX_NAME_LENGTH) {
     return { error: 'invalid last name is less than 2 characters or \
             more than 20 characters' };
   }
@@ -41,7 +48,10 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
 
   let data = getData();
 
-  const authUserId = data.users.length;
+  const authUserId = Math.random();
+  while (adminUserIdExists(authUserId)) {
+      authUserId = Math.random();
+  }
 
   const newUser = {
     authUserId: authUserId,
@@ -49,8 +59,9 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
     nameFirst: nameFirst,
     nameLast: nameLast,
     password: password,
-    numFailedLogins: 0,
-    numSuccessfulLogins: 1,
+    previousPasswords: [password],
+    numFailedLogins: INITIAL_NUM_FAILED_LOGINS,
+    numSuccessfulLogins: INITIAL_NUM_SUCCESSFUL_LOGINS,
   }
 
   data.users.push(newUser);
@@ -78,7 +89,7 @@ export function adminAuthLogin (email, password) {
   const user = data.users.find(current => current.email === email);
   
   if (user.password === password) {
-    user.numFailedLogins = 0;
+    user.numFailedLogins = INITIAL_NUM_FAILED_LOGINS;
     user.numSuccessfulLogins++;
     setData(data);
 
@@ -98,7 +109,7 @@ export function adminAuthLogin (email, password) {
  * @returns {object} user 
  */
 export function adminUserDetails (authUserId) {
-  if (!adminUserIdIsValid(authUserId)) {
+  if (!adminUserIdExists(authUserId)) {
     return { error: 'AuthUserId is not a valid user.' };
   }
 
@@ -129,6 +140,56 @@ export function adminUserDetails (authUserId) {
  * @returns {object} empty
  */
 export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
+
+  let data = getData();
+
+  // check for valid user
+  if (!adminUserIdExists(authUserId)) {
+    return { error : 'authUserId is not a valid user'};
+  }
+
+  // check oldPassword
+  for (const user of data.users) {
+    if (user.authUserId === authUserId) {
+      if (oldPassword !== user.password) {
+        return { error : 'oldPassword is not the correct old password'}
+      }
+    }
+  }
+
+  // check for match
+  if (oldPassword === newPassword) {
+    return { error : 'oldPassword matches newPassword exactly'};
+  }
+
+  // check newPassword
+  for (const user of data.users) {
+    if (user.authUserId === authUserId) {
+      // check previousPassword
+      if (checkPasswordHistory(authUserId, newPassword) === true) {
+        return { error : 'newPassword has already been used before by this user'};
+      }
+    }
+  }
+
+  if (newPassword.length < MIN_PASSWORD_LENGTH) {
+    return { error : 'invalid newPassword is less than 8 charactes'};
+  }
+
+  if (!adminPasswordHasValidChars(newPassword)) {
+    return { error : 'newPassword must contain at least one number and one letter'};
+  }
+
+  // update password for user
+  for (const user of data.users) {
+    if (user.authUserId === authUserId) {
+      user.previousPasswords.push(newPassword);
+      user.password = newPassword;
+    }
+  }
+
+  setData(data);
+
   return {};
 }
 
@@ -143,19 +204,20 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
  * @returns {object} empty | error
  */
 export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
-  if (adminUserIdIsValid(authUserId) == false) {
+  if (adminUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user' };
   }
 
   let data = getData();
 
   for (const user of data.users) {
-    if (user.authUserId === authUserId) {
-      user.email === email;
-      break;
-    } else if (adminEmailInUse(email) === true) {
-      return { error: 'Email is currently used by another user' };
-    } 
+    if (user.email === email) {
+      if (user.authUserId === authUserId) {
+        break;
+      } else {
+        return { error: 'Email currently in use by another user'};
+      }
+    }
   }
 
   if (validator.isEmail(email) === false) {
@@ -196,15 +258,15 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
  * @returns {boolean} true if email exists, false if not
  */
 function adminEmailInUse(email) {
-  let data = getData();
+  const data = getData();
 
-  for (const user of data.users) {
-    if (user.email === email) {
-      return true;
-    }
+  const user = data.users.find(user => user.email === email);
+
+  if (user === undefined) {
+    return false;
+  } else {
+    return true;
   }
-
-  return false;
 }
 
 /**
@@ -226,37 +288,57 @@ function adminUserNameIsValid(name) {
 }
 
 /**
- * Function returns true if string contains a number otherwise it returns false
- *
- * @param {string} string to check
- * @returns {boolean} true if string has a number otherwise false
+ * Function checks whether the given password contains atleast one number and 
+ * atleast one letter
+ * 
+ * @param {string} password to check
+ * @returns {boolean} true if password has neccessary chars otherwise false
  */
-function adminStringHasNum(string) {
-  return /\d/.test(string);
+function adminPasswordHasValidChars(password) {
+  if (/\d/.test(password) && /[a-zA-Z]/.test(password)) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 /**
- * Function returns true if string contains a letter otherwise it returns false
- *
- * @param {string} string to check
- * @returns {boolean} true if string has a letter otherwise false
- */
-function adminStringHasLetter(string) {
-  return /[a-zA-Z]/.test(string);
-}
-
-/**
- * Function checks if an authUserId exists in the dataStore and is valid
+ * Function checks if an authUserId exists in the dataStore 
  *
  * @param {number} authUserId 
- * @returns {boolean} true if authUserId is valid otherwise false
+ * @returns {boolean} true if authUserId is valid otherwise false 
  */
-function adminUserIdIsValid(authUserId) {
+function adminUserIdExists(authUserId) {
+  const data = getData();
+
+  const user = data.users.find(user => user.authUserId === authUserId);
+
+  if (user === undefined) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+/**
+ * Function checks previousPassword array to determine whether a user has already
+ * used a password when updating the password
+ * 
+ * @param {number} authUserId
+ * @param {number} newPassword
+ * 
+ * @returns {boolean} true if newPassword matches any previous passwords
+ */
+function checkPasswordHistory(authUserId, newPassword) {
   let data = getData();
 
   for (const user of data.users) {
     if (user.authUserId === authUserId) {
-      return true;
+      for (const password of user.previousPasswords) {
+        if (password === newPassword) {
+          return true;
+        } 
+      }
     }
   }
 

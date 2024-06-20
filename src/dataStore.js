@@ -1,26 +1,7 @@
 // YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
 let data = {
-  users: [
-    {
-      authUserId: undefined,
-      email: "",
-      nameFirst: "",
-      nameLast: "",
-      password: "",
-      numFailedLogins: undefined,
-      numSuccessfulLogins: undefined,
-    }
-  ],
-  quizzes: [
-    {
-      authUserId: undefined,
-      quizId: undefined,
-      name: "",
-      timeCreated: undefined,
-      timeLastEdited: undefined,
-      description: "",
-    }
-  ],
+  users: [],
+  quizzes: [],
 };
 
 // YOU SHOULD MODIFY THIS OBJECT ABOVE ONLY
