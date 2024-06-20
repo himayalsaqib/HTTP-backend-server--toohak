@@ -10,13 +10,17 @@ beforeEach(()=> {
 
 
 describe('adminQuizRemove', () => {
+    let user;
+    let quiz;
+    beforeEach(() => {
+        user = adminAuthRegister('user@gmail.com', 'Password01', 'User', 'One').authUserId;
+        quiz = adminQuizCreate(user.authUserId, 'Quiz 1', 'Description 1').quizId;
+        
+    });
 
   test('has the correct return type', () => {
-    const user = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One');
-    const quiz = adminQuizCreate(user.authUserId, 'Quiz 1', 'Description 1');
     const remove = adminQuizRemove(user.authUserId, quiz.quizId);
-    
-    expect(remove).toStrictEqual({});
+    expect(remove).toStrictEqual({ });
   });
 
     describe('Remove quiz from invalid ids returns error', () => {
@@ -48,7 +52,7 @@ describe('adminQuizRemove', () => {
     });
     
 
-    describe('Quiz does not belong to user', () => {
+    describe('Returns error when quiz does not belong to user', () => {
         test('should not remove valid quiz that does not belong to user ', () => {
             const user1 = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One').authUserId;
             const user2 = adminAuthRegister('user2@gmail.com', 'Password02', 'User', 'Two').authUserId;
@@ -65,7 +69,7 @@ describe('adminQuizRemove', () => {
             const user = adminAuthRegister('user@gmail.com', 'Password01', 'userfirst', 'userlast').authUserId;
             const quiz = adminQuizCreate(user, 'Quiz', 'Description').quizId;
 
-            expect(adminQuizRemove(user, quiz)).toStrictEqual({});
+            expect(adminQuizRemove(user, quiz)).toStrictEqual({ });
         });
 
         test('Remove a quiz that has already been successfully removed', () => {
