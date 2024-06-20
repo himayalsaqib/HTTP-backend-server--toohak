@@ -7,20 +7,20 @@ beforeEach(() => {
 
 describe('adminUserPasswordUpdate', () => {
     
-    const ERROR = { error : expect.any(String) };
+    const error = { error : expect.any(String) };
 
     let user, originalPassword;
-        beforeEach(() => {
-            originalPassword = 'validpa55w0rd';
-            user = adminAuthRegister('valid123@gmail.com', originalPassword, 'Jane', 'Smith');
-        });
+    beforeEach(() => {
+        originalPassword = 'validpa55w0rd';
+        user = adminAuthRegister('valid123@gmail.com', originalPassword, 'Jane', 'Smith');
+    });
 
     describe('Testing for return type', () => {
         test('Has correct return type', () => {
             const changedPassword = 'password123';
             
             expect(adminUserPasswordUpdate(user.authUserId, originalPassword, changedPassword)).
-            toStrictEqual({});
+            toStrictEqual({ });
         });
     });
 
@@ -29,7 +29,7 @@ describe('adminUserPasswordUpdate', () => {
             const changedPassword = 'an0thervalid0ne';
     
             expect(adminUserPasswordUpdate(user.authUserId + 1, originalPassword, changedPassword)).
-            toStrictEqual(ERROR);
+            toStrictEqual(error);
         });
     });
 
@@ -39,7 +39,7 @@ describe('adminUserPasswordUpdate', () => {
             const alteredPassword = 'newvalidpa55word';
     
             expect(adminUserPasswordUpdate(user.authUserId, incorretOgPassword, alteredPassword)).
-            toStrictEqual(ERROR);
+            toStrictEqual(error);
         });
     
         test('The oldPassword and newPassword match exactly', () => {
@@ -47,7 +47,7 @@ describe('adminUserPasswordUpdate', () => {
             const changedPassword = 'validpa55word';
             
             expect(adminUserPasswordUpdate(user.authUserId, matchingPassword, changedPassword)).
-            toStrictEqual(ERROR);
+            toStrictEqual(error);
         });
     });
     
@@ -71,28 +71,28 @@ describe('adminUserPasswordUpdate', () => {
             const changedPassword = 'inva1d';
             
             expect(adminUserPasswordUpdate(user.authUserId, originalPassword, changedPassword)).
-            toStrictEqual(ERROR);
+            toStrictEqual(error);
         });
     
         test('The newPassword does not contain at least one number', () => {
             const badNewPassword = 'invalidpassword';
     
             expect(adminUserPasswordUpdate(user.authUserId, originalPassword, badNewPassword)).
-            toStrictEqual(ERROR);
+            toStrictEqual(error);
         });
     
         test('The newPassword does not contain at least one letter', () => {
             const badNewPassword = '123456789';
     
             expect(adminUserPasswordUpdate(user.authUserId, originalPassword, badNewPassword)).
-            toStrictEqual(ERROR);
+            toStrictEqual(error);
         });
     
         test('The newPassword meets all criteria', () => {
             const changedPassword = 'veryvalidpassw0rd';
             
             expect(adminUserPasswordUpdate(user.authUserId, originalPassword, changedPassword)).
-            toStrictEqual({});
+            toStrictEqual({ });
         });
     });
     
