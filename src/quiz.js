@@ -53,9 +53,9 @@ export function adminQuizCreate( authUserId, name, description ) {
     }
 
     let data = getData();
-    const newQuizId = Math.random();
+    const newQuizId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     while (quizIdInUse(newQuizId) === true) {
-        newQuizId = Math.random();
+        newQuizId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     }
 
     const newQuiz = {
