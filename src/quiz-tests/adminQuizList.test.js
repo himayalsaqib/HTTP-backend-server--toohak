@@ -81,9 +81,7 @@ describe('adminQuizList', () => {
             const user1 = adminAuthRegister('user1@gmail.com', 'Password01', 'User', 'One').authUserId;
             const user2 = adminAuthRegister('user2@gmail.com', 'Password02', 'User', 'Two').authUserId;
             const quiz1 = adminQuizCreate(user1, 'Quiz 1', 'Description 1').quizId;
-            expect(adminQuizList(user2)).toStrictEqual({
-                quizzes: []
-            });
+            expect(adminQuizList(user2)).toStrictEqual({ error: 'AuthUserId does not refer to a valid user id.' });
         });
     });
 });
