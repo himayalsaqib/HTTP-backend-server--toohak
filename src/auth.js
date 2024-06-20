@@ -76,7 +76,7 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
  * 
  * @param {string} email 
  * @param {string} password 
- * @returns {object} authUserId
+ * @returns {{ authUserId: number } | { error: string }} 
  */
 
 export function adminAuthLogin (email, password) {
@@ -86,21 +86,19 @@ export function adminAuthLogin (email, password) {
 
   let data = getData();
 
-  for (const user of data.users) {
-    if (user.email === email) {
-      if (user.password === password) {
-        user.numFailedLogins = INITIAL_NUM_FAILED_LOGINS;
-        user.numSuccessfulLogins++;
-        setData(data);
+  const user = data.users.find(current => current.email === email);
+  
+  if (user.password === password) {
+    user.numFailedLogins = INITIAL_NUM_FAILED_LOGINS;
+    user.numSuccessfulLogins++;
+    setData(data);
 
-        return { authUserId: user.authUserId };
-      } else {
-        user.numFailedLogins++;
-        setData(data);
-        
-        return { error: 'password is not correct for the given email' };
-      }
-    }
+    return { authUserId: user.authUserId };
+  } else {
+    user.numFailedLogins++;
+    setData(data);
+    
+    return { error: 'password is not correct for the given email' };
   }
 }
 
