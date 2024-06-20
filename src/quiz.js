@@ -136,22 +136,22 @@ export function adminQuizInfo (authUserId, quizId) {
     return { error: 'AuthUserId is not a valid user.' };
   }
   if (quizIdInUse(quizId) === false) {
-      return { error: 'Quiz ID does not refer to a valid quiz.' };
+    return { error: 'Quiz ID does not refer to a valid quiz.' };
   }
 
   let data = getData();
   const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
 
   if (quiz.authUserId !== authUserId) {
-      return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
+    return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
   }
 
   return {
-      quizId: quiz.quizId,
-      name: quiz.name,
-      timeCreated: quiz.timeCreated,
-      timeLastEdited: quiz.timeLastEdited,
-      description: quiz.description,
+    quizId: quiz.quizId,
+    name: quiz.name,
+    timeCreated: quiz.timeCreated,
+    timeLastEdited: quiz.timeLastEdited,
+    description: quiz.description,
   };    
 }
 
