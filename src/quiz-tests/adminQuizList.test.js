@@ -2,7 +2,6 @@ import { adminQuizCreate, adminQuizList, adminQuizRemove } from '../quiz';
 import { adminAuthRegister } from '../auth';
 import { clear } from '../other';
 
-const error = { error: expect.any(String) };
 beforeEach(() => {
   clear();
 });
