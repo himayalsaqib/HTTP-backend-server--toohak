@@ -1,13 +1,12 @@
 // tests for adminQuizRemove function 
 
-import {adminQuizCreate, adminQuizRemove} from '../quiz';
-import {adminAuthRegister} from '../auth';
-import {clear} from '../other';
+import { adminQuizCreate, adminQuizRemove } from '../quiz';
+import { adminAuthRegister } from '../auth';
+import { clear } from '../other';
 
 beforeEach(()=> {
   clear();
 });
-
 
 describe('adminQuizRemove', () => {
   let user;
