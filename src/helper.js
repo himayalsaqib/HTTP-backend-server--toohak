@@ -6,7 +6,7 @@ import { getData } from "./dataStore";
  * @param {number} authUserId 
  * @returns {boolean} true if authUserId is valid otherwise false 
  */
-export function adminUserIdExists(authUserId) {
+export function authUserIdExists(authUserId) {
   let data = getData();
 
   const user = data.users.find(user => user.authUserId === authUserId);
