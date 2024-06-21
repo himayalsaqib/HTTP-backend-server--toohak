@@ -1,6 +1,6 @@
 import { setData, getData } from './dataStore';
 import { 
-  adminUserIdExists,
+  authUserIdExists,
   quizNameHasValidChars,
   quizNameInUse,
   quizIdInUse 
@@ -36,7 +36,7 @@ export function adminQuizList(authUserId) {
 	let data = getData();
 	let quizList = [];
 
-	if (adminUserIdExists(authUserId) === false) {
+	if (authUserIdExists(authUserId) === false) {
 		return { error: 'AuthUserId does not refer to a valid user id.' };
 	}
 
@@ -61,7 +61,7 @@ export function adminQuizList(authUserId) {
  * @returns {{ quizId: number } | { error: string }} - assigns a quizId | error
  */  
 export function adminQuizCreate( authUserId, name, description ) {
-  if (adminUserIdExists(authUserId) === false) {
+  if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
   if (quizNameHasValidChars(name) === false) {
@@ -111,7 +111,7 @@ export function adminQuizCreate( authUserId, name, description ) {
 export function adminQuizRemove ( authUserId, quizId ) {
 	let data = getData();
 
-	if (adminUserIdExists(authUserId) === false) {
+	if (authUserIdExists(authUserId) === false) {
 		return { error: 'AuthUserId does not refer to a valid user id.' };
 	} else if (quizIdInUse(quizId) === false) {
 		return { error: 'Quiz Id does not refer to a valid quiz.' };
@@ -138,7 +138,7 @@ export function adminQuizRemove ( authUserId, quizId ) {
  * @returns {{ quizInfo } | { error: string }} - returns quiz information 
  */
 export function adminQuizInfo (authUserId, quizId) {
-  if (adminUserIdExists(authUserId) === false) {
+  if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
   if (quizIdInUse(quizId) === false) {
@@ -170,7 +170,7 @@ export function adminQuizInfo (authUserId, quizId) {
  * @returns {{} | { error: string }} - empty object
  */
 export function adminQuizNameUpdate (authUserId, quizId, name) {
-  if (adminUserIdExists(authUserId) === false) {
+  if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
   if (quizIdInUse(quizId) === false) {
@@ -213,7 +213,7 @@ export function adminQuizNameUpdate (authUserId, quizId, name) {
  * @returns {{} | { error: string }} - an empty object
  */
 export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
-  if (adminUserIdExists(authUserId) === false) {
+  if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
   if (quizIdInUse(quizId) === false) {
