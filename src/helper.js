@@ -1,6 +1,25 @@
 import { getData } from "./dataStore";
 
 /**
+ * Function checks if an authUserId exists in the dataStore 
+ *
+ * @param {number} authUserId 
+ * @returns {boolean} true if authUserId is valid otherwise false 
+ */
+export function adminUserIdExists(authUserId) {
+  let data = getData();
+
+  const user = data.users.find(user => user.authUserId === authUserId);
+
+  if (user === undefined) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+//////////////////////////// Auth Helper Functions ////////////////////////////
+/**
  * Function checks if an email is already being used by an existing user
  *
  * @param {string} email
@@ -52,24 +71,6 @@ export function adminPasswordHasValidChars(password) {
 }
 
 /**
- * Function checks if an authUserId exists in the dataStore 
- *
- * @param {number} authUserId 
- * @returns {boolean} true if authUserId is valid otherwise false 
- */
-export function adminUserIdExists(authUserId) {
-  let data = getData();
-
-  const user = data.users.find(user => user.authUserId === authUserId);
-
-  if (user === undefined) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-/**
  * Function checks previousPassword array to determine whether a user has already
  * used a password when updating the password
  * 
@@ -77,7 +78,7 @@ export function adminUserIdExists(authUserId) {
  * @param {number} newPassword
  * @returns {boolean} true if newPassword matches any previous passwords
  */
-export function checkPasswordHistory(authUserId, newPassword) {
+export function adminCheckPasswordHistory(authUserId, newPassword) {
   let data = getData();
 
   for (const user of data.users) {
@@ -93,6 +94,7 @@ export function checkPasswordHistory(authUserId, newPassword) {
   return false;
 }
 
+//////////////////////////// Quiz Helper Functions ////////////////////////////
 /**
  * Function checks if a quiz name contains any invalid characters. Characters
  * are considered invalid if they are not alphanumeric or spaces e.g. @
