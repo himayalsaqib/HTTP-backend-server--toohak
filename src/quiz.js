@@ -1,4 +1,10 @@
 import { setData, getData } from './dataStore';
+import { 
+  adminUserIdExists,
+  quizNameHasValidChars,
+  quizNameInUse,
+  quizIdInUse 
+} from './helper';
 
 /////////////////////////////// Global Variables ///////////////////////////////
 const MIN_QUIZ_NAME_LEN = 3;
@@ -30,7 +36,7 @@ export function adminQuizList(authUserId) {
 	let data = getData();
 	let quizList = [];
 
-	if (authUserIdIsValid(authUserId) === false) {
+	if (adminUserIdExists(authUserId) === false) {
 		return { error: 'AuthUserId does not refer to a valid user id.' };
 	}
 
@@ -55,7 +61,7 @@ export function adminQuizList(authUserId) {
  * @returns {{ quizId: number } | { error: string }} - assigns a quizId | error
  */  
 export function adminQuizCreate( authUserId, name, description ) {
-  if (authUserIdIsValid(authUserId) === false) {
+  if (adminUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
   if (quizNameHasValidChars(name) === false) {
@@ -105,7 +111,7 @@ export function adminQuizCreate( authUserId, name, description ) {
 export function adminQuizRemove ( authUserId, quizId ) {
 	let data = getData();
 
-	if (authUserIdIsValid(authUserId) === false) {
+	if (adminUserIdExists(authUserId) === false) {
 		return { error: 'AuthUserId does not refer to a valid user id.' };
 	} else if (quizIdInUse(quizId) === false) {
 		return { error: 'Quiz Id does not refer to a valid quiz.' };
@@ -132,7 +138,7 @@ export function adminQuizRemove ( authUserId, quizId ) {
  * @returns {{ quizInfo } | { error: string }} - returns quiz information 
  */
 export function adminQuizInfo (authUserId, quizId) {
-  if (authUserIdIsValid(authUserId) === false) {
+  if (adminUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
   if (quizIdInUse(quizId) === false) {
@@ -164,7 +170,7 @@ export function adminQuizInfo (authUserId, quizId) {
  * @returns {{} | { error: string }} - empty object
  */
 export function adminQuizNameUpdate (authUserId, quizId, name) {
-  if (authUserIdIsValid(authUserId) === false) {
+  if (adminUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
   if (quizIdInUse(quizId) === false) {
@@ -207,7 +213,7 @@ export function adminQuizNameUpdate (authUserId, quizId, name) {
  * @returns {{} | { error: string }} - an empty object
  */
 export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
-  if (authUserIdIsValid(authUserId) === false) {
+  if (adminUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
   if (quizIdInUse(quizId) === false) {
@@ -230,74 +236,4 @@ export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
   setData(data);
 
   return {};
-}
-
-/////////////////////////////// Helper Functions ///////////////////////////////
-
-/**
- * Function checks if an authUserId is valid i.e. if there is a matching ID in 
- * the users array 
- *
- * @param {number} authUserId
- * @returns {boolean} true if ID is valid, false if not
- */
-function authUserIdIsValid(authUserId) {
-  let data = getData();
-
-  const user = data.users.find(user => user.authUserId === authUserId);
-  if (user === undefined) {
-    return false;
-  }
-  return true;
-}
-
-/**
- * Function checks if a quiz name contains any invalid characters. Characters
- * are considered invalid if they are not alphanumeric or spaces e.g. @
- *
- * @param {String} name
- * @returns {boolean} true if name does not contain any invalid characters, 
- *                    false if it does
- */
-function quizNameHasValidChars(name) {
-  if (/^[A-Za-z0-9 ]*$/.test(name) === false) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-/**
- * Function checks if a quiz name has already been used by the current logged
- * in user
- *
- * @param {Number} authUserId
- * @param {String} name
- * @returns {boolean} true if name has been used, false if it has not
- */
-function quizNameInUse(authUserId, name) {
-  let data = getData();
-
-  for (const quiz of data.quizzes) {
-    if (quiz.authUserId === authUserId && quiz.name == name) {
-      return true;
-    }
-  }
-  return false;
-}
-
-/**
- * Function checks if a quiz ID has already been used by another quiz
- *
- * @param {Number} quizId
- * @returns {boolean} true if quiz ID has been used, false if it has not
- */
-function quizIdInUse(quizId) {
-  let data = getData();
-
-  const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
-  if (quiz === undefined) {
-    return false;
-  }
-  return true;
 }
