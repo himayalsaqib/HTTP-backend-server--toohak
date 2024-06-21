@@ -5,7 +5,7 @@ import {
   adminUserNameIsValid,
   adminPasswordHasValidChars,
   adminUserIdExists,
-  checkPasswordHistory,
+  adminCheckPasswordHistory,
 } from './helper'; 
 
 /////////////////////////////// Global Variables ///////////////////////////////
@@ -180,7 +180,7 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   for (const user of data.users) {
     if (user.authUserId === authUserId) {
       // check previousPassword
-      if (checkPasswordHistory(authUserId, newPassword) === true) {
+      if (adminCheckPasswordHistory(authUserId, newPassword) === true) {
         return { error: 'New password has already been used before by this user.' };
       }
     }
