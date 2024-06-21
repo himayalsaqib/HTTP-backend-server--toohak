@@ -4,7 +4,7 @@ import {
   adminEmailInUse,
   adminUserNameIsValid,
   adminPasswordHasValidChars,
-  adminUserIdExists,
+  authUserIdExists,
   adminCheckPasswordHistory,
 } from './helper'; 
 
@@ -65,7 +65,7 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
   let data = getData();
 
   let newAuthUserId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-  while (adminUserIdExists(newAuthUserId)) {
+  while (authUserIdExists(newAuthUserId)) {
     newAuthUserId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
@@ -125,7 +125,7 @@ export function adminAuthLogin (email, password) {
  * @returns {{ user: userDetails } | { error: string }}  
  */
 export function adminUserDetails (authUserId) {
-  if (!adminUserIdExists(authUserId)) {
+  if (!authUserIdExists(authUserId)) {
     return { error: 'AuthUserId is not a valid user.' };
   }
 
@@ -158,7 +158,7 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   let data = getData();
 
   // check for valid user
-  if (!adminUserIdExists(authUserId)) {
+  if (!authUserIdExists(authUserId)) {
     return { error: 'AuthUserId is not a valid user.'};
   }
 
@@ -218,7 +218,7 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
  * @returns {{} | { error: string }} empty | error
  */
 export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
-  if (adminUserIdExists(authUserId) === false) {
+  if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
 
