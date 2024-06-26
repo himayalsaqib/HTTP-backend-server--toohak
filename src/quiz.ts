@@ -1,4 +1,4 @@
-import { setData, getData } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject } from './dataStore';
 import {
   authUserIdExists,
   quizNameHasValidChars,
@@ -6,33 +6,33 @@ import {
   quizIdInUse
 } from './helper';
 
-/// //////////////////////////// Global Variables ///////////////////////////////
+/// //////////////////////////// Global Variables //////////////////////////////
 const MIN_QUIZ_NAME_LEN = 3;
 const MAX_QUIZ_NAME_LEN = 30;
 const MAX_DESCRIPTION_LEN = 100;
 
-/**
- * @typedef {Object} quizList
- *  @property {number} quizId
- *  @property {string} name
- */
+/// /////////////////////////// Type Annotations ///////////////////////////////
+interface QuizList {
+  quizId: number;
+  name: string;
+}
 
-/**
- * @typedef {Object} quizInfo
- *  @property {number} quizId
- *  @property {string} name
- *  @property {number} timeCreated
- *  @property {number} timeLastEdited
- *  @property {string} description
- */
+interface QuizInfo {
+  quizId: number;
+  name: string;
+  timeCreated: number;
+  timeLastEdited: number;
+  description: string;
+}
 
+/// ////////////////////////////// Functions ///////////////////////////////////
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  *
  * @param {number} authUserId
  * @returns {{ quizzes: { quizList }[] } | { error: string }}
  */
-export function adminQuizList(authUserId) {
+export function adminQuizList(authUserId: number): { quizzes: QuizList[] } | ErrorObject {
   const data = getData();
   const quizList = [];
 
@@ -60,7 +60,7 @@ export function adminQuizList(authUserId) {
  * @param {string} description
  * @returns {{ quizId: number } | { error: string }} - assigns a quizId | error
  */
-export function adminQuizCreate(authUserId, name, description) {
+export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
@@ -94,7 +94,7 @@ export function adminQuizCreate(authUserId, name, description) {
     quizId: newQuizId,
     name: name,
     timeCreated: Date.now(),
-    timeLastEdited: undefined,
+    timeLastEdited: <number> undefined,
     description: description,
   };
 
@@ -111,7 +111,7 @@ export function adminQuizCreate(authUserId, name, description) {
  * @param {number} quizId
  * @returns {{} | { error: string }} - an empty object
  */
-export function adminQuizRemove (authUserId, quizId) {
+export function adminQuizRemove (authUserId: number, quizId: number): EmptyObject | ErrorObject {
   const data = getData();
 
   if (authUserIdExists(authUserId) === false) {
@@ -140,7 +140,7 @@ export function adminQuizRemove (authUserId, quizId) {
  * @param {number} quizId
  * @returns {{ quizInfo } | { error: string }} - returns quiz information
  */
-export function adminQuizInfo (authUserId, quizId) {
+export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
@@ -172,7 +172,7 @@ export function adminQuizInfo (authUserId, quizId) {
  * @param {string} name
  * @returns {{} | { error: string }} - empty object
  */
-export function adminQuizNameUpdate (authUserId, quizId, name) {
+export function adminQuizNameUpdate (authUserId: number, quizId: number, name: string): EmptyObject | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
@@ -218,7 +218,7 @@ export function adminQuizNameUpdate (authUserId, quizId, name) {
  * @param {string} description
  * @returns {{} | { error: string }} - an empty object
  */
-export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
+export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, description: string): EmptyObject | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
