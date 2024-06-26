@@ -11,6 +11,28 @@ const MIN_QUIZ_NAME_LEN = 3;
 const MAX_QUIZ_NAME_LEN = 30;
 const MAX_DESCRIPTION_LEN = 100;
 
+////////////////////////////////// Interfaces //////////////////////////////////
+export interface QuizList {
+  quizId: number;
+  name: string;
+}
+
+export interface QuizInfo {
+  quizId: number;
+  name: string;
+  timeCreated: number;
+  timeLastEdited: number;
+  description: string;
+}
+
+// should be in dataStore.ts
+type EmptyObject = Record<never, never>;
+
+// should be in dataStore.ts
+interface ErrorObject {
+  error: string;
+}
+
 /**
  * @typedef {Object} quizList
  *  @property {number} quizId
@@ -32,7 +54,7 @@ const MAX_DESCRIPTION_LEN = 100;
  * @param {number} authUserId
  * @returns {{ quizzes: { quizList }[] } | { error: string }} 
  */
-export function adminQuizList(authUserId) {
+export function adminQuizList(authUserId: number): { quizzes: QuizList[]} | ErrorObject {
 	let data = getData();
 	let quizList = [];
 
@@ -60,7 +82,7 @@ export function adminQuizList(authUserId) {
  * @param {string} description 
  * @returns {{ quizId: number } | { error: string }} - assigns a quizId | error
  */  
-export function adminQuizCreate( authUserId, name, description ) {
+export function adminQuizCreate( authUserId: number, name: string, description: string ): { quizId: number } | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
@@ -108,7 +130,7 @@ export function adminQuizCreate( authUserId, name, description ) {
  * @param {number} quizId 
  * @returns {{} | { error: string }} - an empty object
  */
-export function adminQuizRemove ( authUserId, quizId ) {
+export function adminQuizRemove ( authUserId: number, quizId: number ): EmptyObject | ErrorObject {
 	let data = getData();
 
 	if (authUserIdExists(authUserId) === false) {
@@ -137,7 +159,7 @@ export function adminQuizRemove ( authUserId, quizId ) {
  * @param {number} quizId 
  * @returns {{ quizInfo } | { error: string }} - returns quiz information 
  */
-export function adminQuizInfo (authUserId, quizId) {
+export function adminQuizInfo ( authUserId: number, quizId: number ): QuizInfo | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
@@ -169,7 +191,7 @@ export function adminQuizInfo (authUserId, quizId) {
  * @param {string} name
  * @returns {{} | { error: string }} - empty object
  */
-export function adminQuizNameUpdate (authUserId, quizId, name) {
+export function adminQuizNameUpdate ( authUserId: number, quizId: number, name: string ): EmptyObject | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
@@ -212,7 +234,7 @@ export function adminQuizNameUpdate (authUserId, quizId, name) {
  * @param {string} description
  * @returns {{} | { error: string }} - an empty object
  */
-export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
+export function adminQuizDescriptionUpdate ( authUserId: number, quizId: number, description: string ): EmptyObject | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
