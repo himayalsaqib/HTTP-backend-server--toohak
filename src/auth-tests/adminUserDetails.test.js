@@ -6,7 +6,7 @@ beforeEach(() => {
 });
 
 describe('adminUserDetails', () => {
-	const error = { error: expect.any(String) };
+  const error = { error: expect.any(String) };
 
   describe('Testing authUserId given to adminUserDetails', () => {
     test('Returns error when no users are registered', () => {
@@ -25,7 +25,7 @@ describe('adminUserDetails', () => {
       user = adminAuthRegister('valid@gmail.com', 'Password12', 'Jane', 'Doe');
     });
 
-  	test('When only one user is registered', () => {
+    test('When only one user is registered', () => {
       expect(adminUserDetails(user.authUserId)).toStrictEqual({
         user: {
           userId: user.authUserId,
@@ -37,8 +37,8 @@ describe('adminUserDetails', () => {
       });
     });
 
-		test('When multiple users are registered', () => {
-			adminAuthRegister('valid1@gmail.com', 'Password12', 'John', 'Doe');
+    test('When multiple users are registered', () => {
+      adminAuthRegister('valid1@gmail.com', 'Password12', 'John', 'Doe');
       expect(adminUserDetails(user.authUserId)).toStrictEqual({
         user: {
           userId: user.authUserId,
@@ -50,8 +50,8 @@ describe('adminUserDetails', () => {
       });
     });
 
-		test('Can view multiple user details correctly', () => {
-			const user1 = adminAuthRegister('valid1@gmail.com', 'Password12', 'John', 'Doe');
+    test('Can view multiple user details correctly', () => {
+      const user1 = adminAuthRegister('valid1@gmail.com', 'Password12', 'John', 'Doe');
       expect(adminUserDetails(user.authUserId)).toStrictEqual({
         user: {
           userId: user.authUserId,
@@ -61,7 +61,7 @@ describe('adminUserDetails', () => {
           numFailedPasswordsSinceLastLogin: expect.any(Number),
         }
       });
-			expect(adminUserDetails(user1.authUserId)).toStrictEqual({
+      expect(adminUserDetails(user1.authUserId)).toStrictEqual({
         user: {
           userId: user1.authUserId,
           name: 'John Doe',

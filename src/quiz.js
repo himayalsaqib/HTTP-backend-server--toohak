@@ -1,12 +1,12 @@
 import { setData, getData } from './dataStore';
-import { 
+import {
   authUserIdExists,
   quizNameHasValidChars,
   quizNameInUse,
-  quizIdInUse 
+  quizIdInUse
 } from './helper';
 
-/////////////////////////////// Global Variables ///////////////////////////////
+/// //////////////////////////// Global Variables ///////////////////////////////
 const MIN_QUIZ_NAME_LEN = 3;
 const MAX_QUIZ_NAME_LEN = 30;
 const MAX_DESCRIPTION_LEN = 100;
@@ -14,13 +14,13 @@ const MAX_DESCRIPTION_LEN = 100;
 /**
  * @typedef {Object} quizList
  *  @property {number} quizId
- *  @property {string} name 
+ *  @property {string} name
  */
 
 /**
  * @typedef {Object} quizInfo
- *  @property {number} quizId 
- *  @property {string} name 
+ *  @property {number} quizId
+ *  @property {string} name
  *  @property {number} timeCreated
  *  @property {number} timeLastEdited
  *  @property {string} description
@@ -28,59 +28,62 @@ const MAX_DESCRIPTION_LEN = 100;
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
- * 
+ *
  * @param {number} authUserId
- * @returns {{ quizzes: { quizList }[] } | { error: string }} 
+ * @returns {{ quizzes: { quizList }[] } | { error: string }}
  */
 export function adminQuizList(authUserId) {
-	let data = getData();
-	let quizList = [];
+  const data = getData();
+  const quizList = [];
 
-	if (authUserIdExists(authUserId) === false) {
-		return { error: 'AuthUserId does not refer to a valid user id.' };
-	}
+  if (authUserIdExists(authUserId) === false) {
+    return { error: 'AuthUserId does not refer to a valid user id.' };
+  }
 
-	for (const quiz of data.quizzes) {
-		if (quiz.authUserId === authUserId) {
-			quizList.push({
-				quizId: quiz.quizId,
-				name: quiz.name,
-			});
-		}
-	}
+  for (const quiz of data.quizzes) {
+    if (quiz.authUserId === authUserId) {
+      quizList.push({
+        quizId: quiz.quizId,
+        name: quiz.name,
+      });
+    }
+  }
 
   return { quizzes: quizList };
 }
 
 /**
  * Given basic details about a new quiz, create one for the logged in user
- * 
- * @param {number} authUserId 
+ *
+ * @param {number} authUserId
  * @param {string} name
- * @param {string} description 
+ * @param {string} description
  * @returns {{ quizId: number } | { error: string }} - assigns a quizId | error
- */  
-export function adminQuizCreate( authUserId, name, description ) {
+ */
+export function adminQuizCreate(authUserId, name, description) {
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
   if (quizNameHasValidChars(name) === false) {
-    return { error: 'Name contains invalid characters. \
-            Valid characters are alphanumeric and spaces.' };
+    return {
+      error: 'Name contains invalid characters. Valid characters are alphanumeric and spaces.'
+    };
   }
   if (name.length < MIN_QUIZ_NAME_LEN || name.length > MAX_QUIZ_NAME_LEN) {
-    return { error: 'Name is either less than 3 characters long or \
-            more than 30 characters long.' };
+    return {
+      error: 'Name is either less than 3 characters long or more than 30 characters long.'
+    };
   }
   if (quizNameInUse(authUserId, name) === true) {
-    return { error: 'Name is already used by the current \
-            logged in user for another quiz.' };
+    return {
+      error: 'Name is already used by the current logged in user for another quiz.'
+    };
   }
   if (description.length > MAX_DESCRIPTION_LEN) {
     return { error: 'Description is more than 100 characters in length.' };
   }
 
-  let data = getData();
+  const data = getData();
   let newQuizId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   while (quizIdInUse(newQuizId) === true) {
     newQuizId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -93,7 +96,7 @@ export function adminQuizCreate( authUserId, name, description ) {
     timeCreated: Date.now(),
     timeLastEdited: undefined,
     description: description,
-  }
+  };
 
   data.quizzes.push(newQuiz);
   setData(data);
@@ -103,39 +106,39 @@ export function adminQuizCreate( authUserId, name, description ) {
 
 /**
  * Given a particular quiz, permanently remove the quiz
- * 
- * @param {number} authUserId 
- * @param {number} quizId 
+ *
+ * @param {number} authUserId
+ * @param {number} quizId
  * @returns {{} | { error: string }} - an empty object
  */
-export function adminQuizRemove ( authUserId, quizId ) {
-	let data = getData();
+export function adminQuizRemove (authUserId, quizId) {
+  const data = getData();
 
-	if (authUserIdExists(authUserId) === false) {
-		return { error: 'AuthUserId does not refer to a valid user id.' };
-	} else if (quizIdInUse(quizId) === false) {
-		return { error: 'Quiz Id does not refer to a valid quiz.' };
-	} 
+  if (authUserIdExists(authUserId) === false) {
+    return { error: 'AuthUserId does not refer to a valid user id.' };
+  } else if (quizIdInUse(quizId) === false) {
+    return { error: 'Quiz Id does not refer to a valid quiz.' };
+  }
 
-	const quizIndex = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
-	const quiz = data.quizzes[quizIndex];
+  const quizIndex = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
+  const quiz = data.quizzes[quizIndex];
 
-	if (quiz.authUserId !== authUserId) {
-		return { error: 'Quiz does not belong to user.' };
-	}
+  if (quiz.authUserId !== authUserId) {
+    return { error: 'Quiz does not belong to user.' };
+  }
 
-	data.quizzes.splice(quizIndex, 1);
-	setData(data);
+  data.quizzes.splice(quizIndex, 1);
+  setData(data);
 
-	return {};
+  return {};
 }
 
 /**
  * Get all of the relevant information about the current quiz.
- * 
+ *
  * @param {number} authUserId
- * @param {number} quizId 
- * @returns {{ quizInfo } | { error: string }} - returns quiz information 
+ * @param {number} quizId
+ * @returns {{ quizInfo } | { error: string }} - returns quiz information
  */
 export function adminQuizInfo (authUserId, quizId) {
   if (authUserIdExists(authUserId) === false) {
@@ -145,7 +148,7 @@ export function adminQuizInfo (authUserId, quizId) {
     return { error: 'Quiz ID does not refer to a valid quiz.' };
   }
 
-  let data = getData();
+  const data = getData();
   const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
 
   if (quiz.authUserId !== authUserId) {
@@ -158,12 +161,12 @@ export function adminQuizInfo (authUserId, quizId) {
     timeCreated: quiz.timeCreated,
     timeLastEdited: quiz.timeLastEdited,
     description: quiz.description,
-  };    
+  };
 }
 
 /**
  * Update the name of the relevant quiz.
- * 
+ *
  * @param {number} authUserId
  * @param {number} quizId
  * @param {string} name
@@ -177,20 +180,23 @@ export function adminQuizNameUpdate (authUserId, quizId, name) {
     return { error: 'Quiz ID does not refer to a valid quiz.' };
   }
   if (quizNameHasValidChars(name) === false) {
-    return { error: 'Name contains invalid characters. Valid characters are \
-            alphanumeric and spaces.' };
+    return {
+      error: 'Name contains invalid characters. Valid characters are alphanumeric and spaces.'
+    };
   }
   if (name.length < MIN_QUIZ_NAME_LEN || name.length > MAX_QUIZ_NAME_LEN) {
-    return { error: 'Name is either less than 3 characters long or more than \
-            30 characters long.' };
+    return {
+      error: 'Name is either less than 3 characters long or more than 30 characters long.'
+    };
   }
   if (quizNameInUse(authUserId, name)) {
-    return { error: 'Name is already used by the current logged in user for \
-            another quiz.' };
+    return {
+      error: 'Name is already used by the current logged in user for another quiz.'
+    };
   }
 
-  let data = getData();
-  let quiz = data.quizzes.find(q => q.quizId === quizId);
+  const data = getData();
+  const quiz = data.quizzes.find(q => q.quizId === quizId);
 
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
@@ -198,7 +204,7 @@ export function adminQuizNameUpdate (authUserId, quizId, name) {
 
   quiz.name = name;
   quiz.timeLastEdited = Date.now();
-   
+
   setData(data);
 
   return {};
@@ -206,7 +212,7 @@ export function adminQuizNameUpdate (authUserId, quizId, name) {
 
 /**
  * Update the description of the relevant quiz
- * 
+ *
  * @param {number} authUserId
  * @param {number} quizId
  * @param {string} description
@@ -223,7 +229,7 @@ export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
     return { error: 'Description is more than 100 characters in length.' };
   }
 
-  let data = getData();
+  const data = getData();
   const quiz = data.quizzes.find(q => q.quizId === quizId);
 
   if (quiz.authUserId !== authUserId) {
@@ -232,7 +238,7 @@ export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
 
   quiz.description = description;
   quiz.timeLastEdited = Date.now();
-   
+
   setData(data);
 
   return {};

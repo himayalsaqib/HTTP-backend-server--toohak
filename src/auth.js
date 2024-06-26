@@ -1,14 +1,14 @@
 import { setData, getData } from './dataStore';
 import validator from 'validator';
-import { 
+import {
   adminEmailInUse,
   adminUserNameIsValid,
   adminPasswordHasValidChars,
   authUserIdExists,
   adminCheckPasswordHistory,
-} from './helper'; 
+} from './helper';
 
-/////////////////////////////// Global Variables ///////////////////////////////
+/// //////////////////////////// Global Variables ///////////////////////////////
 const MIN_PASSWORD_LENGTH = 8;
 const MIN_NAME_LENGTH = 2;
 const MAX_NAME_LENGTH = 20;
@@ -17,27 +17,27 @@ const INITIAL_NUM_SUCCESSFUL_LOGINS = 1;
 
 /**
  * @typedef {Object} userDetails
- *  @property {number} userId 
- *  @property {string} name 
- *  @property {string} email 
+ *  @property {number} userId
+ *  @property {string} name
+ *  @property {string} email
  *  @property {number} numSuccessfulLogins
  *  @property {number} numFailedPasswordsSinceLastLogin
  */
 
 /**
- * Register a user with an email, password, and names, then returns their 
+ * Register a user with an email, password, and names, then returns their
  * authUserId value
- * 
- * @param {string} email 
- * @param {string} password 
- * @param {string} nameFirst 
- * @param {string} nameLast 
- * @returns {{ authUserId: number } | { error: string }} 
+ *
+ * @param {string} email
+ * @param {string} password
+ * @param {string} nameFirst
+ * @param {string} nameLast
+ * @returns {{ authUserId: number } | { error: string }}
  */
 export function adminAuthRegister (email, password, nameFirst, nameLast) {
   if (adminEmailInUse(email)) {
     return { error: 'Email address is used by another user.' };
-  }  
+  }
   if (!validator.isEmail(email)) {
     return { error: 'Invalid email address.' };
   }
@@ -48,21 +48,23 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
     return { error: 'Invalid password does not meet requirements.' };
   }
   if (nameFirst.length < MIN_NAME_LENGTH || nameFirst.length > MAX_NAME_LENGTH) {
-    return { error: 'Invalid first name is less than 2 characters or \
-            more than 20 characters.' };
+    return {
+      error: 'Invalid first name is less than 2 characters or more than 20 characters.'
+    };
   }
   if (!adminUserNameIsValid(nameFirst)) {
     return { error: 'Invalid first name does not meet requirements.' };
   }
   if (nameLast.length < MIN_NAME_LENGTH || nameLast.length > MAX_NAME_LENGTH) {
-    return { error: 'Invalid last name is less than 2 characters or \
-            more than 20 characters.' };
+    return {
+      error: 'Invalid last name is less than 2 characters or more than 20 characters.'
+    };
   }
   if (!adminUserNameIsValid(nameLast)) {
     return { error: 'Invalid last name does not meet requirements.' };
   }
 
-  let data = getData();
+  const data = getData();
 
   let newAuthUserId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   while (authUserIdExists(newAuthUserId)) {
@@ -78,7 +80,7 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
     previousPasswords: [password],
     numFailedLogins: INITIAL_NUM_FAILED_LOGINS,
     numSuccessfulLogins: INITIAL_NUM_SUCCESSFUL_LOGINS,
-  }
+  };
 
   data.users.push(newUser);
 
@@ -89,10 +91,10 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
 
 /**
  * Given a registered user's email and password returns their authUserId value
- * 
- * @param {string} email 
- * @param {string} password 
- * @returns {{ authUserId: number } | { error: string }} 
+ *
+ * @param {string} email
+ * @param {string} password
+ * @returns {{ authUserId: number } | { error: string }}
  */
 
 export function adminAuthLogin (email, password) {
@@ -100,10 +102,10 @@ export function adminAuthLogin (email, password) {
     return { error: 'Email address does not exist.' };
   }
 
-  let data = getData();
+  const data = getData();
 
   const user = data.users.find(current => current.email === email);
-  
+
   if (user.password === password) {
     user.numFailedLogins = INITIAL_NUM_FAILED_LOGINS;
     user.numSuccessfulLogins++;
@@ -113,16 +115,16 @@ export function adminAuthLogin (email, password) {
   } else {
     user.numFailedLogins++;
     setData(data);
-    
+
     return { error: 'Password is not correct for the given email.' };
   }
 }
 
 /**
- * Given an admin user's authUserId, return details about the user. 
- * 
+ * Given an admin user's authUserId, return details about the user.
+ *
  * @param {number} authUserId
- * @returns {{ user: userDetails } | { error: string }}  
+ * @returns {{ user: userDetails } | { error: string }}
  */
 export function adminUserDetails (authUserId) {
   if (!authUserIdExists(authUserId)) {
@@ -130,9 +132,10 @@ export function adminUserDetails (authUserId) {
   }
 
   const data = getData();
-  const user = data.users.find(current => current.authUserId == authUserId);
-  
-  return { user:
+  const user = data.users.find(current => current.authUserId === authUserId);
+
+  return {
+    user:
     {
       userId: user.authUserId,
       name: `${user.nameFirst} ${user.nameLast}`,
@@ -141,11 +144,10 @@ export function adminUserDetails (authUserId) {
       numFailedPasswordsSinceLastLogin: user.numFailedLogins,
     }
   };
-    
 }
 
 /**
- * Given details relating to a password change, update the password 
+ * Given details relating to a password change, update the password
  * of a logged in user.
  *
  * @param {number} authUserId
@@ -154,19 +156,18 @@ export function adminUserDetails (authUserId) {
  * @returns {{} | { error: string }} empty
  */
 export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
-
-  let data = getData();
+  const data = getData();
 
   // check for valid user
   if (!authUserIdExists(authUserId)) {
-    return { error: 'AuthUserId is not a valid user.'};
+    return { error: 'AuthUserId is not a valid user.' };
   }
 
   // check oldPassword
   for (const user of data.users) {
     if (user.authUserId === authUserId) {
       if (oldPassword !== user.password) {
-        return { error: 'Old password is not the correct old password.' }
+        return { error: 'Old password is not the correct old password.' };
       }
     }
   }
@@ -191,7 +192,9 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   }
 
   if (!adminPasswordHasValidChars(newPassword)) {
-    return { error: 'New password must contain at least one number and one letter.' };
+    return {
+      error: 'New password must contain at least one number and one letter.'
+    };
   }
 
   // update password for user
@@ -208,7 +211,7 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
 }
 
 /**
- * Given an admin user's authUserId and a set of properties, 
+ * Given an admin user's authUserId and a set of properties,
  * update the properties of this logged in admin user.
  *
  * @param {number} authUserId
@@ -222,7 +225,7 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
     return { error: 'AuthUserId is not a valid user.' };
   }
 
-  let data = getData();
+  const data = getData();
 
   for (const user of data.users) {
     if (user.email === email) {
@@ -238,15 +241,17 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
     return { error: 'Invalid email address.' };
   }
   if (adminUserNameIsValid(nameFirst) === false) {
-    return { error: 'First name contains characters other than lowercase \
-            letters, uppercase letters, spaces, hyphens, or apostrophes.' };
+    return {
+      error: 'First name contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes.'
+    };
   }
   if (nameFirst.length < 2 || nameFirst.length > 20) {
     return { error: 'First name is less than 2 characters or more than 20 characters.' };
   }
   if (adminUserNameIsValid(nameLast) === false) {
-    return { error: 'Last name contains characters other than lowercase letters, \
-            uppercase letters, spaces, hyphens, or apostrophes.' };
+    return {
+      error: 'Last name contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes.'
+    };
   }
   if (nameLast.length < 2 || nameLast.length > 20) {
     return { error: 'Last name is less than 2 characters or more than 20 characters.' };
@@ -261,8 +266,6 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   }
 
   setData(data);
-  
+
   return {};
 }
-
-
