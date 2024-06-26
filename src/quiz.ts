@@ -12,16 +12,16 @@ const MAX_QUIZ_NAME_LEN = 30;
 const MAX_DESCRIPTION_LEN = 100;
 
 ////////////////////////////////// Interfaces //////////////////////////////////
-export interface QuizList {
+interface QuizList {
   quizId: number;
   name: string;
 }
 
-export interface QuizInfo {
+interface QuizInfo {
   quizId: number;
   name: string;
   timeCreated: number;
-  timeLastEdited: number;
+  timeLastEdited?: number;
   description: string;
 }
 
@@ -33,20 +33,20 @@ interface ErrorObject {
   error: string;
 }
 
-/**
- * @typedef {Object} quizList
- *  @property {number} quizId
- *  @property {string} name
- */
+// /**
+//  * @typedef {Object} quizList
+//  *  @property {number} quizId
+//  *  @property {string} name
+//  */
 
-/**
- * @typedef {Object} quizInfo
- *  @property {number} quizId
- *  @property {string} name
- *  @property {number} timeCreated
- *  @property {number} timeLastEdited
- *  @property {string} description
- */
+// /**
+//  * @typedef {Object} quizInfo
+//  *  @property {number} quizId
+//  *  @property {string} name
+//  *  @property {number} timeCreated
+//  *  @property {number} timeLastEdited
+//  *  @property {string} description
+//  */
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
@@ -116,7 +116,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     quizId: newQuizId,
     name: name,
     timeCreated: Date.now(),
-    timeLastEdited: undefined,
+    timeLastEdited: <number> undefined,
     description: description,
   };
 
