@@ -21,7 +21,7 @@ interface QuizInfo {
   quizId: number;
   name: string;
   timeCreated: number;
-  timeLastEdited?: number;
+  timeLastEdited: number;
   description: string;
 }
 
