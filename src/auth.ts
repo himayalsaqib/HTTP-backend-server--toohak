@@ -1,4 +1,4 @@
-import { setData, getData } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject } from './dataStore';
 import validator from 'validator';
 import {
   adminEmailInUse,
@@ -15,15 +15,16 @@ const MAX_NAME_LENGTH = 20;
 const INITIAL_NUM_FAILED_LOGINS = 0;
 const INITIAL_NUM_SUCCESSFUL_LOGINS = 1;
 
-/**
- * @typedef {Object} userDetails
- *  @property {number} userId
- *  @property {string} name
- *  @property {string} email
- *  @property {number} numSuccessfulLogins
- *  @property {number} numFailedPasswordsSinceLastLogin
- */
+/// /////////////////////////// Type Annotations ///////////////////////////////
+interface UserDetails {
+  userId: number;
+  name: string;
+  email: string;
+  numSuccessfulLogins: number;
+  numFailedPasswordsSinceLastLogin: number;
+}
 
+/// ////////////////////////////// Functions ///////////////////////////////////
 /**
  * Register a user with an email, password, and names, then returns their
  * authUserId value
@@ -34,7 +35,7 @@ const INITIAL_NUM_SUCCESSFUL_LOGINS = 1;
  * @param {string} nameLast
  * @returns {{ authUserId: number } | { error: string }}
  */
-export function adminAuthRegister (email, password, nameFirst, nameLast) {
+export function adminAuthRegister (email: string, password: string, nameFirst: string, nameLast: string): { authUserId: number } | ErrorObject {
   if (adminEmailInUse(email)) {
     return { error: 'Email address is used by another user.' };
   }
@@ -97,7 +98,7 @@ export function adminAuthRegister (email, password, nameFirst, nameLast) {
  * @returns {{ authUserId: number } | { error: string }}
  */
 
-export function adminAuthLogin (email, password) {
+export function adminAuthLogin (email: string, password: string): { authUserId: number } | ErrorObject {
   if (!adminEmailInUse(email)) {
     return { error: 'Email address does not exist.' };
   }
@@ -124,9 +125,9 @@ export function adminAuthLogin (email, password) {
  * Given an admin user's authUserId, return details about the user.
  *
  * @param {number} authUserId
- * @returns {{ user: userDetails } | { error: string }}
+ * @returns {{ user: UserDetails } | { error: string }}
  */
-export function adminUserDetails (authUserId) {
+export function adminUserDetails (authUserId: number): { user: UserDetails } | ErrorObject {
   if (!authUserIdExists(authUserId)) {
     return { error: 'AuthUserId is not a valid user.' };
   }
@@ -155,7 +156,7 @@ export function adminUserDetails (authUserId) {
  * @param {string} newPassword
  * @returns {{} | { error: string }} empty
  */
-export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
+export function adminUserPasswordUpdate(authUserId: number, oldPassword: string, newPassword: string): EmptyObject | ErrorObject {
   const data = getData();
 
   // check for valid user
@@ -220,7 +221,7 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
  * @param {string} nameLast
  * @returns {{} | { error: string }} empty | error
  */
-export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
+export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string): EmptyObject | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
