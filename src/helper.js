@@ -75,7 +75,7 @@ export function adminPasswordHasValidChars(password) {
  * used a password when updating the password
  *
  * @param {number} authUserId
- * @param {number} newPassword
+ * @param {string} newPassword
  * @returns {boolean} true if newPassword matches any previous passwords
  */
 export function adminCheckPasswordHistory(authUserId, newPassword) {
