@@ -1,5 +1,11 @@
 // YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
 
+export interface ErrorObject {
+  error: string
+}
+
+export type EmptyObject = Record<never, never>;
+
 export interface Users {
   authUserId: number,
   email: string,
