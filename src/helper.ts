@@ -6,7 +6,7 @@ import { getData } from './dataStore';
  * @param {number} authUserId
  * @returns {boolean} true if authUserId is valid otherwise false
  */
-export function authUserIdExists(authUserId) {
+export function authUserIdExists(authUserId: number): boolean {
   const data = getData();
 
   const user = data.users.find(user => user.authUserId === authUserId);
@@ -25,7 +25,7 @@ export function authUserIdExists(authUserId) {
  * @param {string} email
  * @returns {boolean} true if email exists, false if not
  */
-export function adminEmailInUse(email) {
+export function adminEmailInUse(email: string): boolean {
   const data = getData();
 
   const user = data.users.find(user => user.email === email);
@@ -44,7 +44,7 @@ export function adminEmailInUse(email) {
  * @param {string} name
  * @returns {boolean} true if a name is valid otherwise false
  */
-export function adminUserNameIsValid(name) {
+export function adminUserNameIsValid(name: string): boolean {
   // specialCharacters will match any string that includes a special
   // character except for space, hyphen or apostrophe
   const specialCharacters = /[^A-Za-z\s'-]/;
@@ -62,7 +62,7 @@ export function adminUserNameIsValid(name) {
  * @param {string} password to check
  * @returns {boolean} true if password has neccessary chars otherwise false
  */
-export function adminPasswordHasValidChars(password) {
+export function adminPasswordHasValidChars(password: string): boolean {
   if (/\d/.test(password) && /[a-zA-Z]/.test(password)) {
     return true;
   } else {
@@ -78,7 +78,7 @@ export function adminPasswordHasValidChars(password) {
  * @param {string} newPassword
  * @returns {boolean} true if newPassword matches any previous passwords
  */
-export function adminCheckPasswordHistory(authUserId, newPassword) {
+export function adminCheckPasswordHistory(authUserId: number, newPassword: string): boolean {
   const data = getData();
 
   for (const user of data.users) {
@@ -103,7 +103,7 @@ export function adminCheckPasswordHistory(authUserId, newPassword) {
  * @returns {boolean} true if name does not contain any invalid characters,
  *                    false if it does
  */
-export function quizNameHasValidChars(name) {
+export function quizNameHasValidChars(name: string): boolean {
   if (/^[A-Za-z0-9 ]*$/.test(name) === false) {
     return false;
   } else {
@@ -119,7 +119,7 @@ export function quizNameHasValidChars(name) {
  * @param {String} name
  * @returns {boolean} true if name has been used, false if it has not
  */
-export function quizNameInUse(authUserId, name) {
+export function quizNameInUse(authUserId: number, name: string): boolean {
   const data = getData();
 
   for (const quiz of data.quizzes) {
@@ -136,7 +136,7 @@ export function quizNameInUse(authUserId, name) {
  * @param {Number} quizId
  * @returns {boolean} true if quiz ID has been used, false if it has not
  */
-export function quizIdInUse(quizId) {
+export function quizIdInUse(quizId: number): boolean {
   const data = getData();
 
   const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
