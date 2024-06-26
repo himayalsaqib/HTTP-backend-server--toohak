@@ -6,12 +6,12 @@ import {
   quizIdInUse
 } from './helper';
 
-/// //////////////////////////// Global Variables ///////////////////////////////
+/// //////////////////////////// Global Variables //////////////////////////////
 const MIN_QUIZ_NAME_LEN = 3;
 const MAX_QUIZ_NAME_LEN = 30;
 const MAX_DESCRIPTION_LEN = 100;
 
-/// /////////////////////////////// Interfaces //////////////////////////////////
+/// /////////////////////////////// Interfaces /////////////////////////////////
 interface QuizList {
   quizId: number;
   name: string;
@@ -25,29 +25,30 @@ interface QuizInfo {
   description: string;
 }
 
-// should be in dataStore.ts
+/// ///////////////// Things to be moved into dataStore.ts /////////////////////
 type EmptyObject = Record<never, never>;
 
-// should be in dataStore.ts
 interface ErrorObject {
   error: string;
 }
 
-// /**
-//  * @typedef {Object} quizList
-//  *  @property {number} quizId
-//  *  @property {string} name
-//  */
+/// /////////////////////////// Type Annotations ///////////////////////////////
+/**
+ * @typedef {Object} quizList
+ *  @property {number} quizId
+ *  @property {string} name
+ */
 
-// /**
-//  * @typedef {Object} quizInfo
-//  *  @property {number} quizId
-//  *  @property {string} name
-//  *  @property {number} timeCreated
-//  *  @property {number} timeLastEdited
-//  *  @property {string} description
-//  */
+/**
+ * @typedef {Object} quizInfo
+ *  @property {number} quizId
+ *  @property {string} name
+ *  @property {number} timeCreated
+ *  @property {number} timeLastEdited
+ *  @property {string} description
+ */
 
+/// ////////////////////////////// Functions ///////////////////////////////////
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  *
