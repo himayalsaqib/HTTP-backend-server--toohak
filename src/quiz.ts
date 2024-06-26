@@ -11,7 +11,7 @@ const MIN_QUIZ_NAME_LEN = 3;
 const MAX_QUIZ_NAME_LEN = 30;
 const MAX_DESCRIPTION_LEN = 100;
 
-/// /////////////////////////////// Interfaces /////////////////////////////////
+/// /////////////////////////// Type Annotations ///////////////////////////////
 interface QuizList {
   quizId: number;
   name: string;
@@ -31,22 +31,6 @@ type EmptyObject = Record<never, never>;
 interface ErrorObject {
   error: string;
 }
-
-/// /////////////////////////// Type Annotations ///////////////////////////////
-/**
- * @typedef {Object} quizList
- *  @property {number} quizId
- *  @property {string} name
- */
-
-/**
- * @typedef {Object} quizInfo
- *  @property {number} quizId
- *  @property {string} name
- *  @property {number} timeCreated
- *  @property {number} timeLastEdited
- *  @property {string} description
- */
 
 /// ////////////////////////////// Functions ///////////////////////////////////
 /**
