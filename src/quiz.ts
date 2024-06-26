@@ -1,4 +1,4 @@
-import { setData, getData } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject } from './dataStore';
 import {
   authUserIdExists,
   quizNameHasValidChars,
@@ -23,13 +23,6 @@ interface QuizInfo {
   timeCreated: number;
   timeLastEdited?: number;
   description: string;
-}
-
-/// ///////////////// Things to be moved into dataStore.ts /////////////////////
-type EmptyObject = Record<never, never>;
-
-interface ErrorObject {
-  error: string;
 }
 
 /// ////////////////////////////// Functions ///////////////////////////////////
