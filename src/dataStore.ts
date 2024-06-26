@@ -40,7 +40,7 @@ let data: Data = {
   quizzes: [],
   trash: [],
   tokens: []
-}
+};
 
 // YOU SHOULD MODIFY THIS OBJECT ABOVE ONLY
 
