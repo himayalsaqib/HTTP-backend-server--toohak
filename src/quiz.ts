@@ -1,5 +1,5 @@
 import { setData, getData } from './dataStore';
-import { 
+import {
   authUserIdExists,
   quizNameHasValidChars,
   quizNameInUse,
@@ -11,7 +11,7 @@ const MIN_QUIZ_NAME_LEN = 3;
 const MAX_QUIZ_NAME_LEN = 30;
 const MAX_DESCRIPTION_LEN = 100;
 
-////////////////////////////////// Interfaces //////////////////////////////////
+/// /////////////////////////////// Interfaces //////////////////////////////////
 interface QuizList {
   quizId: number;
   name: string;
@@ -55,8 +55,8 @@ interface ErrorObject {
  * @returns {{ quizzes: { quizList }[] } | { error: string }}
  */
 export function adminQuizList(authUserId: number): { quizzes: QuizList[] } | ErrorObject {
-  let data = getData();
-  let quizList = [];
+  const data = getData();
+  const quizList = [];
 
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId does not refer to a valid user id.' };
@@ -134,7 +134,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
  * @returns {{} | { error: string }} - an empty object
  */
 export function adminQuizRemove (authUserId: number, quizId: number): EmptyObject | ErrorObject {
-	let data = getData();
+  const data = getData();
 
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId does not refer to a valid user id.' };
@@ -260,7 +260,7 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
 
   quiz.description = description;
   quiz.timeLastEdited = Date.now();
-  
+
   setData(data);
 
   return {};
