@@ -1,13 +1,13 @@
-import { getData } from "./dataStore";
+import { getData } from './dataStore';
 
 /**
- * Function checks if an authUserId exists in the dataStore 
+ * Function checks if an authUserId exists in the dataStore
  *
- * @param {number} authUserId 
- * @returns {boolean} true if authUserId is valid otherwise false 
+ * @param {number} authUserId
+ * @returns {boolean} true if authUserId is valid otherwise false
  */
 export function authUserIdExists(authUserId) {
-  let data = getData();
+  const data = getData();
 
   const user = data.users.find(user => user.authUserId === authUserId);
 
@@ -18,7 +18,7 @@ export function authUserIdExists(authUserId) {
   }
 }
 
-//////////////////////////// Auth Helper Functions ////////////////////////////
+/// ///////////////////////// Auth Helper Functions ////////////////////////////
 /**
  * Function checks if an email is already being used by an existing user
  *
@@ -38,14 +38,14 @@ export function adminEmailInUse(email) {
 }
 
 /**
- * Function checks if a name is valid (ie doesn't contain a number or 
+ * Function checks if a name is valid (ie doesn't contain a number or
  * special characters other than spaces, hyphens or apostrophes)
  *
  * @param {string} name
  * @returns {boolean} true if a name is valid otherwise false
  */
 export function adminUserNameIsValid(name) {
-  // specialCharacters will match any string that includes a special 
+  // specialCharacters will match any string that includes a special
   // character except for space, hyphen or apostrophe
   const specialCharacters = /[^A-Za-z\s'-]/;
   if (specialCharacters.test(name)) {
@@ -56,9 +56,9 @@ export function adminUserNameIsValid(name) {
 }
 
 /**
- * Function checks whether the given password contains atleast one number and 
+ * Function checks whether the given password contains atleast one number and
  * atleast one letter
- * 
+ *
  * @param {string} password to check
  * @returns {boolean} true if password has neccessary chars otherwise false
  */
@@ -73,20 +73,20 @@ export function adminPasswordHasValidChars(password) {
 /**
  * Function checks previousPassword array to determine whether a user has already
  * used a password when updating the password
- * 
+ *
  * @param {number} authUserId
  * @param {number} newPassword
  * @returns {boolean} true if newPassword matches any previous passwords
  */
 export function adminCheckPasswordHistory(authUserId, newPassword) {
-  let data = getData();
+  const data = getData();
 
   for (const user of data.users) {
     if (user.authUserId === authUserId) {
       for (const password of user.previousPasswords) {
         if (password === newPassword) {
           return true;
-        } 
+        }
       }
     }
   }
@@ -94,13 +94,13 @@ export function adminCheckPasswordHistory(authUserId, newPassword) {
   return false;
 }
 
-//////////////////////////// Quiz Helper Functions ////////////////////////////
+/// ///////////////////////// Quiz Helper Functions ////////////////////////////
 /**
  * Function checks if a quiz name contains any invalid characters. Characters
  * are considered invalid if they are not alphanumeric or spaces e.g. @
  *
  * @param {String} name
- * @returns {boolean} true if name does not contain any invalid characters, 
+ * @returns {boolean} true if name does not contain any invalid characters,
  *                    false if it does
  */
 export function quizNameHasValidChars(name) {
@@ -120,10 +120,10 @@ export function quizNameHasValidChars(name) {
  * @returns {boolean} true if name has been used, false if it has not
  */
 export function quizNameInUse(authUserId, name) {
-  let data = getData();
+  const data = getData();
 
   for (const quiz of data.quizzes) {
-    if (quiz.authUserId === authUserId && quiz.name == name) {
+    if (quiz.authUserId === authUserId && quiz.name === name) {
       return true;
     }
   }
@@ -137,7 +137,7 @@ export function quizNameInUse(authUserId, name) {
  * @returns {boolean} true if quiz ID has been used, false if it has not
  */
 export function quizIdInUse(quizId) {
-  let data = getData();
+  const data = getData();
 
   const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
   if (quiz === undefined) {
