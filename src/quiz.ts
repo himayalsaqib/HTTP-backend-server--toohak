@@ -265,4 +265,3 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
 
   return {};
 }
-
