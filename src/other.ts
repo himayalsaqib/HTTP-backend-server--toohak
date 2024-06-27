@@ -1,5 +1,4 @@
-import { setData } from './dataStore';
-import { EmptyObject, Data } from './dataStore';
+import { setData, EmptyObject, Data } from './dataStore';
 
 /**
  * Reset the state of the application back to the start.
