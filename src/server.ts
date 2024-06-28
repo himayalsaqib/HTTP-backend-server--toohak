@@ -9,8 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import process from 'process';
 import { adminAuthRegister } from './auth';
-import { sessionIdExists, tokenCreate } from './serverHelper';
-import { getData, setData } from './dataStore';
+import { tokenCreate } from './serverHelper';
 
 // Set up web app
 const app = express();

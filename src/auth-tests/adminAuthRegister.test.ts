@@ -1,6 +1,6 @@
 // includes http tests for the route /v1/admin/auth/register
 
-import { requestDelete, requestGet, requestPost } from "../requestHelper";
+import { requestDelete, requestGet, requestPost } from '../requestHelper';
 
 beforeEach(() => {
   requestDelete('/v1/clear');
@@ -12,7 +12,7 @@ describe('POST /v1/admin/auth/register', () => {
   describe('Testing for return type', () => {
     test('Has the correct return type', () => {
       const body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({ 
+      expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
         retval: { sessionId: expect.any(Number), authUserId: expect.any(Number) },
         statusCode: 200
       });
@@ -21,11 +21,11 @@ describe('POST /v1/admin/auth/register', () => {
 
   describe('Testing successful registration', () => {
     let body: { email: string, password: string, nameFirst: string, nameLast: string };
-    let token: { sessionId: Number, authUserId: Number };
+    let token: { sessionId: number, authUserId: number };
     beforeEach(() => {
       body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(body, '/v1/admin/auth/register');
-      token = retval as { sessionId: Number, authUserId: Number };
+      token = retval as { sessionId: number, authUserId: number };
     });
 
     test.skip('Has successful side effect (user is registered)', () => {
@@ -51,7 +51,7 @@ describe('POST /v1/admin/auth/register', () => {
       // new user with some parameter the same compared to exisiting user
       const body2 = { email: 'valid2@gmail.com', password, nameFirst, nameLast };
       const { retval } = requestPost(body2, '/v1/admin/auth/register');
-      const token2 = retval as { sessionId: Number, authUserId: Number };
+      const token2 = retval as { sessionId: number, authUserId: number };
 
       expect(token2).toStrictEqual({ sessionId: expect.any(Number), authUserId: expect.any(Number) });
       expect(token.authUserId).not.toStrictEqual(token2.authUserId);
@@ -62,7 +62,7 @@ describe('POST /v1/admin/auth/register', () => {
     test('Returns error when email address used by another user', () => {
       const body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       requestPost(body, '/v1/admin/auth/register');
-      
+
       // user registering with the same email
       const body2 = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'John', nameLast: 'Doe' };
       expect(requestPost(body2, '/v1/admin/auth/register')).toStrictEqual({
@@ -132,11 +132,11 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Returns error when first name is greater than 20 characters', () => {
-      const body = { 
-        email: 'valid@gmail.com', 
-        password: 'Password12', 
-        nameFirst: 'JaneJaneJaneJaneJaneJaneJane', 
-        nameLast: 'Doe' 
+      const body = {
+        email: 'valid@gmail.com',
+        password: 'Password12',
+        nameFirst: 'JaneJaneJaneJaneJaneJaneJane',
+        nameLast: 'Doe'
       };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
         retval: error,
@@ -171,11 +171,11 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Returns error when last name is greater than 20 characters', () => {
-      const body = { 
-        email: 'valid@gmail.com', 
-        password: 'Password12', 
-        nameFirst: 'Jane', 
-        nameLast: 'DoeDoeDoeDoeDoeDoeDoe' 
+      const body = {
+        email: 'valid@gmail.com',
+        password: 'Password12',
+        nameFirst: 'Jane',
+        nameLast: 'DoeDoeDoeDoeDoeDoeDoe'
       };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
         retval: error,
