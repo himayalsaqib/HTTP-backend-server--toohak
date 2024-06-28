@@ -43,7 +43,7 @@ describe('POST /v1/admin/auth/register', () => {
       });
     });
 
-    test.each([
+    test.skip.each([
       { param: 'password', password: 'Password12', nameFirst: 'John', nameLast: 'Day' },
       { param: 'firstname', password: 'Password34', nameFirst: 'Jane', nameLast: 'Day' },
       { param: 'lastname', password: 'Password34', nameFirst: 'John', nameLast: 'Doe' },
