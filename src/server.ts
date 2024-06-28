@@ -10,7 +10,6 @@ import path from 'path';
 import process from 'process';
 import { adminAuthRegister } from './auth';
 import { tokenCreate } from './serverHelper';
-import { adminAuthRegister } from './auth';
 import { clear } from './other';
 
 // Set up web app
