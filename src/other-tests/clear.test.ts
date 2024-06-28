@@ -1,14 +1,11 @@
-import { clear } from '../other';
-import {
-  adminAuthRegister,
-  adminAuthLogin,
-  adminUserDetails
-} from '../auth';
+import { requestDelete } from '../requestHelper';
 
-describe('clear', () => {
+describe('DELETE /v1/clear', () => {
   describe('Test for the return type of clear', () => {
     test('Has correct return type', () => {
-      expect(clear()).toStrictEqual({});
+      const res = requestDelete('/v1/clear');
+      expect(res.retval).toStrictEqual({});
+      expect(res.statusCode).toStrictEqual(200);
     });
   });
 
@@ -38,7 +35,7 @@ describe('clear', () => {
     });
 
     test('Error returned by adminUserDetails after calling clear', () => {
-      clear();
+      requestDelete('/v1/clear');
       expect(adminUserDetails(user.authUserId)).toStrictEqual({ error: expect.any(String) });
     });
   });
