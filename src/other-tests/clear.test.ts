@@ -1,13 +1,13 @@
 import { requestDelete, requestPost, requestGet } from '../requestHelper';
 
 describe('DELETE /v1/clear', () => {
-  const error = { error : expect.any(String) };
-  
+  const error = { error: expect.any(String) };
+
   describe('Test for the return type of clear', () => {
     test('Has correct return type', () => {
       // const res = requestDelete({}, '/v1/clear');
       const res = requestDelete('/v1/clear');
-      expect(res).toStrictEqual({ retval: {}, statusCode: 200});
+      expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
     });
   });
 
