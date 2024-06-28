@@ -3,7 +3,7 @@
 import { requestDelete, requestGet, requestPost } from '../requestHelper';
 
 beforeEach(() => {
-  requestDelete('/v1/clear');
+  requestDelete({}, '/v1/clear');
 });
 
 describe('POST /v1/admin/auth/register', () => {
