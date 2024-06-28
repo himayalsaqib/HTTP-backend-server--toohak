@@ -41,6 +41,10 @@ app.get('/echo', (req: Request, res: Response) => {
   return res.json(result);
 });
 
+app.delete('/v1/clear', (req: Request, res: Response) => {
+  res.json(clear());
+});
+
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
