@@ -8,6 +8,8 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
+import { adminAuthRegister } from './auth';
+import { clear } from './other';
 
 // Set up web app
 const app = express();
