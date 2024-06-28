@@ -1,4 +1,4 @@
-import { requestDelete } from '../requestHelper';
+import { requestDelete, requestPost, requestGet } from '../requestHelper';
 
 describe('DELETE /v1/clear', () => {
   describe('Test for the return type of clear', () => {
@@ -10,22 +10,28 @@ describe('DELETE /v1/clear', () => {
   });
 
   describe('Testing side-effects of clear', () => {
-    let user;
+    let token: { authUserId: number };
     beforeEach(() => {
-      user = adminAuthRegister('email@gmail.com', 'password123', 'Jane', 'Doe');
+      const res = requestPost({email: 'email@gmail.com', password: 'password123', nameFirst: 'Jane', nameLast: 'Doe'}, '/v1/admin/auth/register');
+      token = res.retval;
     });
 
     test('Successful registration of user', () => {
-      expect(user).toStrictEqual({ authUserId: user.authUserId });
+      expect(token).toStrictEqual({ authUserId: expect.any(Number) });
     });
 
     test('Successful access of user details in adminUserDetails after logging in once', () => {
-      const newUser = adminAuthRegister('valid@gmail.com', 'validpa55word', 'John', 'Smith');
-      expect(adminAuthLogin('valid@gmail.com', 'validpa55word')).toStrictEqual({ authUserId: newUser.authUserId });
+      let newUserToken: { authUserId: number };
+      const resRegister = requestPost({email: 'valid@gmail.com', password: 'validpa55word', nameFirst: 'John', nameLast: 'Smith'}, '/v1/admin/auth/regiser');
+      newUserToken = resRegister.retval;
 
-      expect(adminUserDetails(newUser.authUserId)).toStrictEqual({
+      expect(requestPost({ email: 'valid@gmail.com', password: 'validpa55word'}, '/v1/admin/auth/login')).toStrictEqual({ newUserToken: expect.any(Number) });
+
+      const resDetails = requestGet({ token: newUserToken }, '/v1/admin/user/details');
+
+      expect(resDetails.retval).toStrictEqual({
         user: {
-          userId: newUser.authUserId,
+          userId: expect.any(Number),
           name: 'John Smith',
           email: 'valid@gmail.com',
           numSuccessfulLogins: 2,
