@@ -5,8 +5,7 @@ describe('DELETE /v1/clear', () => {
 
   describe('Test for the return type of clear', () => {
     test('Has correct return type', () => {
-      // const res = requestDelete({}, '/v1/clear');
-      const res = requestDelete('/v1/clear');
+      const res = requestDelete({}, '/v1/clear');
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
     });
   });
@@ -44,7 +43,7 @@ describe('DELETE /v1/clear', () => {
     });
 
     test.skip('Error returned by adminUserDetails after calling clear', () => {
-      requestDelete('/v1/clear');
+      requestDelete({}, '/v1/clear');
 
       const resDetails = requestGet({ token }, '/v1/admin/user/details');
       expect(resDetails.retval).toStrictEqual(error);
