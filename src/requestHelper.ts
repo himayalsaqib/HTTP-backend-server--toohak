@@ -15,7 +15,7 @@ export function requestGet(qs: object, path: string) {
       timeout: TIMEOUT_MS,
     }
   );
-  return res;
+  return { retval: JSON.parse(res.body.toString()), statusCode: res.statusCode };
 }
 
 export function requestDelete(path: string) {
@@ -27,7 +27,7 @@ export function requestDelete(path: string) {
       timeout: TIMEOUT_MS
     }
   );
-  return res;
+  return { retval: JSON.parse(res.body.toString()), statusCode: res.statusCode };
 }
 
 export function requestPut(body: object, path: string) {
@@ -39,7 +39,7 @@ export function requestPut(body: object, path: string) {
       timeout: TIMEOUT_MS
     }
   );
-  return res;
+  return { retval: JSON.parse(res.body.toString()), statusCode: res.statusCode };
 }
 
 export function requestPost(body: object, path: string) {
@@ -51,5 +51,5 @@ export function requestPost(body: object, path: string) {
       timeout: TIMEOUT_MS
     }
   );
-  return res;
+  return { retval: JSON.parse(res.body.toString()), statusCode: res.statusCode };
 }
