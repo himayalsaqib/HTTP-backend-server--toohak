@@ -42,7 +42,9 @@ describe('DELETE /v1/clear', () => {
 
     test('Error returned by adminUserDetails after calling clear', () => {
       requestDelete('/v1/clear');
-      expect(adminUserDetails(user.authUserId)).toStrictEqual({ error: expect.any(String) });
+
+      const resDetails = requestGet({ token }, '/v1/admin/user/details');
+      expect(resDetails.statusCode).toStrictEqual(401);
     });
   });
 });
