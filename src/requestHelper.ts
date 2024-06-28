@@ -18,12 +18,12 @@ export function requestGet(qs: object, path: string) {
   return { retval: JSON.parse(res.body.toString()), statusCode: res.statusCode };
 }
 
-export function requestDelete(path: string) {
+export function requestDelete(qs: object, path: string) {
   const res = request(
     'DELETE',
     SERVER_URL + path,
     {
-      qs: {},
+      qs: qs,
       timeout: TIMEOUT_MS
     }
   );
