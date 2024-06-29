@@ -8,7 +8,7 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-import { adminAuthRegister } from './auth';
+import { adminAuthRegister, adminUserPasswordUpdate } from './auth';
 import { tokenCreate } from './serverHelper';
 import { clear } from './other';
 
@@ -53,6 +53,19 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
 
   res.json(tokenCreate(response.authUserId));
 });
+
+app.put('/v1/admin/user/password', (req: Request, res: Response) => {
+  const { token, oldPassword, newPassword } = req.body;
+
+  const result = adminUserPasswordUpdate(token.authUserId, oldPassword, newPassword);
+
+  if ('error' in result) {
+    return res.status(400).json(result);
+  } 
+
+  res.json(result);
+});
+
 
 app.delete('/v1/clear', (req: Request, res: Response) => {
   res.json(clear());
