@@ -19,6 +19,25 @@ export function sessionIdExists(sessionId: number): boolean {
 }
 
 /**
+ * Function checks if a token with a matching sessionId and authUserId exists
+ * in the dataStore
+ *
+ * @param {Tokens} token
+ * @returns {boolean} true if token exists, false if not
+ */
+export function tokenExists(token: Tokens): boolean {
+  const data = getData();
+
+  const foundToken = data.tokens.find(foundToken => foundToken.sessionId === token.sessionId && foundToken.authUserId === token.authUserId);
+
+  if (foundToken === undefined) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+/**
  * Function takes an authUserId (returned when a user registers or logs in),
  * creates a new token which contains the sessionId and authUserId and
  * adds it to dataStore.
