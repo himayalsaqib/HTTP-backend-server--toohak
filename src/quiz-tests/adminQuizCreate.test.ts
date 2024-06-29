@@ -1,24 +1,27 @@
 // contains the tests adminQuizCreate from quiz.js
 
-import { adminAuthRegister } from '../auth';
-import { adminQuizCreate, adminQuizList } from '../quiz';
-import { clear } from '../other';
+import { requestDelete, requestGet, requestPost, requestPut } from '../requestHelper';
 
 beforeEach(() => {
-  clear();
+  requestDelete({}, 'v1/clear');
 });
 
-describe('adminQuizCreate', () => {
+describe('POST v1/admin/quiz', () => {
   const error = { error: expect.any(String) };
-  let user;
+  let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
+  let quizBody: { sessionId: number, name: string, description: string };
+  let token: { sessionId: number, authUserId: number };
+
   beforeEach(() => {
-    user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
+    userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+    const res = requestGet(userBody, '/v1/admin/auth/register');
+    token = res.retval;
   });
 
   describe('Testing for correct return type', () => {
     test('Successful quiz creation with correct return type', () => {
-      expect(adminQuizCreate(user.authUserId, 'Valid Quiz Name',
-        'Valid quiz description.')).toStrictEqual({ quizId: expect.any(Number) });
+      quizBody = { sessionId: token.sessionId, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
+      expect(requestPost(quizBody, 'v1/admin/quiz').retval.toStrictEqual({ quizId: expect.any(Number) }));
     });
   });
 
