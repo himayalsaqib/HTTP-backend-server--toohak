@@ -38,6 +38,25 @@ export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
 }
 
 /**
+ * Function checks if a quiz belongs to a given current user
+ *
+ * @param {number} authUserId
+ * @param {number} quizId
+ * @returns {{} | { error: string }}
+ */
+export function quizBelongsToUser(authUserId: number, quizId: number): EmptyObject | ErrorObject {
+  const data = getData();
+
+  const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
+
+  if (quiz === undefined || quiz.authUserId !== authUserId) {
+    return { error: 'User is not an owner of this quiz' };
+  } else {
+    return {};
+  }
+}
+
+/**
  * Function takes an authUserId (returned when a user registers or logs in),
  * creates a new token which contains the sessionId and authUserId and
  * adds it to dataStore.
