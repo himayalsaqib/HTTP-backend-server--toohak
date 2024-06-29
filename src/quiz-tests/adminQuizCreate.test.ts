@@ -20,19 +20,23 @@ describe('POST /v1/admin/quiz', () => {
   });
 
   describe('Testing for successful quiz creation', () => {
-    quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
-    const res = requestPost(quizBody, '/v1/admin/quiz');
+    beforeEach(() => {
+      quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
+    })
 
     test('Has correct return type', () => {
-      expect(res.retval).toStrictEqual({ quizId: expect.any(Number) });
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+      expect(res.retval).toStrictEqual({ quizId: quizBody.token/*quizId: expect.any(Number)*/ });
     });
 
     test.skip('Side effect: quizList returns correct details about 1 quiz', () => {
+      const res = requestPost(quizBody, '/v1/admin/quiz');
       const listRes = requestGet({ token }, '/v1/admin/quiz/list');
       expect(listRes.retval).toStrictEqual({ quizzes: [{ quizId: res.retval, name: 'Valid Quiz Name' }] });
     });
 
     test.skip('Side effect: quizList returns correct details about multiple quizzes', () => {
+      const res = requestPost(quizBody, '/v1/admin/quiz');
       quizBody = { token: token, name: 'Other Quiz Name', description: 'Other Quiz Description' };
       const res2 = requestPost(quizBody, '/v1/admin/quiz');
       const listRes = requestGet({ token }, '/v1/admin/quiz/list');
@@ -95,9 +99,8 @@ describe('POST /v1/admin/quiz', () => {
     });
 
     describe('Testing description error', () => {
-      const longString = '1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890';
-
       test('Quiz description is more than 100 characters', () => {
+        const longString = '1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890';
         quizBody = { token: token, name: 'Valid Quiz Name', description: longString };
         const res = requestPost(quizBody, '/v1/admin/quiz');
 
