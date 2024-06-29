@@ -3,10 +3,10 @@
 import { requestDelete, requestGet, requestPost, requestPut } from '../requestHelper';
 
 beforeEach(() => {
-  requestDelete({}, 'v1/clear');
+  requestDelete({}, '/v1/clear');
 });
 
-describe('POST v1/admin/quiz', () => {
+describe('POST /v1/admin/quiz', () => {
   const error = { error: expect.any(String) };
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { sessionId: number, name: string, description: string };
@@ -18,10 +18,17 @@ describe('POST v1/admin/quiz', () => {
     token = res.retval;
   });
 
-  describe('Testing for correct return type', () => {
-    test('Successful quiz creation with correct return type', () => {
-      quizBody = { sessionId: token.sessionId, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
-      expect(requestPost(quizBody, 'v1/admin/quiz').retval.toStrictEqual({ quizId: expect.any(Number) }));
+  describe('Testing for successful quiz creation', () => {
+    quizBody = { sessionId: token.sessionId, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
+    const res = requestPost(quizBody, '/v1/admin/quiz');
+
+    test('Has correct return type', () => {
+      expect(res.retval.toStrictEqual({ quizId: expect.any(Number) }));
+    });
+
+    test.skip('Side effect: quizList returns correct details', () => {
+      const listRes = requestGet({ token }, '/v1/admin/quiz/list');
+      expect(listRes.retval.toStrictEqual({ quizzes: [{ quizId: res.retval, name: 'Valid Quiz Name' }] }));
     });
   });
 
