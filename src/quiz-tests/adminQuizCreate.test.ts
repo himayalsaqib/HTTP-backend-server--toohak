@@ -27,9 +27,17 @@ describe('POST /v1/admin/quiz', () => {
       expect(res.retval).toStrictEqual({ quizId: expect.any(Number) });
     });
 
-    test.skip('Side effect: quizList returns correct details', () => {
+    test.skip('Side effect: quizList returns correct details about 1 quiz', () => {
       const listRes = requestGet({ token }, '/v1/admin/quiz/list');
       expect(listRes.retval).toStrictEqual({ quizzes: [{ quizId: res.retval, name: 'Valid Quiz Name' }] });
+    });
+
+    test.skip('Side effect: quizList returns correct details about multiple quizzes', () => {
+      quizBody = { token: token, name: 'Other Quiz Name', description: 'Other Quiz Description' };
+      const res2 = requestPost(quizBody, '/v1/admin/quiz');
+      const listRes = requestGet({ token }, '/v1/admin/quiz/list');
+
+      expect(listRes.retval).toStrictEqual({ quizzes: [{ quizId: res.retval, name: 'Valid Quiz Name' }, { quizId: res2.retval, name: 'Other Quiz Name' }] });
     });
   });
 
