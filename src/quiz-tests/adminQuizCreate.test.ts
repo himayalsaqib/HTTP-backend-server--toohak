@@ -22,7 +22,7 @@ describe('POST /v1/admin/quiz', () => {
   describe('Testing for successful quiz creation', () => {
     beforeEach(() => {
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
-    })
+    });
 
     test('Has correct return type', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');

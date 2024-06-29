@@ -12,7 +12,6 @@ import { adminAuthRegister } from './auth';
 import { tokenCreate, tokenExists } from './serverHelper';
 import { clear } from './other';
 import { adminQuizCreate } from './quiz';
-import { getData } from './dataStore';
 
 // Set up web app
 const app = express();

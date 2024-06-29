@@ -23,7 +23,7 @@ export function sessionIdExists(sessionId: number): boolean {
  * in the dataStore
  *
  * @param {Tokens} token
- * @returns {{} | { error: string }} 
+ * @returns {{} | { error: string }}
  */
 export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
   const data = getData();
