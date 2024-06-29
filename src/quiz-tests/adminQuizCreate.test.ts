@@ -1,4 +1,4 @@
-// contains the tests for adminQuizCreate from quiz.ts
+// includes http tests for the route /v1/admin/quiz
 
 import { Tokens } from '../dataStore';
 import { requestDelete, requestGet, requestPost } from '../requestHelper';
