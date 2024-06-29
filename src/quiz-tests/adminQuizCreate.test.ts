@@ -1,6 +1,6 @@
 // contains the tests adminQuizCreate from quiz.js
 
-import { requestDelete, requestGet, requestPost, requestPut } from '../requestHelper';
+import { requestDelete, requestGet, requestPost } from '../requestHelper';
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
@@ -33,10 +33,21 @@ describe('POST /v1/admin/quiz', () => {
   });
 
   describe('Testing status code 401', () => {
-    describe('Testing user ID', () => {
+    describe('Testing invalid token', () => {
       test('Returns error when given invalid user ID', () => {
-        expect(adminQuizCreate(user.authUserId + 1, 'Valid Quiz Name',
-          'Valid quiz description.')).toStrictEqual(error);
+        quizBody.sessionId += 1;
+        const res = requestPost(quizBody, '/v1/admin/quiz');
+        expect(res.retval.toStrictEqual(error));
+        expect(res.statusCode).toStrictEqual(401);
+      });
+
+      test('Returns error when token is empty', () => {
+        token = { sessionId: null, authUserId: null };
+        quizBody.sessionId = token.sessionId;
+        const res = requestPost(quizBody, '/v1/admin/quiz');
+        
+        expect(res.retval.toStrictEqual(error));
+        expect(res.statusCode).toStrictEqual(401);
       });
     });
   })
