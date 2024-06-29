@@ -1,4 +1,4 @@
-import { Tokens, getData, setData } from './dataStore';
+import { ErrorObject, EmptyObject, Tokens, getData, setData } from './dataStore';
 
 /**
  * Function checks if a sessionId already exists in the dataStore
@@ -23,17 +23,17 @@ export function sessionIdExists(sessionId: number): boolean {
  * in the dataStore
  *
  * @param {Tokens} token
- * @returns {boolean} true if token exists, false if not
+ * @returns {{} | { error: string }} 
  */
-export function tokenExists(token: Tokens): boolean {
+export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
   const data = getData();
 
   const foundToken = data.tokens.find(foundToken => foundToken.sessionId === token.sessionId && foundToken.authUserId === token.authUserId);
 
   if (foundToken === undefined) {
-    return false;
+    return { error: 'Token does not refer to a valid logged in user session' };
   } else {
-    return true;
+    return {};
   }
 }
 
