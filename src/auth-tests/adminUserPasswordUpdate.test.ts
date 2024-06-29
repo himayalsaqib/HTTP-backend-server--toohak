@@ -1,6 +1,6 @@
 // includes HTTP tests for the route /v1/admin/user/password
 
-import { requestDelete, requestPut, requestPost } from "../requestHelper";
+import { requestDelete, requestPut, requestPost } from '../requestHelper';
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
@@ -13,7 +13,7 @@ describe('PUT /v1/admin/user/password', () => {
   let originalPassword: string;
   beforeEach(() => {
     originalPassword = 'validpa55w0rd';
-    const body = { email: 'valid123@gmail.com', password: originalPassword, nameFirst: 'Jane', nameLast: 'Smith'};
+    const body = { email: 'valid123@gmail.com', password: originalPassword, nameFirst: 'Jane', nameLast: 'Smith' };
     const { retval } = requestPost(body, '/v1/admin/auth/register');
     token = retval as { sessionId: number, authUserId: number };
   });
@@ -22,8 +22,8 @@ describe('PUT /v1/admin/user/password', () => {
     test('Has correct return type', () => {
       const changedPassword = 'password123';
       const body = { token: token.sessionId, oldPassword: originalPassword, newPassword: changedPassword };
-      expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({ 
-        retval: {}, 
+      expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
+        retval: {},
         statusCode: 200
       });
     });
@@ -53,7 +53,7 @@ describe('PUT /v1/admin/user/password', () => {
 
     test('The oldPassword and newPassword match exactly', () => {
       const matchingPassword = 'validpa55w0rd';
-      const body = { token: token.sessionId , oldPassword: originalPassword, newPassword: matchingPassword };
+      const body = { token: token.sessionId, oldPassword: originalPassword, newPassword: matchingPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
         retval: error,
         statusCode: 400
