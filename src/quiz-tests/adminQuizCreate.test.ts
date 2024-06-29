@@ -50,7 +50,7 @@ describe('POST /v1/admin/quiz', () => {
         expect(res.statusCode).toStrictEqual(401);
       });
     });
-  })
+  });
 
   describe('Testing status code 400', () => {
     describe('Testing quiz name errors', () => {
@@ -61,7 +61,7 @@ describe('POST /v1/admin/quiz', () => {
         expect(res.retval).toStrictEqual(error);
         expect(res.statusCode).toStrictEqual(400);
       });
-  
+
       test('Quiz name is less than 3 characters', () => {
         quizBody = { sessionId: token.sessionId, name: 'Hi', description: 'Valid Quiz Description' };
         const res = requestPost(quizBody, '/v1/admin/quiz');
@@ -69,7 +69,7 @@ describe('POST /v1/admin/quiz', () => {
         expect(res.retval).toStrictEqual(error);
         expect(res.statusCode).toStrictEqual(400);
       });
-  
+
       test('Quiz name is more than 30 characters', () => {
         quizBody = { sessionId: token.sessionId, name: '1234567890 1234567890 1234567890', description: 'Valid Quiz Description' };
         const res = requestPost(quizBody, '/v1/admin/quiz');
@@ -77,7 +77,7 @@ describe('POST /v1/admin/quiz', () => {
         expect(res.retval).toStrictEqual(error);
         expect(res.statusCode).toStrictEqual(400);
       });
-  
+
       test('Quiz name already used by current user for another quiz', () => {
         quizBody = { sessionId: token.sessionId, name: 'Name In Use', description: 'Valid Quiz Description' };
         requestPost(quizBody, '/v1/admin/quiz');
@@ -89,10 +89,10 @@ describe('POST /v1/admin/quiz', () => {
         expect(res.statusCode).toStrictEqual(400);
       });
     });
-  
+
     describe('Testing description error', () => {
       const longString = '1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890';
-  
+
       test('Quiz description is more than 100 characters', () => {
         quizBody = { sessionId: token.sessionId, name: 'Valid Quiz Name', description: longString };
         const res = requestPost(quizBody, '/v1/admin/quiz');
