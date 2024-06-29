@@ -26,7 +26,7 @@ describe('POST /v1/admin/quiz', () => {
 
     test('Has correct return type', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
-      expect(res.retval).toStrictEqual({ quizId: quizBody.token/*quizId: expect.any(Number)*/ });
+      expect(res.retval).toStrictEqual({ quizId: expect.any(Number) });
     });
 
     test.skip('Side effect: quizList returns correct details about 1 quiz', () => {
