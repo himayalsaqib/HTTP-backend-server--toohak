@@ -1,36 +1,43 @@
-import { adminUserPasswordUpdate, adminAuthRegister, adminAuthLogin } from '../auth';
-import { clear } from '../other';
+// includes HTTP tests for the route /v1/admin/user/password
+
+import { requestDelete, requestPut, requestPost } from "../requestHelper";
 
 beforeEach(() => {
-  clear();
+  requestDelete({}, '/v1/clear');
 });
 
-describe('adminUserPasswordUpdate', () => {
+describe('PUT /v1/admin/user/password', () => {
   const error = { error: expect.any(String) };
 
-  let user, originalPassword;
+  let token: { sessionId: number, authUserId: number };
+  let originalPassword: string;
   beforeEach(() => {
     originalPassword = 'validpa55w0rd';
-    user = adminAuthRegister('valid123@gmail.com', originalPassword, 'Jane', 'Smith');
+    const body = { email: 'valid123@gmail.com', password: originalPassword, nameFirst: 'Jane', nameLast: 'Smith'};
+    const { retval } = requestPost(body, '/v1/admin/auth/register');
+    token = retval as { sessionId: number, authUserId: number };
   });
 
   describe('Testing for return type', () => {
     test('Has correct return type', () => {
       const changedPassword = 'password123';
-      expect(adminUserPasswordUpdate(user.authUserId, originalPassword, changedPassword))
-        .toStrictEqual({});
+      const body = { token: token.sessionId, oldPassword: originalPassword, newPassword: changedPassword };
+      expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({ 
+        retval: {}, 
+        statusCode: 200
+      });
     });
   });
 
-  describe('Testing authUserId in adminPasswordUpdate', () => {
-    test('When authUserId is not a valid user, from adminAuthRegister', () => {
+  describe('Testing token in /v1/admin/user/password', () => {
+    test('When token is not a valid user, from /v1/admin/auth/register', () => {
       const changedPassword = 'an0thervalid0ne';
       expect(adminUserPasswordUpdate(user.authUserId + 1, originalPassword, changedPassword))
         .toStrictEqual(error);
     });
   });
 
-  describe('Testing oldPassword in adminPasswordUpdate', () => {
+  describe('Testing oldPassword in /v1/admin/user/password', () => {
     test('The oldPassword is not the correct oldPassword', () => {
       const incorretOgPassword = 'validpassw0rd';
       const alteredPassword = 'newvalidpa55word';
@@ -46,7 +53,7 @@ describe('adminUserPasswordUpdate', () => {
     });
   });
 
-  describe('Testing newPassword in adminPasswordUpdate', () => {
+  describe('Testing newPassword in /v1/admin/user/password', () => {
     test('The newPassword has already been used before by the user', () => {
       const changedPassword = 'an0therpassw0rd';
       const alternatePassword = 'passw0rd123';
@@ -87,7 +94,7 @@ describe('adminUserPasswordUpdate', () => {
     });
   });
 
-  describe('Testing side-effects from adminPasswordUpdate', () => {
+  describe('Testing side-effects from /v1/admin/user/password', () => {
     test('Successful login before updating password', () => {
       expect(adminAuthLogin('valid123@gmail.com', originalPassword))
         .toStrictEqual({ authUserId: user.authUserId });
