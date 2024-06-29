@@ -10,6 +10,7 @@ import path from 'path';
 import process from 'process';
 import { adminAuthRegister } from './auth';
 import { tokenCreate } from './serverHelper';
+import { clear } from './other';
 
 // Set up web app
 const app = express();
@@ -51,6 +52,10 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   }
 
   res.json(tokenCreate(response.authUserId));
+});
+
+app.delete('/v1/clear', (req: Request, res: Response) => {
+  res.json(clear());
 });
 
 // ====================================================================
