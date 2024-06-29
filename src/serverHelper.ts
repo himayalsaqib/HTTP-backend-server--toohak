@@ -28,9 +28,9 @@ export function sessionIdExists(sessionId: number): boolean {
 export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
   const data = getData();
 
-  const foundToken = data.tokens.find(foundToken => foundToken.sessionId === token.sessionId && foundToken.authUserId === token.authUserId);
+  const foundToken = data.tokens.find(foundToken => foundToken.sessionId === token.sessionId);
 
-  if (foundToken === undefined) {
+  if (foundToken === undefined || foundToken.authUserId !== token.authUserId) {
     return { error: 'Token does not refer to a valid logged in user session' };
   } else {
     return {};
