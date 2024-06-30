@@ -54,6 +54,13 @@ describe('POST /v1/admin/quiz', () => {
         expect(res).toStrictEqual({ retval: error, statusCode: 401 });
       });
 
+      test('Returns error when given invalid session ID', () => {
+        token.sessionId += 1;
+        quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
+        const res = requestPost(quizBody, '/v1/admin/quiz');
+        expect(res).toStrictEqual({ retval: error, statusCode: 401 });
+      });
+
       test('Returns error when token is empty', () => {
         token = { sessionId: null, authUserId: null };
         quizBody.token = token;
