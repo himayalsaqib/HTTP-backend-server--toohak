@@ -71,7 +71,6 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   res.json(response);
 });
 
-
 app.delete('/v1/clear', (req: Request, res: Response) => {
   res.json(clear());
 });
