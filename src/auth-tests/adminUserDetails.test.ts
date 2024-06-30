@@ -98,7 +98,7 @@ describe('adminUserDetails', () => {
       const { retval } = requestPost(body, '/v1/admin/auth/register');
       token = retval as { sessionId: number, authUserId: number };
       token.authUserId += 1;
-    
+
       expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
         retval: error,
         statusCode: 401
@@ -110,7 +110,7 @@ describe('adminUserDetails', () => {
       const { retval } = requestPost(body, '/v1/admin/auth/register');
       token = retval as { sessionId: number, authUserId: number };
       token.sessionId += 1;
-    
+
       expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
         retval: error,
         statusCode: 401
