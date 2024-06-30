@@ -1,4 +1,4 @@
-import { Tokens, getData, setData } from './dataStore';
+import { ErrorObject, EmptyObject, Tokens, getData, setData } from './dataStore';
 
 /**
  * Function checks if a sessionId already exists in the dataStore
@@ -15,6 +15,44 @@ export function sessionIdExists(sessionId: number): boolean {
     return false;
   } else {
     return true;
+  }
+}
+
+/**
+ * Function checks if a token with a matching sessionId and authUserId exists
+ * in the dataStore
+ *
+ * @param {Tokens} token
+ * @returns {{} | { error: string }}
+ */
+export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
+  const data = getData();
+
+  const foundToken = data.tokens.find(foundToken => foundToken.sessionId === token.sessionId);
+
+  if (foundToken === undefined || foundToken.authUserId !== token.authUserId) {
+    return { error: 'Token does not refer to a valid logged in user session' };
+  } else {
+    return {};
+  }
+}
+
+/**
+ * Function checks if a quiz belongs to a given current user
+ *
+ * @param {number} authUserId
+ * @param {number} quizId
+ * @returns {{} | { error: string }}
+ */
+export function quizBelongsToUser(authUserId: number, quizId: number): EmptyObject | ErrorObject {
+  const data = getData();
+
+  const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
+
+  if (quiz === undefined || quiz.authUserId !== authUserId) {
+    return { error: 'User is not an owner of this quiz' };
+  } else {
+    return {};
   }
 }
 
