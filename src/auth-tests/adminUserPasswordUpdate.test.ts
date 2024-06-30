@@ -18,7 +18,7 @@ describe('PUT /v1/admin/user/password', () => {
     token = retval as { sessionId: number, authUserId: number };
   });
 
-  describe('Testing for return type', () => {
+  describe('Testing for return type (status code 200)', () => {
     test('Has correct return type', () => {
       const changedPassword = 'password123';
       const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
@@ -29,7 +29,7 @@ describe('PUT /v1/admin/user/password', () => {
     });
   });
 
-  describe('Testing token in /v1/admin/user/password', () => {
+  describe('Testing token in /v1/admin/user/password (status code 401)', () => {
     test('When authUserId is not valid, from /v1/admin/auth/register', () => {
       const changedPassword = 'an0thervalid0ne';
       token.authUserId += 1;
@@ -51,7 +51,7 @@ describe('PUT /v1/admin/user/password', () => {
     });
   });
 
-  describe('Testing oldPassword in /v1/admin/user/password', () => {
+  describe('Testing oldPassword in /v1/admin/user/password (status code 400)', () => {
     test('The oldPassword is not the correct oldPassword', () => {
       const incorrectOgPassword = 'validpassw0rd';
       const alteredPassword = 'newvalidpa55word';
@@ -72,7 +72,7 @@ describe('PUT /v1/admin/user/password', () => {
     });
   });
 
-  describe('Testing newPassword in /v1/admin/user/password', () => {
+  describe('Testing newPassword in /v1/admin/user/password (staus code 400)', () => {
     test('The newPassword has already been used before by the user', () => {
       const changedPassword = 'an0therpassw0rd';
       const alternatePassword = 'passw0rd123';
@@ -120,7 +120,7 @@ describe('PUT /v1/admin/user/password', () => {
       });
     });
 
-    test('The newPassword meets all criteria', () => {
+    test('The newPassword meets all criteria (status code 200)', () => {
       const changedPassword = 'veryvalidpassw0rd';
       const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
@@ -131,7 +131,7 @@ describe('PUT /v1/admin/user/password', () => {
   });
 
   describe('Testing side-effects from /v1/admin/user/password', () => {
-    test.skip('Successful login before updating password', () => {
+    test.skip('Successful login before updating password (status code 200)', () => {
       const body = { email: 'valid123@gmail.com', password: originalPassword };
       expect(requestPost(body, '/v1/admin/auth/login')).toStrictEqual({
         retval: { sessionId: expect.any(Number), authUserId: token.authUserId },
@@ -139,7 +139,7 @@ describe('PUT /v1/admin/user/password', () => {
       });
     });
 
-    test.skip('Successful login after updating password', () => {
+    test.skip('Successful login after updating password (status code 200)', () => {
       const body = { email: 'valid123@gmail.com', password: originalPassword };
       expect(requestPost(body, '/v1/admin/auth/login')).toStrictEqual({
         retval: { sessionId: expect.any(Number), authUserId: token.authUserId },
