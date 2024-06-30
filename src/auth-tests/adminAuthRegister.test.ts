@@ -10,7 +10,7 @@ describe('POST /v1/admin/auth/register', () => {
   const error = { error: expect.any(String) };
   let body: { email: string, password: string, nameFirst: string, nameLast: string };
 
-  describe('Testing for return type', () => {
+  describe('Testing for return type (status code 200)', () => {
     test('Has the correct return type', () => {
       body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
@@ -58,7 +58,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
   });
 
-  describe('Testing email given to adminAuthRegister', () => {
+  describe('Testing email given to adminAuthRegister (status code 400)', () => {
     test('Returns error when email address used by another user', () => {
       body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       requestPost(body, '/v1/admin/auth/register');
@@ -80,7 +80,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
   });
 
-  describe('Testing password given to adminAuthRegister', () => {
+  describe('Testing password given to adminAuthRegister (status code 400)', () => {
     test('Returns error when password does not contain at least one number', () => {
       body = { email: 'valid@gmail.com', password: 'Password', nameFirst: 'Jane', nameLast: 'Doe' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
@@ -106,7 +106,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
   });
 
-  describe('Testing nameFirst given to adminAuthregister', () => {
+  describe('Testing nameFirst given to adminAuthregister (status code 400)', () => {
     test('Returns error when first name contains a number', () => {
       body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane1', nameLast: 'Doe' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
@@ -145,7 +145,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
   });
 
-  describe('Testing nameLast given to adminAuthRegister', () => {
+  describe('Testing nameLast given to adminAuthRegister (status code 400)', () => {
     test('Returns error when last name contains a number', () => {
       body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe1' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
