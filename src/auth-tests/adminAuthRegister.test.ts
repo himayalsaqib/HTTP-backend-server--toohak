@@ -8,11 +8,10 @@ beforeEach(() => {
 
 describe('POST /v1/admin/auth/register', () => {
   const error = { error: expect.any(String) };
-  let body: { email: string, password: string, nameFirst: string, nameLast: string };
 
   describe('Testing for return type', () => {
     test('Has the correct return type', () => {
-      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      const body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
         retval: { sessionId: expect.any(Number), authUserId: expect.any(Number) },
         statusCode: 200
@@ -21,6 +20,7 @@ describe('POST /v1/admin/auth/register', () => {
   });
 
   describe('Testing successful registration', () => {
+    let body: { email: string, password: string, nameFirst: string, nameLast: string };
     let token: { sessionId: number, authUserId: number };
     beforeEach(() => {
       body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
@@ -28,7 +28,7 @@ describe('POST /v1/admin/auth/register', () => {
       token = retval as { sessionId: number, authUserId: number };
     });
 
-    test.skip('Has successful side effect (userDetails returns correct details)', () => {
+    test.skip('Has successful side effect (user is registered)', () => {
       expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
         retval: {
           user: {
@@ -49,8 +49,8 @@ describe('POST /v1/admin/auth/register', () => {
       { param: 'lastname', password: 'Password34', nameFirst: 'John', nameLast: 'Doe' },
     ])('Can register users with the same $param', ({ param, password, nameFirst, nameLast }) => {
       // new user with some parameter the same compared to exisiting user
-      body = { email: 'valid2@gmail.com', password, nameFirst, nameLast };
-      const { retval } = requestPost(body, '/v1/admin/auth/register');
+      const body2 = { email: 'valid2@gmail.com', password, nameFirst, nameLast };
+      const { retval } = requestPost(body2, '/v1/admin/auth/register');
       const token2 = retval as { sessionId: number, authUserId: number };
 
       expect(token2).toStrictEqual({ sessionId: expect.any(Number), authUserId: expect.any(Number) });
@@ -60,19 +60,19 @@ describe('POST /v1/admin/auth/register', () => {
 
   describe('Testing email given to adminAuthRegister', () => {
     test('Returns error when email address used by another user', () => {
-      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      const body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       requestPost(body, '/v1/admin/auth/register');
 
       // user registering with the same email
-      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'John', nameLast: 'Doe' };
-      expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
+      const body2 = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'John', nameLast: 'Doe' };
+      expect(requestPost(body2, '/v1/admin/auth/register')).toStrictEqual({
         retval: error,
         statusCode: 400
       });
     });
 
     test('Returns error when email address does not meet requirements', () => {
-      body = { email: 'invalid', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      const body = { email: 'invalid', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -82,7 +82,7 @@ describe('POST /v1/admin/auth/register', () => {
 
   describe('Testing password given to adminAuthRegister', () => {
     test('Returns error when password does not contain at least one number', () => {
-      body = { email: 'valid@gmail.com', password: 'Password', nameFirst: 'Jane', nameLast: 'Doe' };
+      const body = { email: 'valid@gmail.com', password: 'Password', nameFirst: 'Jane', nameLast: 'Doe' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -90,7 +90,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Returns error when password does not contain at least one letter', () => {
-      body = { email: 'valid@gmail.com', password: '12345678', nameFirst: 'Jane', nameLast: 'Doe' };
+      const body = { email: 'valid@gmail.com', password: '12345678', nameFirst: 'Jane', nameLast: 'Doe' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -98,7 +98,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Returns error when password is less than 8 characters', () => {
-      body = { email: 'valid@gmail.com', password: 'invalid', nameFirst: 'Jane', nameLast: 'Doe' };
+      const body = { email: 'valid@gmail.com', password: 'invalid', nameFirst: 'Jane', nameLast: 'Doe' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -108,7 +108,7 @@ describe('POST /v1/admin/auth/register', () => {
 
   describe('Testing nameFirst given to adminAuthregister', () => {
     test('Returns error when first name contains a number', () => {
-      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane1', nameLast: 'Doe' };
+      const body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane1', nameLast: 'Doe' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -116,7 +116,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Returns error when first name contains invalid special characters', () => {
-      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: '@Jane', nameLast: 'Doe' };
+      const body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: '@Jane', nameLast: 'Doe' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -124,7 +124,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Returns error when first name is less than 2 characters', () => {
-      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: '', nameLast: 'Doe' };
+      const body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: '', nameLast: 'Doe' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -132,7 +132,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Returns error when first name is greater than 20 characters', () => {
-      body = {
+      const body = {
         email: 'valid@gmail.com',
         password: 'Password12',
         nameFirst: 'JaneJaneJaneJaneJaneJaneJane',
@@ -147,7 +147,7 @@ describe('POST /v1/admin/auth/register', () => {
 
   describe('Testing nameLast given to adminAuthRegister', () => {
     test('Returns error when last name contains a number', () => {
-      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe1' };
+      const body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe1' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -155,7 +155,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Returns error when last name contains invalid special characters', () => {
-      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe!' };
+      const body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe!' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -163,7 +163,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Returns error when last name is less than 2 characters', () => {
-      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: '' };
+      const body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: '' };
       expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -171,7 +171,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Returns error when last name is greater than 20 characters', () => {
-      body = {
+      const body = {
         email: 'valid@gmail.com',
         password: 'Password12',
         nameFirst: 'Jane',
