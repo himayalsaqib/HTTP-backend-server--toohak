@@ -6,7 +6,7 @@ beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
-describe('adminUserDetails', () => {
+describe('GET /v1/admin/user/details', () => {
   const error = { error: expect.any(String) };
   let body: { email: string, password: string, nameFirst: string, nameLast: string };
   let token: { sessionId: number, authUserId: number };
