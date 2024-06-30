@@ -9,8 +9,9 @@ import fs from 'fs';
 import path from 'path';
 import process from 'process';
 import { adminAuthRegister } from './auth';
-import { tokenCreate } from './serverHelper';
+import { tokenCreate, tokenExists } from './serverHelper';
 import { clear } from './other';
+import { adminQuizCreate } from './quiz';
 
 // Set up web app
 const app = express();
@@ -56,6 +57,22 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
 
 app.delete('/v1/clear', (req: Request, res: Response) => {
   res.json(clear());
+});
+
+app.post('/v1/admin/quiz', (req: Request, res: Response) => {
+  const { token, name, description } = req.body;
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = adminQuizCreate(token.authUserId, name, description);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
 });
 
 // ====================================================================
