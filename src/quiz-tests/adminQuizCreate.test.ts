@@ -19,7 +19,7 @@ describe('POST /v1/admin/quiz', () => {
     token = retval as { sessionId: number, authUserId: number };
   });
 
-  describe('Testing for status code 200', () => {
+  describe('Testing status code 200', () => {
     beforeEach(() => {
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
     });
