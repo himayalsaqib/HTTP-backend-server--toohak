@@ -21,7 +21,7 @@ describe('PUT /v1/admin/user/password', () => {
   describe('Testing for return type', () => {
     test('Has correct return type', () => {
       const changedPassword = 'password123';
-      const body = { token: token.authUserId, oldPassword: originalPassword, newPassword: changedPassword };
+      const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
         retval: {},
         statusCode: 200
@@ -32,7 +32,8 @@ describe('PUT /v1/admin/user/password', () => {
   describe('Testing token in /v1/admin/user/password', () => {
     test('When token is not valid, from /v1/admin/auth/register', () => {
       const changedPassword = 'an0thervalid0ne';
-      const body = { token: token.authUserId + 1, oldPassword: originalPassword, newPassword: changedPassword };
+      token.authUserId += 1;
+      const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
         retval: error,
         statusCode: 401
@@ -44,7 +45,7 @@ describe('PUT /v1/admin/user/password', () => {
     test('The oldPassword is not the correct oldPassword', () => {
       const incorrectOgPassword = 'validpassw0rd';
       const alteredPassword = 'newvalidpa55word';
-      const body = { token: token.authUserId, oldPassword: incorrectOgPassword, newPassword: alteredPassword };
+      const body = { token: token, oldPassword: incorrectOgPassword, newPassword: alteredPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -53,7 +54,7 @@ describe('PUT /v1/admin/user/password', () => {
 
     test('The oldPassword and newPassword match exactly', () => {
       const matchingPassword = 'validpa55w0rd';
-      const body = { token: token.authUserId, oldPassword: originalPassword, newPassword: matchingPassword };
+      const body = { token: token, oldPassword: originalPassword, newPassword: matchingPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -67,15 +68,15 @@ describe('PUT /v1/admin/user/password', () => {
       const alternatePassword = 'passw0rd123';
 
       // first password update
-      const update1 = { token: token.authUserId, oldPassword: originalPassword, newPassword: changedPassword };
+      const update1 = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
       requestPut(update1, '/v1/admin/user/password');
 
       // second password update
-      const update2 = { token: token.authUserId, oldPassword: changedPassword, newPassword: alternatePassword };
+      const update2 = { token: token, oldPassword: changedPassword, newPassword: alternatePassword };
       requestPut(update2, '/v1/admin/user/password');
 
       // update to a password that was used previously by the user
-      const update3 = { token: token.authUserId, oldPassword: alternatePassword, newPassword: originalPassword };
+      const update3 = { token: token, oldPassword: alternatePassword, newPassword: originalPassword };
       expect(requestPut(update3, '/v1/admin/user/password')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -84,7 +85,7 @@ describe('PUT /v1/admin/user/password', () => {
 
     test('The newPassword is less than 8 characters', () => {
       const changedPassword = 'inva1d';
-      const body = { token: token.authUserId, oldPassword: originalPassword, newPassword: changedPassword };
+      const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -93,7 +94,7 @@ describe('PUT /v1/admin/user/password', () => {
 
     test('The newPassword does not contain at least one number', () => {
       const badNewPassword = 'invalidpassword';
-      const body = { token: token.authUserId, oldPassword: originalPassword, newPassword: badNewPassword };
+      const body = { token: token, oldPassword: originalPassword, newPassword: badNewPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -102,7 +103,7 @@ describe('PUT /v1/admin/user/password', () => {
 
     test('The newPassword does not contain at least one letter', () => {
       const badNewPassword = '123456789';
-      const body = { token: token.authUserId, oldPassword: originalPassword, newPassword: badNewPassword };
+      const body = { token: token, oldPassword: originalPassword, newPassword: badNewPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -111,7 +112,7 @@ describe('PUT /v1/admin/user/password', () => {
 
     test('The newPassword meets all criteria', () => {
       const changedPassword = 'veryvalidpassw0rd';
-      const body = { token: token.authUserId, oldPassword: originalPassword, newPassword: changedPassword };
+      const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
         retval: {},
         statusCode: 200
