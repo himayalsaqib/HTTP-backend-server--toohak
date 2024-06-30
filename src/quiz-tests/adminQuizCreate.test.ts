@@ -19,29 +19,30 @@ describe('POST /v1/admin/quiz', () => {
     token = retval as { sessionId: number, authUserId: number };
   });
 
-  describe('Testing for successful quiz creation', () => {
+  describe('Testing for status code 200', () => {
     beforeEach(() => {
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
     });
 
     test('Has correct return type', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
-      expect(res.retval).toStrictEqual({ quizId: expect.any(Number) });
+      expect(res).toStrictEqual({ retval: { quizId: expect.any(Number) }, statusCode: 200 });
     });
 
-    test.skip('Side effect: quizList returns correct details about 1 quiz', () => {
+    test.skip('Side effect (successful quiz creation): quizList returns correct details about 1 quiz', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       const listRes = requestGet({ token }, '/v1/admin/quiz/list');
-      expect(listRes.retval).toStrictEqual({ quizzes: [{ quizId: res.retval, name: 'Valid Quiz Name' }] });
+      expect(listRes).toStrictEqual({ retval: { quizzes: [{ quizId: res.retval, name: 'Valid Quiz Name' }] }, statusCode: 200 });
     });
 
-    test.skip('Side effect: quizList returns correct details about multiple quizzes', () => {
+    test.skip('Side effect (successful quiz creation): quizList returns correct details about multiple quizzes', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       quizBody = { token: token, name: 'Other Quiz Name', description: 'Other Quiz Description' };
       const res2 = requestPost(quizBody, '/v1/admin/quiz');
       const listRes = requestGet({ token }, '/v1/admin/quiz/list');
 
       expect(listRes.retval).toStrictEqual({ quizzes: [{ quizId: res.retval, name: 'Valid Quiz Name' }, { quizId: res2.retval, name: 'Other Quiz Name' }] });
+      expect(listRes.statusCode).toStrictEqual(200);
     });
   });
 
