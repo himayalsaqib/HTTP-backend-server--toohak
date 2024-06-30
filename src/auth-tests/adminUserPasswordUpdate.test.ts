@@ -30,9 +30,19 @@ describe('PUT /v1/admin/user/password', () => {
   });
 
   describe('Testing token in /v1/admin/user/password', () => {
-    test('When token is not valid, from /v1/admin/auth/register', () => {
+    test('When authUserId is not valid, from /v1/admin/auth/register', () => {
       const changedPassword = 'an0thervalid0ne';
       token.authUserId += 1;
+      const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
+      expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
+        retval: error,
+        statusCode: 401
+      });
+    });
+
+    test('When sessionId is not valid, from /v1/admin/auth/register', () => {
+      const changedPassword = 'anothervalid0ne';
+      token.sessionId += 1;
       const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
         retval: error,
