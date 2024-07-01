@@ -122,20 +122,23 @@ describe('PUT /v1/admin/user/details', () => {
       expect(res).toStrictEqual({ retval: { error }, statusCode: 401 });
     }) 
 
-    beforeEach(() => {
+    test('Returns error when authUserId is not valid', () => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
       token = retval as { sessionId: number, authUserId: number };
       user = { token: token, email: 'newValidEmail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
-    });
 
-    test('Returns error when authUserId is not valid', () => {
       user.token.authUserId += 1;
       const res = requestPut(user, '/v1/admin/user/details');
       expect(res).toStrictEqual({ retval: { error }, statusCode: 401 });
     }) 
 
     test('Returns error when sessionId is not valid', () => {
+      userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
+      token = retval as { sessionId: number, authUserId: number };
+      user = { token: token, email: 'newValidEmail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
+      
       user.token.sessionId += 1;
       const res = requestPut(user, '/v1/admin/user/details');
       expect(res).toStrictEqual({ retval: { error }, statusCode: 401 });
