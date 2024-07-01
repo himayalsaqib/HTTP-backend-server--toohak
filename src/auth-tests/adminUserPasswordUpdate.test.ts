@@ -49,6 +49,13 @@ describe('PUT /v1/admin/user/password', () => {
         statusCode: 401
       });
     });
+
+    test('When token is empty (no users are registered), from /v1/admin/user/password', () => {
+      expect(requestPut(token, '/v1/admin/user/password')).toStrictEqual({
+        retval: error,
+        statusCode: 401
+      });
+    });
   });
 
   describe('Testing oldPassword in /v1/admin/user/password (status code 400)', () => {
@@ -131,15 +138,8 @@ describe('PUT /v1/admin/user/password', () => {
   });
 
   describe('Testing side-effects from /v1/admin/user/password', () => {
-    test.skip('Successful login before updating password (status code 200)', () => {
-      const body = { email: 'valid123@gmail.com', password: originalPassword };
-      expect(requestPost(body, '/v1/admin/auth/login')).toStrictEqual({
-        retval: { sessionId: expect.any(Number), authUserId: token.authUserId },
-        statusCode: 200
-      });
-    });
-
     test.skip('Successful login after updating password (status code 200)', () => {
+      // login before updating password
       const body = { email: 'valid123@gmail.com', password: originalPassword };
       expect(requestPost(body, '/v1/admin/auth/login')).toStrictEqual({
         retval: { sessionId: expect.any(Number), authUserId: token.authUserId },
@@ -148,7 +148,10 @@ describe('PUT /v1/admin/user/password', () => {
 
       const alteredPassword = 'newpa55word';
       const newBody = { email: 'valid123@gmail.com', oldPassword: originalPassword, newPassword: alteredPassword };
+      // update password
       requestPut(newBody, '/v1/admin/user/password');
+
+      // login after updating password
       expect(requestPost({ email: 'valid123@gmail.com', password: alteredPassword }, '/v1/admin/auth/login')).toStrictEqual({
         retval: { senssionId: expect.any(Number), authUserId: token.authUserId },
         statusCode: 200
