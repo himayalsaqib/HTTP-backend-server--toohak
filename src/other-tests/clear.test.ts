@@ -1,4 +1,4 @@
-import { requestDelete, requestPost, requestGet } from '../requestHelper';
+import { requestDelete, requestPost, requestGet } from '../helper-files/requestHelper';
 
 describe('DELETE /v1/clear', () => {
   const error = { error: expect.any(String) };
