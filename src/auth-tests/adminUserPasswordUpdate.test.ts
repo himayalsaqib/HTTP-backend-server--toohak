@@ -1,5 +1,6 @@
 // includes HTTP tests for the route /v1/admin/user/password
 
+import { request } from 'http';
 import { requestDelete, requestPut, requestPost } from '../requestHelper';
 
 beforeEach(() => {
@@ -60,7 +61,8 @@ describe('PUT /v1/admin/user/password', () => {
     });
 
     test('When token is empty (no users are registered), from /v1/admin/user/password', () => {
-      expect(requestPut({ token, oldPassword: originalPassword, newPassword: 'avalidpa55word' }, '/v1/admin/user/password')).toStrictEqual({
+      requestDelete({}, '/v1/clear');
+      expect(requestPut({ token: token, oldPassword: 'validpa55w0rd', newPassword: 'avalidpa55word' }, '/v1/admin/user/password')).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -137,8 +139,8 @@ describe('PUT /v1/admin/user/password', () => {
     });
   });
 
-  describe('Testing side-effects from /v1/admin/user/password', () => {
-    test.skip('Successful login after updating password (status code 200)', () => {
+  describe('Testing side-effects from /v1/admin/user/password (status code 200)', () => {
+    test.skip('Successful login after updating password', () => {
       // login before updating password
       const body = { email: 'valid123@gmail.com', password: originalPassword };
       expect(requestPost(body, '/v1/admin/auth/login')).toStrictEqual({
