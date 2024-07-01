@@ -1,6 +1,5 @@
 // includes HTTP tests for the route /v1/admin/user/password
 
-import { request } from 'http';
 import { requestDelete, requestPut, requestPost } from '../requestHelper';
 
 beforeEach(() => {
