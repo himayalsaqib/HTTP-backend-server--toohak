@@ -4,7 +4,7 @@ import {
   quizNameHasValidChars,
   quizNameInUse,
   quizIdInUse
-} from './helper';
+} from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
 const MIN_QUIZ_NAME_LEN = 3;
