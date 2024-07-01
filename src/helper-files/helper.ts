@@ -1,4 +1,4 @@
-import { getData } from '../dataStore';
+import { getData, Quizzes, Users } from '../dataStore';
 
 /**
  * Function checks if an authUserId exists in the dataStore
@@ -94,6 +94,28 @@ export function adminCheckPasswordHistory(authUserId: number, newPassword: strin
   return false;
 }
 
+/**
+ * Finds a user in the data store by authUserId
+ *
+ * @param {number} authUserId - The authUserId to find
+ * @returns {Users | undefined} - The user object if found | undefined
+ */
+export function findUserById(authUserId: number): Users | undefined {
+  const data = getData();
+  return data.users.find(user => user.authUserId === authUserId);
+}
+
+/**
+ * Finds a user in the data store by email
+ *
+ * @param {string} email - The email to find
+ * @returns {Users | undefined} - The user object if found | undefined
+ */
+export function findUserByEmail(email: string): Users | undefined {
+  const data = getData();
+  return data.users.find(user => user.email === email);
+}
+
 /// ///////////////////////// Quiz Helper Functions ////////////////////////////
 /**
  * Function checks if a quiz name contains any invalid characters. Characters
@@ -144,4 +166,15 @@ export function quizIdInUse(quizId: number): boolean {
     return false;
   }
   return true;
+}
+
+/**
+ * Finds a quiz in the data by its quiz ID
+ *
+ * @param {number} quizId - The ID of the quiz to find
+ * @returns {Quizzes | undefined} - The quiz with the specified ID | undefined
+ */
+export function findQuizById(quizId: number): Quizzes | undefined {
+  const data = getData();
+  return data.quizzes.find(q => q.quizId === quizId);
 }
