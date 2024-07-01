@@ -18,9 +18,18 @@ describe('PUT /v1/admin/user/password', () => {
     token = retval as { sessionId: number, authUserId: number };
   });
 
-  describe('Testing for return type (status code 200)', () => {
+  describe('Testing successful cases (status code 200)', () => {
     test('Has correct return type', () => {
       const changedPassword = 'password123';
+      const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
+      expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
+        retval: {},
+        statusCode: 200
+      });
+    });
+
+    test('The newPassword meets all criteria', () => {
+      const changedPassword = 'veryvalidpassw0rd';
       const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
         retval: {},
@@ -51,7 +60,7 @@ describe('PUT /v1/admin/user/password', () => {
     });
 
     test('When token is empty (no users are registered), from /v1/admin/user/password', () => {
-      expect(requestPut(token, '/v1/admin/user/password')).toStrictEqual({
+      expect(requestPut({ token, oldPassword: originalPassword, newPassword: 'avalidpa55word'}, '/v1/admin/user/password')).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -124,15 +133,6 @@ describe('PUT /v1/admin/user/password', () => {
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
         retval: error,
         statusCode: 400
-      });
-    });
-
-    test('The newPassword meets all criteria (status code 200)', () => {
-      const changedPassword = 'veryvalidpassw0rd';
-      const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
-      expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
-        retval: {},
-        statusCode: 200
       });
     });
   });
