@@ -116,7 +116,7 @@ describe('PUT /v1/admin/user/details', () => {
   });
 
   describe('Testing status code 401 errors', () => {
-    test('Token is empty (no users are registered', () => {
+    test('Token is empty (no users are registered)', () => {
       user = { token: token, email: 'newValidEmail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
       const res = requestPut(user, '/v1/admin/user/details');
       expect(res).toStrictEqual({ retval: { error }, statusCode: 401 });
