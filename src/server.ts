@@ -8,7 +8,7 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-import { adminAuthRegister, adminUserDetails, adminUserPasswordUpdate } from './auth';
+import { adminAuthRegister, adminUserDetails, adminUserPasswordUpdate, adminUserDetailsUpdate } from './auth';
 import { tokenCreate, tokenExists } from './serverHelper';
 import { clear } from './other';
 import { adminQuizCreate } from './quiz';
@@ -90,6 +90,23 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   }
 
   response = adminUserDetails(token.authUserId);
+  res.json(response);
+});
+
+app.put('/v1/admin/user/details', (req: Request, res: Response) => {
+  const { token, email, nameFirst, nameLast } = req.body;
+  console.log(email);
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = adminUserDetailsUpdate(token.authUserId, email, nameFirst, nameLast);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
   res.json(response);
 });
 
