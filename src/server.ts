@@ -8,8 +8,10 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-import { adminAuthRegister } from './auth';
-import { tokenCreate } from './serverHelper';
+import { adminAuthRegister, adminUserDetails, adminUserPasswordUpdate } from './auth';
+import { tokenCreate, tokenExists } from './serverHelper';
+import { clear } from './other';
+import { adminQuizCreate } from './quiz';
 
 // Set up web app
 const app = express();
@@ -41,6 +43,14 @@ app.get('/echo', (req: Request, res: Response) => {
   return res.json(result);
 });
 
+// ============================== OTHER ROUTES ============================== //
+
+app.delete('/v1/clear', (req: Request, res: Response) => {
+  res.json(clear());
+});
+
+// ============================== AUTH ROUTES =============================== //
+
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
 
@@ -51,6 +61,54 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   }
 
   res.json(tokenCreate(response.authUserId));
+});
+
+app.put('/v1/admin/user/password', (req: Request, res: Response) => {
+  const { token, oldPassword, newPassword } = req.body;
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = adminUserPasswordUpdate(token.authUserId, oldPassword, newPassword);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
+app.get('/v1/admin/user/details', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.query.sessionId as string);
+  const authUserId = parseInt(req.query.authUserId as string);
+  const token = { sessionId: sessionId, authUserId: authUserId };
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = adminUserDetails(token.authUserId);
+  res.json(response);
+});
+
+// ============================== QUIZ ROUTES =============================== //
+
+app.post('/v1/admin/quiz', (req: Request, res: Response) => {
+  const { token, name, description } = req.body;
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = adminQuizCreate(token.authUserId, name, description);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
 });
 
 // ====================================================================
