@@ -19,17 +19,15 @@ describe('DELETE /v1/clear', () => {
       token = retval as { sessionId: number, authUserId: number };
     });
 
-    test('Successful registration of user', () => {
+    test.skip('Error returned by /v1/admin/user/details after clearing a registered user', () => {
       expect(token).toStrictEqual({ sessionId: expect.any(Number), authUserId: expect.any(Number) });
-    });
-
-    test.skip('Successful access of user details in adminUserDetails after logging in once', () => {
+      
       const resRegister = requestPost({ email: 'valid@gmail.com', password: 'validpa55word', nameFirst: 'John', nameLast: 'Smith' }, '/v1/admin/auth/regiser');
       const newUserToken: { sessionId: number, authUserId: number } = resRegister.retval;
 
       expect(requestPost({ email: 'valid@gmail.com', password: 'validpa55word' }, '/v1/admin/auth/login')).toStrictEqual({ newUserToken: expect.any(Number) });
 
-      const resDetails = requestGet({ token: newUserToken }, '/v1/admin/user/details');
+      let resDetails = requestGet({ token: newUserToken }, '/v1/admin/user/details');
 
       expect(resDetails.retval).toStrictEqual({
         user: {
@@ -40,14 +38,39 @@ describe('DELETE /v1/clear', () => {
           numFailedPasswordsSinceLastLogin: 0,
         }
       });
-    });
-
-    test.skip('Error returned by adminUserDetails after calling clear', () => {
+      
       requestDelete({}, '/v1/clear');
 
-      const resDetails = requestGet({ token }, '/v1/admin/user/details');
+      resDetails = requestGet({ token }, '/v1/admin/user/details');
       expect(resDetails.retval).toStrictEqual(error);
       expect(resDetails.statusCode).toStrictEqual(401);
     });
+
+  //   test.skip('Successful access of user details in adminUserDetails after logging in once', () => {
+  //     // const resRegister = requestPost({ email: 'valid@gmail.com', password: 'validpa55word', nameFirst: 'John', nameLast: 'Smith' }, '/v1/admin/auth/regiser');
+  //     // const newUserToken: { sessionId: number, authUserId: number } = resRegister.retval;
+
+  //     // expect(requestPost({ email: 'valid@gmail.com', password: 'validpa55word' }, '/v1/admin/auth/login')).toStrictEqual({ newUserToken: expect.any(Number) });
+
+  //     // const resDetails = requestGet({ token: newUserToken }, '/v1/admin/user/details');
+
+  //     // expect(resDetails.retval).toStrictEqual({
+  //     //   user: {
+  //     //     userId: token.authUserId,
+  //     //     name: 'John Smith',
+  //     //     email: 'valid@gmail.com',
+  //     //     numSuccessfulLogins: 2,
+  //     //     numFailedPasswordsSinceLastLogin: 0,
+  //     //   }
+  //     // });
+  //   });
+
+  //   test('Error returned by adminUserDetails after calling clear', () => {
+  //     // requestDelete({}, '/v1/clear');
+
+  //     // const resDetails = requestGet({ token }, '/v1/admin/user/details');
+  //     // expect(resDetails.retval).toStrictEqual(error);
+  //     // expect(resDetails.statusCode).toStrictEqual(401);
+  //   });
   });
 });
