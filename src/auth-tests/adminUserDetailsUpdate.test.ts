@@ -1,7 +1,7 @@
 // includes http tests for the route /v1/admin/user/details PUT
 
 import { Tokens } from '../dataStore';
-import { requestDelete, requestGet, requestPost, requestPut } from '../requestHelper';
+import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
