@@ -29,7 +29,7 @@ describe('PUT /v1/admin/user/details', () => {
     test('Side effect (successful update): adminUserDetails returns newly updated properties', () => {
       requestPut(user, '/v1/admin/quiz');
       const res = requestGet({ token }, '/v1/admin/user/details');
-      expect(res).toStrictEqual({ 
+      expect(res).toStrictEqual({
         retval: {
           user: {
             userId: token.authUserId,
@@ -42,7 +42,7 @@ describe('PUT /v1/admin/user/details', () => {
         statusCode: 200
       });
     });
-  })
+  });
 
   describe('Testing status code 400', () => {
     beforeEach(() => {
@@ -59,14 +59,14 @@ describe('PUT /v1/admin/user/details', () => {
 
         const res = requestPut(user, '/v1/admin/user/details');
         expect(res).toStrictEqual({ retval: { error }, statusCode: 400 });
-      })
+      });
 
       test('Returns error when email is not valid', () => {
         user.email = 'notValid';
         const res = requestPut(user, '/v1/admin/user/details');
         expect(res).toStrictEqual({ retval: { error }, statusCode: 400 });
-      })
-    }) 
+      });
+    });
 
     describe('Testing error returns for names', () => {
       test('Returns error when nameFirst contains invalid characters (not space, apostrophe or hyphen)', () => {
@@ -78,19 +78,19 @@ describe('PUT /v1/admin/user/details', () => {
         const res2 = requestPut(user, '/v1/admin/user/details');
         expect(res2).toStrictEqual({ retval: { error }, statusCode: 400 });
       });
-  
+
       test('Returns error when nameFirst is less than 2 characters', () => {
         user.nameFirst = 'J';
         const res = requestPut(user, '/v1/admin/user/details');
         expect(res).toStrictEqual({ retval: { error }, statusCode: 400 });
       });
-  
+
       test('Returns error when nameFirst is more than 20 characters', () => {
         user.nameFirst = 'JamieJamieJamieJamieJamie';
         const res = requestPut(user, '/v1/admin/user/details');
         expect(res).toStrictEqual({ retval: { error }, statusCode: 400 });
       });
-  
+
       test('Returns error when nameLast contains invalid characters (not space, apostrophe or hyphen)', () => {
         user.nameLast = 'Doe1';
         const res1 = requestPut(user, '/v1/admin/user/details');
@@ -100,27 +100,27 @@ describe('PUT /v1/admin/user/details', () => {
         const res2 = requestPut(user, '/v1/admin/user/details');
         expect(res2).toStrictEqual({ retval: { error }, statusCode: 400 });
       });
-  
+
       test('Returns error when nameLast is less than 2 characters', () => {
         user.nameLast = 'D';
         const res = requestPut(user, '/v1/admin/user/details');
         expect(res).toStrictEqual({ retval: { error }, statusCode: 400 });
       });
-  
+
       test('Returns error when nameLast is more than 20 characters', () => {
         user.nameLast = 'DavidDavidDavidDavidDavid';
         const res = requestPut(user, '/v1/admin/user/details');
         expect(res).toStrictEqual({ retval: { error }, statusCode: 400 });
       });
-    })
-  })
+    });
+  });
 
   describe('Testing status code 401', () => {
     test('Returns error when token is empty (no users are registered', () => {
       user = { token: token, email: 'newValidEmail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
       const res = requestPut(user, '/v1/admin/user/details');
       expect(res).toStrictEqual({ retval: { error }, statusCode: 401 });
-    }) 
+    });
 
     test('Returns error when authUserId is not valid', () => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
@@ -131,17 +131,17 @@ describe('PUT /v1/admin/user/details', () => {
       user.token.authUserId += 1;
       const res = requestPut(user, '/v1/admin/user/details');
       expect(res).toStrictEqual({ retval: { error }, statusCode: 401 });
-    }) 
+    });
 
     test('Returns error when sessionId is not valid', () => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
       token = retval as { sessionId: number, authUserId: number };
       user = { token: token, email: 'newValidEmail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
-      
+
       user.token.sessionId += 1;
       const res = requestPut(user, '/v1/admin/user/details');
       expect(res).toStrictEqual({ retval: { error }, statusCode: 401 });
-    }) 
-  })
-})
+    });
+  });
+});
