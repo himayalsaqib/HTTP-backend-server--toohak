@@ -28,7 +28,7 @@ describe('POST /v1/admin/auth/register', () => {
       token = retval as { sessionId: number, authUserId: number };
     });
 
-    test.skip('Has successful side effect (user is registered)', () => {
+    test('Has successful side effect (user is registered)', () => {
       expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
         retval: {
           user: {
@@ -43,7 +43,7 @@ describe('POST /v1/admin/auth/register', () => {
       });
     });
 
-    test.skip.each([
+    test.each([
       { param: 'password', password: 'Password12', nameFirst: 'John', nameLast: 'Day' },
       { param: 'firstname', password: 'Password34', nameFirst: 'Jane', nameLast: 'Day' },
       { param: 'lastname', password: 'Password34', nameFirst: 'John', nameLast: 'Doe' },
