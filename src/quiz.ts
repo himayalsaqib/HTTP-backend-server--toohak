@@ -93,7 +93,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     authUserId: authUserId,
     quizId: newQuizId,
     name: name,
-    timeCreated: Date.now(),
+    timeCreated: parseFloat(Date.now().toFixed(10)),
     timeLastEdited: <number> undefined,
     description: description,
   };
@@ -203,7 +203,7 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
   }
 
   quiz.name = name;
-  quiz.timeLastEdited = Date.now();
+  quiz.timeLastEdited = parseFloat(Date.now().toFixed(10));
 
   setData(data);
 
@@ -237,7 +237,7 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
   }
 
   quiz.description = description;
-  quiz.timeLastEdited = Date.now();
+  quiz.timeLastEdited = parseFloat(Date.now().toFixed(10));
 
   setData(data);
 
