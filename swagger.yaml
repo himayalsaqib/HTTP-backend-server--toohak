@@ -1114,7 +1114,7 @@ paths:
           schema:
             $ref: '#/components/return/Error'
         403:
-          description: Valid token is provided, but user is not an owner of this quiz
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
           schema:
             $ref: '#/components/return/Error'
     get:
@@ -1136,7 +1136,7 @@ paths:
           schema:
             $ref: '#/components/return/Error'
         403:
-          description: Valid token is provided, but user is not an owner of this quiz
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
           schema:
             $ref: '#/components/return/Error'
   
@@ -1160,7 +1160,7 @@ paths:
           schema:
             $ref: '#/components/return/Error'
         403:
-          description: Valid token is provided, but user is not an owner of this quiz
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
           schema:
             $ref: '#/components/return/Error'
         400:
@@ -1191,7 +1191,7 @@ paths:
           schema:
             $ref: '#/components/return/Error'
         403:
-          description: Valid token is provided, but user is not an owner of this quiz
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
           schema:
             $ref: '#/components/return/Error'
         400:
@@ -1240,7 +1240,7 @@ paths:
           schema:
             $ref: '#/components/return/Error'
         403:
-          description: Valid token is provided, but user is not an owner of this quiz
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
           schema:
             $ref: '#/components/return/Error'
         400:
@@ -1270,7 +1270,7 @@ paths:
           schema:
             $ref: '#/components/return/Error'
         403:
-          description: Valid token is provided, but one or more of the Quiz IDs refers to a quiz that this current user does not own
+          description: Valid token is provided, but one or more of the Quiz IDs refers to a quiz that this current user does not own or doesn't exist
           schema:
             $ref: '#/components/return/Error'
         400:
@@ -1300,7 +1300,7 @@ paths:
           schema:
             $ref: '#/components/return/Error'
         403:
-          description: Valid token is provided, but user is not an owner of this quiz
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
           schema:
             $ref: '#/components/return/Error'
         400:
@@ -1334,7 +1334,7 @@ paths:
           schema:
             $ref: '#/components/return/Error'
         403:
-          description: Valid token is provided, but user is not an owner of this quiz
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
           schema:
             $ref: '#/components/return/Error'
         400:
@@ -1374,7 +1374,7 @@ paths:
           schema:
             $ref: '#/components/return/Error'
         403:
-          description: Valid token is provided, but user is not an owner of this quiz
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
           schema:
             $ref: '#/components/return/Error'
         400:
@@ -1411,7 +1411,7 @@ paths:
           schema:
             $ref: '#/components/return/Error'
         403:
-          description: Valid token is provided, but user is not an owner of this quiz
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
           schema:
             $ref: '#/components/return/Error'
         400:
@@ -1444,7 +1444,7 @@ paths:
           schema:
             $ref: '#/components/return/Error'
         403:
-          description: Valid token is provided, but user is not an owner of this quiz
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
           schema:
             $ref: '#/components/return/Error'
         400:
@@ -1479,7 +1479,7 @@ paths:
           schema:
             $ref: '#/components/return/Error'
         403:
-          description: Valid token is provided, but user is not an owner of this quiz
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
           schema:
             $ref: '#/components/return/Error'
         400:
