@@ -58,13 +58,13 @@ describe('PUT /v1/admin/user/details', () => {
         requestPost(userRegister, '/v1/admin/auth/register');
 
         const res = requestPut(user, '/v1/admin/user/details');
-        expect(res).toStrictEqual({ retval: { error }, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
       });
 
       test('Email is not valid', () => {
         user.email = 'notValid';
         const res = requestPut(user, '/v1/admin/user/details');
-        expect(res).toStrictEqual({ retval: { error }, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
       });
     });
 
@@ -72,45 +72,45 @@ describe('PUT /v1/admin/user/details', () => {
       test('NameFirst contains invalid characters (not space, apostrophe or hyphen)', () => {
         user.nameFirst = 'Jane1';
         const res1 = requestPut(user, '/v1/admin/user/details');
-        expect(res1).toStrictEqual({ retval: { error }, statusCode: 400 });
+        expect(res1).toStrictEqual({ retval: error, statusCode: 400 });
 
         user.nameFirst = 'Jane&';
         const res2 = requestPut(user, '/v1/admin/user/details');
-        expect(res2).toStrictEqual({ retval: { error }, statusCode: 400 });
+        expect(res2).toStrictEqual({ retval: error, statusCode: 400 });
       });
 
       test('NameFirst is less than 2 characters', () => {
         user.nameFirst = 'J';
         const res = requestPut(user, '/v1/admin/user/details');
-        expect(res).toStrictEqual({ retval: { error }, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
       });
 
       test('NameFirst is more than 20 characters', () => {
         user.nameFirst = 'JamieJamieJamieJamieJamie';
         const res = requestPut(user, '/v1/admin/user/details');
-        expect(res).toStrictEqual({ retval: { error }, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
       });
 
       test('NameLast contains invalid characters (not space, apostrophe or hyphen)', () => {
         user.nameLast = 'Doe1';
         const res1 = requestPut(user, '/v1/admin/user/details');
-        expect(res1).toStrictEqual({ retval: { error }, statusCode: 400 });
+        expect(res1).toStrictEqual({ retval: error, statusCode: 400 });
 
         user.nameLast = 'Doe&';
         const res2 = requestPut(user, '/v1/admin/user/details');
-        expect(res2).toStrictEqual({ retval: { error }, statusCode: 400 });
+        expect(res2).toStrictEqual({ retval: error, statusCode: 400 });
       });
 
       test('NameLast is less than 2 characters', () => {
         user.nameLast = 'D';
         const res = requestPut(user, '/v1/admin/user/details');
-        expect(res).toStrictEqual({ retval: { error }, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
       });
 
       test('NameLast is more than 20 characters', () => {
         user.nameLast = 'DavidDavidDavidDavidDavid';
         const res = requestPut(user, '/v1/admin/user/details');
-        expect(res).toStrictEqual({ retval: { error }, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
       });
     });
   });
@@ -119,7 +119,7 @@ describe('PUT /v1/admin/user/details', () => {
     test('Token is empty (no users are registered)', () => {
       user = { token: token, email: 'newValidEmail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
       const res = requestPut(user, '/v1/admin/user/details');
-      expect(res).toStrictEqual({ retval: { error }, statusCode: 401 });
+      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
 
     test('AuthUserId is not valid', () => {
@@ -130,7 +130,7 @@ describe('PUT /v1/admin/user/details', () => {
 
       user.token.authUserId += 1;
       const res = requestPut(user, '/v1/admin/user/details');
-      expect(res).toStrictEqual({ retval: { error }, statusCode: 401 });
+      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
 
     test('SessionId is not valid', () => {
@@ -141,7 +141,7 @@ describe('PUT /v1/admin/user/details', () => {
 
       user.token.sessionId += 1;
       const res = requestPut(user, '/v1/admin/user/details');
-      expect(res).toStrictEqual({ retval: { error }, statusCode: 401 });
+      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
   });
 });
