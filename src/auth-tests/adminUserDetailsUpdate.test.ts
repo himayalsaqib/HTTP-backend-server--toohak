@@ -13,12 +13,12 @@ describe('PUT /v1/admin/user/details', () => {
   let userRegister: { email: string, password: string, nameFirst: string, nameLast: string };
   let token: { sessionId: number, authUserId: number };
 
-  describe('Testing status code 200 successful cases', () => {
+  describe('Testing successful cases (status code 200)', () => {
     beforeEach(() => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
       token = retval as { sessionId: number, authUserId: number };
-      user = { token: token, email: 'newValidEmail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
+      user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
     });
 
     test('Successful update has correct return type', () => {
@@ -34,7 +34,7 @@ describe('PUT /v1/admin/user/details', () => {
           user: {
             userId: token.authUserId,
             name: 'Not Jane Not Doe',
-            email: 'newValidEmail1@gmail',
+            email: 'newValid1@gmail.com',
             numSuccessfulLogins: 1,
             numFailedPasswordsSinceLastLogin: 0,
           }
@@ -44,17 +44,17 @@ describe('PUT /v1/admin/user/details', () => {
     });
   });
 
-  describe('Testing status code 400 errors', () => {
+  describe('Testing name and email errors (status code 400)', () => {
     beforeEach(() => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
       token = retval as { sessionId: number, authUserId: number };
-      user = { token: token, email: 'newValidEmail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
+      user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
     });
 
     describe('Testing error returns for email', () => {
       test('Email is currently used by another user', () => {
-        userRegister.email = 'newValidEmail1@gmail.com';
+        userRegister.email = 'newValid1@gmail.com';
         requestPost(userRegister, '/v1/admin/auth/register');
 
         const res = requestPut(user, '/v1/admin/user/details');
@@ -115,9 +115,9 @@ describe('PUT /v1/admin/user/details', () => {
     });
   });
 
-  describe('Testing status code 401 errors', () => {
+  describe('Testing token errors (status code 401)', () => {
     test('Token is empty (no users are registered)', () => {
-      user = { token: token, email: 'newValidEmail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
+      user = { token: token, email: 'newvalidemail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
       const res = requestPut(user, '/v1/admin/user/details');
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
@@ -126,7 +126,7 @@ describe('PUT /v1/admin/user/details', () => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
       token = retval as { sessionId: number, authUserId: number };
-      user = { token: token, email: 'newValidEmail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
+      user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
 
       user.token.authUserId += 1;
       const res = requestPut(user, '/v1/admin/user/details');
@@ -137,7 +137,7 @@ describe('PUT /v1/admin/user/details', () => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
       token = retval as { sessionId: number, authUserId: number };
-      user = { token: token, email: 'newValidEmail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
+      user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
 
       user.token.sessionId += 1;
       const res = requestPut(user, '/v1/admin/user/details');
