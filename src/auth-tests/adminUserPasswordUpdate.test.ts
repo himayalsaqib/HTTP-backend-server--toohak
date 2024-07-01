@@ -60,7 +60,7 @@ describe('PUT /v1/admin/user/password', () => {
     });
 
     test('When token is empty (no users are registered), from /v1/admin/user/password', () => {
-      expect(requestPut({ token, oldPassword: originalPassword, newPassword: 'avalidpa55word'}, '/v1/admin/user/password')).toStrictEqual({
+      expect(requestPut({ token, oldPassword: originalPassword, newPassword: 'avalidpa55word' }, '/v1/admin/user/password')).toStrictEqual({
         retval: error,
         statusCode: 401
       });
