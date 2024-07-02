@@ -7,9 +7,7 @@ import { getData, Quizzes, Users } from '../dataStore';
  * @returns {boolean} true if authUserId is valid otherwise false
  */
 export function authUserIdExists(authUserId: number): boolean {
-  const data = getData();
-
-  const user = data.users.find(user => user.authUserId === authUserId);
+  const user = findUserById(authUserId);
 
   if (user === undefined) {
     return false;
@@ -26,9 +24,7 @@ export function authUserIdExists(authUserId: number): boolean {
  * @returns {boolean} true if email exists, false if not
  */
 export function adminEmailInUse(email: string): boolean {
-  const data = getData();
-
-  const user = data.users.find(user => user.email === email);
+  const user = findUserByEmail(email);
 
   if (user === undefined) {
     return false;
