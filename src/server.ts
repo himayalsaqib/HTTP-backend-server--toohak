@@ -8,7 +8,13 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-import { adminAuthRegister, adminUserDetails, adminUserPasswordUpdate, adminUserDetailsUpdate } from './auth';
+import {
+  adminAuthRegister,
+  adminAuthLogin,
+  adminUserDetails,
+  adminUserDetailsUpdate,
+  adminUserPasswordUpdate
+} from './auth';
 import { tokenCreate, tokenExists } from './helper-files/serverHelper';
 import { clear } from './other';
 import { adminQuizCreate } from './quiz';
@@ -63,20 +69,16 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   res.json(tokenCreate(response.authUserId));
 });
 
-app.put('/v1/admin/user/password', (req: Request, res: Response) => {
-  const { token, oldPassword, newPassword } = req.body;
+app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
+  const { email, password } = req.body;
 
-  let response = tokenExists(token);
-  if ('error' in response) {
-    return res.status(401).json(response);
-  }
+  const response = adminAuthLogin(email, password);
 
-  response = adminUserPasswordUpdate(token.authUserId, oldPassword, newPassword);
   if ('error' in response) {
     return res.status(400).json(response);
   }
 
-  res.json(response);
+  res.json(tokenCreate(response.authUserId));
 });
 
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
@@ -103,6 +105,22 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
   }
 
   response = adminUserDetailsUpdate(token.authUserId, email, nameFirst, nameLast);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
+app.put('/v1/admin/user/password', (req: Request, res: Response) => {
+  const { token, oldPassword, newPassword } = req.body;
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = adminUserPasswordUpdate(token.authUserId, oldPassword, newPassword);
   if ('error' in response) {
     return res.status(400).json(response);
   }
