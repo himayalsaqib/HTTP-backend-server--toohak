@@ -75,15 +75,10 @@ export function adminPasswordHasValidChars(password: string): boolean {
  * @returns {boolean} true if newPassword matches any previous passwords
  */
 export function adminCheckPasswordHistory(authUserId: number, newPassword: string): boolean {
-  const data = getData();
-
-  for (const user of data.users) {
-    if (user.authUserId === authUserId) {
-      for (const password of user.previousPasswords) {
-        if (password === newPassword) {
-          return true;
-        }
-      }
+  const user = findUserById(authUserId);
+  for (const password of user.previousPasswords) {
+    if (password === newPassword) {
+      return true;
     }
   }
 
