@@ -200,7 +200,7 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
 
   quiz.name = name;
   quiz.timeLastEdited = parseFloat(Date.now().toFixed(10));
-  
+
   const data = getData();
   setData(data);
 
