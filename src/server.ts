@@ -8,8 +8,8 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-import { adminAuthRegister, adminUserDetails } from './auth';
-import { tokenCreate, tokenExists } from './serverHelper';
+import { adminAuthRegister, adminUserDetails, adminUserPasswordUpdate, adminUserDetailsUpdate } from './auth';
+import { tokenCreate, tokenExists } from './helper-files/serverHelper';
 import { clear } from './other';
 import { adminQuizCreate } from './quiz';
 
@@ -63,6 +63,22 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   res.json(tokenCreate(response.authUserId));
 });
 
+app.put('/v1/admin/user/password', (req: Request, res: Response) => {
+  const { token, oldPassword, newPassword } = req.body;
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = adminUserPasswordUpdate(token.authUserId, oldPassword, newPassword);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.sessionId as string);
   const authUserId = parseInt(req.query.authUserId as string);
@@ -74,6 +90,23 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   }
 
   response = adminUserDetails(token.authUserId);
+  res.json(response);
+});
+
+app.put('/v1/admin/user/details', (req: Request, res: Response) => {
+  const { token, email, nameFirst, nameLast } = req.body;
+  console.log(email);
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = adminUserDetailsUpdate(token.authUserId, email, nameFirst, nameLast);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
   res.json(response);
 });
 
