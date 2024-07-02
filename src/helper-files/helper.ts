@@ -155,9 +155,7 @@ export function quizNameInUse(authUserId: number, name: string): boolean {
  * @returns {boolean} true if quiz ID has been used, false if it has not
  */
 export function quizIdInUse(quizId: number): boolean {
-  const data = getData();
-
-  const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
+  const quiz = findQuizById(quizId);
   if (quiz === undefined) {
     return false;
   }
