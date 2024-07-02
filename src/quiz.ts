@@ -200,8 +200,9 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
 
   quiz.name = name;
   quiz.timeLastEdited = parseFloat(Date.now().toFixed(10));
-
-  setData(getData());
+  
+  const data = getData();
+  setData(data);
 
   return {};
 }
@@ -234,7 +235,8 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
   quiz.description = description;
   quiz.timeLastEdited = parseFloat(Date.now().toFixed(10));
 
-  setData(getData());
+  const data = getData();
+  setData(data);
 
   return {};
 }
