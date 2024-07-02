@@ -22,34 +22,34 @@ describe('DELETE /v1/clear', () => {
     test('Error returned by /v1/admin/user/details after clearing a registered user', () => {
       // test return of '/v1/admin/auth/register'
       expect(token).toStrictEqual({ sessionId: expect.any(Number), authUserId: expect.any(Number) });
-      
+
       // login the user again
-      let loginBody = { email: 'email@gmail.com', password: 'password123' };
-      expect(requestPost(loginBody, '/v1/admin/auth/login')).toStrictEqual({ 
+      const loginBody = { email: 'email@gmail.com', password: 'password123' };
+      expect(requestPost(loginBody, '/v1/admin/auth/login')).toStrictEqual({
         retval: { sessionId: expect.any(Number), authUserId: token.authUserId },
         statusCode: 200
-       });
+      });
 
       // get the details of the user
       expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
         retval: {
           user: {
-          userId: token.authUserId,
-          name: 'Jane Doe',
-          email: 'email@gmail.com',
-          numSuccessfulLogins: 2,
-          numFailedPasswordsSinceLastLogin: 0,
-        }
-      },
-      statusCode: 200
+            userId: token.authUserId,
+            name: 'Jane Doe',
+            email: 'email@gmail.com',
+            numSuccessfulLogins: 2,
+            numFailedPasswordsSinceLastLogin: 0,
+          }
+        },
+        statusCode: 200
       });
-      
+
       // set the dataStore back to it's initial state
       requestDelete({}, '/v1/clear');
-      
+
       // call the route to give the details of the cleared user, return error
       expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
-        retval: error, 
+        retval: error,
         statusCode: 401
       });
     });
