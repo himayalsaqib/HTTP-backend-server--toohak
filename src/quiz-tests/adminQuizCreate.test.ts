@@ -13,14 +13,11 @@ describe('POST /v1/admin/quiz', () => {
   let quizBody: { token: Tokens, name: string, description: string };
   let token: { sessionId: number, authUserId: number };
 
-  beforeEach(() => {
-    userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-    const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-    token = retval as { sessionId: number, authUserId: number };
-  });
-
-  describe('Testing status code 200', () => {
+  describe('Testing successful cases (status code 200)', () => {
     beforeEach(() => {
+      userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
+      token = retval as { sessionId: number, authUserId: number };
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
     });
 
@@ -46,33 +43,43 @@ describe('POST /v1/admin/quiz', () => {
     });
   });
 
-  describe('Testing status code 401', () => {
-    describe('Testing invalid token', () => {
-      test('Returns error when given invalid user ID', () => {
-        token.authUserId += 1;
-        quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
-        const res = requestPost(quizBody, '/v1/admin/quiz');
-        expect(res).toStrictEqual({ retval: error, statusCode: 401 });
-      });
+  describe('Testing token errors (status code 401)', () => {
+    test('Given invalid user ID', () => {
+      userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
+      token = retval as { sessionId: number, authUserId: number };
 
-      test('Returns error when given invalid session ID', () => {
-        token.sessionId += 1;
-        quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
-        const res = requestPost(quizBody, '/v1/admin/quiz');
-        expect(res).toStrictEqual({ retval: error, statusCode: 401 });
-      });
+      token.authUserId += 1;
+      quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
+    });
 
-      test('Returns error when token is empty', () => {
-        token = { sessionId: null, authUserId: null };
-        quizBody.token = token;
-        const res = requestPost(quizBody, '/v1/admin/quiz');
+    test('Given invalid session ID', () => {
+      userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
+      token = retval as { sessionId: number, authUserId: number };
 
-        expect(res).toStrictEqual({ retval: error, statusCode: 401 });
-      });
+      token.sessionId += 1;
+      quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
+    });
+
+    test('Token is empty (no users are registered)', () => {
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+
+      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
   });
 
-  describe('Testing status code 400', () => {
+  describe('Testing name and description errors (status code 400)', () => {
+    beforeEach(() => {
+      userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
+      token = retval as { sessionId: number, authUserId: number };
+    });
+
     describe('Testing quiz name errors', () => {
       test('Quiz name contains invalid characters', () => {
         quizBody = { token: token, name: 'Invalid Quiz Name !@#$%^&*()', description: 'Valid Quiz Description' };
