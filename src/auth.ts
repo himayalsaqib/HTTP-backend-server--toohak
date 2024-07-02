@@ -6,7 +6,7 @@ import {
   adminPasswordHasValidChars,
   authUserIdExists,
   adminCheckPasswordHistory,
-} from './helper';
+} from './helper-files/helper';
 
 /// //////////////////////////// Global Variables ///////////////////////////////
 const MIN_PASSWORD_LENGTH = 8;

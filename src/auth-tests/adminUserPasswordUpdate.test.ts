@@ -1,6 +1,6 @@
 // includes HTTP tests for the route /v1/admin/user/password
 
-import { requestDelete, requestPut, requestPost } from '../requestHelper';
+import { requestDelete, requestPut, requestPost } from '../helper-files/requestHelper';
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');

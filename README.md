@@ -8,7 +8,7 @@
 
 ## Change Log
 
-N/A
+* 29/06 Added missing error condition to adminQuizDescriptionUpdate and peer assessment links.
 
 ## 🫡 0. Aims:
 
@@ -1420,19 +1420,19 @@ The following criteria will be assessed by your team members:
   </tr>
   <tr>
     <td>1</td>
-    <td>Coming soon</td>
+    <td>Completed</td>
     <td>8pm Friday 21st June</td>
     <td>9am Monday 24th June</td>
   </tr>
   <tr>
     <td>2</td>
-    <td>Coming soon</td>
+    <td><a href="https://moodle.telt.unsw.edu.au/mod/assign/view.php?id=6843129">Click here</a></td>
     <td>8pm Friday 12th July</td>
     <td>9am Monday 15th July</td>
   </tr>
   <tr>
     <td>3</td>
-    <td>Coming soon</td>
+    <td><a href="https://moodle.telt.unsw.edu.au/mod/assign/view.php?id=6843131">Click here</a></td>
     <td>8pm Friday 2nd August</td>
     <td>9am Monday 5th August</td>
   </tr>

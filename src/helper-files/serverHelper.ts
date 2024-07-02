@@ -1,4 +1,4 @@
-import { ErrorObject, EmptyObject, Tokens, getData, setData } from './dataStore';
+import { ErrorObject, EmptyObject, Tokens, getData, setData } from '../dataStore';
 
 /**
  * Function checks if a sessionId already exists in the dataStore

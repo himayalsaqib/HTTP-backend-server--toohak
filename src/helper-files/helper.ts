@@ -1,4 +1,4 @@
-import { getData } from './dataStore';
+import { getData } from '../dataStore';
 
 /**
  * Function checks if an authUserId exists in the dataStore
