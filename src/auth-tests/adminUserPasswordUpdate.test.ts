@@ -139,22 +139,36 @@ describe('PUT /v1/admin/user/password', () => {
   });
 
   describe('Testing side-effects from /v1/admin/user/password (status code 200)', () => {
-    test.skip('Successful login after updating password', () => {
-      // login before updating password
-      const body = { email: 'valid123@gmail.com', password: originalPassword };
-      expect(requestPost(body, '/v1/admin/auth/login')).toStrictEqual({
-        retval: { sessionId: expect.any(Number), authUserId: token.authUserId },
+    test('Successful login after updating password', () => {
+      // register new user
+      const ogPassword = 'avalidpa5sw0rd';
+      const body = { email: 'email@gmail.com', password: ogPassword, nameFirst: 'John', nameLast: 'Smith' };
+      const response = requestPost(body, '/v1/admin/auth/register');
+      expect(response).toStrictEqual({
+        retval: { sessionId: expect.any(Number), authUserId: expect.any(Number) },
         statusCode: 200
       });
 
-      const alteredPassword = 'newpa55word';
-      const newBody = { email: 'valid123@gmail.com', oldPassword: originalPassword, newPassword: alteredPassword };
-      // update password
-      requestPut(newBody, '/v1/admin/user/password');
+      // login after registering
+      const loginBody = { email: 'email@gmail.com', password: ogPassword };
+      const loginResponse = requestPost(loginBody, '/v1/admin/auth/login');
+      expect(loginResponse).toStrictEqual({
+        retval: { sessionId: expect.any(Number), authUserId: response.retval.authUserId },
+        statusCode: 200
+      });
 
-      // login after updating password
-      expect(requestPost({ email: 'valid123@gmail.com', password: alteredPassword }, '/v1/admin/auth/login')).toStrictEqual({
-        retval: { senssionId: expect.any(Number), authUserId: token.authUserId },
+      // update the password
+      const changedPassword = 'an0thervalidPass';
+      const passwordBody = { token: response.retval, oldPassword: ogPassword, newPassword: changedPassword };
+      expect(requestPut(passwordBody, '/v1/admin/user/password')).toStrictEqual({
+        retval: {},
+        statusCode: 200
+      });
+
+      // login with updated password
+      const updatedLoginBody = { email: 'email@gmail.com', password: changedPassword };
+      expect(requestPost(updatedLoginBody, '/v1/admin/auth/login')).toStrictEqual({
+        retval: { sessionId: expect.any(Number), authUserId: response.retval.authUserId },
         statusCode: 200
       });
     });
