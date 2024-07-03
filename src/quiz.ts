@@ -3,7 +3,8 @@ import {
   authUserIdExists,
   quizNameHasValidChars,
   quizNameInUse,
-  quizIdInUse
+  quizIdInUse,
+  findQuizById
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -112,21 +113,18 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
  * @returns {{} | { error: string }} - an empty object
  */
 export function adminQuizRemove (authUserId: number, quizId: number): EmptyObject | ErrorObject {
-  const data = getData();
-
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId does not refer to a valid user id.' };
   } else if (quizIdInUse(quizId) === false) {
     return { error: 'Quiz Id does not refer to a valid quiz.' };
   }
-
+  const data = getData();
   const quizIndex = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
   const quiz = data.quizzes[quizIndex];
 
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz does not belong to user.' };
   }
-
   data.quizzes.splice(quizIndex, 1);
   setData(data);
 
@@ -148,8 +146,7 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | E
     return { error: 'Quiz ID does not refer to a valid quiz.' };
   }
 
-  const data = getData();
-  const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
+  const quiz = findQuizById(quizId);
 
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
@@ -195,8 +192,7 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
     };
   }
 
-  const data = getData();
-  const quiz = data.quizzes.find(q => q.quizId === quizId);
+  const quiz = findQuizById(quizId);
 
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
@@ -205,6 +201,7 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
   quiz.name = name;
   quiz.timeLastEdited = parseFloat(Date.now().toFixed(10));
 
+  const data = getData();
   setData(data);
 
   return {};
@@ -229,8 +226,7 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
     return { error: 'Description is more than 100 characters in length.' };
   }
 
-  const data = getData();
-  const quiz = data.quizzes.find(q => q.quizId === quizId);
+  const quiz = findQuizById(quizId);
 
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
@@ -239,6 +235,7 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
   quiz.description = description;
   quiz.timeLastEdited = parseFloat(Date.now().toFixed(10));
 
+  const data = getData();
   setData(data);
 
   return {};
