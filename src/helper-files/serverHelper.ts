@@ -1,4 +1,5 @@
 import { ErrorObject, EmptyObject, Tokens, getData, setData } from '../dataStore';
+import { findQuizById } from './helper';
 
 /**
  * Function checks if a sessionId already exists in the dataStore
@@ -45,9 +46,7 @@ export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
  * @returns {{} | { error: string }}
  */
 export function quizBelongsToUser(authUserId: number, quizId: number): EmptyObject | ErrorObject {
-  const data = getData();
-
-  const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
+  const quiz = findQuizById(quizId);
 
   if (quiz === undefined || quiz.authUserId !== authUserId) {
     return { error: 'User is not an owner of this quiz' };

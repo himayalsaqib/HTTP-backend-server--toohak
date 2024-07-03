@@ -1,4 +1,4 @@
-import { getData } from '../dataStore';
+import { getData, Quizzes, Users } from '../dataStore';
 
 /**
  * Function checks if an authUserId exists in the dataStore
@@ -7,9 +7,7 @@ import { getData } from '../dataStore';
  * @returns {boolean} true if authUserId is valid otherwise false
  */
 export function authUserIdExists(authUserId: number): boolean {
-  const data = getData();
-
-  const user = data.users.find(user => user.authUserId === authUserId);
+  const user = findUserById(authUserId);
 
   if (user === undefined) {
     return false;
@@ -26,9 +24,7 @@ export function authUserIdExists(authUserId: number): boolean {
  * @returns {boolean} true if email exists, false if not
  */
 export function adminEmailInUse(email: string): boolean {
-  const data = getData();
-
-  const user = data.users.find(user => user.email === email);
+  const user = findUserByEmail(email);
 
   if (user === undefined) {
     return false;
@@ -79,19 +75,36 @@ export function adminPasswordHasValidChars(password: string): boolean {
  * @returns {boolean} true if newPassword matches any previous passwords
  */
 export function adminCheckPasswordHistory(authUserId: number, newPassword: string): boolean {
-  const data = getData();
-
-  for (const user of data.users) {
-    if (user.authUserId === authUserId) {
-      for (const password of user.previousPasswords) {
-        if (password === newPassword) {
-          return true;
-        }
-      }
+  const user = findUserById(authUserId);
+  for (const password of user.previousPasswords) {
+    if (password === newPassword) {
+      return true;
     }
   }
 
   return false;
+}
+
+/**
+ * Finds a user in the data store by authUserId
+ *
+ * @param {number} authUserId - The authUserId to find
+ * @returns {Users | undefined} - The user object if found | undefined
+ */
+export function findUserById(authUserId: number): Users | undefined {
+  const data = getData();
+  return data.users.find(user => user.authUserId === authUserId);
+}
+
+/**
+ * Finds a user in the data store by email
+ *
+ * @param {string} email - The email to find
+ * @returns {Users | undefined} - The user object if found | undefined
+ */
+export function findUserByEmail(email: string): Users | undefined {
+  const data = getData();
+  return data.users.find(user => user.email === email);
 }
 
 /// ///////////////////////// Quiz Helper Functions ////////////////////////////
@@ -137,11 +150,20 @@ export function quizNameInUse(authUserId: number, name: string): boolean {
  * @returns {boolean} true if quiz ID has been used, false if it has not
  */
 export function quizIdInUse(quizId: number): boolean {
-  const data = getData();
-
-  const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
+  const quiz = findQuizById(quizId);
   if (quiz === undefined) {
     return false;
   }
   return true;
+}
+
+/**
+ * Finds a quiz in the data by its quiz ID
+ *
+ * @param {number} quizId - The ID of the quiz to find
+ * @returns {Quizzes | undefined} - The quiz with the specified ID | undefined
+ */
+export function findQuizById(quizId: number): Quizzes | undefined {
+  const data = getData();
+  return data.quizzes.find(q => q.quizId === quizId);
 }

@@ -6,6 +6,8 @@ import {
   adminPasswordHasValidChars,
   authUserIdExists,
   adminCheckPasswordHistory,
+  findUserById,
+  findUserByEmail
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables ///////////////////////////////
@@ -102,10 +104,8 @@ export function adminAuthLogin (email: string, password: string): { authUserId: 
   if (!adminEmailInUse(email)) {
     return { error: 'Email address does not exist.' };
   }
-
+  const user = findUserByEmail(email);
   const data = getData();
-
-  const user = data.users.find(current => current.email === email);
 
   if (user.password === password) {
     user.numFailedLogins = INITIAL_NUM_FAILED_LOGINS;
@@ -132,8 +132,7 @@ export function adminUserDetails (authUserId: number): { user: UserDetails } | E
     return { error: 'AuthUserId is not a valid user.' };
   }
 
-  const data = getData();
-  const user = data.users.find(current => current.authUserId === authUserId);
+  const user = findUserById(authUserId);
 
   return {
     user:
@@ -157,19 +156,17 @@ export function adminUserDetails (authUserId: number): { user: UserDetails } | E
  * @returns {{} | { error: string }} empty
  */
 export function adminUserPasswordUpdate(authUserId: number, oldPassword: string, newPassword: string): EmptyObject | ErrorObject {
-  const data = getData();
-
   // check for valid user
   if (!authUserIdExists(authUserId)) {
     return { error: 'AuthUserId is not a valid user.' };
   }
 
+  const user = findUserById(authUserId);
+
   // check oldPassword
-  for (const user of data.users) {
-    if (user.authUserId === authUserId) {
-      if (oldPassword !== user.password) {
-        return { error: 'Old password is not the correct old password.' };
-      }
+  if (user) {
+    if (oldPassword !== user.password) {
+      return { error: 'Old password is not the correct old password.' };
     }
   }
 
@@ -179,12 +176,10 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
   }
 
   // check newPassword
-  for (const user of data.users) {
-    if (user.authUserId === authUserId) {
-      // check previousPassword
-      if (adminCheckPasswordHistory(authUserId, newPassword) === true) {
-        return { error: 'New password has already been used before by this user.' };
-      }
+  if (user.authUserId === authUserId) {
+    // check previousPassword
+    if (adminCheckPasswordHistory(authUserId, newPassword) === true) {
+      return { error: 'New password has already been used before by this user.' };
     }
   }
 
@@ -199,13 +194,11 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
   }
 
   // update password for user
-  for (const user of data.users) {
-    if (user.authUserId === authUserId) {
-      user.previousPasswords.push(newPassword);
-      user.password = newPassword;
-    }
+  if (user.authUserId === authUserId) {
+    user.previousPasswords.push(newPassword);
+    user.password = newPassword;
   }
-
+  const data = getData();
   setData(data);
 
   return {};
@@ -226,15 +219,10 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
     return { error: 'AuthUserId is not a valid user.' };
   }
 
-  const data = getData();
-
-  for (const user of data.users) {
-    if (user.email === email) {
-      if (user.authUserId === authUserId) {
-        break;
-      } else {
-        return { error: 'Email currently in use by another user.' };
-      }
+  const userWithEmail = findUserByEmail(email);
+  if (userWithEmail) {
+    if (userWithEmail.authUserId !== authUserId) {
+      return { error: 'Email currently in use by another user.' };
     }
   }
 
@@ -258,14 +246,14 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
     return { error: 'Last name is less than 2 characters or more than 20 characters.' };
   }
 
-  for (const user of data.users) {
-    if (user.authUserId === authUserId) {
-      user.email = email;
-      user.nameFirst = nameFirst;
-      user.nameLast = nameLast;
-    }
+  const userToUpdate = findUserById(authUserId);
+  if (userToUpdate) {
+    userToUpdate.email = email;
+    userToUpdate.nameFirst = nameFirst;
+    userToUpdate.nameLast = nameLast;
   }
 
+  const data = getData();
   setData(data);
 
   return {};
