@@ -77,7 +77,7 @@ describe('POST /v1/admin/auth/login', () => {
     });
   });
 
-  describe('Testing password given to adminAuthRegister (status code 400)', () => {
+  describe('Testing password given to adminAuthLogin (status code 400)', () => {
     test('Returns error when password does not match given email', () => {
       bodyLogin = { email: 'valid@gmail.com', password: 'Password34' };
       expect(requestPost(bodyLogin, '/v1/admin/auth/login')).toStrictEqual({
