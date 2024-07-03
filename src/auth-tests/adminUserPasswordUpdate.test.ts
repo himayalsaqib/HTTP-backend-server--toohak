@@ -139,11 +139,10 @@ describe('PUT /v1/admin/user/password', () => {
   });
 
   describe('Testing side-effects from /v1/admin/user/password (status code 200)', () => {
-    test('Successful login after updating password (not broken)', () => {
+    test('Successful login after updating password', () => {
       // register new user
       const ogPassword = 'avalidpa5sw0rd';
       const body = { email: 'email@gmail.com', password: ogPassword, nameFirst: 'John', nameLast: 'Smith' };
-
       const response = requestPost(body, '/v1/admin/auth/register');
       expect(response).toStrictEqual({
         retval: { sessionId: expect.any(Number), authUserId: expect.any(Number) },
@@ -173,28 +172,5 @@ describe('PUT /v1/admin/user/password', () => {
         statusCode: 200
       });
     });
-
-    // test.skip('NOT WORKING Successful login after updating password', () => {
-    //   // login before updating password
-    //   const body = { email: 'valid123@gmail.com', password: originalPassword };
-    //   expect(requestPost(body, '/v1/admin/auth/login')).toStrictEqual({
-    //     retval: { sessionId: expect.any(Number), authUserId: token.authUserId },
-    //     statusCode: 200
-    //   });
-
-    //   const alteredPassword = 'newpa55word';
-    //   const newBody = { email: 'valid123@gmail.com', oldPassword: originalPassword, newPassword: alteredPassword };
-    //   // update password
-    //   expect(requestPut(newBody, '/v1/admin/user/password')).toStrictEqual({
-    //     retval: {},
-    //     statusCode: 200
-    //   });
-
-    //   // login after updating password
-    //   expect(requestPost({ email: 'valid123@gmail.com', password: alteredPassword }, '/v1/admin/auth/login')).toStrictEqual({
-    //     retval: { senssionId: expect.any(Number), authUserId: token.authUserId },
-    //     statusCode: 200
-    //   });
-    // });
   });
 });
