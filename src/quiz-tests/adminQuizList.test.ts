@@ -32,10 +32,10 @@ describe('GET /v1/admin/quiz/list', () => {
             }
           ]  
         },
-      statusCode: 200 
+        statusCode: 200 
+      });
     });
-    
-    });
+
     test('Correctly returns quiz list that contains multiple quizzes', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       quizBody = { token: token, name: 'My Quiz Two', description: 'Other Quiz Description' }
@@ -52,10 +52,10 @@ describe('GET /v1/admin/quiz/list', () => {
               quizId: res2.retval, 
               name: 'My Quiz Two',
             }
-          ]  
+          ]
         },
-      statusCode: 200 
-    });
+        statusCode: 200
+      });
     });
 
     test.skip('Correctly returns quiz list after a quiz has been removed', () => {
@@ -71,10 +71,10 @@ describe('GET /v1/admin/quiz/list', () => {
               quizId: res.retval, 
               name: 'My Quiz Name',
             }
-          ]  
+          ]
         },
-      statusCode: 200 
-    });
+        statusCode: 200
+      });
     });
 
     test('Correctly returns quiz list that contains no quizzes', () => {
@@ -87,19 +87,16 @@ describe('GET /v1/admin/quiz/list', () => {
         statusCode: 200 
       });
     });
-
   });
 
   describe('Testing for invaliduser (status code 401)', () => {
     test('Returns error when authUserId is not a valid user', () => {
     token.authUserId += 1;
-
     expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
       retval: error,
       statusCode: 401
     });
   });
 });
-
 });
 
