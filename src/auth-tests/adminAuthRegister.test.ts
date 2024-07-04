@@ -10,22 +10,21 @@ describe('POST /v1/admin/auth/register', () => {
   const error = { error: expect.any(String) };
   let body: { email: string, password: string, nameFirst: string, nameLast: string };
 
-  describe('Testing for return type (status code 200)', () => {
-    test('Has the correct return type', () => {
-      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
-        retval: { sessionId: expect.any(Number), authUserId: expect.any(Number) },
-        statusCode: 200
-      });
-    });
-  });
-
   describe('Testing successful registration (status code 200)', () => {
     let token: { sessionId: number, authUserId: number };
     beforeEach(() => {
       body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(body, '/v1/admin/auth/register');
       token = retval as { sessionId: number, authUserId: number };
+    });
+
+    test('Has the correct return type', () => {
+      requestDelete({}, '/v1/clear');
+      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
+        retval: { sessionId: expect.any(Number), authUserId: expect.any(Number) },
+        statusCode: 200
+      });
     });
 
     test('Has successful side effect (user is registered)', () => {
@@ -48,7 +47,7 @@ describe('POST /v1/admin/auth/register', () => {
       { param: 'firstname', password: 'Password34', nameFirst: 'Jane', nameLast: 'Day' },
       { param: 'lastname', password: 'Password34', nameFirst: 'John', nameLast: 'Doe' },
     ])('Can register users with the same $param', ({ param, password, nameFirst, nameLast }) => {
-      // new user with some parameter the same compared to exisiting user
+      // new user with some parameter the same compared to existing user
       body = { email: 'valid2@gmail.com', password, nameFirst, nameLast };
       const { retval } = requestPost(body, '/v1/admin/auth/register');
       const token2 = retval as { sessionId: number, authUserId: number };
