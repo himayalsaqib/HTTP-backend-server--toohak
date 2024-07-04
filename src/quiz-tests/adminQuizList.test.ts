@@ -16,7 +16,7 @@ describe('GET /v1/admin/quiz/list', () => {
   describe('Testing for correct return type (status code 200)', () => {
     beforeEach(() => {
       userBody = { email: 'user@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
-      const { retval } = requestPost(userBody, '/v1/admin/quiz/register');
+      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
       token = retval as { sessionId: number, authUserId: number };
       quizBody = { token: token, name: 'My Quiz Name', description: 'Valid Quiz Description' };
     });
@@ -28,7 +28,7 @@ describe('GET /v1/admin/quiz/list', () => {
         retval: {
           quizzes: [
             {
-              quizId: res.retval,
+              quizId: res.retval.quizId,
               name: 'My Quiz Name',
             }
           ]
@@ -46,11 +46,11 @@ describe('GET /v1/admin/quiz/list', () => {
         retval: {
           quizzes: [
             {
-              quizId: res.retval,
+              quizId: res.retval.quizId,
               name: 'My Quiz Name',
             },
             {
-              quizId: res2.retval,
+              quizId: res2.retval.quizId,
               name: 'My Quiz Two',
             }
           ]
@@ -69,7 +69,7 @@ describe('GET /v1/admin/quiz/list', () => {
         retval: {
           quizzes: [
             {
-              quizId: res.retval,
+              quizId: res.retval.quizId,
               name: 'My Quiz Name',
             }
           ]
@@ -80,6 +80,9 @@ describe('GET /v1/admin/quiz/list', () => {
 
     test('Correctly returns quiz list that contains no quizzes', () => {
       requestDelete({}, '/v1/clear');
+      userBody = { email: 'user@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
+      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
+      token = retval as { sessionId: number, authUserId: number };
       const listRes = requestGet(token, '/v1/admin/quiz/list');
       expect(listRes).toStrictEqual({
         retval: {
