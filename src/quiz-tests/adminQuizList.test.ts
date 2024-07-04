@@ -79,10 +79,6 @@ describe('GET /v1/admin/quiz/list', () => {
     });
 
     test('Correctly returns quiz list that contains no quizzes', () => {
-      requestDelete({}, '/v1/clear');
-      userBody = { email: 'user@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
-      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
       const listRes = requestGet(token, '/v1/admin/quiz/list');
       expect(listRes).toStrictEqual({
         retval: {
