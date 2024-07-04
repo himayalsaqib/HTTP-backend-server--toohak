@@ -269,9 +269,7 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
 export function adminAuthLogout(token: Tokens): EmptyObject | ErrorObject {
   const data = getData();
 
-  const index = data.tokens.findIndex(currToken => {
-    return currToken.sessionId === token.sessionId && currToken.authUserId === token.authUserId;
-  });
+  const index = data.tokens.findIndex(currToken => currToken === token);
   data.tokens.splice(index, 1);
 
   setData(data);
