@@ -27,7 +27,7 @@ describe('POST /v1/admin/auth/register', () => {
       });
     });
 
-    test('Has successful side effect (user is registered)', () => {
+    test('Side effect: adminUserDetails successfully returns registered user\'s details', () => {
       expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
         retval: {
           user: {
