@@ -15,7 +15,7 @@ import {
   adminUserDetailsUpdate,
   adminUserPasswordUpdate
 } from './auth';
-import { tokenCreate, tokenExists } from './helper-files/serverHelper';
+import { quizBelongsToUser, tokenCreate, tokenExists } from './helper-files/serverHelper';
 import { clear } from './other';
 import { adminQuizCreate } from './quiz';
 
@@ -141,6 +141,22 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   response = adminQuizCreate(token.authUserId, name, description);
   if ('error' in response) {
     return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
+app.post('/v1/admin/quiz/{quizid}', (req: Request, res: Response) => {
+  const {token} = req.body;
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = quizBelongsToUser(token.authUserId, token.quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
   }
 
   res.json(response);
