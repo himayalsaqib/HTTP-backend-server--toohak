@@ -23,7 +23,7 @@ describe('GET /v1/admin/quiz/list', () => {
 
     test('Correctly returns quiz list that contains 1 quiz', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
-      const listRes = requestGet(token , '/v1/admin/quiz/list');
+      const listRes = requestGet(token, '/v1/admin/quiz/list');
       expect(listRes).toStrictEqual({
         retval: {
           quizzes: [
