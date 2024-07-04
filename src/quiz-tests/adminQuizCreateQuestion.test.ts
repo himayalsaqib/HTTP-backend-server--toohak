@@ -1,6 +1,6 @@
 // includes http tests for the route /v1/admin/quiz/{quizid}/question
 
-import { Tokens } from "../dataStore";
+import { Tokens, Quizzes } from "../dataStore";
 import { requestDelete, requestPost } from "../helper-files/requestHelper";
 
 beforeEach(() => {
@@ -9,8 +9,26 @@ beforeEach(() => {
 
 describe('POST /v1/amdin/quiz/{quizid}/question', () => {
   const error = { error: expect.any(String) };
+  let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
+  let quizBody: { token: Tokens, name: string, description: string };
+  let questionBody: { question: string, duration: number, points: number, answers: []}
+  let token: { sessionId: number, authUserId: number };
   
   describe('Testing successful cases (status code 200)', () => {
+    beforeEach(() => {
+      // register a user to create a quiz
+      userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
+      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
+      token = retval as { sessionId: number, authUserId: number };
+      
+      // create the quiz
+      quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+
+      // create a quiz question
+      
+    });
+    
     test.todo('Has correct return type');
 
     test.todo('Side effect - Successful listing of information about a quiz');
