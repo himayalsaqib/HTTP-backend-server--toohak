@@ -105,6 +105,13 @@ describe('GET /v1/admin/quiz/list', () => {
         statusCode: 401
       });
     });
-    
+
+    test('Returns error when sessionId is invalid', () => {
+      token.sessionId += 1;
+      expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
+        retval: error,
+        statusCode: 401
+      });
+    });
   });
 });
