@@ -17,7 +17,7 @@ import {
 } from './auth';
 import { quizBelongsToUser, tokenCreate, tokenExists } from './helper-files/serverHelper';
 import { clear } from './other';
-import { adminQuizCreate } from './quiz';
+import { adminQuizCreate, adminQuizRemove } from './quiz';
 
 // Set up web app
 const app = express();
@@ -148,17 +148,19 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
 
 app.delete('/v1/admin/quiz/{quizid}', (req: Request, res: Response) => {
   const {token} = req.body;
+  const quizId = parseInt(req.params.quizId);
 
   let response = tokenExists(token);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = quizBelongsToUser(token.authUserId, token.quizId);
+  response = quizBelongsToUser(token.authUserId, quizId);
   if ('error' in response) {
     return res.status(403).json(response);
   }
 
+  response = adminQuizRemove(token.authUserId, quizId);
   res.json(response);
 });
 
