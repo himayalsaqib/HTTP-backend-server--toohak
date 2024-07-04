@@ -23,7 +23,7 @@ describe('GET /v1/admin/quiz/list', () => {
 
     test('Correctly returns quiz list that contains 1 quiz', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
-      const listRes = requestGet({ token }, '/v1/admin/quiz/list');
+      const listRes = requestGet(token , '/v1/admin/quiz/list');
       expect(listRes).toStrictEqual({
         retval: {
           quizzes: [
@@ -41,7 +41,7 @@ describe('GET /v1/admin/quiz/list', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       quizBody = { token: token, name: 'My Quiz Two', description: 'Other Quiz Description' };
       const res2 = requestPost(quizBody, '/v1/admin/quiz');
-      const listRes = requestGet({ token }, '/v1/admin/quiz/list');
+      const listRes = requestGet(token, '/v1/admin/quiz/list');
       expect(listRes).toStrictEqual({
         retval: {
           quizzes: [
@@ -64,7 +64,7 @@ describe('GET /v1/admin/quiz/list', () => {
       quizBody = { token: token, name: 'My Quiz Two', description: 'Other Quiz Description' };
       const res2 = requestPost(quizBody, '/v1/admin/quiz');
       requestDelete(token, res2.retval);
-      const listRes = requestGet({ token }, '/v1/admin/quiz/list');
+      const listRes = requestGet(token, '/v1/admin/quiz/list');
       expect(listRes).toStrictEqual({
         retval: {
           quizzes: [
@@ -80,7 +80,7 @@ describe('GET /v1/admin/quiz/list', () => {
 
     test('Correctly returns quiz list that contains no quizzes', () => {
       requestDelete({}, '/v1/clear');
-      const listRes = requestGet({ token }, '/v1/admin/quiz/list');
+      const listRes = requestGet(token, '/v1/admin/quiz/list');
       expect(listRes).toStrictEqual({
         retval: {
           quizzes: []
