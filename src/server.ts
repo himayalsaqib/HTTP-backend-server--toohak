@@ -155,7 +155,8 @@ app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
   if ('error' in response) {
     return res.status(401).json(response);
   }
-  
+
+  response = adminQuizList(token.authUserId);
   res.json(response);
 });
 
