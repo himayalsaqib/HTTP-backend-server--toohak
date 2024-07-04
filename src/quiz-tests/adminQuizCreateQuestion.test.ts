@@ -8,7 +8,8 @@ beforeEach(() => {
 });
 
 describe('POST /v1/amdin/quiz/{quizid}/question', () => {
-
+  const error = { error: expect.any(String) };
+  
   describe('Testing successful cases (status code 200)', () => {
     test.todo('Has correct return type');
 
