@@ -260,5 +260,11 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  * question are randomly generated
  * 
  * @param {number} quizId
- * @param {object} questionBody
+ * @param {object} QuestionBody
+ * @returns { {questionId: number} | { error: string}}
  */
+
+export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBody): { questionId: number} | ErrorObject {
+
+  return { questionId: 100 };
+}
