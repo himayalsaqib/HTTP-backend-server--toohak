@@ -1,4 +1,4 @@
-import { setData, getData, ErrorObject, EmptyObject } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, Tokens } from './dataStore';
 import validator from 'validator';
 import {
   adminEmailInUse,
@@ -37,7 +37,7 @@ interface UserDetails {
  * @param {string} nameLast
  * @returns {{ authUserId: number } | { error: string }}
  */
-export function adminAuthRegister (email: string, password: string, nameFirst: string, nameLast: string): { authUserId: number } | ErrorObject {
+export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string): { authUserId: number } | ErrorObject {
   if (adminEmailInUse(email)) {
     return { error: 'Email address is used by another user.' };
   }
@@ -100,7 +100,7 @@ export function adminAuthRegister (email: string, password: string, nameFirst: s
  * @returns {{ authUserId: number } | { error: string }}
  */
 
-export function adminAuthLogin (email: string, password: string): { authUserId: number } | ErrorObject {
+export function adminAuthLogin(email: string, password: string): { authUserId: number } | ErrorObject {
   if (!adminEmailInUse(email)) {
     return { error: 'Email address does not exist.' };
   }
@@ -127,7 +127,7 @@ export function adminAuthLogin (email: string, password: string): { authUserId: 
  * @param {number} authUserId
  * @returns {{ user: UserDetails } | { error: string }}
  */
-export function adminUserDetails (authUserId: number): { user: UserDetails } | ErrorObject {
+export function adminUserDetails(authUserId: number): { user: UserDetails } | ErrorObject {
   if (!authUserIdExists(authUserId)) {
     return { error: 'AuthUserId is not a valid user.' };
   }
@@ -254,6 +254,26 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
   }
 
   const data = getData();
+  setData(data);
+
+  return {};
+}
+
+/**
+ * Given a user's token (containing authUserId and sessionId), logout the user.
+ * i.e. delete the given token from the tokens array
+ *
+ * @param {Tokens} token
+ * @returns {{} | { error: string }}
+ */
+export function adminAuthLogout(token: Tokens): EmptyObject | ErrorObject {
+  const data = getData();
+
+  const index = data.tokens.findIndex(currToken => {
+    currToken.sessionId === token.sessionId && currToken.authUserId === token.authUserId
+  });
+  data.tokens.splice(index, 1);
+  
   setData(data);
 
   return {};
