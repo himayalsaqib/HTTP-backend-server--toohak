@@ -17,7 +17,7 @@ import {
 } from './auth';
 import { tokenCreate, tokenExists } from './helper-files/serverHelper';
 import { clear } from './other';
-import { adminQuizCreate } from './quiz';
+import { adminQuizCreate, adminQuizList } from './quiz';
 
 // Set up web app
 const app = express();
@@ -143,6 +143,20 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
     return res.status(400).json(response);
   }
 
+  res.json(response);
+});
+
+app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.query.sessionId as string);
+  const authUserId = parseInt(req.query.authUserId as string);
+  const token = { sessionId: sessionId, authUserId: authUserId };
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = adminQuizList(token.authUserId);
   res.json(response);
 });
 
