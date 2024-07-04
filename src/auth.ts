@@ -270,10 +270,10 @@ export function adminAuthLogout(token: Tokens): EmptyObject | ErrorObject {
   const data = getData();
 
   const index = data.tokens.findIndex(currToken => {
-    currToken.sessionId === token.sessionId && currToken.authUserId === token.authUserId
+    return currToken.sessionId === token.sessionId && currToken.authUserId === token.authUserId;
   });
   data.tokens.splice(index, 1);
-  
+
   setData(data);
 
   return {};
