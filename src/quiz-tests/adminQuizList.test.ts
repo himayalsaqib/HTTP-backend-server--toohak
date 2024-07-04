@@ -89,7 +89,7 @@ describe('GET /v1/admin/quiz/list', () => {
     });
   });
 
-  describe('Testing for invaliduser (status code 401)', () => {
+  describe('Testing invalid token(status code 401)', () => {
     test('Returns error when authUserId is not a valid user', () => {
       token.authUserId += 1;
       expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
@@ -97,5 +97,14 @@ describe('GET /v1/admin/quiz/list', () => {
         statusCode: 401
       });
     });
+
+    test('Returns error when token is empty', () => {
+      requestDelete({}, '/v1/clear');
+      expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
+        retval: error,
+        statusCode: 401
+      });
+    });
+    
   });
 });
