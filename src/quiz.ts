@@ -26,6 +26,18 @@ interface QuizInfo {
   description: string;
 }
 
+interface QuizQuestionAnswers {
+  answer: string;
+  correct: boolean;
+}
+
+interface QuestionBody {
+  question: string;
+  duration: number;
+  points: number;
+  answers: []; // not 100% certain of this
+}
+
 /// ////////////////////////////// Functions ///////////////////////////////////
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
@@ -240,3 +252,13 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
 
   return {};
 }
+
+/**
+ * Create a new stub for question for a particular quiz.
+ * When this route is called, and a question is created, the timeLastEdited is set
+ * as the same as the created time, and the colours of all the answers of that 
+ * question are randomly generated
+ * 
+ * @param {number} quizId
+ * @param {object} questionBody
+ */
