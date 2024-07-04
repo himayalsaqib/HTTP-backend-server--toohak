@@ -1,7 +1,7 @@
 // includes http tests for the route /v1/admin/quiz/list
 
 import { Tokens } from '../dataStore';
-import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper'; // Adjust import based on your helper setup
+import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper'; 
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
