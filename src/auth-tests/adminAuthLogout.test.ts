@@ -35,6 +35,17 @@ describe('POST /v1/admin/auth/logout', () => {
         statusCode: 401
       });
     });
+
+    test('Side effect: adminAuthLogout returns error when user tries to logout same token twice', () => {
+      expect(requestPost(token, '/v1/admin/auth/logout')).toStrictEqual({
+        retval: {},
+        statusCode: 200
+      });
+      expect(requestPost(token, '/v1/admin/auth/logout')).toStrictEqual({
+        retval: error,
+        statusCode: 401
+      });
+    });
   });
 
   describe('Testing token given to adminAuthLogout (status code 401)', () => {
