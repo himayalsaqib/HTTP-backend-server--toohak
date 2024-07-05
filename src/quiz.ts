@@ -35,7 +35,7 @@ interface QuestionBody {
   question: string;
   duration: number;
   points: number;
-  answers: []; // not 100% certain of this
+  answers: QuizQuestionAnswers[]; // not 100% certain of this
 }
 
 /// ////////////////////////////// Functions ///////////////////////////////////
