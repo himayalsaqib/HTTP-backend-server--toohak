@@ -51,6 +51,14 @@ describe('DELETE /v1/admin/quiz/:quizid', () => {
         });
       });
 
+      test('Returns error when sessionId is invalid', () => {
+        token.sessionId += 1;
+        expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
+          retval: error,
+          statusCode: 401
+        });
+      });
+
       test('Returns error when token is empty', () => {
         requestDelete({}, '/v1/clear');
         expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
@@ -66,8 +74,11 @@ describe('DELETE /v1/admin/quiz/:quizid', () => {
         const { retval: registerRes2 } = requestPost(userBody2, '/v1/admin/auth/register');
         const token2 = registerRes2 as { sessionId: number, authUserId: number };
 
-        const removeRes = requestDelete({ token: token2 }, '/v1/admin/quiz/{quizid}');
-        expect(removeRes.statusCode).toBe(401);
+        const res = requestPost(quizBody, '/v1/admin/quiz');
+        const quizId = res.retval.quizId;
+
+        const removeRes = requestDelete(token2, `/v1/admin/quiz/${quizId}`);
+        expect(removeRes.statusCode).toBe(403);
         expect(removeRes.retval).toStrictEqual(error);
       });
 
