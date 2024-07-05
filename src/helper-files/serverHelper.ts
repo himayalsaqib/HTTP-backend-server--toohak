@@ -1,5 +1,5 @@
 import { ErrorObject, EmptyObject, Tokens, getData, setData } from '../dataStore';
-import { findQuizById } from './helper';
+import { findQuizById, findTrashedQuizById } from './helper';
 
 /**
  * Function checks if a sessionId already exists in the dataStore
@@ -63,8 +63,7 @@ export function quizBelongsToUser(authUserId: number, quizId: number): EmptyObje
  * @returns {{} | { error: string }}
  */
 export function trashedQuizBelongsToUser(authUserId: number, quizId: number): EmptyObject | ErrorObject {
-  let data = getData();
-  const trashedQuiz = data.trash.find(q => q.quiz.quizId === quizId);
+  const trashedQuiz = findTrashedQuizById(quizId);
 
   if (trashedQuiz === undefined) {
     return {};
@@ -80,8 +79,7 @@ export function trashedQuizBelongsToUser(authUserId: number, quizId: number): Em
  * @returns {{} | { error: string }}
  */
 export function quizDoesNotExist(quizId: number): EmptyObject | ErrorObject {
-  let data = getData();
-  const trashedQuiz = data.trash.find(q => q.quiz.quizId === quizId);
+  const trashedQuiz = findTrashedQuizById(quizId);
   if (trashedQuiz === undefined) {
     const quiz = findQuizById(quizId);
     if (quiz === undefined) {

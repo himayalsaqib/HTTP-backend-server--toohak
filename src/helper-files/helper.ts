@@ -1,4 +1,4 @@
-import { getData, Quizzes, Users } from '../dataStore';
+import { getData, Quizzes, Users, Trash } from '../dataStore';
 
 /**
  * Function checks if an authUserId exists in the dataStore
@@ -171,6 +171,17 @@ export function quizIdInUse(quizId: number): boolean {
 export function findQuizById(quizId: number): Quizzes | undefined {
   const data = getData();
   return data.quizzes.find(q => q.quizId === quizId);
+}
+
+/**
+ * Finds a quiz in the trash by its quiz ID
+ *
+ * @param {number} quizId - The ID of the quiz to find
+ * @returns {Quizzes | undefined} - The quiz with the specified ID | undefined
+ */
+export function findTrashedQuizById(quizId: number): Trash | undefined {
+  const data = getData();
+  return data.trash.find(q => q.quiz.quizId === quizId);
 }
 
 /**
