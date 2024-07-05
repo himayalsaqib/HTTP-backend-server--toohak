@@ -65,11 +65,9 @@ describe('GET /v1/admin/quiz/list', () => {
       const res2 = requestPost(quizBody, '/v1/admin/quiz');
       const quizId2 = res2.retval.quizId;
 
-      const deleteRes = requestDelete(token, `/v1/admin/quiz/${quizId2}`);
-      console.log(deleteRes);
-
+      requestDelete(token, `/v1/admin/quiz/${quizId2}`);
       const listRes = requestGet(token, '/v1/admin/quiz/list');
-      console.log(listRes);
+      
       expect(listRes).toStrictEqual({
         retval: {
           quizzes: [
