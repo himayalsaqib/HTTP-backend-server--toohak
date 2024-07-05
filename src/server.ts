@@ -16,7 +16,13 @@ import {
   adminUserPasswordUpdate,
   adminAuthLogout
 } from './auth';
-import { quizBelongsToUser, tokenCreate, tokenExists, trashedQuizBelongsToUser } from './helper-files/serverHelper';
+import { 
+  quizBelongsToUser, 
+  tokenCreate, 
+  tokenExists, 
+  trashedQuizBelongsToUser, 
+  quizDoesNotExist 
+} from './helper-files/serverHelper';
 import { clear } from './other';
 import {
   adminQuizCreate,
@@ -230,6 +236,11 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   }
 
   response = trashedQuizBelongsToUser(token.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = quizDoesNotExist(quizId);
   if ('error' in response) {
     return res.status(403).json(response);
   }

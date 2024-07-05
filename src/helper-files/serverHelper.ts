@@ -66,11 +66,29 @@ export function trashedQuizBelongsToUser(authUserId: number, quizId: number): Em
   let data = getData();
   const trashedQuiz = data.trash.find(q => q.quiz.quizId === quizId);
 
-  if (trashedQuiz === undefined || trashedQuiz.quiz.authUserId !== authUserId) {
-    return { error: 'User is not an owner of this quiz' };
-  } else {
+  if (trashedQuiz === undefined) {
     return {};
+  } else if (trashedQuiz.quiz.authUserId !== authUserId) {
+    return { error: 'User is not an owner of this quiz' };
+  } return {};
+}
+
+/**
+ * Function checks if a quiz exists in either trash or quizzes
+ *
+ * @param {number} quizId
+ * @returns {{} | { error: string }}
+ */
+export function quizDoesNotExist(quizId: number): EmptyObject | ErrorObject {
+  let data = getData();
+  const trashedQuiz = data.trash.find(q => q.quiz.quizId === quizId);
+  if (trashedQuiz === undefined) {
+    const quiz = findQuizById(quizId);
+    if (quiz === undefined) {
+      return { error: 'Quiz does not exist'};
+    }
   }
+  return {};
 }
 
 /**
