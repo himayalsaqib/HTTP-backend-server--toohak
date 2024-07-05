@@ -75,7 +75,57 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test.todo('Side effect - Successful listing of information a quiz with multiple questions');
+    test('Side effect - Successful listing of information a quiz with multiple questions', () => {
+      // create question
+      const answerBody = { answer: 'Prince Charles', correct: true };
+      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody] };
+      const res = requestPost(questionCreateBody , `/v1/admin/quiz/${event.quizId}/question`);
+      
+      // create second question
+      const answerBody2 = { answer: 'Chappell Roan', correct: true };
+      const questionCreateBody2 = { question: `Who is your favourite artist's favourite artist?`, duration: 5, points: 7, answers: [answerBody2] };
+      const res2 = requestPost(questionCreateBody2 , `/v1/admin/quiz/${event.quizId}/question`);
+
+      // use GET /v1/admin/quiz/{quizid}
+      expect(requestGet({ token: token },`/v1/admin/quiz/${event.quizId}`)).toStrictEqual({
+        retval: {
+          quizId: event.quizId,
+          name: quizBody.name,
+          timeCreated: expect.any(Number),
+          timeLastEditied: expect.any(Number),
+          description: quizBody.description,
+          numQuestions: 2,
+          questions: [
+            {
+              questionId: res.retval,
+              question: questionCreateBody.question,
+              duration: questionCreateBody.duration,
+              points: questionCreateBody.points,
+              answers: [
+                {
+                  answer: answerBody.answer,
+                  correct: answerBody.correct
+                }
+              ]
+            },
+            {
+              questionId: res2.retval,
+              question: questionCreateBody2.question,
+              duration: questionCreateBody2.duration,
+              points: questionCreateBody2.points,
+              answers: [
+                {
+                  answer: answerBody2.answer,
+                  correct: answerBody2.correct
+                }
+              ]
+            }
+          ],
+          duration: expect.any(Number)
+        },
+        statusCode: 200
+      });
+    });
   });
 
   describe('Testing errors in questionBody (status code 400)', () => {
