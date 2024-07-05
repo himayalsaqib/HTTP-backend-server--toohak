@@ -151,11 +151,11 @@ export function quizNameInUse(authUserId: number, name: string): boolean {
  */
 export function quizIdInUse(quizId: number): boolean {
   const quiz = findQuizById(quizId);
-  
+
   if (quiz === undefined) {
     const data = getData();
-    const trashQuiz = data.trash.find(q => q.quiz.quizId === quizId)
-    if (trashQuiz == undefined) {
+    const trashQuiz = data.trash.find(q => q.quiz.quizId === quizId);
+    if (trashQuiz === undefined) {
       return false;
     }
   }
