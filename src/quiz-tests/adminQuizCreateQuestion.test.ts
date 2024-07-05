@@ -40,7 +40,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test('Side effect - Successful listing of information about a quiz', () => {
+    test('Side effect - Successful listing of information about a quiz with one question', () => {
       // create question
       const answerBody = { answer: 'Prince Charles', correct: true };
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody] };
