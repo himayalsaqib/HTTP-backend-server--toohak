@@ -15,6 +15,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
   let token: { sessionId: number, authUserId: number };
   
   describe('Testing successful cases (status code 200)', () => {
+    let event: { questionId: number };
     beforeEach(() => {
       // register a user to create a quiz
       userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
@@ -24,12 +25,19 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       // create the quiz
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
       const res = requestPost(quizBody, '/v1/admin/quiz');
-
-      // create a quiz question
-      
+      event = JSON.parse(res.retval.toString());
     });
     
-    test.todo('Has correct return type');
+    test('Has correct return type', () => {
+      // create question
+      const answerBody = { answer: 'Prince Charles', correct: true };
+      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody] };
+
+      expect(requestPost(questionCreateBody , `/v1/admin/quiz/${event.questionId}/question`)).toStrictEqual({
+        retval: { questionId: expect.any(Number) },
+        statusCode: 200
+      });
+    });
 
     test.todo('Side effect - Successful listing of information about a quiz');
     // use /v1/admin/quiz/{quizid}
