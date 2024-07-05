@@ -11,6 +11,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
   const error = { error: expect.any(String) };
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { token: Tokens, name: string, description: string };
+  let answerBody: { answer: string, correct: boolean };
   let questionBody: { question: string, duration: number, points: number, answers: []}
   let token: { sessionId: number, authUserId: number };
   
@@ -43,7 +44,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       // create question
       const answerBody = { answer: 'Prince Charles', correct: true };
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody] };
-      const res = requestPost(questionCreateBody , `/v1/admin/quiz/${event.quizId}/question`)
+      const res = requestPost(questionCreateBody , `/v1/admin/quiz/${event.quizId}/question`);
       
       // use GET /v1/admin/quiz/{quizid}
       expect(requestGet({ token: token },`/v1/admin/quiz/${event.quizId}`)).toStrictEqual({
@@ -73,6 +74,8 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
         statusCode: 200
       });
     });
+
+    test.todo('Side effect - Successful listing of information a quiz with multiple questions');
   });
 
   describe('Testing errors in questionBody (status code 400)', () => {
@@ -92,11 +95,67 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
   });
 
   describe('Testing token errors (status code 401)', () => {
-    test.todo('Token is empty (no users are registered');
+    test('Token is empty (no users are registered', () => {
+      expect(requestPost(quizBody, '/v1/admin/quiz')).toStrictEqual({
+        retval: error, 
+        statusCode: 401
+      });
+    });
 
-    test.todo('Invalid user ID');
+    // beforeEach(() => {
+    //   userBody = { email: 'valid@gmail.com', password: 'validpa55word', nameFirst: 'John', nameLast: 'Smith' };
+    //   const { retval } = requestPost(userBody, '/v1/admin/auth/register');
+    //   token = retval as { sessionId: number, authUserId: number };
 
-    test.todo('Invalid session ID');
+    //   quizBody = { token: token, name: 'A valid quiz name', description: 'Valid quiz description' };
+    //   const res = requestPost(quizBody, '/v1/admin/quiz');
+    // });
+
+    test('Invalid user ID', () => {
+      // register user
+      userBody = { email: 'valid@gmail.com', password: 'validpa55word', nameFirst: 'John', nameLast: 'Smith' };
+      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
+      token = retval as { sessionId: number, authUserId: number };
+
+      // create quiz
+      quizBody = { token: token, name: 'A valid quiz name', description: 'Valid quiz description' };
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+
+      // make userId invalid
+      token.authUserId += 1;
+
+      // create question
+      const answerBody = { answer: 'Prince Charles', correct: true };
+      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody] };
+
+      expect(requestPost(questionCreateBody , `/v1/admin/quiz/${res.retval}/question`)).toStrictEqual({
+        retval: error,
+        statusCode: 401
+      });
+    });
+
+    test('Invalid session ID', () => {
+      // register user
+      userBody = { email: 'valid@gmail.com', password: 'validpa55word', nameFirst: 'John', nameLast: 'Smith' };
+      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
+      token = retval as { sessionId: number, authUserId: number };
+
+      // create quiz
+      quizBody = { token: token, name: 'A valid quiz name', description: 'Valid quiz description' };
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+
+      // make userId invalid
+      token.sessionId += 1;
+
+      // create question
+      const answerBody = { answer: 'Prince Charles', correct: true };
+      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody] };
+
+      expect(requestPost(questionCreateBody , `/v1/admin/quiz/${res.retval}/question`)).toStrictEqual({
+        retval: error,
+        statusCode: 401
+      });
+    });
   });
 
   describe('Testing quiz owner and quiz existence errors (status code 403)', () => {
