@@ -80,7 +80,7 @@ describe('DELETE /v1/admin/quiz/:quizid', () => {
         expect(removeRes2.statusCode).toBe(403);
         expect(removeRes2.retval).toStrictEqual(error);
       });
-      
+
       test('Returns error when quiz does not belong to user', () => {
         const userBody2 = { email: 'user2@gmail.com', password: 'Password024', nameFirst: 'User', nameLast: 'Two' };
         const { retval: registerRes2 } = requestPost(userBody2, '/v1/admin/auth/register');
