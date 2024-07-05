@@ -122,15 +122,12 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
       const otherUserResponse = requestPost(otherUserBody, '/v1/admin/auth/register');
       const otherUserToken = otherUserResponse.retval as { sessionId: number, authUserId: number };
 
-      const otherQuizBody = { token: otherUserToken, name: 'Other User Quiz', description: 'Description' };
-      const otherQuizResponse = requestPost(otherQuizBody, '/v1/admin/quiz');
-      const otherQuizId = otherQuizResponse.retval.quizId;
-
-      quiz = { token: token, name: 'New Name' };
-      const res = requestPut(quiz, `/v1/admin/quiz/${otherQuizId}/name`);
+      quiz = { token: otherUserToken, name: 'New Name' };
+      const res = requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
 
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
     });
+    
     test("Quiz doesn't exist", () => {
       const invalidQuizId = 'invalidQuiz123';
 
