@@ -15,7 +15,11 @@ import {
   adminUserDetailsUpdate,
   adminUserPasswordUpdate
 } from './auth';
-import { tokenCreate, tokenExists } from './helper-files/serverHelper';
+import { 
+  tokenCreate, 
+  tokenExists,
+  quizBelongsToUser
+ } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
   adminQuizCreate,
@@ -157,10 +161,15 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   if ('error' in response) {
     return res.status(401).json(response);
   }
+  const check = quizBelongsToUser(token.authUserId, quizId);
+  if ('error' in check) {
+    return res.status(403).json(check);
+  }
   response = adminQuizNameUpdate(token.authUserId, quizId, name);
   if ('error' in response) {
     return res.status(400).json(response);
   }
+
   res.json(response);
 });
 // ====================================================================
