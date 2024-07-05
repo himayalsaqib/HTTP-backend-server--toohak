@@ -7,7 +7,7 @@ beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
-describe('PUT v1/admin/quiz:quizid/name', () => {
+describe('PUT /v1/admin/quiz:quizid/name', () => {
   const error = { error: expect.any(String) };
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { token: Tokens, name: string, description: string };
@@ -36,6 +36,7 @@ describe('PUT v1/admin/quiz:quizid/name', () => {
 
     test.skip('Side effect (successful update): adminQuizInfo returns newly updated properties', () => {
       quiz = { token: token, name: 'Updated Quiz Name' };
+      quizInfo = { quizId: quizId, token: token };
       requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
       const res = requestGet(quizInfo, '/v1/admin/quiz/:quizId'); // {quizId}
       expect(res).not.toStrictEqual({
@@ -106,13 +107,37 @@ describe('PUT v1/admin/quiz:quizid/name', () => {
     });
 
     test('Quiz name already used by current user for another quiz', () => {
-      quizBody = { token: token, name: 'Name In Use', description: 'Valid Quiz Description' };
+      const quizBody = { token: token, name: 'Name In Use', description: 'Valid Quiz Description' };
       requestPost(quizBody, '/v1/admin/quiz');
 
       quiz = { token: token, name: 'Name In Use' };
       const res = requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
 
       expect(res).toStrictEqual({ retval: error, statusCode: 400 });
+    });
+  });
+  describe('Testing quizId errors (status code 403)', () => {
+    test('User is not an owner of this quiz', () => {
+      const otherUserBody = { email: 'otherUser@gmail.com', password: 'Password23', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
+      const otherUserResponse = requestPost(otherUserBody, '/v1/admin/auth/register');
+      const otherUserToken = otherUserResponse.retval as { sessionId: number, authUserId: number };
+
+      const otherQuizBody = { token: otherUserToken, name: 'Other User Quiz', description: 'Description' };
+      const otherQuizResponse = requestPost(otherQuizBody, '/v1/admin/quiz');
+      const otherQuizId = otherQuizResponse.retval.quizId;
+
+      quiz = { token: token, name: 'New Name' };
+      const res = requestPut(quiz, `/v1/admin/quiz/${otherQuizId}/name`);
+
+      expect(res).toStrictEqual({ retval: error, statusCode: 403 });
+    });
+    test('Invalid quizUserId', () => {
+      const invalidQuizId = 'invalidQuiz123';
+
+      const quiz = { token: token, name: 'New Name' };
+      const res = requestPut(quiz, `/v1/admin/quiz/${invalidQuizId}/name`);
+
+      expect(res).toStrictEqual({ retval: error, statusCode: 403 });
     });
   });
 });
