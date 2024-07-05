@@ -120,12 +120,3 @@ describe('PUT /v1/admin/quiz:quizid/description', () => {
     });
   });
 });
-/*
-    test('Description exactly 100 characters', () => {
-      const description = 'This description is exactly 100 characters long and' +
-      "it's used to test the edge case of the function.";
-      expect(adminQuizDescriptionUpdate(user.authUserId, quizId, description)).toStrictEqual({});
-    });
-  });
-});
-*/
