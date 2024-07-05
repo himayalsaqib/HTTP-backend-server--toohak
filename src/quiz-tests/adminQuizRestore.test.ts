@@ -57,6 +57,14 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
       expect(res.retval.timeLastEdited).toBeGreaterThanOrEqual(time);
       expect(res.retval.timeLastEdited).toBeLessThanOrEqual(time + 1);
     });
+
+    test.skip('Side effect (successful restoration): viewTrash does not display restored quiz', () => {
+      let res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
+      expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
+
+      res = requestGet(token, '/v1/admin/quiz/trash');
+      expect(res).toStrictEqual({ retval: { quizzes: [] }, statusCode: 200 });
+    });
   });
 
   describe('Testing quiz name error (status code 400)', () => {
