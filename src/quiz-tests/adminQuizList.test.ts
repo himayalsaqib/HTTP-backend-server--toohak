@@ -67,7 +67,7 @@ describe('GET /v1/admin/quiz/list', () => {
 
       const deleteRes = requestDelete(token, `/v1/admin/quiz/${quizId2}`);
       console.log(deleteRes);
-
+      
       const listRes = requestGet(token, '/v1/admin/quiz/list');
       console.log(listRes);
       expect(listRes).toStrictEqual({
@@ -94,7 +94,7 @@ describe('GET /v1/admin/quiz/list', () => {
     });
   });
 
-  describe('Testing invalid token(status code 401)', () => {
+  describe('Testing invalid token (status code 401)', () => {
     test('Returns error when authUserId is not a valid user', () => {
       token.authUserId += 1;
       expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
