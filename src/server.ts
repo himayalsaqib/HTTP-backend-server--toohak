@@ -18,7 +18,7 @@ import {
 } from './auth';
 import { quizBelongsToUser, tokenCreate, tokenExists } from './helper-files/serverHelper';
 import { clear } from './other';
-import { adminQuizCreate, adminQuizRemove, adminQuizList} from './quiz';
+import { adminQuizCreate, adminQuizRemove, adminQuizList } from './quiz';
 
 // Set up web app
 const app = express();
