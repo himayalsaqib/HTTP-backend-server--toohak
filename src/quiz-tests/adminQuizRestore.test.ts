@@ -103,4 +103,83 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
     })
   })
 
+  describe('Testing token errors (status code 401)', () => {
+    beforeEach(() => {
+      // register a user
+      user = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      const { retval } = requestPost(user, '/v1/admin/auth/register');
+      token = retval as { sessionId: number, authUserId: number };
+      
+      // create a quiz
+      quiz = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
+      const createQuizRes = requestPost(quiz, '/v1/admin/quiz');
+      quizId = createQuizRes.retval.quizId;
+
+      // delete the quiz
+      requestDelete(token, `/v1/admin/quiz/${quizId}`);
+    })
+
+    test('Token is empty (no users registered)', () => {
+      requestDelete({}, '/v1/clear');
+      let res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
+      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
+    })
+
+    test('Session ID is invalid', () => {
+      token.sessionId += 1;
+      let res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
+      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
+    })
+
+    test('User ID is invalid', () => {
+      token.authUserId += 1;
+      let res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
+      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
+    })
+  })
+
+  describe('Testing quiz name error (status code 400)', () => {
+    beforeEach(() => {
+      // register a user
+      user = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      const { retval } = requestPost(user, '/v1/admin/auth/register');
+      token = retval as { sessionId: number, authUserId: number };
+      
+      // create a quiz
+      quiz = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
+      const createQuizRes = requestPost(quiz, '/v1/admin/quiz');
+      quizId = createQuizRes.retval.quizId;
+
+      // delete the quiz
+      requestDelete(token, `/v1/admin/quiz/${quizId}`);
+
+      // create a quiz with the same name as the deleted quiz
+      quiz = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
+      requestPost(quiz, '/v1/admin/quiz');
+    })
+
+    test('Quiz name of the restored quiz is already used by another active quiz', () => {
+      let res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
+      expect(res).toStrictEqual({ retval: error, statusCode: 400 });
+    })
+  })
+
+  describe('Testing error for a quiz that has not been deleted (status code 400)', () => {
+    beforeEach(() => {
+      // register a user
+      user = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      const { retval } = requestPost(user, '/v1/admin/auth/register');
+      token = retval as { sessionId: number, authUserId: number };
+      
+      // create a quiz
+      quiz = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
+      const createQuizRes = requestPost(quiz, '/v1/admin/quiz');
+      quizId = createQuizRes.retval.quizId;
+    })
+
+    test('Quiz ID refers to a quiz that is not currently in the trash', () => {
+      let res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
+      expect(res).toStrictEqual({ retval: error, statusCode: 400 });
+    })
+  })
 })
