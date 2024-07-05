@@ -137,6 +137,8 @@ export function adminQuizRemove (authUserId: number, quizId: number): EmptyObjec
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz does not belong to user.' };
   }
+  quiz.timeLastEdited = parseFloat(Date.now().toFixed(10));
+  data.trash.push({ quiz: quiz });
   data.quizzes.splice(quizIndex, 1);
   setData(data);
 
