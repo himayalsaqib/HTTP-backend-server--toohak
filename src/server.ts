@@ -16,12 +16,12 @@ import {
   adminUserPasswordUpdate,
   adminAuthLogout
 } from './auth';
-import { 
-  quizBelongsToUser, 
-  tokenCreate, 
-  tokenExists, 
-  trashedQuizBelongsToUser, 
-  quizDoesNotExist 
+import {
+  quizBelongsToUser,
+  tokenCreate,
+  tokenExists,
+  trashedQuizBelongsToUser,
+  quizDoesNotExist
 } from './helper-files/serverHelper';
 import { clear } from './other';
 import {

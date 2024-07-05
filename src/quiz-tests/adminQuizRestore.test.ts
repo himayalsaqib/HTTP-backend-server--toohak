@@ -157,9 +157,7 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
 
     test('Current user does not own the quiz', () => {
       // register a second user
-      let user2: { email: string, password: string, nameFirst: string, nameLast: string };
-
-      user2 = { email: 'valid2@gmail.com', password: 'Password12', nameFirst: 'Jamie', nameLast: 'David' };
+      const user2 = { email: 'valid2@gmail.com', password: 'Password12', nameFirst: 'Jamie', nameLast: 'David' };
       const { retval } = requestPost(user2, '/v1/admin/auth/register');
       const token2 = retval as { sessionId: number, authUserId: number };
 
