@@ -131,7 +131,7 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
 
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
     });
-    test('Invalid quizUserId', () => {
+    test("Quiz doesn't exist", () => {
       const invalidQuizId = 'invalidQuiz123';
 
       const quiz = { token: token, name: 'New Name' };
