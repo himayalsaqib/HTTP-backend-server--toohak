@@ -7,7 +7,7 @@ beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
-describe('DELETE /v1/admin/quiz/{quizid}', () => {
+describe('DELETE /v1/admin/quiz/:quizid', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { token: Tokens, name: string, description: string };
   let token: { sessionId: number, authUserId: number };
@@ -15,25 +15,29 @@ describe('DELETE /v1/admin/quiz/{quizid}', () => {
 
   describe('Testing for correct return type (status code 200)', () => {
     beforeEach(() => {
-      userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      userBody = { email: 'userone@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
       const { retval } = requestPost(userBody, '/v1/admin/auth/register');
       token = retval as { sessionId: number, authUserId: number };
       quizBody = { token: token, name: 'My Quiz Name', description: 'Valid Quiz Description' };
     });
 
     test('Successful removal of a quiz', () => {
-      const removeRes = requestDelete({ token: token }, `/v1/admin/quiz/{quizId}`);
+      const createRes = requestPost(quizBody, '/v1/admin/quiz');
+      const quizId = createRes.retval.quizId;
+      const removeRes = requestDelete(token, `/v1/admin/quiz/${quizId}`);
       expect(removeRes.retval).toStrictEqual({});
       expect(removeRes.statusCode).toBe(200);
     });
 
     test('Successful removal of multiple quizzes', () => {
-      const res = requestPost(quizBody, '/v1/admin/quiz');
+      const res1 = requestPost(quizBody, '/v1/admin/quiz');
+      const quizId1 = res1.retval.quizId;
       quizBody = { token: token, name: 'My Quiz Two', description: 'Other Quiz Description' };
       const res2 = requestPost(quizBody, '/v1/admin/quiz');
+      const quizId2 = res2.retval.quizId;
 
-      let removeRes = requestDelete({ token: token }, `/v1/admin/quiz/{quizId}`);
-      removeRes = requestDelete({ token: token }, `/v1/admin/quiz/{quizId}`);
+      let removeRes = requestDelete(token, `/v1/admin/quiz/${quizId1}`);
+      removeRes = requestDelete(token, `/v1/admin/quiz/${quizId2}`);
       expect(removeRes.statusCode).toBe(200);
       expect(removeRes.retval).toStrictEqual({});
     });
@@ -57,13 +61,13 @@ describe('DELETE /v1/admin/quiz/{quizid}', () => {
 
     });
 
-    describe('Testing for valid token but wrong owner and non-existent quiz (status code 401', () => {
+    describe('Testing for valid token but wrong owner and non-existent quiz (status code 403', () => {
       test('Returns error when quiz does not belong to user', () => {
         const userBody2 = { email: 'user2@gmail.com', password: 'Password024', nameFirst: 'User', nameLast: 'Two' };
         const { retval: registerRes2 } = requestPost(userBody2, '/v1/admin/auth/register');
         const token2 = registerRes2 as { sessionId: number, authUserId: number };
 
-        const removeRes = requestDelete({ token: token2 }, `/v1/admin/quiz/{quizId}`);
+        const removeRes = requestDelete({ token: token2 }, `/v1/admin/quiz/{quizid}`);
         expect(removeRes.statusCode).toBe(401);
         expect(removeRes.retval).toStrictEqual(error);
       });
@@ -71,9 +75,9 @@ describe('DELETE /v1/admin/quiz/{quizid}', () => {
       test('Returns error when quiz does not exist', () => {
         const res = requestPost(quizBody, '/v1/admin/quiz');
         quizBody = { token: token, name: 'My Quiz Two', description: 'Other Quiz Description' };
-        res.retval.quizId += 999;
-        const removeRes = requestDelete({ token: token }, `/v1/admin/quiz/{quizId}`);
-        expect(removeRes.statusCode).toBe(400);
+        const quizId = res.retval.quizId + 1;
+        const removeRes = requestDelete(token, `/v1/admin/quiz/${quizId}`);
+        expect(removeRes.statusCode).toBe(403);
         expect(removeRes.retval).toStrictEqual(error);
       });
 
