@@ -4,7 +4,8 @@ import {
   quizNameHasValidChars,
   quizNameInUse,
   quizIdInUse,
-  findQuizById
+  findQuizById,
+  quizIsInTrash
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -106,7 +107,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
 }
 
 /**
- * Given a particular quiz, permanently remove the quiz
+ * Given a particular quiz, move quiz to trash
  *
  * @param {number} authUserId
  * @param {number} quizId
@@ -254,7 +255,24 @@ export function adminQuizRestore (authUserId: number, quizId: number): EmptyObje
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
-  if (quizIdInUse(quizId) === true) {
-    return { error: 'Quiz ID refers to a quiz that is not currently in the trash.' };
+  if (quizIsInTrash(quizId) === false) {
+    return { error: 'Quiz ID refers to a quiz that is not currently in the trash'}
   }
+
+  let data = getData();
+  const trashedQuiz = data.trash.find(q => q.quiz.quizId === quizId);
+
+  if (quizNameInUse(authUserId, trashedQuiz.quiz.name) === true) {
+    return { error: 'Quiz name of the restored quiz is already used by the current logged in user for another active quiz' };
+  }
+
+  const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
+  data.trash.splice(index, 1);
+
+  trashedQuiz.quiz.timeLastEdited = parseFloat((Date.now() / 1000).toFixed(10));
+
+  data.quizzes.push(trashedQuiz.quiz);
+  setData(data);
+
+  return {};
 }
