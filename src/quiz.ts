@@ -268,5 +268,8 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
 
 export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBody): { questionId: number} | ErrorObject {
 
+  // NOTE:
+  //  duration is in seconds
+
   return { questionId: 100 };
 }
