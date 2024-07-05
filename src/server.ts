@@ -13,11 +13,12 @@ import {
   adminAuthLogin,
   adminUserDetails,
   adminUserDetailsUpdate,
-  adminUserPasswordUpdate
+  adminUserPasswordUpdate,
+  adminAuthLogout
 } from './auth';
-import { tokenCreate, tokenExists } from './helper-files/serverHelper';
+import { quizBelongsToUser, tokenCreate, tokenExists } from './helper-files/serverHelper';
 import { clear } from './other';
-import { adminQuizCreate, adminQuizList } from './quiz';
+import { adminQuizCreate, adminQuizRemove } from './quiz';
 
 // Set up web app
 const app = express();
@@ -128,6 +129,18 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   res.json(response);
 });
 
+app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
+  const token = req.body;
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = adminAuthLogout(token);
+  res.json(response);
+});
+
 // ============================== QUIZ ROUTES =============================== //
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
@@ -146,7 +159,9 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   res.json(response);
 });
 
-app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
+app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+
   const sessionId = parseInt(req.query.sessionId as string);
   const authUserId = parseInt(req.query.authUserId as string);
   const token = { sessionId: sessionId, authUserId: authUserId };
@@ -156,7 +171,12 @@ app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
     return res.status(401).json(response);
   }
 
-  response = adminQuizList(token.authUserId);
+  response = quizBelongsToUser(token.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizRemove(token.authUserId, quizId);
   res.json(response);
 });
 
