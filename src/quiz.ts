@@ -258,16 +258,15 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
 /**
  * Create a new stub for question for a particular quiz.
  * When this route is called, and a question is created, the timeLastEdited is set
- * as the same as the created time, and the colours of all the answers of that 
+ * as the same as the created time, and the colours of all the answers of that
  * question are randomly generated
- * 
+ *
  * @param {number} quizId
  * @param {object} QuestionBody
  * @returns { {questionId: number} | { error: string}}
  */
 
 export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBody): { questionId: number} | ErrorObject {
-
   // NOTE:
   //  duration is in seconds
 
