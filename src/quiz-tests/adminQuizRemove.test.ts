@@ -69,6 +69,18 @@ describe('DELETE /v1/admin/quiz/:quizid', () => {
     });
 
     describe('Testing for valid token but wrong owner and non-existent quiz (status code 403', () => {
+      test('Returns error when trying to remove quiz that has already been removed', () => {
+        const res = requestPost(quizBody, '/v1/admin/quiz');
+        const quizId = res.retval.quizId;
+        const removeRes1 = requestDelete(token, `/v1/admin/quiz/${quizId}`);
+        expect(removeRes1.retval).toStrictEqual({});
+        expect(removeRes1.statusCode).toBe(200);
+
+        const removeRes2 = requestDelete(token, `/v1/admin/quiz/${quizId}`);
+        expect(removeRes2.statusCode).toBe(403);
+        expect(removeRes2.retval).toStrictEqual(error);
+      });
+      
       test('Returns error when quiz does not belong to user', () => {
         const userBody2 = { email: 'user2@gmail.com', password: 'Password024', nameFirst: 'User', nameLast: 'Two' };
         const { retval: registerRes2 } = requestPost(userBody2, '/v1/admin/auth/register');
