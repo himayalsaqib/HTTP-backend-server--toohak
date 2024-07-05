@@ -16,9 +16,9 @@ import {
   adminUserPasswordUpdate,
   adminAuthLogout
 } from './auth';
-import { tokenCreate, tokenExists } from './helper-files/serverHelper';
+import { quizBelongsToUser, tokenCreate, tokenExists } from './helper-files/serverHelper';
 import { clear } from './other';
-import { adminQuizCreate } from './quiz';
+import { adminQuizCreate, adminQuizRemove } from './quiz';
 
 // Set up web app
 const app = express();
@@ -156,6 +156,27 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
     return res.status(400).json(response);
   }
 
+  res.json(response);
+});
+
+app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+
+  const sessionId = parseInt(req.query.sessionId as string);
+  const authUserId = parseInt(req.query.authUserId as string);
+  const token = { sessionId: sessionId, authUserId: authUserId };
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = quizBelongsToUser(token.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizRemove(token.authUserId, quizId);
   res.json(response);
 });
 
