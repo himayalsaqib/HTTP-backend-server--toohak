@@ -249,17 +249,17 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  *
  * @param {number} authUserId
  * @param {number} quizId
- * @returns {{} | { error: string }} 
+ * @returns {{} | { error: string }}
  */
 export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
   if (quizIsInTrash(quizId) === false) {
-    return { error: 'Quiz ID refers to a quiz that is not currently in the trash'}
+    return { error: 'Quiz ID refers to a quiz that is not currently in the trash' };
   }
 
-  let data = getData();
+  const data = getData();
   const trashedQuiz = data.trash.find(q => q.quiz.quizId === quizId);
 
   if (quizNameInUse(authUserId, trashedQuiz.quiz.name) === true) {
