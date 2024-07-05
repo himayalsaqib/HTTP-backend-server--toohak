@@ -59,7 +59,7 @@ describe('GET /v1/admin/quiz/list', () => {
       });
     });
 
-    test.skip('Correctly returns quiz list after a quiz has been removed', () => {
+    test('Correctly returns quiz list after a quiz has been removed', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       quizBody = { token: token, name: 'My Quiz Two', description: 'Other Quiz Description' };
       const res2 = requestPost(quizBody, '/v1/admin/quiz');
