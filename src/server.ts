@@ -147,8 +147,6 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
 });
 
 app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
-  // const token = req.body;
-  // console.log(token);
   const quizId = parseInt(req.params.quizid as string);
 
   const sessionId = parseInt(req.query.sessionId as string);
