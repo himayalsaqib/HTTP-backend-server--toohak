@@ -58,7 +58,6 @@ describe('DELETE /v1/admin/quiz/:quizid', () => {
           statusCode: 401
         });
       });
-
     });
 
     describe('Testing for valid token but wrong owner and non-existent quiz (status code 403', () => {
@@ -67,7 +66,7 @@ describe('DELETE /v1/admin/quiz/:quizid', () => {
         const { retval: registerRes2 } = requestPost(userBody2, '/v1/admin/auth/register');
         const token2 = registerRes2 as { sessionId: number, authUserId: number };
 
-        const removeRes = requestDelete({ token: token2 }, `/v1/admin/quiz/{quizid}`);
+        const removeRes = requestDelete({ token: token2 }, '/v1/admin/quiz/{quizid}');
         expect(removeRes.statusCode).toBe(401);
         expect(removeRes.retval).toStrictEqual(error);
       });
@@ -80,9 +79,8 @@ describe('DELETE /v1/admin/quiz/:quizid', () => {
         expect(removeRes.statusCode).toBe(403);
         expect(removeRes.retval).toStrictEqual(error);
       });
-
     });
-  })
+  });
 });
 
 // describe('adminQuizRemove', () => {
