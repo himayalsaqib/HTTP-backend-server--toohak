@@ -18,7 +18,12 @@ import {
 } from './auth';
 import { quizBelongsToUser, tokenCreate, tokenExists } from './helper-files/serverHelper';
 import { clear } from './other';
-import { adminQuizCreate, adminQuizRemove, adminQuizList, adminQuizNameUpdate } from './quiz';
+import {
+  adminQuizCreate,
+  adminQuizRemove,
+  adminQuizList,
+  adminQuizNameUpdate,
+} from './quiz';
 
 // Set up web app
 const app = express();
@@ -193,6 +198,7 @@ app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
   response = adminQuizList(token.authUserId);
   res.json(response);
 });
+
 app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   const { token, name } = req.body;
   const quizId = parseInt(req.params.quizid as string);
@@ -201,9 +207,9 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   if ('error' in response) {
     return res.status(401).json(response);
   }
-  const check = quizBelongsToUser(token.authUserId, quizId);
-  if ('error' in check) {
-    return res.status(403).json(check);
+  response = quizBelongsToUser(token.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
   }
   response = adminQuizNameUpdate(token.authUserId, quizId, name);
   if ('error' in response) {
@@ -212,6 +218,7 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
 
   res.json(response);
 });
+
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
