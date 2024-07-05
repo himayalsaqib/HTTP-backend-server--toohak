@@ -15,11 +15,11 @@ import {
   adminUserDetailsUpdate,
   adminUserPasswordUpdate
 } from './auth';
-import { 
-  tokenCreate, 
+import {
+  tokenCreate,
   tokenExists,
   quizBelongsToUser
- } from './helper-files/serverHelper';
+} from './helper-files/serverHelper';
 import { clear } from './other';
 import {
   adminQuizCreate,
