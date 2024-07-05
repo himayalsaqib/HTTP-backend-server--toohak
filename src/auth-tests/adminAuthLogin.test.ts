@@ -20,7 +20,7 @@ describe('POST /v1/admin/auth/login', () => {
 
   describe('Testing user login (status code 200)', () => {
     bodyLogin = { email: 'valid@gmail.com', password: 'Password12' };
-    
+
     test('Has the correct return type and value of authUserId', () => {
       expect(requestPost(bodyLogin, '/v1/admin/auth/login')).toStrictEqual({
         retval: { sessionId: expect.any(Number), authUserId: token.authUserId },
@@ -29,16 +29,14 @@ describe('POST /v1/admin/auth/login', () => {
     });
 
     test('User can login multiple times (have multiple tokens)', () => {
-      const { retval } = requestPost(bodyLogin, '/v1/admin/auth/login');
-      token = retval as { sessionId: number, authUserId: number };
+      const login1 = requestPost(bodyLogin, '/v1/admin/auth/login');
+      token = login1.retval as { sessionId: number, authUserId: number };
 
       const login2 = requestPost(bodyLogin, '/v1/admin/auth/login');
-      expect(login2).toStrictEqual({
-        retval: { sessionId: expect.any(Number), authUserId: token.authUserId },
-        statusCode: 200
-      });
+      const token2 = login2.retval as { sessionId: number, authUserId: number };
       
-      expect(token).not.toStrictEqual(login2.retval);
+      expect(token2).toStrictEqual({ sessionId: expect.any(Number), authUserId: token.authUserId });
+      expect(token.sessionId).not.toStrictEqual(token2.sessionId);
     });
 
     test('Side effect: correctly updates user details after a failed login', () => {
