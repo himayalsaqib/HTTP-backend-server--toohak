@@ -67,7 +67,7 @@ describe('GET /v1/admin/quiz/list', () => {
 
       const deleteRes = requestDelete(token, `/v1/admin/quiz/${quizId2}`);
       console.log(deleteRes);
-      
+
       const listRes = requestGet(token, '/v1/admin/quiz/list');
       console.log(listRes);
       expect(listRes).toStrictEqual({
