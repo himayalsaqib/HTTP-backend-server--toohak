@@ -242,3 +242,19 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
 
   return {};
 }
+
+/**
+ * Restores a quiz from trash
+ *
+ * @param {number} authUserId
+ * @param {number} quizId
+ * @returns {{} | { error: string }} 
+ */
+export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
+  if (authUserIdExists(authUserId) === false) {
+    return { error: 'AuthUserId is not a valid user.' };
+  }
+  if (quizIdInUse(quizId) === true) {
+    return { error: 'Quiz ID refers to a quiz that is not currently in the trash.' };
+  }
+}
