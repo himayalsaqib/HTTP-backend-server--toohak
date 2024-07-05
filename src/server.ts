@@ -17,7 +17,10 @@ import {
 } from './auth';
 import { tokenCreate, tokenExists } from './helper-files/serverHelper';
 import { clear } from './other';
-import { adminQuizCreate } from './quiz';
+import {
+  adminQuizCreate,
+  adminQuizNameUpdate
+} from './quiz';
 
 // Set up web app
 const app = express();
@@ -146,6 +149,20 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   res.json(response);
 });
 
+app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
+  const { token, name } = req.body;
+  const quizId = parseInt(req.params.quizid as string);
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+  response = adminQuizNameUpdate(token.authUserId, quizId, name);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+  res.json(response);
+});
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
