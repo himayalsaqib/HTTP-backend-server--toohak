@@ -56,6 +56,24 @@ export function quizBelongsToUser(authUserId: number, quizId: number): EmptyObje
 }
 
 /**
+ * Function checks if a quiz in the trash belongs to a given current user
+ *
+ * @param {number} authUserId
+ * @param {number} quizId
+ * @returns {{} | { error: string }}
+ */
+export function trashedQuizBelongsToUser(authUserId: number, quizId: number): EmptyObject | ErrorObject {
+  let data = getData();
+  const trashedQuiz = data.trash.find(q => q.quiz.quizId === quizId);
+
+  if (trashedQuiz === undefined || trashedQuiz.quiz.authUserId !== authUserId) {
+    return { error: 'User is not an owner of this quiz' };
+  } else {
+    return {};
+  }
+}
+
+/**
  * Function takes an authUserId (returned when a user registers or logs in),
  * creates a new token which contains the sessionId and authUserId and
  * adds it to dataStore.
