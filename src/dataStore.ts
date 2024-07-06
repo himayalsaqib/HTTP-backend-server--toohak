@@ -28,12 +28,6 @@ export interface Quizzes {
   duration?: number;
 }
 
-export interface QuizInfo extends Omit<Quizzes, 'authUserId'> {
-  numQuestions: number,
-  questions: Question[],
-  duration: number,
-}
-
 export interface Question {
   questionId: number;
   question: string;

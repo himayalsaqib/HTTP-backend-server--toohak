@@ -1,4 +1,4 @@
-import { setData, getData, ErrorObject, EmptyObject, QuizInfo, Question, Answer } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, Quizzes, Question, Answer } from './dataStore';
 import {
   authUserIdExists,
   quizNameHasValidChars,
@@ -16,6 +16,12 @@ const MAX_DESCRIPTION_LEN = 100;
 interface QuizList {
   quizId: number;
   name: string;
+}
+
+export interface QuizInfo extends Omit<Quizzes, 'authUserId'> {
+  numQuestions: number,
+  questions: Question[],
+  duration: number,
 }
 
 /// ////////////////////////////// Functions ///////////////////////////////////
