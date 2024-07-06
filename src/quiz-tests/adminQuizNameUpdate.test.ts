@@ -51,7 +51,6 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
           quizId: quizId,
           name: 'Original Quiz Name',
           timeCreated: expect.any(Number),
-          timeLastEdited: undefined,
           description: 'Quiz description',
           numQuestions: expect.any(Number),
           questions: [],
@@ -91,7 +90,7 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
     });
 
     test('Token is empty (no users are registered)', () => {
-      userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      requestDelete({}, '/v1/clear');
       const res = requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
