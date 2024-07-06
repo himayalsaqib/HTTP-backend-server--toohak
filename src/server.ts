@@ -30,7 +30,8 @@ import {
   adminQuizList,
   adminQuizInfo,
   adminQuizNameUpdate,
-  adminQuizRestore
+  adminQuizRestore,
+  adminQuizDescriptionUpdate
 } from './quiz';
 
 // Set up web app
@@ -239,6 +240,25 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
     return res.status(403).json(response);
   }
   response = adminQuizNameUpdate(token.authUserId, quizId, name);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
+  const { token, description } = req.body;
+  const quizId = parseInt(req.params.quizid as string);
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+  response = quizBelongsToUser(token.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+  response = adminQuizDescriptionUpdate(token.authUserId, quizId, description);
   if ('error' in response) {
     return res.status(400).json(response);
   }
