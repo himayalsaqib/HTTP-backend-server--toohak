@@ -15,14 +15,13 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
 
   let quiz: { token: Tokens, name: string };
   let quizId: number;
-  let quizInfo: { quizId: number, token: Tokens};
 
   beforeEach(() => {
     userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
     const registerResponse = requestPost(userBody, '/v1/admin/auth/register');
     token = registerResponse.retval as { sessionId: number, authUserId: number };
 
-    quizBody = { token: token, name: 'Original Quiz Name', description: 'Quiz Description' };
+    quizBody = { token: token, name: 'Original Quiz Name', description: 'Quiz description' };
     const quizResponse = requestPost(quizBody, '/v1/admin/quiz');
     quizId = quizResponse.retval.quizId;
   });
@@ -34,18 +33,27 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
     });
 
-    test.skip('Side effect (successful update): adminQuizInfo returns newly updated properties', () => {
+    test('Side effect (successful update): adminQuizInfo returns newly updated properties', () => {
+      const clientSendTime = Math.floor(Date.now() / 1000);
       quiz = { token: token, name: 'Updated Quiz Name' };
-      quizInfo = { quizId: quizId, token: token };
+
       requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
-      const res = requestGet(quizInfo, '/v1/admin/quiz/:quizId'); // {quizId}
+
+      const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
+      const timeLastEdited = res.retval.timeLastEdited;
+
+      expect(timeLastEdited).toBeGreaterThanOrEqual(clientSendTime - 1);
+      expect(timeLastEdited).toBeLessThanOrEqual(clientSendTime + 1);
+
       expect(res).not.toStrictEqual({
         retval: {
           quizId: quizId,
           name: 'Original Quiz Name',
           timeCreated: expect.any(Number),
-          timeLastEdited: undefined,
-          description: 'Valid quiz description'
+          description: 'Quiz description',
+          numQuestions: expect.any(Number),
+          questions: [],
+          duration: expect.any(Number)
         },
         statusCode: 200
       });
@@ -55,7 +63,10 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
           name: 'Updated Quiz Name',
           timeCreated: expect.any(Number),
           timeLastEdited: expect.any(Number),
-          description: 'Valid quiz description'
+          description: 'Quiz description',
+          numQuestions: expect.any(Number),
+          questions: [],
+          duration: expect.any(Number)
         },
         statusCode: 200
       });
@@ -78,7 +89,7 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
     });
 
     test('Token is empty (no users are registered)', () => {
-      userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      requestDelete({}, '/v1/clear');
       const res = requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
@@ -129,10 +140,8 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
     });
 
     test("Quiz doesn't exist", () => {
-      const invalidQuizId = 'invalidQuiz123';
-
       const quiz = { token: token, name: 'New Name' };
-      const res = requestPut(quiz, `/v1/admin/quiz/${invalidQuizId}/name`);
+      const res = requestPut(quiz, `/v1/admin/quiz/${quizId + 1}/name`);
 
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
     });
