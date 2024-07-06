@@ -89,6 +89,7 @@ describe('PUT /v1/admin/quiz:quizid/description', () => {
     });
 
     test('Token is empty (no users are registered)', () => {
+      requestDelete({}, '/v1/clear');
       const res = requestPut(quiz, `/v1/admin/quiz/${quizId}/description`);
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
