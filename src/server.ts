@@ -24,7 +24,7 @@ import {
   adminQuizList,
   adminQuizInfo,
   adminQuizNameUpdate,
-  adminQuizTrash
+  adminQuizTrash,
   adminQuizDescriptionUpdate
 } from './quiz';
 
