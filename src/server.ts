@@ -23,7 +23,9 @@ import {
   adminQuizRemove,
   adminQuizList,
   adminQuizNameUpdate,
-  adminQuizTrash
+  adminQuizTrash,
+  adminQuizDescriptionUpdate,
+  adminQuizInfo
 } from './quiz';
 
 // Set up web app
@@ -235,6 +237,46 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
     return res.status(401).json(response);
   }
 
+  res.json(response);
+});
+
+
+app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
+  const { token, description } = req.body;
+  const quizId = parseInt(req.params.quizid as string);
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+  response = quizBelongsToUser(token.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+  response = adminQuizDescriptionUpdate(token.authUserId, quizId, description);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
+app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.query.sessionId as string);
+  const authUserId = parseInt(req.query.authUserId as string);
+  const token = { sessionId: sessionId, authUserId: authUserId };
+  const quizId = parseInt(req.params.quizid as string);
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+  response = quizBelongsToUser(token.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizInfo(token.authUserId, quizId);
   res.json(response);
 });
 
