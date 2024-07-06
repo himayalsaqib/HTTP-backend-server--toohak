@@ -11,6 +11,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
   const error = { error: expect.any(String) };
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { token: Tokens, name: string, description: string };
+  let quizId: { quizId: number };
   let answerBody: { answer: string, correct: boolean };
   let questionBody: { question: string, duration: number, points: number, answers: object[]};
   let token: { sessionId: number, authUserId: number };
@@ -283,7 +284,10 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
 
   describe('Testing token errors (status code 401)', () => {
     test('Token is empty (no users are registered', () => {
-      expect(requestPost(quizBody, '/v1/admin/quiz')).toStrictEqual({
+      const answerBody = { answer: 'this is the answer', correct: true };
+      const questionBody = { question: 'A very valid question?', duration: 14, points: 6, answers: [answerBody] };
+      
+      expect(requestPost(questionBody, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
