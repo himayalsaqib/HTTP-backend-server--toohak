@@ -123,10 +123,8 @@ describe('PUT /v1/admin/quiz:quizid/description', () => {
     });
 
     test("Quiz doesn't exist", () => {
-      const invalidQuizId = 'invalidQuiz123';
-
       const quiz = { token: token, name: 'Updated quiz description' };
-      const res = requestPut(quiz, `/v1/admin/quiz/${invalidQuizId}/description`);
+      const res = requestPut(quiz, `/v1/admin/quiz/${quizId + 1}/description`);
 
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
     });
