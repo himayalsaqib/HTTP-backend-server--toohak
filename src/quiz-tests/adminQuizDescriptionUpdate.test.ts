@@ -37,7 +37,7 @@ describe('PUT /v1/admin/quiz:quizid/description', () => {
   test('Side effect (successful update): adminQuizInfo returns newly updated properties', () => {
     const clientSendTime = Math.floor(Date.now() / 1000);
     quiz = { token: token, description: 'Updated quiz description' };
-    
+
     requestPut(quiz, `/v1/admin/quiz/${quizId}/description`);
     const serverReceiveTime = Math.floor(Date.now() / 1000);
 
@@ -46,7 +46,7 @@ describe('PUT /v1/admin/quiz:quizid/description', () => {
 
     expect(timeLastEdited).toBeGreaterThanOrEqual(clientSendTime - 1);
     expect(timeLastEdited).toBeLessThanOrEqual(serverReceiveTime + 1);
-    
+
     expect(res).not.toStrictEqual({
       retval: {
         quizId: quizId,
