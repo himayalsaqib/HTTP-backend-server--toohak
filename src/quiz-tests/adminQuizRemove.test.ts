@@ -7,7 +7,7 @@ beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
-describe('DELETE /v1/admin/quiz/:quizid', () => {
+describe('DELETE /v1/admin/quiz/${quizId}', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { token: Tokens, name: string, description: string };
   let token: { sessionId: number, authUserId: number };
@@ -45,7 +45,7 @@ describe('DELETE /v1/admin/quiz/:quizid', () => {
     describe('Testing for invalid and empty token (status code 401', () => {
       test('Returns error when authUserId is not a valid user', () => {
         token.authUserId += 1;
-        expect(requestDelete(token, '/v1/admin/quiz/:quizid')).toStrictEqual({
+        expect(requestDelete(token, '/v1/admin/quiz/${quizId}')).toStrictEqual({
           retval: error,
           statusCode: 401
         });
@@ -53,7 +53,7 @@ describe('DELETE /v1/admin/quiz/:quizid', () => {
 
       test('Returns error when sessionId is invalid', () => {
         token.sessionId += 1;
-        expect(requestDelete(token, '/v1/admin/quiz/:quizid')).toStrictEqual({
+        expect(requestDelete(token, '/v1/admin/quiz/${quizId}')).toStrictEqual({
           retval: error,
           statusCode: 401
         });
