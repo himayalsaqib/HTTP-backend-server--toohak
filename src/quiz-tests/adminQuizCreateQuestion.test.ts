@@ -36,7 +36,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       const answerBody2 = { answer: 'Prince William', correct: false };
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2] };
 
-      expect(requestPost({token: token, questionBody: questionCreateBody}, `/v1/admin/quiz/${event.quizId}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${event.quizId}/question`)).toStrictEqual({
         retval: { questionId: expect.any(Number) },
         statusCode: 200
       });
@@ -47,7 +47,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2] };
-      const res = requestPost({token: token, questionBody: questionCreateBody}, `/v1/admin/quiz/${event.quizId}/question`);
+      const res = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${event.quizId}/question`);
 
       // use GET /v1/admin/quiz/{quizid}
       expect(requestGet({ token: token }, `/v1/admin/quiz/${event.quizId}`)).toStrictEqual({
@@ -68,7 +68,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
                 {
                   answer: answerBody1.answer,
                   correct: answerBody1.correct
-                }, 
+                },
                 {
                   answer: answerBody2.answer,
                   correct: answerBody2.answer
@@ -86,12 +86,12 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       // create question
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
-      const res = requestPost({token: token, questionBody: questionCreateBody}, `/v1/admin/quiz/${event.quizId}/question`);
+      const res = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${event.quizId}/question`);
 
       // create second question
       const answerBody2 = [{ answer: 'Chappell Roan', correct: true }, { answer: 'Sabrina Carpenter', correct: false }];
       const questionCreateBody2 = { question: 'Who is your favourite artist\'s favourite artist?', duration: 5, points: 7, answers: answerBody2 };
-      const res2 = requestPost({token: token, questionBody: questionCreateBody2}, `/v1/admin/quiz/${event.quizId}/question`);
+      const res2 = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${event.quizId}/question`);
 
       // use GET /v1/admin/quiz/{quizid}
       expect(requestGet({ token: token }, `/v1/admin/quiz/${event.quizId}`)).toStrictEqual({
@@ -112,7 +112,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
                 {
                   answer: answerBody[0].answer,
                   correct: answerBody[0].correct
-                }, 
+                },
                 {
                   answer: answerBody[1].answer,
                   correct: answerBody[1].correct
@@ -128,7 +128,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
                 {
                   answer: answerBody2[0].answer,
                   correct: answerBody2[0].correct
-                }, 
+                },
                 {
                   answer: answerBody2[1].answer,
                   correct: answerBody2[1].correct
@@ -160,7 +160,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: 'valid', correct: true }, { answer: 'also valid', correct: false }];
       questionBody = { question: 'bad', duration: 5, points: 3, answers: answerBody };
 
-      expect(requestPost({token: token, questionBody: questionBody}, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -170,7 +170,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: 'valid', correct: true }, { answer: 'also valid', correct: false }];
       questionBody = { question: 'this string is longer it totes will cause an error?', duration: 5, points: 3, answers: answerBody };
 
-      expect(requestPost({token: token, questionBody: questionBody}, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -187,7 +187,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
 
       questionBody = { question: 'a valid question', duration: 15, points: 9, answers: [answerBody1, answerBody2, answerBody3, answerBody4, answerBody5, answerBody6, answerBody7] };
 
-      expect(requestPost({token: token, questionBody: questionBody}, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -198,7 +198,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
 
       questionBody = { question: 'a valid question', duration: 8, points: 6, answers: [answerBody1] };
 
-      expect(requestPost({token: token, questionBody: questionBody}, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -208,7 +208,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: 'valid', correct: true }, { answer: 'also valid', correct: false }];
       questionBody = { question: 'this is a valid quesetion', duration: -1, points: 3, answers: answerBody };
 
-      expect(requestPost({token: token, questionBody: questionBody}, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -243,7 +243,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: 'valid', correct: true }, { answer: 'also valid :)', correct: false }];
       questionBody = { question: 'a very good question?', duration: 5, points: 0, answers: answerBody };
 
-      expect(requestPost({token: token, questionBody: questionBody}, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -253,7 +253,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: 'valid', correct: true }, { answer: 'also valid', correct: false }];
       questionBody = { question: 'bad', duration: 5, points: 11, answers: answerBody };
 
-      expect(requestPost({token: token, questionBody: questionBody}, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -263,7 +263,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: '', correct: true }, { answer: 'a valid ans', correct: true }];
       questionBody = { question: 'a good question', duration: 5, points: 2, answers: answerBody };
 
-      expect(requestPost({token: token, questionBody: questionBody}, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -274,7 +274,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       const answerBody2 = { answer: 'a very very not valid answer string', correct: false };
       questionBody = { question: 'valid question indeed', duration: 5, points: 7, answers: [answerBody1, answerBody2] };
 
-      expect(requestPost({token: token, questionBody: questionBody}, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -286,7 +286,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       const answerBody3 = { answer: 'correct ans', correct: false };
       questionBody = { question: 'which is the correct answer?', duration: 5, points: 4, answers: [answerBody1, answerBody2, answerBody3] };
 
-      expect(requestPost({token: token, questionBody: questionBody}, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
         retval: error,
         statusCode: 400
       });
@@ -298,7 +298,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       const answerBody3 = { answer: 'also valid ans', correct: false };
       questionBody = { question: 'bad', duration: 2, points: 9, answers: [answerBody1, answerBody2, answerBody3] };
 
-      expect(requestPost({token: token, questionBody: questionBody}, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -309,8 +309,8 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
     test('Token is empty (no users are registered', () => {
       const answerBody = [{ answer: 'this is the answer', correct: true }, { answer: 'also valid', correct: false }];
       const questionBody = { question: 'A very valid question?', duration: 14, points: 6, answers: answerBody };
-      
-      expect(requestPost({token: token, questionBody: questionBody}, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
+
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -333,7 +333,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Me', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
 
-      expect(requestPost({token: token, questionBody: questionCreateBody}, `/v1/admin/quiz/${res.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${res.retval}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -356,7 +356,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Me', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
 
-      expect(requestPost({token: token, questionBody: questionCreateBody}, `/v1/admin/quiz/${res.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${res.retval}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -382,7 +382,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: 'Oak', correct: true }, { answer: 'Birch', correct: false }];
       questionBody = { question: 'What is the best kind of tree?', duration: 7, points: 5, answers: answerBody };
 
-      expect(requestPost({token: token1, questionBody: questionBody}, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
+      expect(requestPost({ token: token1, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -402,7 +402,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       // creating a question for a quiz that does not exist (i.e. has been deleted)
       answerBody = [{ answer: 'cats are the best!', correct: true }, { answer: 'birds are cool too', correct: false }];
       questionBody = { question: 'which animal is the best?', duration: 16, points: 10, answers: answerBody };
-      expect(requestPost({token: token, questionBody: questionBody}, `/v1/admin/quiz/${res.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${res.retval}/question`)).toStrictEqual({
         retval: error,
         statusCode: 403
       });
