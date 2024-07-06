@@ -78,12 +78,12 @@ describe('GET /v1/admin/quiz/trash', () => {
       const trashRes = requestGet(token, '/v1/admin/quiz/trash');
       expect(trashRes).toStrictEqual({ retval: { quizzes: [] }, statusCode: 200 });
     });
-    
+
     test.skip('Side effect: correctly displays empty trash after trash has been emptied', () => {
       let res = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = res.retval.quizId;
       requestDelete(token, `/v1/admin/quiz/${quizId}`);
-  
+
       res = requestDelete(token, '/v1/admin/quiz/trash/empty');
       const trashRes = requestGet(token, '/v1/admin/quiz/trash');
       expect(trashRes).toStrictEqual({ retval: { quizzes: [] }, statusCode: 200 });
@@ -97,25 +97,23 @@ describe('GET /v1/admin/quiz/trash', () => {
       token = retval as { sessionId: number, authUserId: number };
       quizBody = { token: token, name: 'My Quiz Name', description: 'Valid Quiz Description' };
     });
-    
+
     test('Returns errors when authUserId is not a valid user', () => {
       token.authUserId += 1;
-      const res = requestDelete(token, `/v1/admin/quiz/trash`);
+      const res = requestDelete(token, '/v1/admin/quiz/trash');
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
 
     test('Returns errors when token is empty', () => {
       requestDelete({}, '/v1/clear');
-      const res = requestDelete(token, `/v1/admin/quiz/trash`);
+      const res = requestDelete(token, '/v1/admin/quiz/trash');
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
 
     test('Returns errors when sessionId is invalid', () => {
       token.sessionId += 1;
-      const res = requestDelete(token, `/v1/admin/quiz/trash`);
+      const res = requestDelete(token, '/v1/admin/quiz/trash');
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
   });
 });
-
-
