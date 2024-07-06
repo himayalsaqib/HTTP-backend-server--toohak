@@ -102,6 +102,12 @@ describe('GET /v1/admin/quiz/trash', () => {
       const res = requestDelete(token, `/v1/admin/quiz/trash`);
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
+
+    test('Returns errors when sessionId is invalid', () => {
+      token.sessionId += 1;
+      const res = requestDelete(token, `/v1/admin/quiz/trash`);
+      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
+    });
   });
 });
 
