@@ -5,7 +5,8 @@ import {
   quizNameInUse,
   quizIdInUse,
   findQuizById,
-  quizIsInTrash
+  quizIsInTrash,
+  findTrashedQuizById
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -260,7 +261,7 @@ export function adminQuizRestore (authUserId: number, quizId: number): EmptyObje
   }
 
   const data = getData();
-  const trashedQuiz = data.trash.find(q => q.quiz.quizId === quizId);
+  const trashedQuiz = findTrashedQuizById(quizId);
 
   if (quizNameInUse(authUserId, trashedQuiz.quiz.name) === true) {
     return { error: 'Quiz name of the restored quiz is already used by the current logged in user for another active quiz' };
