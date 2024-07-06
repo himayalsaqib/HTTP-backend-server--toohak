@@ -1,4 +1,4 @@
-import { setData, getData, ErrorObject, EmptyObject } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, Quizzes, Question, Answer } from './dataStore';
 import {
   authUserIdExists,
   quizNameHasValidChars,
@@ -20,12 +20,10 @@ interface QuizList {
   name: string;
 }
 
-interface QuizInfo {
-  quizId: number;
-  name: string;
-  timeCreated: number;
-  timeLastEdited: number;
-  description: string;
+export interface QuizInfo extends Omit<Quizzes, 'authUserId'> {
+  numQuestions: number,
+  questions: Question[],
+  duration: number,
 }
 
 /// ////////////////////////////// Functions ///////////////////////////////////
@@ -156,12 +154,28 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | E
     return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
   }
 
+  const questions = quiz.questions?.map((q: Question) => ({
+    questionId: q.questionId,
+    question: q.question,
+    duration: q.duration,
+    points: q.points,
+    answers: q.answers.map((a: Answer) => ({
+      answerId: a.answerId,
+      answer: a.answer,
+      colour: a.colour,
+      correct: a.correct,
+    })),
+  })) || [];
+
   return {
     quizId: quiz.quizId,
     name: quiz.name,
     timeCreated: quiz.timeCreated,
     timeLastEdited: quiz.timeLastEdited,
     description: quiz.description,
+    numQuestions: questions.length,
+    questions: questions,
+    duration: quiz.duration || 0,
   };
 }
 
@@ -201,7 +215,6 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
   }
-
   quiz.name = name;
   quiz.timeLastEdited = Math.floor(Date.now() / 1000);
 
