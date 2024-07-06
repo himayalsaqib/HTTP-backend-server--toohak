@@ -12,6 +12,20 @@ const MIN_QUIZ_NAME_LEN = 3;
 const MAX_QUIZ_NAME_LEN = 30;
 const MAX_DESCRIPTION_LEN = 100;
 
+const MIN_QUESTION_LEN = 5;
+const MAX_QUESTION_LEN = 50;
+
+const MIN_NUM_ANSWERS = 2;
+const MAX_NUM_ANSWERS = 6;
+
+const MAX_QUIZ_QUESTIONS_DURATION = 180; // 3 minutes in seconds
+
+const MIN_POINT_VALUE = 1;
+const MAX_POINT_VALUE = 10;
+
+const MIN_ANS_LEN = 1;
+const MAX_ANS_LEN = 30;
+
 /// /////////////////////////// Type Annotations ///////////////////////////////
 interface QuizList {
   quizId: number;
@@ -280,6 +294,13 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  */
 
 export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBody): { questionId: number} | ErrorObject {
+  // error checking
+
+  if (questionBody.question.length > 50 || questionBody.question.length < 5) {
+    return { error : ''}
+  }
+
+  
   // NOTE:
   //  duration is in seconds
 
