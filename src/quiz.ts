@@ -1,4 +1,4 @@
-import { setData, getData, ErrorObject, EmptyObject } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, QuizInfo, Question, Answer } from './dataStore';
 import {
   authUserIdExists,
   quizNameHasValidChars,
@@ -17,14 +17,17 @@ interface QuizList {
   quizId: number;
   name: string;
 }
-
+/*
 interface QuizInfo {
   quizId: number;
   name: string;
   timeCreated: number;
   timeLastEdited: number;
   description: string;
-}
+  numQuestions: number;
+  questions: Question[];
+  duration: number;
+} */
 
 /// ////////////////////////////// Functions ///////////////////////////////////
 /**
@@ -154,12 +157,29 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | E
     return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
   }
 
+  const questions = quiz.questions?.map((q: any) => ({
+    questionId: q.questionId,
+    question: q.question,
+    duration: q.duration,
+    points: q.points,
+    answers: q.answers.map((a: any) => ({
+      answerId: a.answerId,
+      answer: a.answer,
+      colour: a.colour,
+      correct: a.correct,
+    })),
+  })) || [];
+
+
   return {
     quizId: quiz.quizId,
     name: quiz.name,
     timeCreated: quiz.timeCreated,
     timeLastEdited: quiz.timeLastEdited,
     description: quiz.description,
+    numQuestions: questions.length,
+    questions: questions,
+    duration: quiz.duration || 0,
   };
 }
 
