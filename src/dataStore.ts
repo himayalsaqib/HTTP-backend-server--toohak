@@ -24,6 +24,23 @@ export interface Quizzes {
   timeCreated: number,
   timeLastEdited: number,
   description: string,
+  questions?: Question[];
+  duration?: number;
+}
+
+export interface Question {
+  questionId: number;
+  question: string;
+  duration: number;
+  points: number;
+  answers: Answer[];
+}
+
+export interface Answer {
+  answerId: number;
+  answer: string;
+  colour: string;
+  correct: boolean;
 }
 
 export interface Trash {
