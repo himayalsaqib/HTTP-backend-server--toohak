@@ -190,7 +190,18 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test.todo('The sum of the question durations in the quiz exceeds 3 minutes'); // 180 seconds
+    test('The sum of the question durations in the quiz exceeds 3 minutes', () => {
+      /**
+       * questionBody1
+       * questionBody2
+       * questionBody3
+       * questionBody4
+       * questionBody5
+       * questionBody6
+       * questionBody7
+       */
+
+    }); // 180 seconds
 
     test('The points awarded for the question are less than 1', () => {
       answerBody = { answer: 'valid', correct: true };
@@ -233,7 +244,17 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test.todo('Any answer strings are duplicates of one another (within the same question)');
+    test('Any answer strings are duplicates of one another (within the same question)', () => {
+      const answerBody1 = { answer: 'correct ans', correct: true };
+      const answerBody2 = { answer: 'not the same', correct: false };
+      const answerBody3 = { answer: 'correct ans', correct: false };
+      questionBody = { question: 'which is the correct answer?', duration: 5, points: 4, answers: [answerBody1, answerBody2, answerBody3] };
+
+      expect(requestPost(questionBody, `/v1/admin/quiz/${resQuizCreate.retval}/question`)).toStrictEqual({
+        retval: error,
+        statusCode: 400
+      });
+    });
 
     test('There are no correct answers', () => {
       const answerBody1 = { answer: 'valid', correct: false };
@@ -304,7 +325,29 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
   });
 
   describe('Testing quiz owner and quiz existence errors (status code 403)', () => {
-    test.todo('The user is not an owner of the quiz with the given quizid');
+    test('The user is not an owner of the quiz with the given quizid', () => {
+      // register two users to create a quiz
+      userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
+      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
+      const token1 = retval as { sessionId: number, authUserId: number };
+
+      const userBody2 = { email: 'email@gmail.com', password: 'Password123', nameFirst: 'John', nameLast: 'Smith' };
+      requestPost(userBody2, '/v1/admin/auth/register');
+
+      // create a quiz for first user
+      quizBody = { token: token1, name: 'Valid Quiz Name', description: 'A valid quiz description' };
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+      const quizId = res.retval;
+
+      // user 2 tries to add question to user 1's quiz
+      answerBody = { answer: 'Oak', correct: true};
+      questionBody = { question: 'What is the best kind of tree?', duration: 7, points: 5, answers: [answerBody] };
+
+      expect(requestPost(questionBody, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
+        retval: error, 
+        statusCode: 401
+      });
+    });
 
     test('The quiz does not exist', () => {
       // register a user to create a quiz
