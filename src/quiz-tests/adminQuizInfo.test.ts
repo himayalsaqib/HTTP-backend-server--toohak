@@ -77,6 +77,7 @@ describe('GET /v1/admin/quiz:quizid', () => {
     });
 
     test('Token is empty (no users are registered)', () => {
+      requestDelete({}, '/v1/clear');
       const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
