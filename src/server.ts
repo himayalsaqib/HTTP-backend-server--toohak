@@ -23,6 +23,7 @@ import {
   adminQuizRemove,
   adminQuizList,
   adminQuizNameUpdate,
+  adminQuizTrash
 } from './quiz';
 
 // Set up web app
@@ -212,6 +213,24 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
     return res.status(403).json(response);
   }
   response = adminQuizNameUpdate(token.authUserId, quizId, name);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
+app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.query.sessionId as string);
+  const authUserId = parseInt(req.query.authUserId as string);
+  const token = { sessionId: sessionId, authUserId: authUserId };
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = adminQuizTrash(token.authUserId);
   if ('error' in response) {
     return res.status(400).json(response);
   }
