@@ -29,15 +29,12 @@ describe('GET /v1/admin/quiz/trash', () => {
       const trashRes = requestGet(token, '/v1/admin/quiz/trash');
       expect(trashRes.statusCode).toBe(200);
       expect(trashRes.retval.quizzes).toStrictEqual({
-        retval: {
           quizzes: [
             {
               quizId: res.retval.quizId,
               name: 'My Quiz Name'
             }
           ]
-        },
-        statusCode: 200
       });
     });
 
@@ -53,7 +50,6 @@ describe('GET /v1/admin/quiz/trash', () => {
 
       const trashRes = requestGet(token, '/v1/admin/quiz/trash');
       expect(trashRes.retval.quizzes).toStrictEqual({
-        retval: {
           quizzes: [
             {
               quizId: res.retval.quizId,
@@ -61,11 +57,9 @@ describe('GET /v1/admin/quiz/trash', () => {
             },
             {
               quizId: res2.retval.quizId,
-              name: 'My Quiz Name'
+              name: 'My Quiz Two'
             }
           ]
-        },
-        statusCode: 200
       });
     });
 
