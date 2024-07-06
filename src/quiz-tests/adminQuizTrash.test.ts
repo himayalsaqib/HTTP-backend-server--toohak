@@ -91,6 +91,13 @@ describe('GET /v1/admin/quiz/trash', () => {
   });
 
   describe('Testing for empty or invalid Token (status code 401)', () => {
+    beforeEach(() => {
+      userBody = { email: 'userone@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
+      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
+      token = retval as { sessionId: number, authUserId: number };
+      quizBody = { token: token, name: 'My Quiz Name', description: 'Valid Quiz Description' };
+    });
+    
     test('Returns errors when authUserId is not a valid user', () => {
       token.authUserId += 1;
       const res = requestDelete(token, `/v1/admin/quiz/trash`);
