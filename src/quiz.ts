@@ -123,7 +123,7 @@ export function adminQuizRemove (authUserId: number, quizId: number): EmptyObjec
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz does not belong to user.' };
   }
-  quiz.timeLastEdited = parseFloat(Date.now().toFixed(10));
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
   data.trash.push({ quiz: quiz });
   data.quizzes.splice(quizIndex, 1);
   setData(data);
@@ -248,7 +248,7 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
   }
 
   quiz.description = description;
-  quiz.timeLastEdited = parseFloat(Date.now().toFixed(10));
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
 
   const data = getData();
   setData(data);
