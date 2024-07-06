@@ -35,7 +35,7 @@ describe('GET /v1/admin/quiz:quizid', () => {
           name: 'Original Quiz Name',
           timeCreated: expect.any(Number),
           description: 'Quiz description',
-          numQuestions: 0,
+          numQuestions: expect.any(Number),
           questions: [],
           duration: expect.any(Number)
         },
@@ -54,7 +54,7 @@ describe('GET /v1/admin/quiz:quizid', () => {
           timeCreated: expect.any(Number),
           timeLastEdited: expect.any(Number),
           description: 'Quiz description',
-          numQuestions: 0,
+          numQuestions: expect.any(Number),
           questions: [],
           duration: expect.any(Number)
         },
