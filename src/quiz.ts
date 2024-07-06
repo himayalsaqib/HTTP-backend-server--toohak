@@ -248,7 +248,7 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  *
  * @param {number} authUserId
  * @param {number} quizId
- * @returns {{} | { error: string }} - an empty object
+ * @returns {{ quizzes: array } | { error: string }} - returns list of quizzes 
  */
 export function adminQuizTrash (authUserId: number, quizId: number): EmptyObject | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
