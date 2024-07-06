@@ -28,16 +28,17 @@ describe('GET /v1/admin/quiz:quizid', () => {
   });
 
   describe('Testing successful cases (status code 200)', () => {
-    test.skip('Quiz info of a new quiz was successful and has correct return type', () => { // need to debug
+    test('Quiz info of a new quiz was successful and has correct return type', () => { 
       const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
-      console.log('Response:', res); 
       expect(res).toStrictEqual({ 
         retval: {
           quizId: res.retval.quizId,
           name: 'Original Quiz Name',
           timeCreated: expect.any(Number),
-          timeLastEdited: undefined,
-          description: 'Quiz description'
+          description: 'Quiz description',
+          numQuestions: 0,
+          questions: [],
+          duration: expect.any(Number)
         }, 
         statusCode: 200 
       });
@@ -46,14 +47,16 @@ describe('GET /v1/admin/quiz:quizid', () => {
       quiz = { token: token, name: 'Updated Quiz Name' };
       requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
       const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
-      console.log('Response:', res); 
       expect(res).toStrictEqual({ 
         retval: {
           quizId: res.retval.quizId,
           name: 'Updated Quiz Name',
           timeCreated: expect.any(Number),
           timeLastEdited: expect.any(Number),
-          description: 'Quiz description'
+          description: 'Quiz description',
+          numQuestions: 0,
+          questions: [],
+          duration: expect.any(Number)
         }, 
         statusCode: 200 
       });
@@ -100,58 +103,3 @@ describe('GET /v1/admin/quiz:quizid', () => {
   });
 
 });
-
-/*
-describe('adminQuizInfo', () => {
-  let user;
-  let quizId;
-  const error = { error: expect.any(String) };
-
-  beforeEach(() => {
-    clear();
-    user = adminAuthRegister('valid1@gmail.com', 'Password12', 'Jane', 'Doe');
-    const quiz = adminQuizCreate(user.authUserId, 'Valid Quiz Name', 'Valid quiz description');
-    quizId = quiz.quizId;
-  });
-
-  describe('Testing for correct return type', () => {
-    test('Quiz info of an edited quiz was successful and has correct return type', () => {
-      adminQuizNameUpdate(user.authUserId, quizId, 'Updated Quiz Name');
-      expect(adminQuizInfo(user.authUserId, quizId)).toStrictEqual({
-        quizId: quizId,
-        name: 'Updated Quiz Name',
-        timeCreated: expect.any(Number),
-        timeLastEdited: expect.any(Number),
-        description: 'Valid quiz description'
-      });
-    });
-
-    test('Quiz info for a new quiz was successful and has correct return type', () => {
-      expect(adminQuizInfo(user.authUserId, quizId)).toStrictEqual({
-        quizId: quizId,
-        name: 'Valid Quiz Name',
-        timeCreated: expect.any(Number),
-        timeLastEdited: undefined,
-        description: 'Valid quiz description'
-      });
-    });
-  });
-
-  describe('Testing authUserId in adminQuizInfo', () => {
-    test('Invalid authUserId', () => {
-      expect(adminQuizInfo('invalidUser123', quizId)).toStrictEqual(error);
-    });
-  });
-
-  describe('Testing quizId in adminQuizInfo', () => {
-    test('Invalid quizId', () => {
-      expect(adminQuizInfo(user.authUserId, 'invalidQuiz123')).toStrictEqual(error);
-    });
-    test('Quiz not owned by user', () => {
-      const otherUser = adminAuthRegister('otheruser@gmail.com', 'Password12', 'Joe', 'Mama');
-      const otherQuiz = adminQuizCreate(otherUser.authUserId, "Other User's Quiz", 'Description');
-      expect(adminQuizInfo(user.authUserId, otherQuiz.quizId)).toStrictEqual(error);
-    });
-  });
-});
-*/
