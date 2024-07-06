@@ -15,7 +15,6 @@ describe('PUT /v1/admin/quiz:quizid/description', () => {
 
   let quiz: { token: Tokens, description: string };
   let quizId: number;
-  let quizInfo: { quizId: number, token: Tokens};
 
   beforeEach(() => {
     userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
@@ -36,17 +35,27 @@ describe('PUT /v1/admin/quiz:quizid/description', () => {
   });
 
   test.skip('Side effect (successful update): adminQuizInfo returns newly updated properties', () => {
+    const clientSendTime = Math.floor(Date.now() / 1000);
     quiz = { token: token, description: 'Updated quiz description' };
-    quizInfo = { quizId: quizId, token: token };
+    
     requestPut(quiz, `/v1/admin/quiz/${quizId}/description`);
-    const res = requestGet(quizInfo, '/v1/admin/quiz/:quizId'); // {quizId}
+    const serverReceiveTime = Math.floor(Date.now() / 1000);
+
+    const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
+    const timeLastEdited = res.retval.timeLastEdited;
+
+    expect(timeLastEdited).toBeGreaterThanOrEqual(clientSendTime - 1);
+    expect(timeLastEdited).toBeLessThanOrEqual(serverReceiveTime + 1);
+    
     expect(res).not.toStrictEqual({
       retval: {
         quizId: quizId,
         name: 'Quiz Name',
         timeCreated: expect.any(Number),
-        timeLastEdited: undefined,
-        description: 'Original quiz description'
+        description: 'Original quiz description',
+        numQuestions: expect.any(Number),
+        questions: [],
+        duration: expect.any(Number)
       },
       statusCode: 200
     });
@@ -56,7 +65,10 @@ describe('PUT /v1/admin/quiz:quizid/description', () => {
         name: 'Updated Quiz Name',
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
-        description: 'Updated quiz description'
+        description: 'Updated quiz description',
+        numQuestions: expect.any(Number),
+        questions: [],
+        duration: expect.any(Number)
       },
       statusCode: 200
     });
