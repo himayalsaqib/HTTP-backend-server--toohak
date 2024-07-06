@@ -200,7 +200,6 @@ app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
   res.json(response);
 });
 
-/*
 app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.sessionId as string);
   const authUserId = parseInt(req.query.authUserId as string);
@@ -219,7 +218,6 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   response = adminQuizInfo(token.authUserId, quizId);
   res.json(response);
 });
-*/
 
 app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   const { token, name } = req.body;
