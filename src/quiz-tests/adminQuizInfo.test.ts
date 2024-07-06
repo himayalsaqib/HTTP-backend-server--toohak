@@ -3,7 +3,6 @@
 import { Tokens } from '../dataStore';
 import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
 
-
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
@@ -28,9 +27,9 @@ describe('GET /v1/admin/quiz:quizid', () => {
   });
 
   describe('Testing successful cases (status code 200)', () => {
-    test('Quiz info of a new quiz was successful and has correct return type', () => { 
+    test('Quiz info of a new quiz was successful and has correct return type', () => {
       const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
-      expect(res).toStrictEqual({ 
+      expect(res).toStrictEqual({
         retval: {
           quizId: res.retval.quizId,
           name: 'Original Quiz Name',
@@ -39,15 +38,15 @@ describe('GET /v1/admin/quiz:quizid', () => {
           numQuestions: 0,
           questions: [],
           duration: expect.any(Number)
-        }, 
-        statusCode: 200 
+        },
+        statusCode: 200
       });
     });
     test('Quiz info of an edited quiz was successful and has correct return type', () => {
       quiz = { token: token, name: 'Updated Quiz Name' };
       requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
       const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
-      expect(res).toStrictEqual({ 
+      expect(res).toStrictEqual({
         retval: {
           quizId: res.retval.quizId,
           name: 'Updated Quiz Name',
@@ -57,8 +56,8 @@ describe('GET /v1/admin/quiz:quizid', () => {
           numQuestions: 0,
           questions: [],
           duration: expect.any(Number)
-        }, 
-        statusCode: 200 
+        },
+        statusCode: 200
       });
     });
   });
@@ -101,5 +100,4 @@ describe('GET /v1/admin/quiz:quizid', () => {
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
     });
   });
-
 });
