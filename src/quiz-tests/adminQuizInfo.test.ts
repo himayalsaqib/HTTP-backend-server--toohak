@@ -42,6 +42,7 @@ describe('GET /v1/admin/quiz:quizid', () => {
         statusCode: 200
       });
     });
+
     test('Quiz info of an edited quiz was successful and has correct return type', () => {
       quiz = { token: token, name: 'Updated Quiz Name' };
       requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
@@ -61,21 +62,22 @@ describe('GET /v1/admin/quiz:quizid', () => {
       });
     });
   });
+
   describe('Testing token errors (status code 401)', () => {
     test('Invalid authUserId', () => {
       token.authUserId += 1;
-      const res = requestGet(quiz, `/v1/admin/quiz/${quizId}`);
+      const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
 
     test('Given invalid session ID', () => {
       token.sessionId += 1;
-      const res = requestGet(quiz, `/v1/admin/quiz/${quizId}`);
+      const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
 
     test('Token is empty (no users are registered)', () => {
-      const res = requestGet(quiz, `/v1/admin/quiz/${quizId}`);
+      const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
   });
