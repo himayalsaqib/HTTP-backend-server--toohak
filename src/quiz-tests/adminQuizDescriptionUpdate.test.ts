@@ -39,13 +39,12 @@ describe('PUT /v1/admin/quiz:quizid/description', () => {
     quiz = { token: token, description: 'Updated quiz description' };
 
     requestPut(quiz, `/v1/admin/quiz/${quizId}/description`);
-    const serverReceiveTime = Math.floor(Date.now() / 1000);
 
     const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
     const timeLastEdited = res.retval.timeLastEdited;
 
-    expect(timeLastEdited).toBeGreaterThanOrEqual(clientSendTime - 1);
-    expect(timeLastEdited).toBeLessThanOrEqual(serverReceiveTime + 1);
+    expect(timeLastEdited).toBeGreaterThanOrEqual(clientSendTime);
+    expect(timeLastEdited).toBeLessThanOrEqual(clientSendTime + 1);
 
     expect(res).not.toStrictEqual({
       retval: {
