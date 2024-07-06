@@ -27,7 +27,8 @@ describe('GET /v1/admin/quiz/trash', () => {
       requestDelete(token, `/v1/admin/quiz/${quizId}`);
 
       const trashRes = requestGet(token, '/v1/admin/quiz/trash');
-      expect(trashRes.statusCode).toBe(200);
+      console.log(trashRes);
+      expect(trashRes.statusCode).toStrictEqual(200);
       expect(trashRes.retval).toStrictEqual({
         quizzes: [
           {
@@ -49,7 +50,7 @@ describe('GET /v1/admin/quiz/trash', () => {
       requestDelete(token, `/v1/admin/quiz/${quizId2}`);
 
       const trashRes = requestGet(token, '/v1/admin/quiz/trash');
-      expect(trashRes.statusCode).toBe(200);
+      expect(trashRes.statusCode).toStrictEqual(200);
       expect(trashRes.retval).toStrictEqual({
         quizzes: [
           {
@@ -71,7 +72,7 @@ describe('GET /v1/admin/quiz/trash', () => {
 
       res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
       const trashRes = requestGet(token, '/v1/admin/quiz/trash');
-      expect(trashRes.statusCode).toBe(200);
+      expect(trashRes.statusCode).toStrictEqual(200);
       expect(trashRes).toStrictEqual({ retval: { quizzes: [] }, statusCode: 200 });
     });
 
@@ -82,7 +83,7 @@ describe('GET /v1/admin/quiz/trash', () => {
 
       res = requestDelete(token, '/v1/admin/quiz/trash/empty');
       const trashRes = requestGet(token, '/v1/admin/quiz/trash');
-      expect(trashRes.statusCode).toBe(200);
+      expect(trashRes.statusCode).toStrictEqual(200);
       expect(trashRes).toStrictEqual({ retval: { quizzes: [] }, statusCode: 200 });
     });
   });
