@@ -248,14 +248,13 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  *
  * @param {number} authUserId
  * @param {number} quizId
- * @returns {{ quizzes: array } | { error: string }} - returns list of quizzes 
+ * @returns {{ quizzes: array } | { error: string }} - returns list of quizzes
  */
-export function adminQuizTrash (authUserId: number, quizId: number): EmptyObject | ErrorObject {
+export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId does not refer to a valid user id.' };
-  } else if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz Id does not refer to a valid quiz.' };
   }
+  
   const data = getData();
   const trashList = [];
 
