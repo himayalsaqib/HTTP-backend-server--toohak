@@ -34,7 +34,7 @@ describe('PUT /v1/admin/quiz:quizid/description', () => {
     });
   });
 
-  test.skip('Side effect (successful update): adminQuizInfo returns newly updated properties', () => {
+  test('Side effect (successful update): adminQuizInfo returns newly updated properties', () => {
     const clientSendTime = Math.floor(Date.now() / 1000);
     quiz = { token: token, description: 'Updated quiz description' };
     
@@ -62,7 +62,7 @@ describe('PUT /v1/admin/quiz:quizid/description', () => {
     expect(res).toStrictEqual({
       retval: {
         quizId: quizId,
-        name: 'Updated Quiz Name',
+        name: 'Quiz Name',
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
         description: 'Updated quiz description',
