@@ -256,17 +256,15 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
   }
 
   const data = getData();
-  const trashList = [];
+  const trashList: QuizList[] = [];
 
   for (const trashItem of data.trash) {
-    if (trashItem.quiz.authUserId == authUserId) {
+    if (trashItem.quiz.authUserId === authUserId) {
       trashList.push({
         quizId: trashItem.quiz.quizId,
-        name: trashItem.quiz.name
+        name: trashItem.quiz.name,
       });
-    } 
-      
-    
+    }
   }
 
   return { quizzes: trashList };
