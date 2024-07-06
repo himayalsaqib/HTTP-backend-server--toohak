@@ -259,14 +259,14 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
   const trashList = [];
 
   for (const trashItem of data.trash) {
-    if (trashItem.quiz.authUserId !== authUserId) {
-      return { error: 'Incorrect autherUserId' };
-    } else {
+    if (trashItem.quiz.authUserId == authUserId) {
       trashList.push({
         quizId: trashItem.quiz.quizId,
         name: trashItem.quiz.name
       });
-    }
+    } 
+      
+    
   }
 
   return { quizzes: trashList };
