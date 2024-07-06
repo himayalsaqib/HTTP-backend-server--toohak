@@ -25,13 +25,8 @@ describe('GET /v1/admin/quiz/trash', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = res.retval.quizId;
       requestDelete(token, `/v1/admin/quiz/${quizId}`);
-      console.log(token);
 
       const trashRes = requestGet(token, '/v1/admin/quiz/trash');
-
-      console.log(token);
-      console.log(trashRes);
-
       expect(trashRes.statusCode).toStrictEqual(200);
       expect(trashRes.retval).toStrictEqual({
         quizzes: [
