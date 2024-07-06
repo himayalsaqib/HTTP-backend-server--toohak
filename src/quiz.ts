@@ -260,13 +260,13 @@ export function adminQuizTrash (authUserId: number, quizId: number): EmptyObject
   const trashList = [];
 
   for (const trashItem of data.trash) {
-    if (trashItem.quiz.authUserId != authUserId) {
-      return { error: 'Incorrect autherUserId'}
+    if (trashItem.quiz.authUserId !== authUserId) {
+      return { error: 'Incorrect autherUserId' };
     } else {
       trashList.push({
         quizId: trashItem.quiz.quizId,
         name: trashItem.quiz.name
-      })
+      });
     }
   }
 
