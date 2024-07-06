@@ -232,7 +232,7 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
 
   response = adminQuizTrash(token.authUserId);
   if ('error' in response) {
-    return res.status(400).json(response);
+    return res.status(401).json(response);
   }
 
   res.json(response);
