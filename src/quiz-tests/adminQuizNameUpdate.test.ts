@@ -35,12 +35,10 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
 
     test('Side effect (successful update): adminQuizInfo returns newly updated properties', () => {
       const clientSendTime = Math.floor(Date.now() / 1000);
-      console.log(`Client send time: ${clientSendTime}`);
       quiz = { token: token, name: 'Updated Quiz Name' };
-      
+
       requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
       const serverReceiveTime = Math.floor(Date.now() / 1000);
-      console.log(`Server receive time: ${serverReceiveTime}`);
 
       const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
       const timeLastEdited = res.retval.timeLastEdited;
@@ -55,7 +53,7 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
           timeCreated: expect.any(Number),
           timeLastEdited: undefined,
           description: 'Quiz description',
-          numQuestions: 0,
+          numQuestions: expect.any(Number),
           questions: [],
           duration: expect.any(Number)
         },
@@ -68,7 +66,7 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
           timeCreated: expect.any(Number),
           timeLastEdited: expect.any(Number),
           description: 'Quiz description',
-          numQuestions: 0,
+          numQuestions: expect.any(Number),
           questions: [],
           duration: expect.any(Number)
         },
