@@ -1,7 +1,7 @@
 // tests for adminQuizRemove function
 
 import { Tokens } from '../dataStore';
-import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
+import { requestDelete, requestPost } from '../helper-files/requestHelper';
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
