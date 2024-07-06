@@ -45,7 +45,7 @@ describe('DELETE /v1/admin/quiz/:quizid', () => {
     describe('Testing for invalid and empty token (status code 401', () => {
       test('Returns error when authUserId is not a valid user', () => {
         token.authUserId += 1;
-        expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
+        expect(requestDelete(token, '/v1/admin/quiz/:quizid')).toStrictEqual({
           retval: error,
           statusCode: 401
         });
@@ -53,7 +53,7 @@ describe('DELETE /v1/admin/quiz/:quizid', () => {
 
       test('Returns error when sessionId is invalid', () => {
         token.sessionId += 1;
-        expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
+        expect(requestDelete(token, '/v1/admin/quiz/:quizid')).toStrictEqual({
           retval: error,
           statusCode: 401
         });
