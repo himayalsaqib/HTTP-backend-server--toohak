@@ -172,14 +172,3 @@ export function findQuizById(quizId: number): Quizzes | undefined {
   const data = getData();
   return data.quizzes.find(q => q.quizId === quizId);
 }
-
-/**
- * Finds a quizId in the data store by quizId
- *
- * @param {number} quizId - The quizId to find
- * @returns {Quizzes | undefined} - The quizzes object if found | undefined
- */
-export function findUserByQuizId(quizId: number): Quizzes | undefined {
-  const data = getData();
-  return data.quizzes.find(quiz => quiz.quizId === quizId);
-}
