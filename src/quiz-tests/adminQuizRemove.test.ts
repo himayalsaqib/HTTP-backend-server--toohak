@@ -61,7 +61,7 @@ describe('DELETE /v1/admin/quiz/:quizid', () => {
 
       test('Returns error when token is empty', () => {
         requestDelete({}, '/v1/clear');
-        expect(requestGet(token, '/v1/admin/quiz/:quizid')).toStrictEqual({
+        expect(requestDelete(token, '/v1/admin/quiz/:quizid')).toStrictEqual({
           retval: error,
           statusCode: 401
         });
