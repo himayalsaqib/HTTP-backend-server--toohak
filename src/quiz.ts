@@ -1,4 +1,4 @@
-import { setData, getData, ErrorObject, EmptyObject, Quizzes, Question, Answer, Tokens } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, Quizzes, Question, Answer } from './dataStore';
 import {
   authUserIdExists,
   quizNameHasValidChars,
@@ -44,7 +44,6 @@ interface QuizQuestionAnswers {
 }
 
 interface QuestionBody {
-  token: Tokens;
   question: string;
   duration: number;
   points: number;
@@ -294,9 +293,9 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  * @returns { {questionId: number} | { error: string}}
  */
 
-export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBody): { questionId: number} | ErrorObject {
+export function adminQuizCreateQuestion(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number} | ErrorObject {
   const data = getData();
-  
+
   // error checking
   if (questionBody.question.length > MAX_QUESTION_LEN || questionBody.question.length < MIN_QUESTION_LEN) {
     return { error: 'The question string cannot be less than 5 characters or greater than 50 characters in length.' };
@@ -309,7 +308,7 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
   if (questionBody.duration < 0) {
     return { error: 'The question duration must be a positive number.' };
   }
-  
+
   // sum execeds 3 mins
   // helper function
 
@@ -326,10 +325,12 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
   // check if there are no correct answers
   // helper function
 
-
+  if (authUserIdExists(authUserId) === false) {
+    return { error: 'AuthUser ID is not a valid user.' };
+  }
 
   if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz ID does not refer to a quiz that exists.'}
+    return { error: 'Quiz ID does not refer to a quiz that exists.' };
   }
 
   // NOTE:
