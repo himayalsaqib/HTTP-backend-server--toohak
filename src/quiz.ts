@@ -1,4 +1,4 @@
-import { setData, getData, ErrorObject, EmptyObject, Quizzes, Question, Answer } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, Quizzes, Question, Answer, Tokens } from './dataStore';
 import {
   authUserIdExists,
   quizNameHasValidChars,
@@ -44,6 +44,7 @@ interface QuizQuestionAnswers {
 }
 
 interface QuestionBody {
+  token: Tokens;
   question: string;
   duration: number;
   points: number;
@@ -294,15 +295,46 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  */
 
 export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBody): { questionId: number} | ErrorObject {
+  const data = getData();
+  
   // error checking
-
-  if (questionBody.question.length > 50 || questionBody.question.length < 5) {
-    return { error : ''}
+  if (questionBody.question.length > MAX_QUESTION_LEN || questionBody.question.length < MIN_QUESTION_LEN) {
+    return { error: 'The question string cannot be less than 5 characters or greater than 50 characters in length.' };
   }
 
+  if (questionBody.answers.length < MAX_NUM_ANSWERS || questionBody.answers.length < MIN_NUM_ANSWERS) {
+    return { error: 'The question cannot have more than 6 answers or less than 2 answers.' };
+  }
+
+  if (questionBody.duration < 0) {
+    return { error: 'The question duration must be a positive number.' };
+  }
   
+  // sum execeds 3 mins
+  // helper function
+
+  if (questionBody.points > MAX_POINT_VALUE || questionBody.points < MIN_POINT_VALUE) {
+    return { error: 'The points awarded must not be less than 1 or not greater than 10.' };
+  }
+
+  // check length of all answers
+  // helper function
+
+  // check if any answer strings are duplicates of one other (in same question)
+  // helper function
+
+  // check if there are no correct answers
+  // helper function
+
+
+
+  if (quizIdInUse(quizId) === false) {
+    return { error: 'Quiz ID does not refer to a quiz that exists.'}
+  }
+
   // NOTE:
   //  duration is in seconds
+  setData(data);
 
   return { questionId: 100 };
 }
