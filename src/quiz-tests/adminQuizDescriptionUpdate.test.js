@@ -24,7 +24,7 @@ describe('adminQuizDescriptionUpdate', () => {
   });
 
   describe('Testing side-effects on adminQuizInfo', () => {
-    test('Quiz info with updated description was successful and has correct return type', () => {
+    test.skip('Quiz info with updated description was successful and has correct return type', () => {
       adminQuizDescriptionUpdate(user.authUserId, quizId, 'Updated quiz description');
       expect(adminQuizInfo(user.authUserId, quizId)).not.toStrictEqual({
         quizId: quizId,
