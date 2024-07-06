@@ -242,3 +242,33 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
 
   return {};
 }
+
+/**
+ * Given a user id, view all quizzes in trash
+ *
+ * @param {number} authUserId
+ * @param {number} quizId
+ * @returns {{} | { error: string }} - an empty object
+ */
+export function adminQuizTrash (authUserId: number, quizId: number): EmptyObject | ErrorObject {
+  if (authUserIdExists(authUserId) === false) {
+    return { error: 'AuthUserId does not refer to a valid user id.' };
+  } else if (quizIdInUse(quizId) === false) {
+    return { error: 'Quiz Id does not refer to a valid quiz.' };
+  }
+  const data = getData();
+  const trashList = [];
+
+  for (const trashItem of data.trash) {
+    if (trashItem.quiz.authUserId != authUserId) {
+      return { error: 'Incorrect autherUserId'}
+    } else {
+      trashList.push({
+        quizId: trashItem.quiz.quizId,
+        name: trashItem.quiz.name
+      })
+    }
+  }
+
+  return { quizzes: trashList };
+}
