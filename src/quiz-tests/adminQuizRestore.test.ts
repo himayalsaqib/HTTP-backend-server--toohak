@@ -37,7 +37,7 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
     });
 
-    test('Side effect (successful restoration): quizList returns details of restored quiz', () => {
+    test('Side effect (successful restoration): adminQuizList returns details of restored quiz', () => {
       let res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 
@@ -50,7 +50,7 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
       });
     });
 
-    test('Side effect (successful restoration): quizInfo displays correct timeLastEdited', () => {
+    test('Side effect (successful restoration): adminQuizInfo displays correct timeLastEdited', () => {
       const time = Math.floor(Date.now() / 1000);
       let res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
@@ -60,7 +60,7 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
       expect(res.retval.timeLastEdited).toBeLessThanOrEqual(time + 1);
     });
 
-    test.skip('Side effect (successful restoration): viewTrash does not display restored quiz', () => {
+    test('Side effect (successful restoration): adminQuizTrash does not display restored quiz', () => {
       let res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 
