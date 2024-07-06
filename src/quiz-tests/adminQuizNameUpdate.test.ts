@@ -42,7 +42,7 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
       const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
       const timeLastEdited = res.retval.timeLastEdited;
 
-      expect(timeLastEdited).toBeGreaterThanOrEqual(clientSendTime - 1);
+      expect(timeLastEdited).toBeGreaterThanOrEqual(clientSendTime);
       expect(timeLastEdited).toBeLessThanOrEqual(clientSendTime + 1);
 
       expect(res).not.toStrictEqual({
