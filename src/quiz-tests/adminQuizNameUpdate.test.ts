@@ -38,13 +38,12 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
       quiz = { token: token, name: 'Updated Quiz Name' };
 
       requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
-      const serverReceiveTime = Math.floor(Date.now() / 1000);
 
       const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
       const timeLastEdited = res.retval.timeLastEdited;
 
       expect(timeLastEdited).toBeGreaterThanOrEqual(clientSendTime - 1);
-      expect(timeLastEdited).toBeLessThanOrEqual(serverReceiveTime + 1);
+      expect(timeLastEdited).toBeLessThanOrEqual(clientSendTime + 1);
 
       expect(res).not.toStrictEqual({
         retval: {
@@ -141,10 +140,8 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
     });
 
     test("Quiz doesn't exist", () => {
-      const invalidQuizId = 'invalidQuiz123';
-
       const quiz = { token: token, name: 'New Name' };
-      const res = requestPut(quiz, `/v1/admin/quiz/${invalidQuizId}/name`);
+      const res = requestPut(quiz, `/v1/admin/quiz/${quizId + 1}/name`);
 
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
     });
