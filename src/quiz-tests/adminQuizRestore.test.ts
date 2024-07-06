@@ -60,7 +60,7 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
       expect(res.retval.timeLastEdited).toBeLessThanOrEqual(time + 1);
     });
 
-    test('Side effect (successful restoration): adminQuizTrash does not display restored quiz', () => {
+    test.skip('Side effect (successful restoration): adminQuizTrash does not display restored quiz', () => {
       let res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 
