@@ -1,4 +1,4 @@
-import { setData, getData, ErrorObject, EmptyObject, QuizInfo, Question, Answer } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, Quizzes, Question, Answer } from './dataStore';
 import {
   authUserIdExists,
   quizNameHasValidChars,
@@ -16,6 +16,12 @@ const MAX_DESCRIPTION_LEN = 100;
 interface QuizList {
   quizId: number;
   name: string;
+}
+
+export interface QuizInfo extends Omit<Quizzes, 'authUserId'> {
+  numQuestions: number,
+  questions: Question[],
+  duration: number,
 }
 
 /// ////////////////////////////// Functions ///////////////////////////////////
@@ -207,9 +213,8 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
   }
-
   quiz.name = name;
-  quiz.timeLastEdited = parseFloat(Date.now().toFixed(10));
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
 
   const data = getData();
   setData(data);
