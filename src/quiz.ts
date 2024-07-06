@@ -254,7 +254,7 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId does not refer to a valid user id.' };
   }
-  
+
   const data = getData();
   const trashList = [];
 
