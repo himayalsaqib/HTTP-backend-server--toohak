@@ -28,7 +28,7 @@ describe('GET /v1/admin/quiz/trash', () => {
 
       const trashRes = requestGet(token, '/v1/admin/quiz/trash');
       expect(trashRes.statusCode).toBe(200);
-      expect(trashRes.retval.quizzes).toStrictEqual({
+      expect(trashRes.retval).toStrictEqual({
           quizzes: [
             {
               quizId: res.retval.quizId,
@@ -49,7 +49,7 @@ describe('GET /v1/admin/quiz/trash', () => {
       requestDelete(token, `/v1/admin/quiz/${quizId2}`);
 
       const trashRes = requestGet(token, '/v1/admin/quiz/trash');
-      expect(trashRes.retval.quizzes).toStrictEqual({
+      expect(trashRes.retval).toStrictEqual({
           quizzes: [
             {
               quizId: res.retval.quizId,
