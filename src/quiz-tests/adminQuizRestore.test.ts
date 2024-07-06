@@ -49,7 +49,7 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
     });
 
     test.skip('Side effect (successful restoration): quizInfo displays correct timeLastEdited', () => {
-      const time = parseFloat((Date.now() / 1000).toFixed(10));
+      const time = Math.floor(Date.now() / 1000);
       let res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 

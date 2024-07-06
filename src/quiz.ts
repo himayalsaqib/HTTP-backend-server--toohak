@@ -95,7 +95,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     authUserId: authUserId,
     quizId: newQuizId,
     name: name,
-    timeCreated: parseFloat((Date.now() / 1000).toFixed(10)),
+    timeCreated: Math.floor(Date.now() / 1000),
     timeLastEdited: <number> undefined,
     description: description,
   };
@@ -126,7 +126,7 @@ export function adminQuizRemove (authUserId: number, quizId: number): EmptyObjec
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz does not belong to user.' };
   }
-  quiz.timeLastEdited = parseFloat((Date.now() / 1000).toFixed(10));
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
   data.trash.push({ quiz: quiz });
   data.quizzes.splice(quizIndex, 1);
   setData(data);
@@ -202,7 +202,7 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
   }
 
   quiz.name = name;
-  quiz.timeLastEdited = parseFloat((Date.now() / 1000).toFixed(10));
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
 
   const data = getData();
   setData(data);
@@ -236,7 +236,7 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
   }
 
   quiz.description = description;
-  quiz.timeLastEdited = parseFloat((Date.now() / 1000).toFixed(10));
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
 
   const data = getData();
   setData(data);
@@ -269,7 +269,7 @@ export function adminQuizRestore (authUserId: number, quizId: number): EmptyObje
   const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
   data.trash.splice(index, 1);
 
-  trashedQuiz.quiz.timeLastEdited = parseFloat((Date.now() / 1000).toFixed(10));
+  trashedQuiz.quiz.timeLastEdited = Math.floor(Date.now() / 1000);
 
   data.quizzes.push(trashedQuiz.quiz);
   setData(data);
