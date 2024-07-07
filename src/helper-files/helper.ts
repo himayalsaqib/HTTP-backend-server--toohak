@@ -1,4 +1,4 @@
-import { getData, Quizzes, Users } from '../dataStore';
+import { getData, Question, Quizzes, Users } from '../dataStore';
 
 /**
  * Function checks if an authUserId exists in the dataStore
@@ -172,6 +172,36 @@ export function findQuizById(quizId: number): Quizzes | undefined {
   const data = getData();
   return data.quizzes.find(q => q.quizId === quizId);
 }
+
+/**
+ * Finds a question in the data by its question ID
+ * 
+ * @param {number} questionId - ID of the question to find
+ * @param {number} quizId - ID of the quiz to find
+ * @returns {Question | undefined} - the quetion with the specified ID | undefined
+ */
+export function findQuestionById(questionId: number, quizId: number ): Question | undefined {
+  const quiz = findQuizById(quizId);
+  return quiz.questions.find(q => q.questionId === questionId);
+}
+
+/**
+ * Checks if a questionId has been used already by another question
+ * 
+ * @param {number} questionId
+ * @param {number} quizId
+ * @return {boolean} true if questionId has been used, false otherwise
+ */
+export function questionIdInUse(questionId: number, quizId: number): boolean {
+  const question = findQuestionById(questionId, quizId);
+
+  if (question === undefined) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 
 /**
  * Calculates the sum of question durations of a quiz given by its quiz ID
