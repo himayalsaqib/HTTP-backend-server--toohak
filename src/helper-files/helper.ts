@@ -172,3 +172,21 @@ export function findQuizById(quizId: number): Quizzes | undefined {
   const data = getData();
   return data.quizzes.find(q => q.quizId === quizId);
 }
+
+/**
+ * Calculates the sum of question durations of a quiz given by its quiz ID
+ * 
+ * @param {number} quizId - ID of quiz to find
+ * @returns {number} - the sum of the question durations in seconds 
+ */
+export function calculateSumQuestionDuration(quizId: number): number {
+  let sumQuestionDuration = 0;
+
+  const quiz = findQuizById(quizId);
+
+  for (const question of quiz.questions) {
+    sumQuestionDuration += question.duration;
+  }
+
+  return sumQuestionDuration;
+}
