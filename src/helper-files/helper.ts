@@ -190,3 +190,72 @@ export function calculateSumQuestionDuration(quizId: number): number {
 
   return sumQuestionDuration;
 }
+
+/**
+ * Checks whether any of the answers in a question are too short or too long
+ * 
+ * @param {number} quizId
+ * @param {number} minAnsLength
+ * @param {number} maxAnsLength
+ * @returns {boolean} - returns true if any answer is too short/long, false 
+ *                      otherwise
+ */
+export function checkAnswerLength(quizId: number, minAnsLength: number, maxAnsLength: number): boolean {
+  const quiz = findQuizById(quizId);
+
+  for (const question of quiz.questions) {
+    for (const answer of question.answers) {
+      if (answer.answer.length < minAnsLength || answer.answer.length > maxAnsLength) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Determines whether any answer strings are duplicates
+ * 
+ * @param {number} quizId
+ * @returns {boolean} returns true if there are duplicates, false otherwise
+ */
+export function checkForAnsDuplicates(quizId: number): boolean {
+  const quiz = findQuizById(quizId);
+  let answerDuplicates = [];
+
+  for (const question of quiz.questions) {
+    for (const answer of question.answers) {
+      if (answer.answer.indexOf(answer.toString()) !== answer.answer.lastIndexOf(answer.toString())) {
+        answerDuplicates.push(answer);
+      }
+    }
+  }
+
+  if (answerDuplicates.length > 0) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Checks for any correct answers in a question
+ * 
+ * @param {number} quizId
+ * @returns {number} - returns the number of correct answers in a question
+ */
+export function checkForNumCorrectAns(quizId: number): number {
+  let numCorrectAns = 0;
+  const quiz = findQuizById(quizId);
+
+  for (const question of quiz.questions) {
+    for (const answer of question.answers) {
+      if (answer.correct === true) {
+        numCorrectAns++;
+      }
+    }
+  }
+
+  return numCorrectAns;
+}
