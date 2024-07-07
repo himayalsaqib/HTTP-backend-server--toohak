@@ -259,6 +259,12 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   res.json(response);
 });
 
+app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
+  const { token, questionBody } = req.body;
+  const quizId = parseInt(req.params.quizid as string);
+  //res.json(response);
+});
+
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
