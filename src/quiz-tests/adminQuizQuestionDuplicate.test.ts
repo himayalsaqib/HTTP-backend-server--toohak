@@ -113,4 +113,10 @@ describe('POST /v1/admin/quiz/{quizid}/question/{questionid}/duplicate', () => {
       expect(dupeRes.retval).toStrictEqual(error);
     });
   });
+
+  describe('Testing if quiz question exceeds quiz duration', () => {
+    test.skip('Returns error if duplicated quiz exceeds quiz duration', () => {
+
+    })
+  })
 });
