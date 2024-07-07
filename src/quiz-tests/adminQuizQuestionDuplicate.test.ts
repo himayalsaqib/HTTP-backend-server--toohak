@@ -117,6 +117,6 @@ describe('POST /v1/admin/quiz/{quizid}/question/{questionid}/duplicate', () => {
   describe('Testing if quiz question exceeds quiz duration', () => {
     test.skip('Returns error if duplicated quiz exceeds quiz duration', () => {
 
-    })
-  })
+    });
+  });
 });
