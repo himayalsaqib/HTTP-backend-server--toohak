@@ -12,7 +12,6 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { token: Tokens, name: string, description: string };
   let token: { sessionId: number, authUserId: number };
-
   let quizIds: number[];
 
   beforeEach(() => {
@@ -35,30 +34,35 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
   describe('Testing for correct return type (status code 200)', () => {
     test('Successfully deletes specific quizzes from trash', () => {
       const quizIdsToDelete = JSON.stringify([quizIds[1], quizIds[2]]);
-      const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash');
+      console.log("Quiz IDs to delete:", quizIdsToDelete); //debug
+      const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty');
+      console.log("Response:", res); //debug
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
   });
 
-    test.skip('Side effect (successful update): adminQuizTrash does not show deleted quizzes', () => {
+    test.skip('Side effect (successful update): adminQuizTrash does not show permanently deleted quizzes', () => {
       const quizIdsToDelete = JSON.stringify([quizIds[1], quizIds[2]]);
-      const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash');
+
+      const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty');
 
       requestGet(token, '/v1/admin/quiz/trash');
       expect(res).toStrictEqual({
-        quizzes: [
-          {
-            quizId: quizIds[3],
-            name: 'Quiz 3'
-          },
-          {
-            quizId: quizIds[4],
-            name: 'Quiz 4'
-          },
-          {
-            quizId: quizIds[5],
-            name: 'Quiz 5'
-          }
-        ],
+        retval: {
+          quizzes: [
+            {
+              quizId: quizIds[3],
+              name: 'Quiz 3'
+            },
+            {
+              quizId: quizIds[4],
+              name: 'Quiz 4'
+            },
+            {
+              quizId: quizIds[5],
+              name: 'Quiz 5'
+            }
+          ]
+        },
         statusCode: 200
       });
     });
@@ -77,7 +81,7 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
       const quizIdsInTrash = [quizIds[0], quizIds[1]];
       const mixedQuizIds = JSON.stringify([...quizIdsInTrash, nonDeletedQuiz1, nonDeletedQuiz2]);
 
-      const res = requestDelete({ token: token, quizIds: mixedQuizIds }, '/v1/admin/quiz/trash');
+      const res = requestDelete({ token: token, quizIds: mixedQuizIds }, '/v1/admin/quiz/trash/empty');
       expect(res).toStrictEqual({ retval: error, statusCode: 400 });
     });   
   });
@@ -86,21 +90,21 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
     test('Invalid authUserId', () => {
       token.authUserId += 1;
       const quizIdsToDelete = JSON.stringify([quizIds[1], quizIds[2]]);
-      const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash');
+      const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty');
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
 
     test('Given invalid session ID', () => {
       token.sessionId += 1;
       const quizIdsToDelete = JSON.stringify([quizIds[1], quizIds[2]]);
-      const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash');
+      const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty');
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
 
     test('Token is empty (no users are registered)', () => {
       requestDelete({}, '/v1/clear');
       const quizIdsToDelete = JSON.stringify([quizIds[1], quizIds[2]]);
-      const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash');
+      const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty');
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
   });
@@ -126,13 +130,13 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
       const userQuizIdsDelete = [quizIds[1], quizIds[2]];
       const mixedQuizIds = JSON.stringify([...userQuizIdsDelete, otherUserQuiz1, otherUserQuiz2]);
       
-      const res = requestDelete({ token: token, quizIds: mixedQuizIds }, '/v1/admin/quiz/trash');
+      const res = requestDelete({ token: token, quizIds: mixedQuizIds }, '/v1/admin/quiz/trash/empty');
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
       
     });
     test("One or more of the Quiz IDs refers to a quiz that doesn't exist", () => {
       const quizIdsToDelete = JSON.stringify([quizIds[1], 9999, 10000]); // not sure about this
-      const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash');
+      const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty');
 
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
     });
