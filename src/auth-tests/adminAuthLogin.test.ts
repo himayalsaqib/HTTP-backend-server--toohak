@@ -34,7 +34,7 @@ describe('POST /v1/admin/auth/login', () => {
 
       const login2 = requestPost(bodyLogin, '/v1/admin/auth/login');
       const token2 = login2.retval as { sessionId: number, authUserId: number };
-      
+
       expect(token2).toStrictEqual({ sessionId: expect.any(Number), authUserId: token.authUserId });
       expect(token.sessionId).not.toStrictEqual(token2.sessionId);
     });
