@@ -46,12 +46,12 @@ export interface QuizInfo extends Omit<Quizzes, 'authUserId'> {
   duration: number,
 }
 
-interface QuizQuestionAnswers {
+export interface QuizQuestionAnswers {
   answer: string;
   correct: boolean;
 }
 
-interface QuestionBody {
+export interface QuestionBody {
   question: string;
   duration: number;
   points: number;
@@ -303,12 +303,12 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
 
 export function adminQuizCreateQuestion(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number} | ErrorObject {
   const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
-  
+
   if (questionBody.question.length > MAX_QUESTION_LEN || questionBody.question.length < MIN_QUESTION_LEN) {
     return { error: 'The question string cannot be less than 5 characters or greater than 50 characters in length.' };
   }
 
-  if (questionBody.answers.length < MAX_NUM_ANSWERS || questionBody.answers.length < MIN_NUM_ANSWERS) {
+  if (questionBody.answers.length > MAX_NUM_ANSWERS || questionBody.answers.length < MIN_NUM_ANSWERS) {
     return { error: 'The question cannot have more than 6 answers or less than 2 answers.' };
   }
 
@@ -316,24 +316,20 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     return { error: 'The question duration must be a positive number.' };
   }
 
-  if (calculateSumQuestionDuration(quizId) > MAX_QUIZ_QUESTIONS_DURATION) {
-    return { error: 'The sum of the question durations cannot exceed 3 minutes.' };
-  }
-
   if (questionBody.points > MAX_POINT_VALUE || questionBody.points < MIN_POINT_VALUE) {
     return { error: 'The points awarded must not be less than 1 or not greater than 10.' };
   }
 
-  if (checkAnswerLength(quizId, MIN_ANS_LEN, MAX_ANS_LEN) === true) {
+  if (checkAnswerLength(questionBody, MIN_NUM_ANSWERS, MAX_NUM_ANSWERS) === true) {
     return { error: 'The answer cannot be longer than 30 characters or shorter than 1 character.' };
   }
 
-  if (checkForAnsDuplicates(quizId) === true) {
+  if (checkForAnsDuplicates(questionBody) === true) {
     return { error: 'Answers cannot be duplicates of each other in the same question.' };
   }
 
-  if (checkForNumCorrectAns(quizId) < MIN_CORRECT_ANS) {
-    return { error: 'There must be at least 1 correct answer.' }
+  if (checkForNumCorrectAns(questionBody) < MIN_CORRECT_ANS) {
+    return { error: 'There must be at least 1 correct answer.' };
   }
 
   if (authUserIdExists(authUserId) === false) {
@@ -345,10 +341,14 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   }
 
   const quiz = findQuizById(quizId);
-
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
   }
+
+  // //
+  // if (calculateSumQuestionDuration(quiz.questions) > MAX_QUIZ_QUESTIONS_DURATION) {
+  //   return { error: 'The sum of the question durations cannot exceed 3 minutes.' };
+  // }
 
   const data = getData();
   let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -356,7 +356,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
-  let questionAnswersArray = [];
+  const questionAnswersArray = [];
   // create answers to the question
   for (const answer of questionBody.answers) {
     let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -373,7 +373,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
       answer: answer.answer,
       colour: answerColour,
       correct: answer.correct
-    }
+    };
     questionAnswersArray.push(newAnswer);
   }
 
