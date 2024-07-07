@@ -255,3 +255,42 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
 
   return {};
 }
+
+/**
+ * Permanently deletes specified quizzes from the trash
+ *
+ * @param {number} authUserId
+ * @param {number[]} quizIds
+ * @returns {{} | { error: string }}
+ */
+export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
+  if (authUserIdExists(authUserId) === false) {
+    return { error: 'AuthUserId is not a valid user.' };
+  }
+
+  const data = getData();
+
+  for (const quizId of quizIds) {
+    const trashedQuiz = data.trash.find(q => q.quiz.quizId === quizId);
+    if (!trashedQuiz) {
+      return { error: `One or more Quiz IDs refer to a quiz that doesn't exist.` };
+    }
+  }
+
+
+    const quizzesNotInTrash = quizIds.filter(quizId => !(data.trash.some(q => q.quiz.quizId === quizId)));
+  if (quizzesNotInTrash.length > 0) {
+    return { error: 'One or more Quiz IDs is not currently in the trash.' };
+  }
+
+  for (const quizId of quizIds) {
+    const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
+    if (index !== -1) {
+      data.trash.splice(index, 1);
+    }
+  }
+
+  setData(data);
+
+  return {};
+}
