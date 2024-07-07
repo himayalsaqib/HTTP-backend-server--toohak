@@ -359,17 +359,18 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   const colourIndex = Math.floor(Math.random() * answerColours.length);
   const answerColour = answerColours[colourIndex];
 
+  // generate a answerId and check that is not already used
 
-  // create answers to the question
-  for (const answer of questionBody.answers) {
-    const newAnswer = {
-      answerId: null,
-      answer: answer.answer,
-      colour: answerColour,
-      correct: answer.correct
-    }
-    questionAnswersArray.push(newAnswer);
-  }
+  // // create answers to the question
+  // for (const answer of questionBody.answers) {
+  //   const newAnswer = {
+  //     answerId: null,
+  //     answer: answer.answer,
+  //     colour: answerColour,
+  //     correct: answer.correct
+  //   }
+  //   questionAnswersArray.push(newAnswer);
+  // }
 
   const newQuestion = {
     questionId: newQuestionId,
