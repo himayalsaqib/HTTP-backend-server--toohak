@@ -4,7 +4,9 @@ import {
   quizNameHasValidChars,
   quizNameInUse,
   quizIdInUse,
-  findQuizById
+  findQuizById,
+  quizIsInTrash,
+  findTrashedQuizById
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -92,7 +94,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     authUserId: authUserId,
     quizId: newQuizId,
     name: name,
-    timeCreated: parseFloat(Date.now().toFixed(10)),
+    timeCreated: Math.floor(Date.now() / 1000),
     timeLastEdited: <number> undefined,
     description: description,
   };
@@ -104,7 +106,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
 }
 
 /**
- * Given a particular quiz, permanently remove the quiz
+ * Given a particular quiz, move quiz to trash
  *
  * @param {number} authUserId
  * @param {number} quizId
@@ -251,6 +253,39 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
   quiz.timeLastEdited = Math.floor(Date.now() / 1000);
 
   const data = getData();
+  setData(data);
+
+  return {};
+}
+
+/**
+ * Restores a quiz from trash
+ *
+ * @param {number} authUserId
+ * @param {number} quizId
+ * @returns {{} | { error: string }}
+ */
+export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
+  if (authUserIdExists(authUserId) === false) {
+    return { error: 'AuthUserId is not a valid user.' };
+  }
+  if (quizIsInTrash(quizId) === false) {
+    return { error: 'Quiz ID refers to a quiz that is not currently in the trash' };
+  }
+
+  const data = getData();
+  const trashedQuiz = findTrashedQuizById(quizId);
+
+  if (quizNameInUse(authUserId, trashedQuiz.quiz.name) === true) {
+    return { error: 'Quiz name of the restored quiz is already used by the current logged in user for another active quiz' };
+  }
+
+  const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
+  data.trash.splice(index, 1);
+
+  trashedQuiz.quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+
+  data.quizzes.push(trashedQuiz.quiz);
   setData(data);
 
   return {};
