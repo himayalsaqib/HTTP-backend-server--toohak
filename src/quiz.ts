@@ -9,7 +9,8 @@ import {
   checkAnswerLength,
   checkForAnsDuplicates,
   checkForNumCorrectAns,
-  questionIdInUse
+  questionIdInUse,
+  answerIdInUse
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -356,30 +357,38 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   }
 
   let questionAnswersArray = [];
-  const colourIndex = Math.floor(Math.random() * answerColours.length);
-  const answerColour = answerColours[colourIndex];
+  // create answers to the question
+  for (const answer of questionBody.answers) {
+    let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    while (answerIdInUse(newAnswerId, newQuestionId, quizId) === true) {
+      newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    }
 
-  // generate a answerId and check that is not already used
+    const colourIndex = Math.floor(Math.random() * answerColours.length);
+    // make sure colour is not the same as other colours
+    const answerColour = answerColours[colourIndex];
 
-  // // create answers to the question
-  // for (const answer of questionBody.answers) {
-  //   const newAnswer = {
-  //     answerId: null,
-  //     answer: answer.answer,
-  //     colour: answerColour,
-  //     correct: answer.correct
-  //   }
-  //   questionAnswersArray.push(newAnswer);
-  // }
+    const newAnswer = {
+      answerId: newAnswerId,
+      answer: answer.answer,
+      colour: answerColour,
+      correct: answer.correct
+    }
+    questionAnswersArray.push(newAnswer);
+  }
+
+  // set timeLastEditied as the same as timeCreated
+  quiz.timeLastEdited = quiz.timeCreated;
 
   const newQuestion = {
     questionId: newQuestionId,
     question: questionBody.question,
     duration: questionBody.duration,
     points: questionBody.points,
-    answers: [questionBody.answers]
+    answers: questionAnswersArray
   };
 
+  quiz.questions.push(newQuestion);
   setData(data);
 
   return { questionId: newQuestionId };
