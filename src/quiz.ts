@@ -4,7 +4,12 @@ import {
   quizNameHasValidChars,
   quizNameInUse,
   quizIdInUse,
-  findQuizById
+  findQuizById,
+  calculateSumQuestionDuration,
+  checkAnswerLength,
+  checkForAnsDuplicates,
+  checkForNumCorrectAns,
+  questionIdInUse
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -25,6 +30,8 @@ const MAX_POINT_VALUE = 10;
 
 const MIN_ANS_LEN = 1;
 const MAX_ANS_LEN = 30;
+
+const MIN_CORRECT_ANS = 1;
 
 /// /////////////////////////// Type Annotations ///////////////////////////////
 interface QuizList {
@@ -294,9 +301,8 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  */
 
 export function adminQuizCreateQuestion(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number} | ErrorObject {
-  const data = getData();
-
-  // error checking
+  const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+  
   if (questionBody.question.length > MAX_QUESTION_LEN || questionBody.question.length < MIN_QUESTION_LEN) {
     return { error: 'The question string cannot be less than 5 characters or greater than 50 characters in length.' };
   }
@@ -309,21 +315,25 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     return { error: 'The question duration must be a positive number.' };
   }
 
-  // sum execeds 3 mins
-  // helper function
+  if (calculateSumQuestionDuration(quizId) > MAX_QUIZ_QUESTIONS_DURATION) {
+    return { error: 'The sum of the question durations cannot exceed 3 minutes.' };
+  }
 
   if (questionBody.points > MAX_POINT_VALUE || questionBody.points < MIN_POINT_VALUE) {
     return { error: 'The points awarded must not be less than 1 or not greater than 10.' };
   }
 
-  // check length of all answers
-  // helper function
+  if (checkAnswerLength(quizId, MIN_ANS_LEN, MAX_ANS_LEN) === true) {
+    return { error: 'The answer cannot be longer than 30 characters or shorter than 1 character.' };
+  }
 
-  // check if any answer strings are duplicates of one other (in same question)
-  // helper function
+  if (checkForAnsDuplicates(quizId) === true) {
+    return { error: 'Answers cannot be duplicates of each other in the same question.' };
+  }
 
-  // check if there are no correct answers
-  // helper function
+  if (checkForNumCorrectAns(quizId) < MIN_CORRECT_ANS) {
+    return { error: 'There must be at least 1 correct answer.' }
+  }
 
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUser ID is not a valid user.' };
@@ -333,9 +343,43 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     return { error: 'Quiz ID does not refer to a quiz that exists.' };
   }
 
-  // NOTE:
-  //  duration is in seconds
+  const quiz = findQuizById(quizId);
+
+  if (quiz.authUserId !== authUserId) {
+    return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
+  }
+
+  const data = getData();
+  let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  while (questionIdInUse(newQuestionId, quizId) === true) {
+    newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  }
+
+  let questionAnswersArray = [];
+  const colourIndex = Math.floor(Math.random() * answerColours.length);
+  const answerColour = answerColours[colourIndex];
+
+
+  // create answers to the question
+  for (const answer of questionBody.answers) {
+    const newAnswer = {
+      answerId: null,
+      answer: answer.answer,
+      colour: answerColour,
+      correct: answer.correct
+    }
+    questionAnswersArray.push(newAnswer);
+  }
+
+  const newQuestion = {
+    questionId: newQuestionId,
+    question: questionBody.question,
+    duration: questionBody.duration,
+    points: questionBody.points,
+    answers: [questionBody.answers]
+  };
+
   setData(data);
 
-  return { questionId: 100 };
+  return { questionId: newQuestionId };
 }
