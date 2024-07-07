@@ -1,5 +1,6 @@
 import e from 'express';
 import { Answer, getData, Question, Quizzes, Users } from '../dataStore';
+import { QuestionBody } from '../quiz';
 
 /**
  * Function checks if an authUserId exists in the dataStore
@@ -232,6 +233,7 @@ export function answerIdInUse(answerId: number, questionId: number, quizId: numb
     return true;
   }
 }
+
 /**
  * Calculates the sum of question durations of a quiz given by its quiz ID
  * 
@@ -253,20 +255,17 @@ export function calculateSumQuestionDuration(quizId: number): number {
 /**
  * Checks whether any of the answers in a question are too short or too long
  * 
- * @param {number} quizId
+ * @param {QuestionBody} questionBody
  * @param {number} minAnsLength
  * @param {number} maxAnsLength
  * @returns {boolean} - returns true if any answer is too short/long, false 
  *                      otherwise
  */
-export function checkAnswerLength(quizId: number, minAnsLength: number, maxAnsLength: number): boolean {
-  const quiz = findQuizById(quizId);
-
-  for (const question of quiz.questions) {
-    for (const answer of question.answers) {
-      if (answer.answer.length < minAnsLength || answer.answer.length > maxAnsLength) {
-        return true;
-      }
+export function checkAnswerLength(questionBody: QuestionBody, minAnsLength: number, maxAnsLength: number): boolean {
+  
+  for (const answer of questionBody.answers) {
+    if (answer.answer.length < minAnsLength || answer.answer.length > maxAnsLength) {
+      return true;
     }
   }
 
@@ -276,18 +275,14 @@ export function checkAnswerLength(quizId: number, minAnsLength: number, maxAnsLe
 /**
  * Determines whether any answer strings are duplicates
  * 
- * @param {number} quizId
+ * @param {QuestionBody} questionBody
  * @returns {boolean} returns true if there are duplicates, false otherwise
  */
-export function checkForAnsDuplicates(quizId: number): boolean {
-  const quiz = findQuizById(quizId);
-  let answerDuplicates = [];
-
-  for (const question of quiz.questions) {
-    for (const answer of question.answers) {
-      if (answer.answer.indexOf(answer.toString()) !== answer.answer.lastIndexOf(answer.toString())) {
-        answerDuplicates.push(answer);
-      }
+export function checkForAnsDuplicates(questionBody: QuestionBody): boolean {
+  const answerDuplicates = [];
+  for (const answer of questionBody.answers) {
+    if (answer.answer.indexOf(answer.toString()) !== answer.answer.lastIndexOf(answer.toString())) {
+      answerDuplicates.push(answer);
     }
   }
 
@@ -301,18 +296,15 @@ export function checkForAnsDuplicates(quizId: number): boolean {
 /**
  * Checks for any correct answers in a question
  * 
- * @param {number} quizId
+ * @param {QuestionBody} questionBody
  * @returns {number} - returns the number of correct answers in a question
  */
-export function checkForNumCorrectAns(quizId: number): number {
+export function checkForNumCorrectAns(questionBody: QuestionBody): number {
   let numCorrectAns = 0;
-  const quiz = findQuizById(quizId);
-
-  for (const question of quiz.questions) {
-    for (const answer of question.answers) {
-      if (answer.correct === true) {
-        numCorrectAns++;
-      }
+  
+  for (const answer of questionBody.answers) {
+    if (answer.correct === true) {
+      numCorrectAns++
     }
   }
 
