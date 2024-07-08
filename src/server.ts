@@ -29,7 +29,6 @@ import {
   adminQuizDescriptionUpdate,
   adminQuizCreateQuestion
 } from './quiz';
-import { Question } from './dataStore';
 
 // Set up web app
 const app = express();
