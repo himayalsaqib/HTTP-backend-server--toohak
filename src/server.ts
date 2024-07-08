@@ -23,9 +23,8 @@ import {
   adminQuizRemove,
   adminQuizList,
   adminQuizNameUpdate,
-  adminQuizTrash, 
-  adminQuizDescriptionUpdate,
-  adminQuizInfo, 
+  adminQuizTrash,
+  adminQuizInfo,
   adminQuizRestore
 } from './quiz';
 
