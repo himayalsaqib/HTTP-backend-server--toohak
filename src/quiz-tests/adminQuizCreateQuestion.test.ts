@@ -31,7 +31,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       event = res.retval;
     });
 
-    test.only('Has correct return type', () => {
+    test('Has correct return type', () => {
       // create question
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
@@ -178,7 +178,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test.skip('The question has more than 6 answers', () => {
+    test('The question has more than 6 answers', () => {
       const answerBody1 = { answer: '1st valid answer', correct: true };
       const answerBody2 = { answer: '2nd valid string', correct: false };
       const answerBody3 = { answer: '3rd valid answer', correct: true };
@@ -226,7 +226,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       requestPost(questionBody2, `/v1/admin/quiz/${quizId}/question`);
 
       const answerBody3 = [{ answer: 'COMP1531', correct: true }, { answer: 'COMP1511', correct: false }];
-      const questionBody3 = { question: 'What is the best comp course at UNSW?', duration: 37, points: 5, answers: answerBody3 };
+      const questionBody3 = { question: 'What is the best comp course at UNSW?', duration: 36, points: 5, answers: answerBody3 };
       requestPost(questionBody3, `/v1/admin/quiz/${quizId}/question`);
 
       const answerBody4 = [{ answer: 'Google', correct: true }, { answer: 'FireFox', correct: false }];
@@ -234,7 +234,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       requestPost(questionBody4, `/v1/admin/quiz/${quizId}/question`);
 
       const answerBody5 = [{ answer: 'a valid answer', correct: true }, { answer: 'valid answer again', correct: true }];
-      const questionBody5 = { question: 'which one is valid?', duration: 36, points: 10, answers: answerBody5 };
+      const questionBody5 = { question: 'which one is valid?', duration: 37, points: 10, answers: answerBody5 };
       expect(requestPost(questionBody5, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -335,7 +335,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Me', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
 
-      expect(requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${res.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${res.retval.quizId}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -358,7 +358,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Me', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
 
-      expect(requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${res.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${res.retval.quizId}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -378,7 +378,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       // create a quiz for first user
       quizBody = { token: token1, name: 'Valid Quiz Name', description: 'A valid quiz description' };
       const res = requestPost(quizBody, '/v1/admin/quiz');
-      const quizId = res.retval;
+      const quizId = res.retval.quizId;
 
       // user 2 tries to add question to user 1's quiz
       answerBody = [{ answer: 'Oak', correct: true }, { answer: 'Birch', correct: false }];
@@ -399,12 +399,12 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       // create a quiz to delete
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
       const res = requestPost(quizBody, '/v1/admin/quiz');
-      requestDelete({ token: token }, `/v1/admin/quiz/${res.retval}`);
+      requestDelete({ token: token }, `/v1/admin/quiz/${res.retval.quizId}`);
 
       // creating a question for a quiz that does not exist (i.e. has been deleted)
       answerBody = [{ answer: 'cats are the best!', correct: true }, { answer: 'birds are cool too', correct: false }];
       questionBody = { question: 'which animal is the best?', duration: 16, points: 10, answers: answerBody };
-      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${res.retval}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${res.retval.quizId}/question`)).toStrictEqual({
         retval: error,
         statusCode: 403
       });
