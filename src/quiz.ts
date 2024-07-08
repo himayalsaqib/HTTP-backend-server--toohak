@@ -301,16 +301,16 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  *
  * @param {number} authUserId
  * @param {number} quizId
- * @param {object} QuestionBody
+ * @param {object} questionBody
  * @returns { {questionId: number} | { error: string}}
  */
-export function adminQuizCreateQuestion(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number} | ErrorObject {
+export function adminQuizCreateQuestion(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number } | ErrorObject {
   const data = getData();
   const quiz = findQuizById(quizId);
   
   // initalise empty questions: []
-  const emptyQuestionsArray: Question[] = [];
-  quiz.questions = emptyQuestionsArray;
+  // const emptyQuestionsArray: Question[] = [];
+  // quiz.questions = emptyQuestionsArray;
   quiz.duration = 0;
 
   if (questionBody.question.length > MAX_QUESTION_LEN || questionBody.question.length < MIN_QUESTION_LEN) {
@@ -365,9 +365,8 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   }
 
   // initialise answers array as empty
-  const emptyAnswersArray: Answer[] = [];
   const question = findQuestionById(newQuestionId, quizId);
-  question.answers = emptyAnswersArray;
+  question.answers = [];
 
   const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
   const questionAnswersArray = [];
@@ -403,7 +402,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   quiz.timeLastEdited = quiz.timeCreated;
   quiz.duration += questionBody.duration;
 
-  quiz.questions.push(newQuestion);
+  quiz.questions?.push(newQuestion);
   setData(data);
 
   return { questionId: newQuestionId };
