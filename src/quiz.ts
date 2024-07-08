@@ -309,8 +309,8 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   const quiz = findQuizById(quizId);
   
   // initalise empty questions: []
-  // const emptyQuestionsArray: Question[] = [];
-  // quiz.questions = emptyQuestionsArray;
+  const emptyQuestionsArray: Question[] = [];
+  quiz.questions = emptyQuestionsArray;
   quiz.duration = 0;
 
   if (questionBody.question.length > MAX_QUESTION_LEN || questionBody.question.length < MIN_QUESTION_LEN) {
