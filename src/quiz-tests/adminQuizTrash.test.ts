@@ -64,7 +64,7 @@ describe('GET /v1/admin/quiz/trash', () => {
       });
     });
 
-    test.skip('Side effect: correctly displays trash after quiz had been restored', () => {
+    test('Side effect: correctly displays trash after quiz had been restored', () => {
       let res = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = res.retval.quizId;
       requestDelete(token, `/v1/admin/quiz/${quizId}`);
