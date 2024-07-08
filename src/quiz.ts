@@ -326,7 +326,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     return { error: 'The points awarded must not be less than 1 or not greater than 10.' };
   }
 
-  if (checkAnswerLength(questionBody, MIN_NUM_ANSWERS, MAX_NUM_ANSWERS) === true) {
+  if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN) === true) {
     return { error: 'The answer cannot be longer than 30 characters or shorter than 1 character.' };
   }
 
