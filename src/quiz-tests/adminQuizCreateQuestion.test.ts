@@ -220,23 +220,23 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
     test('The sum of the question durations in the quiz exceeds 3 minutes', () => {
       const answerBody1 = [{ answer: 'Garfield', correct: true }, { answer: 'Tom', correct: false }];
       const questionBody1 = { question: 'Famous cat that loves lasagna', duration: 36, points: 9, answers: answerBody1 };
-      requestPost(questionBody1, `/v1/admin/quiz/${quizId}/question`);
+      requestPost({ token: token, questionBody: questionBody1 }, `/v1/admin/quiz/${quizId}/question`);
 
       const answerBody2 = [{ answer: 'King Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionBody2 = { question: 'Who is the Monarch of England in 2024', duration: 36, points: 3, answers: answerBody2 };
-      requestPost(questionBody2, `/v1/admin/quiz/${quizId}/question`);
+      requestPost({ token: token, questionBody: questionBody2 }, `/v1/admin/quiz/${quizId}/question`);
 
       const answerBody3 = [{ answer: 'COMP1531', correct: true }, { answer: 'COMP1511', correct: false }];
       const questionBody3 = { question: 'What is the best comp course at UNSW?', duration: 36, points: 5, answers: answerBody3 };
-      requestPost(questionBody3, `/v1/admin/quiz/${quizId}/question`);
+      requestPost({ token: token, questionBody: questionBody3 }, `/v1/admin/quiz/${quizId}/question`);
 
       const answerBody4 = [{ answer: 'Google', correct: true }, { answer: 'FireFox', correct: false }];
       const questionBody4 = { question: 'Which which is the most popular search engine', duration: 36, points: 8, answers: answerBody4 };
-      requestPost(questionBody4, `/v1/admin/quiz/${quizId}/question`);
+      requestPost({ token: token, questionBody: questionBody4 }, `/v1/admin/quiz/${quizId}/question`);
 
       const answerBody5 = [{ answer: 'a valid answer', correct: true }, { answer: 'valid answer again', correct: true }];
       const questionBody5 = { question: 'which one is valid?', duration: 37, points: 10, answers: answerBody5 };
-      expect(requestPost(questionBody5, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody5 }, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
         retval: error,
         statusCode: 400
       });
