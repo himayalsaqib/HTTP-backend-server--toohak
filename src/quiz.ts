@@ -259,6 +259,32 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
 }
 
 /**
+ * Given a user id, view all quizzes in trash
+ *
+ * @param {number} authUserId
+ * @param {number} quizId
+ * @returns {{ quizzes: array } | { error: string }} - returns list of quizzes
+ */
+export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | ErrorObject {
+  if (authUserIdExists(authUserId) === false) {
+    return { error: 'AuthUserId does not refer to a valid user id.' };
+  }
+
+  const data = getData();
+  const trashList: QuizList[] = [];
+
+  for (const trashItem of data.trash) {
+    if (trashItem.quiz.authUserId === authUserId) {
+      trashList.push({
+        quizId: trashItem.quiz.quizId,
+        name: trashItem.quiz.name,
+      });
+    }
+  }
+
+  return { quizzes: trashList };
+}
+/**
  * Restores a quiz from trash
  *
  * @param {number} authUserId
