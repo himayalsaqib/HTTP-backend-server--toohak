@@ -12,7 +12,8 @@ import {
   checkForAnsDuplicates,
   checkForNumCorrectAns,
   questionIdInUse,
-  answerIdInUse
+  answerIdInUse,
+  findQuestionById
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -304,6 +305,14 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  * @returns { {questionId: number} | { error: string}}
  */
 export function adminQuizCreateQuestion(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number} | ErrorObject {
+  const data = getData();
+  const quiz = findQuizById(quizId);
+  
+  // initalise empty questions: []
+  const emptyQuestionsArray: Question[] = [];
+  quiz.questions = emptyQuestionsArray;
+  quiz.duration = 0;
+
   if (questionBody.question.length > MAX_QUESTION_LEN || questionBody.question.length < MIN_QUESTION_LEN) {
     return { error: 'The question string cannot be less than 5 characters or greater than 50 characters in length.' };
   }
@@ -346,17 +355,19 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     return { error: 'Quiz ID does not refer to a quiz that exists.' };
   }
 
-  const quiz = findQuizById(quizId);
-
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz ID does not refer a quiz that this user owns.' };
   }
 
-  const data = getData();
   let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   while (questionIdInUse(newQuestionId, quizId) === true) {
     newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
+
+  // initialise answers array as empty
+  const emptyAnswersArray: Answer[] = [];
+  const question = findQuestionById(newQuestionId, quizId);
+  question.answers = emptyAnswersArray;
 
   const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
   const questionAnswersArray = [];
