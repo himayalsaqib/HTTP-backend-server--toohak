@@ -31,7 +31,8 @@ import {
   adminQuizInfo,
   adminQuizNameUpdate,
   adminQuizRestore,
-  adminQuizDescriptionUpdate
+  adminQuizDescriptionUpdate,
+  adminQuizQuestionDuplicate
 } from './quiz';
 
 // Set up web app
@@ -286,6 +287,29 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   }
 
   response = adminQuizRestore(token.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
+app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
+  const { token } = req.body;
+  const quizId = parseInt(req.params.quizid as string);
+  const questionId = parseInt(req.params.questionid as string);
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = quizBelongsToUser(token.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizQuestionDuplicate(token.authUserId, quizId, questionId);
   if ('error' in response) {
     return res.status(400).json(response);
   }
