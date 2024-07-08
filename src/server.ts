@@ -16,7 +16,7 @@ import {
   adminUserPasswordUpdate,
   adminAuthLogout
 } from './auth';
-import { quizBelongsToUser, tokenCreate, tokenExists, trashedQuizBelongsToUser, quizDoesNotExist } from './helper-files/serverHelper';
+import { quizBelongsToUser, tokenCreate, tokenExists, trashedQuizBelongsToUser, quizDoesNotExist, findTokenFromSessionId } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
   adminQuizCreate,
@@ -262,8 +262,13 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
-  const token = req.body;
+  const sessionId = parseInt(req.body.token);
   const quizId = parseInt(req.params.quizid as string);
+
+  let token = findTokenFromSessionId(sessionId);
+  if ('error' in token) {
+    return res.status(401).json(token);
+  }
 
   let response = tokenExists(token);
   if ('error' in response) {

@@ -39,6 +39,25 @@ export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
 }
 
 /**
+ * Function checks if a sessionId exists and returns the entire token object or 
+ * an error
+ *
+ * @param {Tokens} token
+ * @returns {{} | { error: string }}
+ */
+export function findTokenFromSessionId(sessionId: number): Tokens | ErrorObject {
+  const data = getData();
+
+  const foundToken = data.tokens.find(foundToken => foundToken.sessionId === sessionId);
+
+  if (foundToken === undefined) {
+    return { error: 'Token does not refer to a valid logged in user session' };
+  } else {
+    return foundToken;
+  }
+}
+
+/**
  * Function checks if a quiz belongs to a given current user
  *
  * @param {number} authUserId
