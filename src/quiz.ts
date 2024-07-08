@@ -298,14 +298,12 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  * as the same as the created time, and the colours of all the answers of that
  * question are randomly generated
  *
+ * @param {number} authUserId
  * @param {number} quizId
  * @param {object} QuestionBody
  * @returns { {questionId: number} | { error: string}}
  */
-
 export function adminQuizCreateQuestion(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number} | ErrorObject {
-  const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
-
   if (questionBody.question.length > MAX_QUESTION_LEN || questionBody.question.length < MIN_QUESTION_LEN) {
     return { error: 'The question string cannot be less than 5 characters or greater than 50 characters in length.' };
   }
@@ -318,6 +316,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     return { error: 'The question duration must be a positive number.' };
   }
 
+  //
   if (calculateSumQuestionDuration(quizId, questionBody.duration) > MAX_QUIZ_QUESTIONS_DURATION) {
     return { error: 'The sum of the question durations cannot exceed 3 minutes.' };
   }
@@ -329,7 +328,8 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN) === true) {
     return { error: 'The answer cannot be longer than 30 characters or shorter than 1 character.' };
   }
-
+  
+  //
   if (checkForAnsDuplicates(questionBody) === true) {
     return { error: 'Answers cannot be duplicates of each other in the same question.' };
   }
@@ -347,8 +347,9 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   }
 
   const quiz = findQuizById(quizId);
+
   if (quiz.authUserId !== authUserId) {
-    return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
+    return { error: 'Quiz ID does not refer a quiz that this user owns.' };
   }
 
   const data = getData();
@@ -357,6 +358,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
+  const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
   const questionAnswersArray = [];
   // create answers to the question
   for (const answer of questionBody.answers) {
@@ -365,7 +367,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
       newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     }
 
-    const colourIndex = Math.floor(Math.random() * answerColours.length);
+    let colourIndex = Math.floor(Math.random() * answerColours.length);
     // make sure colour is not the same as other colours
     const answerColour = answerColours[colourIndex];
 
@@ -378,10 +380,6 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     questionAnswersArray.push(newAnswer);
   }
 
-  // set timeLastEditied as the same as timeCreated
-  quiz.timeLastEdited = quiz.timeCreated;
-  quiz.duration += questionBody.duration;
-
   const newQuestion = {
     questionId: newQuestionId,
     question: questionBody.question,
@@ -389,6 +387,10 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     points: questionBody.points,
     answers: questionAnswersArray
   };
+
+  // set timeLastEditied as the same as timeCreated
+  quiz.timeLastEdited = quiz.timeCreated;
+  quiz.duration += questionBody.duration;
 
   quiz.questions.push(newQuestion);
   setData(data);
