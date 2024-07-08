@@ -87,28 +87,18 @@ describe('POST /v1/admin/quiz/{quizid}/question/{questionid}/duplicate', () => {
       expect(dupeRes.statusCode).toStrictEqual(401);
       expect(dupeRes.retval).toStrictEqual(error);
     });
-  });
-  test('Returns error when sessionId is invalid', () => {
-    token.sessionId += 1;
-    const createRes = requestPost(quizBody, '/v1/admin/quiz');
-    const quizId = createRes.retval.quizId;
 
-    const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }] };
-    const questionRes = requestPost({ token, ...question }, `/v1/admin/quiz/${quizId}/question`);
-
-    const questionId = questionRes.retval.questionId;
-    const dupeRes = requestPost(token, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
-
-    expect(dupeRes.statusCode).toStrictEqual(401);
-    expect(dupeRes.retval).toStrictEqual(error);
-  });
-
-  describe('Testing for invalid questionId (status code 400)', () => {
-    test('Question Id does not refer to a valid question within the quiz', () => {
+    test('Returns error when sessionId is invalid', () => {
+      token.sessionId += 1;
       const createRes = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = createRes.retval.quizId;
-      const invalidQuestionId = quizId + 1;
-      const dupeRes = requestPost(token, `/v1/admin/quiz/${quizId}/question/${invalidQuestionId}/duplicate`);
+
+      const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }] };
+      const questionRes = requestPost({ token, ...question }, `/v1/admin/quiz/${quizId}/question`);
+
+      const questionId = questionRes.retval.questionId;
+      const dupeRes = requestPost(token, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
+
       expect(dupeRes.statusCode).toStrictEqual(401);
       expect(dupeRes.retval).toStrictEqual(error);
     });
