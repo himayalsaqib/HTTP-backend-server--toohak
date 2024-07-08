@@ -1,4 +1,3 @@
-import e from 'express';
 import { Answer, getData, Question, Quizzes, Users, Trash } from '../dataStore';
 import { QuestionBody } from '../quiz';
 
