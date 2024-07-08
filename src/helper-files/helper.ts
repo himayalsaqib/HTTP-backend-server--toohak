@@ -179,7 +179,7 @@ export function findQuizById(quizId: number): Quizzes | undefined {
  * 
  * @param {number} questionId - ID of the question to find
  * @param {number} quizId - ID of the quiz to find
- * @returns {Question | undefined} - the quetion with the specified ID | undefined
+ * @returns {Question | undefined} - the question with the specified ID | undefined
  */
 export function findQuestionById(questionId: number, quizId: number ): Question | undefined {
   const quiz = findQuizById(quizId);
