@@ -318,6 +318,10 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     return { error: 'The question duration must be a positive number.' };
   }
 
+  if (calculateSumQuestionDuration(quizId, questionBody.duration) > MAX_QUIZ_QUESTIONS_DURATION) {
+    return { error: 'The sum of the question durations cannot exceed 3 minutes.' };
+  }
+
   if (questionBody.points > MAX_POINT_VALUE || questionBody.points < MIN_POINT_VALUE) {
     return { error: 'The points awarded must not be less than 1 or not greater than 10.' };
   }
@@ -346,11 +350,6 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
   }
-
-  // //
-  // if (calculateSumQuestionDuration(quiz.questions) > MAX_QUIZ_QUESTIONS_DURATION) {
-  //   return { error: 'The sum of the question durations cannot exceed 3 minutes.' };
-  // }
 
   const data = getData();
   let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -381,6 +380,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
 
   // set timeLastEditied as the same as timeCreated
   quiz.timeLastEdited = quiz.timeCreated;
+  quiz.duration += questionBody.duration;
 
   const newQuestion = {
     questionId: newQuestionId,
