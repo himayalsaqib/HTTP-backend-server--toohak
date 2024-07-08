@@ -198,9 +198,8 @@ export function questionIdInUse(questionId: number, quizId: number): boolean {
 
   if (question === undefined) {
     return false;
-  } else {
-    return true;
-  }
+  } 
+  return true;
 }
 
 /**
