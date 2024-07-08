@@ -292,7 +292,7 @@ export function adminQuizRestore (authUserId: number, quizId: number): EmptyObje
 }
 
 /**
- * Duplicates a quiz question 
+ * Duplicates a quiz question
  *
  * @param {number} authUserId
  * @param {number} quizId
@@ -304,7 +304,7 @@ export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, 
 
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId does not refer to a valid user id.' };
-  } 
+  }
   if (quizIdInUse(quizId) === false) {
     return { error: 'Quiz Id does not refer to a valid quiz.' };
   }
@@ -316,7 +316,7 @@ export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, 
 
   const questionIndex = quiz.questions?.findIndex(q => q.questionId === questionId);
   if (questionIndex === undefined || questionIndex === -1) {
-    return { error: 'Question ID does not refer to a valid question in the quiz.' };
+    return { error: 'Question Id does not refer to a valid question in the quiz.' };
   }
 
   const question = quiz.questions![questionIndex];
@@ -328,8 +328,8 @@ export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, 
   quiz.questions?.splice(questionIndex + 1, 0, newQuestion);
   quiz.duration = (quiz.duration || 0) + newQuestion.duration;
 
-  if (quiz.duration > 180) { 
-    quiz.questions.splice(questionIndex + 1, 1); 
+  if (quiz.duration > 180) {
+    quiz.questions.splice(questionIndex + 1, 1);
     return { error: 'Duplicating this question exceeds the maximum quiz duration of 3 minutes.' };
   }
 
@@ -337,5 +337,4 @@ export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, 
   setData(data);
 
   return { newQuestionId: newQuestion.questionId };
-
 }
