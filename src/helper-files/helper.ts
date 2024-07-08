@@ -238,18 +238,13 @@ export function answerIdInUse(answerId: number, questionId: number, quizId: numb
  * Calculates the sum of question durations of a quiz given by its quiz ID
  * 
  * @param {number} quizId - ID of quiz to find
+ * @param {number} questionDuration - duration of the question
  * @returns {number} - the sum of the question durations in seconds 
  */
-export function calculateSumQuestionDuration(quizId: number): number {
-  let sumQuestionDuration = 0;
-
+export function calculateSumQuestionDuration(quizId: number, questionDuration: number): number {
   const quiz = findQuizById(quizId);
 
-  for (const question of quiz.questions) {
-    sumQuestionDuration += question.duration;
-  }
-
-  return sumQuestionDuration;
+  return quiz.duration + questionDuration;
 }
 
 /**
