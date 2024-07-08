@@ -16,6 +16,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
   let answerBody: { answer: string, correct: boolean }[];
   let questionBody: { question: string, duration: number, points: number, answers: QuizQuestionAnswers[] };
   let token: { sessionId: number, authUserId: number };
+  let token2: { sessionId: number, authUserId: number };
 
   describe('Testing successful cases (status code 200)', () => {
     let event: { quizId: number };
@@ -373,7 +374,8 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       const token1 = retval as { sessionId: number, authUserId: number };
 
       const userBody2 = { email: 'email@gmail.com', password: 'Password123', nameFirst: 'John', nameLast: 'Smith' };
-      requestPost(userBody2, '/v1/admin/auth/register');
+      const res1 = requestPost(userBody2, '/v1/admin/auth/register');
+      const token2 = res1.retval as { sessionId: number, authUserId: number };
 
       // create a quiz for first user
       quizBody = { token: token1, name: 'Valid Quiz Name', description: 'A valid quiz description' };
@@ -384,7 +386,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: 'Oak', correct: true }, { answer: 'Birch', correct: false }];
       questionBody = { question: 'What is the best kind of tree?', duration: 7, points: 5, answers: answerBody };
 
-      expect(requestPost({ token: token1, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
+      expect(requestPost({ token: token2, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
         retval: error,
         statusCode: 403
       });
