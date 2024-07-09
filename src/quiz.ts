@@ -336,7 +336,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     return { error: 'The answer cannot be longer than 30 characters or shorter than 1 character.' };
   }
   
-  //
+  
   if (checkForAnsDuplicates(questionBody) === true) {
     return { error: 'Answers cannot be duplicates of each other in the same question.' };
   }
@@ -368,7 +368,6 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   // create answers to the question
   for (const answer of questionBody.answers) {
     let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-    console.log(`AnswerId: ${newAnswerId}`);
     while (answerIdInUse(newAnswerId) === true) {
       newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     }
