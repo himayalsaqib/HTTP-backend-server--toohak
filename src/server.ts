@@ -106,8 +106,13 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
 });
 
 app.put('/v1/admin/user/details', (req: Request, res: Response) => {
-  const { token, email, nameFirst, nameLast } = req.body;
-  console.log(email);
+  const { givenSessionId, email, nameFirst, nameLast } = req.body;
+  const sessionId = parseInt(givenSessionId);
+
+  let token = findTokenFromSessionId(sessionId);
+  if ('error' in token) {
+    return res.status(401).json(token);
+  }
 
   let response = tokenExists(token);
   if ('error' in response) {
