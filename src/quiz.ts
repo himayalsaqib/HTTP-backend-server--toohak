@@ -360,9 +360,9 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   }
 
   let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-  while (questionIdInUse(newQuestionId, quizId) === true) {
-    newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-  }
+  // while (questionIdInUse(newQuestionId, quizId) === true) {
+  //   newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  // }
 
   // initialise answers array as empty
   const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
@@ -370,9 +370,9 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   // create answers to the question
   for (const answer of questionBody.answers) {
     let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-    while (answerIdInUse(newAnswerId, newQuestionId, quizId) === true) {
-      newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-    }
+    // while (answerIdInUse(newAnswerId, newQuestionId, quizId) === true) {
+    //   newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    // }
 
     let colourIndex = Math.floor(Math.random() * answerColours.length);
     // make sure colour is not the same as other colours
