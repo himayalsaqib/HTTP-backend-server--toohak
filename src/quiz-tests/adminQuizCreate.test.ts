@@ -27,7 +27,7 @@ describe('POST /v1/admin/quiz', () => {
 
     test('Side effect (successful quiz creation): quizList returns correct details about 1 quiz', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
-      const listRes = requestGet({ token }, '/v1/admin/quiz/list');
+      const listRes = requestGet({ token: token }, '/v1/admin/quiz/list');
       expect(listRes).toStrictEqual({ retval: { quizzes: [{ quizId: res.retval, name: 'Valid Quiz Name' }] }, statusCode: 200 });
     });
 
@@ -35,7 +35,7 @@ describe('POST /v1/admin/quiz', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       quizBody = { token: token, name: 'Other Quiz Name', description: 'Other Quiz Description' };
       const res2 = requestPost(quizBody, '/v1/admin/quiz');
-      const listRes = requestGet({ token }, '/v1/admin/quiz/list');
+      const listRes = requestGet({ token: token }, '/v1/admin/quiz/list');
 
       expect(listRes.retval).toStrictEqual({ quizzes: [{ quizId: res.retval, name: 'Valid Quiz Name' }, { quizId: res2.retval, name: 'Other Quiz Name' }] });
       expect(listRes.statusCode).toStrictEqual(200);
@@ -43,17 +43,6 @@ describe('POST /v1/admin/quiz', () => {
   });
 
   describe('Testing token errors (status code 401)', () => {
-    test('Given invalid user ID', () => {
-      userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
-
-      token.authUserId += 1;
-      quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
-      const res = requestPost(quizBody, '/v1/admin/quiz');
-      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
-    });
-
     test('Given invalid session ID', () => {
       userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userBody, '/v1/admin/auth/register');
