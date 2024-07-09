@@ -26,7 +26,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userBody, '/v1/admin/auth/register');
       token = retval as { sessionId: number, authUserId: number };
-      console.log(`token is ${retval}`);
+      
       // create the quiz
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
       const res = requestPost(quizBody, '/v1/admin/quiz');
