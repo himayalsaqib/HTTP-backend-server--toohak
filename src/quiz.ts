@@ -125,6 +125,8 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     newQuizId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
+  const emptyQuestions: Question[] = [];
+
   const newQuiz = {
     authUserId: authUserId,
     quizId: newQuizId,
@@ -132,6 +134,8 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     timeCreated: Math.floor(Date.now() / 1000),
     timeLastEdited: <number> undefined,
     description: description,
+    questions: emptyQuestions,
+    duration: 0,
   };
 
   data.quizzes.push(newQuiz);
@@ -307,11 +311,6 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
 export function adminQuizCreateQuestion(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number } | ErrorObject {
   const data = getData();
   const quiz = findQuizById(quizId);
-  
-  // initalise empty questions: []
-  const emptyQuestionsArray: Question[] = [];
-  quiz.questions = emptyQuestionsArray;
-  quiz.duration = 0;
 
   if (questionBody.question.length > MAX_QUESTION_LEN || questionBody.question.length < MIN_QUESTION_LEN) {
     return { error: 'The question string cannot be less than 5 characters or greater than 50 characters in length.' };
@@ -360,9 +359,9 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   }
 
   let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-  // while (questionIdInUse(newQuestionId, quizId) === true) {
-  //   newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-  // }
+  while (questionIdInUse(newQuestionId) === true) {
+    newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  }
 
   // initialise answers array as empty
   const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
@@ -370,12 +369,13 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   // create answers to the question
   for (const answer of questionBody.answers) {
     let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-    // while (answerIdInUse(newAnswerId, newQuestionId, quizId) === true) {
-    //   newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-    // }
+    console.log(`AnswerId: ${newAnswerId}`);
+    while (answerIdInUse(newAnswerId) === true) {
+      newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    }
 
+    // make helper function -- inc colours array
     let colourIndex = Math.floor(Math.random() * answerColours.length);
-    // make sure colour is not the same as other colours
     const answerColour = answerColours[colourIndex];
 
     const newAnswer = {
@@ -396,10 +396,10 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   };
 
   // set timeLastEditied as the same as timeCreated
-  quiz.timeLastEdited = quiz.timeCreated;
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
   quiz.duration += questionBody.duration;
 
-  quiz.questions?.push(newQuestion);
+  quiz.questions.push(newQuestion);
   setData(data);
 
   return { questionId: newQuestionId };
