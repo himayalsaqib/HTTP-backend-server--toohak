@@ -18,7 +18,7 @@ describe('GET /v1/admin/quiz:quizid', () => {
   beforeEach(() => {
     userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
     const registerResponse = requestPost(userBody, '/v1/admin/auth/register');
-    token = registerResponse.retval;
+    token = registerResponse.retval.token;
 
     quizBody = { token: token, name: 'Original Quiz Name', description: 'Quiz description' };
     const quizResponse = requestPost(quizBody, '/v1/admin/quiz');
@@ -80,10 +80,9 @@ describe('GET /v1/admin/quiz:quizid', () => {
     test('User is not an owner of this quiz', () => {
       const otherUserBody = { email: 'otherUser@gmail.com', password: 'Password23', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
       const otherUserResponse = requestPost(otherUserBody, '/v1/admin/auth/register');
-      const otherUserToken = otherUserResponse.retval;
+      const otherUserToken = otherUserResponse.retval.token;
 
-      quiz = { token: otherUserToken, name: 'Other Name' };
-      const res = requestGet(otherUserToken, `/v1/admin/quiz/${quizId}`);
+      const res = requestGet({ token: otherUserToken }, `/v1/admin/quiz/${quizId}`);
 
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
     });
