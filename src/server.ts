@@ -182,8 +182,8 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
 app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
 
-  const sessionId = parseInt(req.query.sessionId as string);
-  const authUserId = parseInt(req.query.authUserId as string);
+  const sessionId = parseInt(req.query.token as string);
+  const authUserId = parseInt(req.query.authUserId as string); 
   const token = { sessionId: sessionId, authUserId: authUserId };
 
   let response = tokenExists(token);
