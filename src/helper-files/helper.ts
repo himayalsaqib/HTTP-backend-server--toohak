@@ -279,16 +279,19 @@ export function checkAnswerLength(questionBody: QuestionBody, minAnsLength: numb
  * @returns {boolean} returns true if there are duplicates, false otherwise
  */
 export function checkForAnsDuplicates(questionBody: QuestionBody): boolean {
-  const answerDuplicates = [];
-  for (const answer of questionBody.answers) {
-    if (answer.answer.indexOf(answer.toString()) !== answer.answer.lastIndexOf(answer.toString())) {
-      answerDuplicates.push(answer);
+  const answerStrings = questionBody.answers.map((a: Answer) => ( a.answer ));
+  
+  let i = 0;
+  while (i < questionBody.answers.length) {
+    const answerToCompare = answerStrings.shift();
+    for (const answer1 of answerStrings) {
+      if (answerToCompare.localeCompare(answer1) === 0) {
+        return true;
+      }
     }
-  }
-
-  if (answerDuplicates.length > 0) {
-    return true;
-  }
+    answerStrings.push(answerToCompare);
+    i++;
+  } 
 
   return false;
 }
