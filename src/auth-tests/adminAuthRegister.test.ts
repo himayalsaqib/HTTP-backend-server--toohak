@@ -11,7 +11,7 @@ describe('POST /v1/admin/auth/register', () => {
   let body: { email: string, password: string, nameFirst: string, nameLast: string };
 
   describe('Testing successful registration (status code 200)', () => {
-    let token: string;
+    let token: { token: string };
     beforeEach(() => {
       body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const response = requestPost(body, '/v1/admin/auth/register');
@@ -28,7 +28,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Side effect: adminUserDetails successfully returns registered user\'s details', () => {
-      expect(requestGet({ token: token }, '/v1/admin/user/details')).toStrictEqual({
+      expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
         retval: {
           user: {
             userId: expect.any(Number),
