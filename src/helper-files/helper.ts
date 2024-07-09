@@ -172,3 +172,21 @@ export function findQuizById(quizId: number): Quizzes | undefined {
   const data = getData();
   return data.quizzes.find(q => q.quizId === quizId);
 }
+
+/**
+ * Loops through quiz given by quizId and sums the new duration after a question
+ * in the quiz has been updated
+ *
+ * @param {number} quizId 
+ * @returns {number} 
+ */
+export function updateQuizDuration(quizId: number): number {
+  const quiz = findQuizById(quizId);
+
+  let newDuration = 0;
+  for (const question of quiz.questions) {
+    newDuration += question.duration;
+  }
+
+  return newDuration;
+}
