@@ -1,4 +1,4 @@
-import express, { json, Request, Response } from 'express';
+import express, { json, query, Request, Response } from 'express';
 import { echo } from './newecho';
 import morgan from 'morgan';
 import config from './config.json';
@@ -16,7 +16,7 @@ import {
   adminUserPasswordUpdate,
   adminAuthLogout
 } from './auth';
-import { quizBelongsToUser, tokenCreate, tokenExists } from './helper-files/serverHelper';
+import { quizBelongsToUser, quizzesBelongToUser, tokenCreate, tokenExists } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
   adminQuizCreate,
@@ -24,7 +24,8 @@ import {
   adminQuizList,
   adminQuizInfo,
   adminQuizNameUpdate,
-  adminQuizDescriptionUpdate
+  adminQuizDescriptionUpdate,
+  adminQuizTrashEmpty
 } from './quiz';
 
 // Set up web app
@@ -172,6 +173,8 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.sessionId as string);
   const authUserId = parseInt(req.query.authUserId as string);
   const token = { sessionId: sessionId, authUserId: authUserId };
+  console.log("token quiz delete", token); // debug
+  console.log(req.query);
 
   let response = tokenExists(token);
   if ('error' in response) {
@@ -205,6 +208,7 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.sessionId as string);
   const authUserId = parseInt(req.query.authUserId as string);
   const token = { sessionId: sessionId, authUserId: authUserId };
+  console.log("quizinfo token", token);
   const quizId = parseInt(req.params.quizid as string);
 
   let response = tokenExists(token);
@@ -239,6 +243,7 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
 
   res.json(response);
 });
+
 app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   const { token, description } = req.body;
   const quizId = parseInt(req.params.quizid as string);
@@ -256,6 +261,34 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
     return res.status(400).json(response);
   }
 
+  res.json(response);
+});
+
+app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.query.sessionId as string);
+  const authUserId = parseInt(req.query.authUserId as string);
+  const token = { sessionId: sessionId, authUserId: authUserId };
+  // const token = req.query.token;
+  
+  console.log("token:", token);
+  const quizIds = JSON.parse(req.query.quizIds as string);
+  console.log("Qiizid:", quizIds); //debug
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = quizzesBelongToUser(token.authUserId, quizIds);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizTrashEmpty(token.authUserId, quizIds);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+  
   res.json(response);
 });
 
