@@ -88,7 +88,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test.skip('Side effect - Successful listing of information a quiz with multiple questions', () => {
+    test.skip('Side effect - Successful listing of information about a quiz with multiple questions', () => {
       // create question
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
@@ -404,21 +404,20 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test.skip('The quiz does not exist', () => {
+    test('The quiz does not exist', () => {
       // register a user to create a quiz
       userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userBody, '/v1/admin/auth/register');
       token = retval as { sessionId: number, authUserId: number };
 
-      // create a quiz to delete
+      // create a quiz
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
       const res = requestPost(quizBody, '/v1/admin/quiz');
-      requestDelete({ token: token }, `/v1/admin/quiz/${res.retval.quizId}`);
 
-      // creating a question for a quiz that does not exist (i.e. has been deleted)
+      // creating a question for a quiz that does not exist
       answerBody = [{ answer: 'cats are the best!', correct: true }, { answer: 'birds are cool too', correct: false }];
       questionBody = { question: 'which animal is the best?', duration: 16, points: 10, answers: answerBody };
-      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${res.retval.quizId}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${res.retval.quizId + 1}/question`)).toStrictEqual({
         retval: error,
         statusCode: 403
       });
