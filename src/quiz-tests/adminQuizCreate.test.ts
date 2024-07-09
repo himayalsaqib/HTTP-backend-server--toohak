@@ -16,7 +16,8 @@ describe('POST /v1/admin/quiz', () => {
     beforeEach(() => {
       userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      token = retval as string;
+      token = retval.toString();
+      console.log(token);
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
     });
 

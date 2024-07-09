@@ -31,7 +31,7 @@ export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
 
   const foundToken = data.tokens.find(foundToken => foundToken.sessionId === token.sessionId);
 
-  if (foundToken === undefined || foundToken.authUserId != token.sessionId) {
+  if (foundToken === undefined || foundToken.authUserId != token.authUserId) {
     return { error: 'Token does not refer to a valid logged in user session' };
   } else {
     return {};
@@ -45,16 +45,12 @@ export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
  * @param {number} sessionId
  * @returns {{} | { error: string }}
  */
-export function findTokenFromSessionId(sessionId: number): Tokens | ErrorObject {
+export function findTokenFromSessionId(sessionId: number): Tokens {
   const data = getData();
 
   const foundToken = data.tokens.find(foundToken => foundToken.sessionId === sessionId);
 
-  if (foundToken === undefined) {
-    return { error: 'Token does not refer to a valid logged in user session' };
-  } else {
-    return foundToken;
-  }
+  return foundToken;
 }
 
 /**

@@ -16,7 +16,7 @@ import {
   adminUserPasswordUpdate,
   adminAuthLogout
 } from './auth';
-import { quizBelongsToUser, tokenCreate, tokenExists, trashedQuizBelongsToUser, quizDoesNotExist, findTokenFromSessionId } from './helper-files/serverHelper';
+import { quizBelongsToUser, tokenCreate, tokenExists, trashedQuizBelongsToUser, quizDoesNotExist, findTokenFromSessionId, sessionIdExists } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
   adminQuizCreate,
@@ -76,7 +76,7 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
     return res.status(400).json(response);
   }
 
-  res.json(tokenCreate(response.authUserId));
+  res.json(tokenCreate(response.authUserId).sessionId.toString());
 });
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
@@ -158,20 +158,21 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
 // ============================== QUIZ ROUTES =============================== //
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
-  const { givenSessionId, name, description } = req.body;
-  let sessionId = parseInt(givenSessionId);
+  const { token, name, description } = req.body;
+  let sessionId = parseInt(token);
 
-  let token = findTokenFromSessionId(sessionId);
-  if ('error' in token) {
-    return res.status(401).json(token);
+  if (sessionIdExists(sessionId) === false) {
+    return(res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let response = tokenExists(token);
+  let token1 = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(token1);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = adminQuizCreate(token.authUserId, name, description);
+  response = adminQuizCreate(token1.authUserId, name, description);
   if ('error' in response) {
     return res.status(400).json(response);
   }
