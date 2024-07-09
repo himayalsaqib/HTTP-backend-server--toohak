@@ -68,12 +68,16 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
               points: questionCreateBody.points,
               answers: [
                 {
+                  answerId: expect.any(Number),
                   answer: answerBody1.answer,
+                  colour: expect.any(String),
                   correct: answerBody1.correct
                 },
                 {
+                  answerId: expect.any(Number),
                   answer: answerBody2.answer,
-                  correct: answerBody2.answer
+                  colour: expect.any(String),
+                  correct: answerBody2.correct
                 }
               ]
             }
@@ -112,11 +116,15 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
               points: questionCreateBody.points,
               answers: [
                 {
+                  answerId: expect.any(Number),
                   answer: answerBody[0].answer,
+                  colour: expect.any(String),
                   correct: answerBody[0].correct
                 },
                 {
+                  answerId: expect.any(Number),
                   answer: answerBody[1].answer,
+                  colour: expect.any(String),
                   correct: answerBody[1].correct
                 }
               ]
@@ -128,11 +136,15 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
               points: questionCreateBody2.points,
               answers: [
                 {
+                  answerId: expect.any(Number),
                   answer: answerBody2[0].answer,
+                  colour: expect.any(String),
                   correct: answerBody2[0].correct
                 },
                 {
+                  answerId: expect.any(Number),
                   answer: answerBody2[1].answer,
+                  colour: expect.any(String),
                   correct: answerBody2[1].correct
                 }
               ]
