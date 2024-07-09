@@ -1,6 +1,5 @@
 // includes http tests for the route /v1/admin/quiz
 
-import { Tokens } from '../dataStore';
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 
 beforeEach(() => {
@@ -10,14 +9,14 @@ beforeEach(() => {
 describe('POST /v1/admin/quiz', () => {
   const error = { error: expect.any(String) };
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
-  let quizBody: { token: Tokens, name: string, description: string };
-  let token: { sessionId: number, authUserId: number };
+  let quizBody: { token: string, name: string, description: string };
+  let token: string;
 
   describe('Testing successful cases (status code 200)', () => {
     beforeEach(() => {
       userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
+      token = retval as string;
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
     });
 
@@ -26,13 +25,13 @@ describe('POST /v1/admin/quiz', () => {
       expect(res).toStrictEqual({ retval: { quizId: expect.any(Number) }, statusCode: 200 });
     });
 
-    test.skip('Side effect (successful quiz creation): quizList returns correct details about 1 quiz', () => {
+    test('Side effect (successful quiz creation): quizList returns correct details about 1 quiz', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       const listRes = requestGet({ token }, '/v1/admin/quiz/list');
       expect(listRes).toStrictEqual({ retval: { quizzes: [{ quizId: res.retval, name: 'Valid Quiz Name' }] }, statusCode: 200 });
     });
 
-    test.skip('Side effect (successful quiz creation): quizList returns correct details about multiple quizzes', () => {
+    test('Side effect (successful quiz creation): quizList returns correct details about multiple quizzes', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       quizBody = { token: token, name: 'Other Quiz Name', description: 'Other Quiz Description' };
       const res2 = requestPost(quizBody, '/v1/admin/quiz');
