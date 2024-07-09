@@ -75,6 +75,7 @@ describe('PUT /v1/admin/quiz:quizid/description', () => {
   describe('Testing token errors (status code 401)', () => {
     test('Given invalid session ID', () => {
       const sessionId = parseInt(token) + 1;
+      token = sessionId.toString();
       quiz = { token: token, description: 'Updated Quiz Description' };
       const res = requestPut(quiz, `/v1/admin/quiz/${quizId}/description`);
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });

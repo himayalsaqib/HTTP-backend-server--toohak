@@ -259,16 +259,23 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
 app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   const { token, description } = req.body;
   const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(token);
 
-  let response = tokenExists(token);
+  if (sessionIdExists(sessionId) === false) {
+    return(res).status(401).json({ error: 'Invalid session ID' });
+  }
+
+  let userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
-  response = quizBelongsToUser(token.authUserId, quizId);
+  response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
     return res.status(403).json(response);
   }
-  response = adminQuizDescriptionUpdate(token.authUserId, quizId, description);
+  response = adminQuizDescriptionUpdate(userToken.authUserId, quizId, description);
   if ('error' in response) {
     return res.status(400).json(response);
   }
