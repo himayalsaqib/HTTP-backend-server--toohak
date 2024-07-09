@@ -16,8 +16,8 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
   beforeEach(() => {
     // register a user
     user = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-    const { retval } = requestPost(user, '/v1/admin/auth/register');
-    token = retval.toString();
+    const registerUser = requestPost(user, '/v1/admin/auth/register');
+    token = registerUser.retval;
 
     // create a quiz
     quiz = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
