@@ -16,8 +16,8 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
   beforeEach(() => {
     // register a user
     user = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-    const { retval } = requestPost(user, '/v1/admin/auth/register');
-    token = retval as 'string';
+    const registerUser = requestPost(user, '/v1/admin/auth/register');
+    token = registerUser.retval.token;
 
     // create a quiz
     quiz = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
@@ -119,8 +119,8 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
     test('Current user does not own the quiz', () => {
       // register a second user
       const user2 = { email: 'valid2@gmail.com', password: 'Password12', nameFirst: 'Jamie', nameLast: 'David' };
-      const { retval } = requestPost(user2, '/v1/admin/auth/register');
-      const token2 = retval as string;
+      const registerUser2 = requestPost(user2, '/v1/admin/auth/register');
+      const token2 = registerUser2.retval.token;
 
       // create a quiz for the second user
       quiz = { token: token2, name: 'Other Valid Quiz Name', description: 'Other Valid Quiz Description' };

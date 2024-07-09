@@ -12,14 +12,14 @@ describe('POST /v1/admin/quiz', () => {
   let quizBody: { token: string, name: string, description: string };
   let token: string;
 
-  describe('Testing successful cases (status code 200)', () => {
-    beforeEach(() => {
-      userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      token = retval as string;
-      quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
-    });
+  beforeEach(() => {
+    userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+    const registerUser = requestPost(userBody, '/v1/admin/auth/register');
+    token = registerUser.retval.token;
+    quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
+  });
 
+  describe('Testing successful cases (status code 200)', () => {
     test('Has correct return type', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       expect(res).toStrictEqual({ retval: { quizId: expect.any(Number) }, statusCode: 200 });
@@ -28,7 +28,7 @@ describe('POST /v1/admin/quiz', () => {
     test('Side effect (successful quiz creation): quizList returns correct details about 1 quiz', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       const listRes = requestGet({ token: token }, '/v1/admin/quiz/list');
-      expect(listRes).toStrictEqual({ retval: { quizzes: [{ quizId: res.retval, name: 'Valid Quiz Name' }] }, statusCode: 200 });
+      expect(listRes).toStrictEqual({ retval: { quizzes: [{ quizId: res.retval.quizId, name: 'Valid Quiz Name' }] }, statusCode: 200 });
     });
 
     test('Side effect (successful quiz creation): quizList returns correct details about multiple quizzes', () => {
@@ -37,17 +37,13 @@ describe('POST /v1/admin/quiz', () => {
       const res2 = requestPost(quizBody, '/v1/admin/quiz');
       const listRes = requestGet({ token: token }, '/v1/admin/quiz/list');
 
-      expect(listRes.retval).toStrictEqual({ quizzes: [{ quizId: res.retval, name: 'Valid Quiz Name' }, { quizId: res2.retval, name: 'Other Quiz Name' }] });
+      expect(listRes.retval).toStrictEqual({ quizzes: [{ quizId: res.retval.quizId, name: 'Valid Quiz Name' }, { quizId: res2.retval.quizId, name: 'Other Quiz Name' }] });
       expect(listRes.statusCode).toStrictEqual(200);
     });
   });
 
   describe('Testing token errors (status code 401)', () => {
     test('Given invalid session ID', () => {
-      userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      token = retval as string;
-
       const sessionId = parseInt(token) + 1;
       quizBody = { token: sessionId.toString(), name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
       const res = requestPost(quizBody, '/v1/admin/quiz');
@@ -55,6 +51,7 @@ describe('POST /v1/admin/quiz', () => {
     });
 
     test('Token is empty (no users are registered)', () => {
+      requestDelete({}, '/v1/clear');
       const res = requestPost(quizBody, '/v1/admin/quiz');
 
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
@@ -62,12 +59,6 @@ describe('POST /v1/admin/quiz', () => {
   });
 
   describe('Testing name and description errors (status code 400)', () => {
-    beforeEach(() => {
-      userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      token = retval as string;
-    });
-
     describe('Testing quiz name errors', () => {
       test('Quiz name contains invalid characters', () => {
         quizBody = { token: token, name: 'Invalid Quiz Name !@#$%^&*()', description: 'Valid Quiz Description' };
