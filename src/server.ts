@@ -263,8 +263,16 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
+  // const sessionId = parseInt(req.body.token);
+  // const { questionBody } = req.body;
   const { token, questionBody } = req.body;
   const quizId = parseInt(req.params.quizid as string);
+
+  // in prep of sessionId functions
+  // let token = findTokenFromSessionId(sessionId);
+  // if ('error' in token) {
+  //   return res.status(401).json(token);
+  // }
 
   let response = tokenExists(token);
   if ('error' in response) {
