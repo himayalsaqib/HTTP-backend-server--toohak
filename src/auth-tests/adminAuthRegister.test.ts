@@ -32,8 +32,8 @@ describe('POST /v1/admin/auth/register', () => {
         retval: {
           user: {
             userId: expect.any(Number),
-            name: 'Jane Doe',
-            email: 'valid@gmail.com',
+            name: `${body.nameFirst} ${body.nameLast}`,
+            email: body.email,
             numSuccessfulLogins: 1,
             numFailedPasswordsSinceLastLogin: 0,
           }

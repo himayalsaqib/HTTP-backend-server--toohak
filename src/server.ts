@@ -89,7 +89,8 @@ app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
     return res.status(400).json(response);
   }
 
-  res.json(tokenCreate(response.authUserId));
+  const token = tokenCreate(response.authUserId)
+  res.json({token: token.sessionId.toString()});
 });
 
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
