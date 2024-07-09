@@ -295,7 +295,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test.skip('Any answer strings are duplicates of one another (within the same question)', () => {
+    test('Any answer strings are duplicates of one another (within the same question)', () => {
       const answerBody1 = { answer: 'correct ans', correct: true };
       const answerBody2 = { answer: 'not the same', correct: false };
       const answerBody3 = { answer: 'correct ans', correct: false };
