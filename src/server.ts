@@ -280,17 +280,18 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   const sessionId = parseInt(req.body.token);
   const quizId = parseInt(req.params.quizid as string);
 
-  let token = findTokenFromSessionId(sessionId);
-  if ('error' in token) {
-    return res.status(401).json(token);
+  if (sessionIdExists(sessionId) === false) {
+    return(res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let response = tokenExists(token);
+  let userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = trashedQuizBelongsToUser(token.authUserId, quizId);
+  response = trashedQuizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
     return res.status(403).json(response);
   }
@@ -300,7 +301,7 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
     return res.status(403).json(response);
   }
 
-  response = adminQuizRestore(token.authUserId, quizId);
+  response = adminQuizRestore(userToken.authUserId, quizId);
   if ('error' in response) {
     return res.status(400).json(response);
   }
