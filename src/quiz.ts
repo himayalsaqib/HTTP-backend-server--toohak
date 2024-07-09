@@ -13,7 +13,8 @@ import {
   checkForNumCorrectAns,
   questionIdInUse,
   answerIdInUse,
-  findQuestionById
+  findQuestionById,
+  generateAnsColour
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -362,19 +363,15 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
-  // initialise answers array as empty
-  const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
-  const questionAnswersArray = [];
   // create answers to the question
+  const questionAnswersArray = [];
   for (const answer of questionBody.answers) {
     let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     while (answerIdInUse(newAnswerId) === true) {
       newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     }
 
-    // make helper function -- inc colours array
-    let colourIndex = Math.floor(Math.random() * answerColours.length);
-    const answerColour = answerColours[colourIndex];
+    const answerColour = generateAnsColour();
 
     const newAnswer = {
       answerId: newAnswerId,
@@ -393,7 +390,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     answers: questionAnswersArray
   };
 
-  // set timeLastEditied as the same as timeCreated
+  // set timeLastEditied as the same as timeCreated for quiz
   quiz.timeLastEdited = Math.floor(Date.now() / 1000);
   quiz.duration += questionBody.duration;
 
