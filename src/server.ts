@@ -276,6 +276,11 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
     return res.status(403).json(response);
   }
 
+  response = quizDoesNotExist(quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
   response = adminQuizCreateQuestion(token.authUserId, quizId, questionBody);
   if ('error' in response) {
     return res.status(400).json(response);
