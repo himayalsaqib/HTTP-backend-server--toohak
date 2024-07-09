@@ -1,3 +1,7 @@
+import fs from 'fs';
+
+const path = __dirname + '/toohakData.json';
+
 // YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
 
 export interface ErrorObject {
@@ -92,6 +96,17 @@ function getData() {
 // Use set(newData) to pass in the entire data object, with modifications made
 function setData(newData: Data) {
   data = newData;
+
+  // saving data as JSON in JSON file
+  const dataString = JSON.stringify(newData, null, 2);
+  fs.writeFileSync(path, dataString, { flag: 'w' });
 }
 
-export { getData, setData };
+function load() {
+  if (fs.existsSync(path)) {
+    const dataString = fs.readFileSync(path);
+    data = JSON.parse(dataString.toString());
+  }
+}
+
+export { getData, setData, load };
