@@ -153,10 +153,10 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
 // ============================== QUIZ ROUTES =============================== //
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
-  const { sessionId, name, description } = req.body;
-  let token = parseInt(sessionId);
+  const { givenSessionId, name, description } = req.body;
+  let sessionId = parseInt(givenSessionId);
 
-  token = findTokenFromSessionId(sessionId);
+  let token = findTokenFromSessionId(sessionId);
   if ('error' in token) {
     return res.status(401).json(token);
   }

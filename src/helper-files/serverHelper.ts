@@ -26,7 +26,7 @@ export function sessionIdExists(sessionId: number): boolean {
  * @param {number} sessionId
  * @returns {{} | { error: string }}
  */
-export function tokenExists(sessionId: number): EmptyObject | ErrorObject {
+export function tokenExists(sessionId: number): Tokens | ErrorObject {
   const data = getData();
 
   const foundToken = data.tokens.find(foundToken => foundToken.sessionId === sessionId);
@@ -34,7 +34,7 @@ export function tokenExists(sessionId: number): EmptyObject | ErrorObject {
   if (foundToken === undefined) {
     return { error: 'Token does not refer to a valid logged in user session' };
   } else {
-    return {};
+    return foundToken;
   }
 }
 
