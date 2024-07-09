@@ -146,12 +146,12 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   const token = req.body;
 
-  let response = tokenExists(token);
+  let response = tokenExists(token.sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = adminAuthLogout(token);
+  response = adminAuthLogout(token.sessionId);
   res.json(response);
 });
 
