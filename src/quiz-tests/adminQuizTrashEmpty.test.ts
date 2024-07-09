@@ -78,7 +78,7 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
       const quiz7Response = requestPost(quizBody, '/v1/admin/quiz');
       const nonDeletedQuiz2 = quiz7Response.retval.quizId;
 
-      const quizIdsInTrash = [quizIds[0], quizIds[1]];
+      const quizIdsInTrash = [quizIds[1], quizIds[2]];
       const mixedQuizIds = JSON.stringify([...quizIdsInTrash, nonDeletedQuiz1, nonDeletedQuiz2]);
 
       const res = requestDelete({ token: token, quizIds: mixedQuizIds }, '/v1/admin/quiz/trash/empty');
