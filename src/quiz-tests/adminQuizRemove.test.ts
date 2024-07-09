@@ -20,10 +20,9 @@ describe('DELETE /v1/admin/quiz/:quizid', () => {
       quizBody = { token: token, name: 'My Quiz Name', description: 'Valid Quiz Description' };
     });
 
-    test.only('Successful removal of a quiz', () => {
+    test('Successful removal of a quiz', () => {
       const createRes = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = createRes.retval.quizId;
-      console.log(token);
       const removeRes = requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
       expect(removeRes.retval).toStrictEqual({});
       expect(removeRes.statusCode).toStrictEqual(200);

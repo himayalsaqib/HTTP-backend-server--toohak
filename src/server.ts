@@ -165,14 +165,14 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
     return(res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let token1 = findTokenFromSessionId(sessionId);
+  let userToken = findTokenFromSessionId(sessionId);
 
-  let response = tokenExists(token1);
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = adminQuizCreate(token1.authUserId, name, description);
+  response = adminQuizCreate(userToken.authUserId, name, description);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -182,22 +182,25 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
 
 app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(req.query.token as string);
 
-  const sessionId = parseInt(req.query.sessionId as string);
-  const authUserId = parseInt(req.query.authUserId as string);
-  const token = { sessionId: sessionId, authUserId: authUserId };
+  if (sessionIdExists(sessionId) === false) {
+    return(res).status(401).json({ error: 'Invalid session ID' });
+  }
 
-  let response = tokenExists(token);
+  let userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = quizBelongsToUser(token.authUserId, quizId);
+  response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
     return res.status(403).json(response);
   }
 
-  response = adminQuizRemove(token.authUserId, quizId);
+  response = adminQuizRemove(userToken.authUserId, quizId);
   res.json(response);
 });
 
