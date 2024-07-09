@@ -1,6 +1,5 @@
 // contains the HTTP tests for adminQuizNameUpdate from quiz.ts
 
-import { Tokens } from '../dataStore';
 import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
 
 beforeEach(() => {
@@ -10,16 +9,16 @@ beforeEach(() => {
 describe('PUT /v1/admin/quiz:quizid/name', () => {
   const error = { error: expect.any(String) };
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
-  let quizBody: { token: Tokens, name: string, description: string };
-  let token: { sessionId: number, authUserId: number };
+  let quizBody: { token: string, name: string, description: string };
+  let token: string;
 
-  let quiz: { token: Tokens, name: string };
+  let quiz: { token: string, name: string };
   let quizId: number;
 
   beforeEach(() => {
     userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
     const registerResponse = requestPost(userBody, '/v1/admin/auth/register');
-    token = registerResponse.retval as { sessionId: number, authUserId: number };
+    token = registerResponse.retval;
 
     quizBody = { token: token, name: 'Original Quiz Name', description: 'Quiz description' };
     const quizResponse = requestPost(quizBody, '/v1/admin/quiz');
@@ -39,7 +38,7 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
 
       requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
 
-      const res = requestGet(token, `/v1/admin/quiz/${quizId}`);
+      const res = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
       const timeLastEdited = res.retval.timeLastEdited;
 
       expect(timeLastEdited).toBeGreaterThanOrEqual(clientSendTime);
@@ -74,16 +73,9 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
   });
 
   describe('Testing token errors (status code 401)', () => {
-    test('Invalid authUserId', () => {
-      token.authUserId += 1;
-      quiz = { token: token, name: 'Updated Quiz Name' };
-      const res = requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
-      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
-    });
-
     test('Given invalid session ID', () => {
-      token.sessionId += 1;
-      quiz = { token: token, name: 'Updated Quiz Name' };
+      const sessionId = parseInt(token) + 1;
+      quiz = { token: sessionId.toString(), name: 'Updated Quiz Name' };
       const res = requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
@@ -131,7 +123,7 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
     test('User is not an owner of this quiz', () => {
       const otherUserBody = { email: 'otherUser@gmail.com', password: 'Password23', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
       const otherUserResponse = requestPost(otherUserBody, '/v1/admin/auth/register');
-      const otherUserToken = otherUserResponse.retval as { sessionId: number, authUserId: number };
+      const otherUserToken = otherUserResponse.retval;
 
       quiz = { token: otherUserToken, name: 'New Name' };
       const res = requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
