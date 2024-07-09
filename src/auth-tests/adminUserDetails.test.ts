@@ -9,22 +9,22 @@ beforeEach(() => {
 describe('GET /v1/admin/user/details', () => {
   const error = { error: expect.any(String) };
   let body: { email: string, password: string, nameFirst: string, nameLast: string };
-  let token: { sessionId: number, authUserId: number };
+  let token: { token: string };
+
+  beforeEach(() => {
+    body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+    const registerResponse = requestPost(body, '/v1/admin/auth/register');
+    token = registerResponse.retval;
+  });
 
   describe('Testing for correct return type (status code 200)', () => {
-    beforeEach(() => {
-      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(body, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
-    });
-
     test('Successful return of user details when only one user is registered', () => {
       expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
         retval: {
           user: {
-            userId: token.authUserId,
-            name: 'Jane Doe',
-            email: 'valid@gmail.com',
+            userId: expect.any(Number),
+            name: `${body.nameFirst} ${body.nameLast}`,
+            email: body.email,
             numSuccessfulLogins: 1,
             numFailedPasswordsSinceLastLogin: 0,
           }
@@ -35,15 +35,15 @@ describe('GET /v1/admin/user/details', () => {
 
     test('Successful return of user details when multiple users are registered', () => {
       // second registration
-      body = { email: 'valid2@gmail.com', password: 'Password12', nameFirst: 'John', nameLast: 'Doe' };
-      requestPost(body, '/v1/admin/auth/register');
+      const body2 = { email: 'valid2@gmail.com', password: 'Password12', nameFirst: 'John', nameLast: 'Doe' };
+      requestPost(body2, '/v1/admin/auth/register');
 
       expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
         retval: {
           user: {
-            userId: token.authUserId,
-            name: 'Jane Doe',
-            email: 'valid@gmail.com',
+            userId: expect.any(Number),
+            name: `${body.nameFirst} ${body.nameLast}`,
+            email: body.email,
             numSuccessfulLogins: 1,
             numFailedPasswordsSinceLastLogin: 0,
           }
@@ -54,16 +54,16 @@ describe('GET /v1/admin/user/details', () => {
 
     test('Can view multiple user details correctly', () => {
       // second registration
-      body = { email: 'valid2@gmail.com', password: 'Password12', nameFirst: 'John', nameLast: 'Doe' };
-      const { retval } = requestPost(body, '/v1/admin/auth/register');
-      const token2 = retval as { sessionId: number, authUserId: number };
+      const body2 = { email: 'valid2@gmail.com', password: 'Password12', nameFirst: 'John', nameLast: 'Doe' };
+      const registerResponse2 = requestPost(body2, '/v1/admin/auth/register');
+      const token2 = registerResponse2.retval;
 
       expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
         retval: {
           user: {
-            userId: token.authUserId,
-            name: 'Jane Doe',
-            email: 'valid@gmail.com',
+            userId: expect.any(Number),
+            name: `${body.nameFirst} ${body.nameLast}`,
+            email: body.email,
             numSuccessfulLogins: 1,
             numFailedPasswordsSinceLastLogin: 0,
           }
@@ -73,9 +73,9 @@ describe('GET /v1/admin/user/details', () => {
       expect(requestGet(token2, '/v1/admin/user/details')).toStrictEqual({
         retval: {
           user: {
-            userId: token2.authUserId,
-            name: 'John Doe',
-            email: 'valid2@gmail.com',
+            userId: expect.any(Number),
+            name: `${body2.nameFirst} ${body2.nameLast}`,
+            email: body2.email,
             numSuccessfulLogins: 1,
             numFailedPasswordsSinceLastLogin: 0,
           }
@@ -87,18 +87,7 @@ describe('GET /v1/admin/user/details', () => {
 
   describe('Testing authUserId given to adminUserDetails (status code 401)', () => {
     test('Returns error when token is empty (no users are registered)', () => {
-      expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
-        retval: error,
-        statusCode: 401
-      });
-    });
-
-    test('Returns error when authUserId is not a valid user', () => {
-      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(body, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
-      token.authUserId += 1;
-
+      requestDelete({}, '/v1/clear');
       expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
         retval: error,
         statusCode: 401
@@ -106,12 +95,8 @@ describe('GET /v1/admin/user/details', () => {
     });
 
     test('Returns error when sessionId is not a valid logged in user session', () => {
-      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(body, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
-      token.sessionId += 1;
-
-      expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
+      const sessionId = parseInt(token.token) + 1;
+      expect(requestGet({ token: sessionId.toString() }, '/v1/admin/user/details')).toStrictEqual({
         retval: error,
         statusCode: 401
       });
