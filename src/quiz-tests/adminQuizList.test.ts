@@ -16,7 +16,7 @@ describe('GET /v1/admin/quiz/list', () => {
     beforeEach(() => {
       userBody = { email: 'user@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
       const registerUser = requestPost(userBody, '/v1/admin/auth/register');
-      token = registerUser.retval;
+      token = registerUser.retval.token;
       quizBody = { token: token, name: 'My Quiz Name', description: 'Valid Quiz Description' };
     });
 

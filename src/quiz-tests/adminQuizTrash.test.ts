@@ -16,7 +16,7 @@ describe('GET /v1/admin/quiz/trash', () => {
     beforeEach(() => {
       userBody = { email: 'userone@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
       const registerUser = requestPost(userBody, '/v1/admin/auth/register');
-      token = registerUser.retval;
+      token = registerUser.retval.token;
       quizBody = { token: token, name: 'My Quiz Name', description: 'Valid Quiz Description' };
     });
 
@@ -90,7 +90,7 @@ describe('GET /v1/admin/quiz/trash', () => {
     beforeEach(() => {
       userBody = { email: 'userone@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
       const registerUser = requestPost(userBody, '/v1/admin/auth/register');
-      token = registerUser.retval;
+      token = registerUser.retval.token;
       quizBody = { token: token, name: 'My Quiz Name', description: 'Valid Quiz Description' };
     });
 

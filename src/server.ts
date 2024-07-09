@@ -76,7 +76,7 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
     return res.status(400).json(response);
   }
 
-  res.json(tokenCreate(response.authUserId).sessionId.toString());
+  res.json({ token: tokenCreate(response.authUserId).sessionId.toString() });
 });
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {

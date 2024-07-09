@@ -18,7 +18,7 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
   beforeEach(() => {
     userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
     const registerResponse = requestPost(userBody, '/v1/admin/auth/register');
-    token = registerResponse.retval;
+    token = registerResponse.retval.token;
 
     quizBody = { token: token, name: 'Original Quiz Name', description: 'Quiz description' };
     const quizResponse = requestPost(quizBody, '/v1/admin/quiz');
@@ -123,7 +123,7 @@ describe('PUT /v1/admin/quiz:quizid/name', () => {
     test('User is not an owner of this quiz', () => {
       const otherUserBody = { email: 'otherUser@gmail.com', password: 'Password23', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
       const otherUserResponse = requestPost(otherUserBody, '/v1/admin/auth/register');
-      const otherUserToken = otherUserResponse.retval;
+      const otherUserToken = otherUserResponse.retval.token;
 
       quiz = { token: otherUserToken, name: 'New Name' };
       const res = requestPut(quiz, `/v1/admin/quiz/${quizId}/name`);
