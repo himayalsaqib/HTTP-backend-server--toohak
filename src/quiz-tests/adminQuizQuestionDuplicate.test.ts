@@ -22,12 +22,10 @@ describe('POST /v1/admin/quiz/{quizid}/question/{questionid}/duplicate', () => {
 
   describe('Testing for correct return type (status code 200)', () => {
     test('Successfully duplicate a quiz', () => {
-      let sessionId = token.sessionId.toString();
       const createRes = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = createRes.retval.quizId;
       const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }] };
-      console.log(token);
-      const questionRes = requestPost({ sessionId, ...question }, `/v1/admin/quiz/${quizId}/question`);
+      const questionRes = requestPost({token, ...question }, `/v1/admin/quiz/${quizId}/question`);
       console.log(questionRes);
       const questionId = questionRes.retval.questionId;
       const dupeRes = requestPost(token, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
