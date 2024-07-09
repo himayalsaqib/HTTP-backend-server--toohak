@@ -46,10 +46,10 @@ describe('POST /v1/admin/quiz', () => {
     test('Given invalid session ID', () => {
       userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
+      token = retval as string;
 
-      token.sessionId += 1;
-      quizBody = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
+      const sessionId = parseInt(token) + 1;
+      quizBody = { token: sessionId.toString(), name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
       const res = requestPost(quizBody, '/v1/admin/quiz');
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
@@ -65,7 +65,7 @@ describe('POST /v1/admin/quiz', () => {
     beforeEach(() => {
       userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
+      token = retval as string;
     });
 
     describe('Testing quiz name errors', () => {
