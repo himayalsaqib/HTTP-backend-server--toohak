@@ -28,7 +28,7 @@ describe('POST /v1/admin/quiz', () => {
     test('Side effect (successful quiz creation): quizList returns correct details about 1 quiz', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       const listRes = requestGet({ token: token }, '/v1/admin/quiz/list');
-      expect(listRes).toStrictEqual({ retval: { quizzes: [{ quizId: res.retval, name: 'Valid Quiz Name' }] }, statusCode: 200 });
+      expect(listRes).toStrictEqual({ retval: { quizzes: [{ quizId: res.retval.quizId, name: 'Valid Quiz Name' }] }, statusCode: 200 });
     });
 
     test('Side effect (successful quiz creation): quizList returns correct details about multiple quizzes', () => {
@@ -37,7 +37,7 @@ describe('POST /v1/admin/quiz', () => {
       const res2 = requestPost(quizBody, '/v1/admin/quiz');
       const listRes = requestGet({ token: token }, '/v1/admin/quiz/list');
 
-      expect(listRes.retval).toStrictEqual({ quizzes: [{ quizId: res.retval, name: 'Valid Quiz Name' }, { quizId: res2.retval, name: 'Other Quiz Name' }] });
+      expect(listRes.retval).toStrictEqual({ quizzes: [{ quizId: res.retval.quizId, name: 'Valid Quiz Name' }, { quizId: res2.retval.quizId, name: 'Other Quiz Name' }] });
       expect(listRes.statusCode).toStrictEqual(200);
     });
   });
