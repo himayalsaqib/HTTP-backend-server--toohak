@@ -250,16 +250,20 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
 });
 
 app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
-  const sessionId = parseInt(req.query.sessionId as string);
-  const authUserId = parseInt(req.query.authUserId as string);
-  const token = { sessionId: sessionId, authUserId: authUserId };
+  const sessionId = parseInt(req.query.token as string);
 
-  let response = tokenExists(token);
+  if (sessionIdExists(sessionId) === false) {
+    return(res).status(401).json({ error: 'Invalid session ID' });
+  }
+
+  let userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = adminQuizTrash(token.authUserId);
+  response = adminQuizTrash(userToken.authUserId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
