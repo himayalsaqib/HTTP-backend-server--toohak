@@ -124,10 +124,11 @@ describe('PUT /v1/admin/user/details', () => {
     test('SessionId is not valid', () => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
+      token = retval as string;
       user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
 
-      user.token.sessionId += 1;
+      const sessionId = parseInt(user.token) + 1;
+      user.token = sessionId.toString();
       const res = requestPut(user, '/v1/admin/user/details');
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
