@@ -42,7 +42,7 @@ export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
  * Function checks if a sessionId exists and returns the entire token object or 
  * an error
  *
- * @param {Tokens} token
+ * @param {number} sessionId
  * @returns {{} | { error: string }}
  */
 export function findTokenFromSessionId(sessionId: number): Tokens | ErrorObject {
