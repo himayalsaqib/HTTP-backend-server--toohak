@@ -324,7 +324,6 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     return { error: 'The question duration must be a positive number.' };
   }
 
-  //
   if (calculateSumQuestionDuration(quizId, questionBody.duration) > MAX_QUIZ_QUESTIONS_DURATION) {
     return { error: 'The sum of the question durations cannot exceed 3 minutes.' };
   }
