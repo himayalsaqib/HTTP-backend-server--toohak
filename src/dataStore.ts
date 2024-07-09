@@ -11,23 +11,23 @@ export interface ErrorObject {
 export type EmptyObject = Record<never, never>;
 
 export interface Users {
-  authUserId: number,
-  email: string,
-  nameFirst: string,
-  nameLast: string,
-  password: string,
-  previousPasswords: Array<string>,
-  numFailedLogins: number,
-  numSuccessfulLogins: number,
+  authUserId: number;
+  email: string;
+  nameFirst: string;
+  nameLast: string;
+  password: string;
+  previousPasswords: Array<string>;
+  numFailedLogins: number;
+  numSuccessfulLogins: number;
 }
 
 export interface Quizzes {
-  authUserId: number,
-  quizId: number,
-  name: string,
-  timeCreated: number,
-  timeLastEdited: number,
-  description: string,
+  authUserId: number;
+  quizId: number;
+  name: string;
+  timeCreated: number;
+  timeLastEdited: number;
+  description: string;
   questions?: Question[];
   duration?: number;
 }
@@ -48,19 +48,19 @@ export interface Answer {
 }
 
 export interface Trash {
-  quiz: Quizzes
+  quiz: Quizzes;
 }
 
 export interface Tokens {
-  sessionId: number,
-  authUserId: number
+  sessionId: number;
+  authUserId: number;
 }
 
 export interface Data {
-  users: Users[],
-  quizzes: Quizzes[],
-  trash: Trash[],
-  tokens: Tokens[]
+  users: Users[];
+  quizzes: Quizzes[];
+  trash: Trash[];
+  tokens: Tokens[];
 }
 
 let data: Data = {
