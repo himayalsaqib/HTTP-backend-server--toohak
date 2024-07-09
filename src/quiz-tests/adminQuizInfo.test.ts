@@ -82,8 +82,7 @@ describe('GET /v1/admin/quiz:quizid', () => {
       const otherUserResponse = requestPost(otherUserBody, '/v1/admin/auth/register');
       const otherUserToken = otherUserResponse.retval;
 
-      quiz = { token: otherUserToken, name: 'Other Name' };
-      const res = requestGet(otherUserToken, `/v1/admin/quiz/${quizId}`);
+      const res = requestGet({ token: otherUserToken }, `/v1/admin/quiz/${quizId}`);
 
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
     });
