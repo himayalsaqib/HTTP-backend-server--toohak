@@ -193,13 +193,16 @@ export function findQuestionById(questionId: number, quizId: number ): Question 
  * @param {number} quizId
  * @return {boolean} true if questionId has been used, false otherwise
  */
-export function questionIdInUse(questionId: number, quizId: number): boolean {
-  const question = findQuestionById(questionId, quizId);
+export function questionIdInUse(questionId: number): boolean {
+  const data = getData();
+  for (const quiz of data.quizzes) {
+    const question = findQuestionById(questionId, quiz.quizId);
+    if (question !== undefined) {
+      return true;
+    }
+  }
 
-  if (question === undefined) {
-    return false;
-  } 
-  return true;
+  return false;
 }
 
 /**
@@ -222,14 +225,18 @@ export function findAnswerById(answerId: number, questionId: number, quizId: num
  * @param {number} quizId
  * @returns {boolean} - true if answerId has been used, false otherwise
  */
-export function answerIdInUse(answerId: number, questionId: number, quizId: number): boolean {
-  const answer = findAnswerById(answerId, questionId, quizId)
-
-  if (answer.answerId === undefined) {
-    return false
-  } else {
-    return true;
+export function answerIdInUse(answerId: number): boolean {
+  const data = getData();
+  for (const quiz of data.quizzes) {
+    for (const question of quiz.questions) {
+      const answer = findAnswerById(answerId, question.questionId, quiz.quizId);
+      if (answer !== undefined) {
+        return true;
+      }
+    }
   }
+  
+  return false;
 }
 
 /**
