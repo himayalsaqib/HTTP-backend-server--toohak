@@ -339,3 +339,9 @@ export function quizIsInTrash(quizId: number): boolean {
   }
   return true;
 }
+
+export function generateAnsColour(): string {
+  const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+  let colourIndex = Math.floor(Math.random() * answerColours.length);
+  return answerColours[colourIndex]
+}
