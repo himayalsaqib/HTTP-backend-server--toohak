@@ -24,7 +24,7 @@ export interface Quizzes {
   timeCreated: number,
   timeLastEdited: number,
   description: string,
-  questions?: Question[];
+  questions: Question[];
   duration?: number;
 }
 
