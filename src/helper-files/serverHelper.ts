@@ -26,12 +26,13 @@ export function sessionIdExists(sessionId: number): boolean {
  * @param {Tokens} token
  * @returns {{} | { error: string }}
  */
-export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
+export function tokenExists(token: string): EmptyObject | ErrorObject {
   const data = getData();
+  const decodedToken: Tokens = JSON.parse(decodeURIComponent(token));
 
-  const foundToken = data.tokens.find(foundToken => foundToken.sessionId === token.sessionId);
+  const foundToken = data.tokens.find(foundToken => foundToken.sessionId === decodedToken.sessionId);
 
-  if (foundToken === undefined || foundToken.authUserId !== token.authUserId) {
+  if (foundToken === undefined || foundToken.authUserId !== decodedToken.authUserId) {
     return { error: 'Token does not refer to a valid logged in user session' };
   } else {
     return {};
@@ -63,7 +64,7 @@ export function quizBelongsToUser(authUserId: number, quizId: number): EmptyObje
  * @returns {{} | { error: string }}
  */
 export function quizzesBelongToUser(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
-  for (const quizId of quizIds) {
+  for (const quizId of quizIds) {  // for loop
     const quiz = findQuizById(quizId);
     if (quiz === undefined || quiz.authUserId !== authUserId) {
       return { error: 'One or more Quiz IDs refer to a quiz that this current user does not own.' };
@@ -78,9 +79,9 @@ export function quizzesBelongToUser(authUserId: number, quizIds: number[]): Empt
  * adds it to dataStore.
  *
  * @param {number} authUserId
- * @returns {Tokens}
+ * @returns 
  */
-export function tokenCreate(authUserId: number): Tokens {
+export function tokenCreate(authUserId: number): { token: string } {
   let newSessionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   while (sessionIdExists(newSessionId)) {
     newSessionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -95,5 +96,5 @@ export function tokenCreate(authUserId: number): Tokens {
   data.tokens.push(newToken);
   setData(data);
 
-  return newToken;
+  return { token: encodeURIComponent(JSON.stringify(newToken)) };
 }
