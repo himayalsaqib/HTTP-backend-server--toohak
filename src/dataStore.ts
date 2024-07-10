@@ -1,3 +1,7 @@
+import fs from 'fs';
+
+const path = __dirname + '/toohakData.json';
+
 // YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
 
 export interface ErrorObject {
@@ -7,23 +11,23 @@ export interface ErrorObject {
 export type EmptyObject = Record<never, never>;
 
 export interface Users {
-  authUserId: number,
-  email: string,
-  nameFirst: string,
-  nameLast: string,
-  password: string,
-  previousPasswords: Array<string>,
-  numFailedLogins: number,
-  numSuccessfulLogins: number,
+  authUserId: number;
+  email: string;
+  nameFirst: string;
+  nameLast: string;
+  password: string;
+  previousPasswords: Array<string>;
+  numFailedLogins: number;
+  numSuccessfulLogins: number;
 }
 
 export interface Quizzes {
-  authUserId: number,
-  quizId: number,
-  name: string,
-  timeCreated: number,
-  timeLastEdited: number,
-  description: string,
+  authUserId: number;
+  quizId: number;
+  name: string;
+  timeCreated: number;
+  timeLastEdited: number;
+  description: string;
   questions?: Question[];
   duration?: number;
 }
@@ -44,19 +48,19 @@ export interface Answer {
 }
 
 export interface Trash {
-  quiz: Quizzes
+  quiz: Quizzes;
 }
 
 export interface Tokens {
-  sessionId: number,
-  authUserId: number
+  sessionId: number;
+  authUserId: number;
 }
 
 export interface Data {
-  users: Users[],
-  quizzes: Quizzes[],
-  trash: Trash[],
-  tokens: Tokens[]
+  users: Users[];
+  quizzes: Quizzes[];
+  trash: Trash[];
+  tokens: Tokens[];
 }
 
 let data: Data = {
@@ -92,6 +96,17 @@ function getData() {
 // Use set(newData) to pass in the entire data object, with modifications made
 function setData(newData: Data) {
   data = newData;
+
+  // saving data as JSON in JSON file
+  const dataString = JSON.stringify(newData, null, 2);
+  fs.writeFileSync(path, dataString, { flag: 'w' });
 }
 
-export { getData, setData };
+function load() {
+  if (fs.existsSync(path)) {
+    const dataString = fs.readFileSync(path);
+    data = JSON.parse(dataString.toString());
+  }
+}
+
+export { getData, setData, load };
