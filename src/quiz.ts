@@ -384,7 +384,6 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     answers: questionAnswersArray
   };
 
-  console.log(newQuestion);
   // set timeLastEditied as the same as timeCreated for question
   quiz.timeLastEdited = Math.floor(Date.now() / 1000);
   quiz.duration += questionBody.duration;

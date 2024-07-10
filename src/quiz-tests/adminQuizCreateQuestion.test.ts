@@ -42,7 +42,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test.only('Side effect - Successful listing of information about a quiz with one question', () => {
+    test('Side effect - Successful listing of information about a quiz with one question', () => {
       // create question
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
@@ -60,7 +60,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
           numQuestions: 1,
           questions: [
             {
-              questionId: res.retval,
+              questionId: res.retval.questionId,
               question: questionCreateBody.question,
               duration: questionCreateBody.duration,
               points: questionCreateBody.points,
@@ -108,7 +108,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
           numQuestions: 2,
           questions: [
             {
-              questionId: res.retval,
+              questionId: res.retval.questionId,
               question: questionCreateBody.question,
               duration: questionCreateBody.duration,
               points: questionCreateBody.points,
@@ -128,7 +128,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
               ]
             },
             {
-              questionId: res2.retval,
+              questionId: res2.retval.questionId,
               question: questionCreateBody2.question,
               duration: questionCreateBody2.duration,
               points: questionCreateBody2.points,
