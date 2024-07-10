@@ -149,6 +149,14 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   }
 
   response = adminUserPasswordUpdate(userToken.authUserId, oldPassword, newPassword);
+  console.log('Tokennnnnnnn');
+  console.log(userToken);
+  console.log('userToken.authUserIdddddddddddd');
+  console.log(userToken.authUserId);
+  console.log('userToken.sessionnnnIdddddddddddd');
+  console.log(userToken.sessionId);
+  console.log('RESPONSEEEEE:');
+  console.log(response);
   if ('error' in response) {
     return res.status(400).json(response);
   }
