@@ -383,29 +383,29 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
 * @returns {{} | { error: string }}
 */
 export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
- if (authUserIdExists(authUserId) === false) {
-   return { error: 'AuthUserId is not a valid user.' };
- }
- if (quizIsInTrash(quizId) === false) {
-   return { error: 'Quiz ID refers to a quiz that is not currently in the trash' };
- }
+  if (authUserIdExists(authUserId) === false) {
+    return { error: 'AuthUserId is not a valid user.' };
+  }
+  if (quizIsInTrash(quizId) === false) {
+    return { error: 'Quiz ID refers to a quiz that is not currently in the trash' };
+  }
 
- const data = getData();
- const trashedQuiz = findTrashedQuizById(quizId);
+  const data = getData();
+  const trashedQuiz = findTrashedQuizById(quizId);
 
- if (quizNameInUse(authUserId, trashedQuiz.quiz.name) === true) {
-   return { error: 'Quiz name of the restored quiz is already used by the current logged in user for another active quiz' };
- }
+  if (quizNameInUse(authUserId, trashedQuiz.quiz.name) === true) {
+    return { error: 'Quiz name of the restored quiz is already used by the current logged in user for another active quiz' };
+  }
 
- const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
- data.trash.splice(index, 1);
+  const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
+  data.trash.splice(index, 1);
 
- trashedQuiz.quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  trashedQuiz.quiz.timeLastEdited = Math.floor(Date.now() / 1000);
 
- data.quizzes.push(trashedQuiz.quiz);
- setData(data);
+  data.quizzes.push(trashedQuiz.quiz);
+  setData(data);
 
- return {};
+  return {};
 }
 
 /**
@@ -442,7 +442,7 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
  * @param {number} quizId
  * @param {number} questionId
  * @param {QuestionBody} questionBody
- * @returns {{} | { error: string }} 
+ * @returns {{} | { error: string }}
  */
 export function adminQuizQuestionUpdate(
   authUserId: number,
@@ -454,10 +454,10 @@ export function adminQuizQuestionUpdate(
     return { error: 'Question  is less than 5 characters or greater than 50 characters.' };
   }
   if (questionBody.answers.length < MIN_NUM_ANSWERS || questionBody.answers.length > MAX_NUM_ANSWERS) {
-    return { error: 'Question has more than 6 answers or less than 2 answers.'};
+    return { error: 'Question has more than 6 answers or less than 2 answers.' };
   }
   if (questionBody.duration <= 0) {
-    return { error: 'Question duration is not a positive number.'};
+    return { error: 'Question duration is not a positive number.' };
   }
   if (calculateSumQuestionDuration(quizId, questionBody.duration) > MAX_QUIZ_QUESTIONS_DURATION) {
     return { error: 'Sum of the question durations in the quiz exceeds 3 minutes.' };
@@ -489,10 +489,10 @@ export function adminQuizQuestionUpdate(
     return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
   }
   if (questionIdInUse(questionId) === false) {
-    return { error: 'Question Id does not refer to a valid question within this quiz.'};
+    return { error: 'Question Id does not refer to a valid question within this quiz.' };
   }
 
-  let questionToUpdate = findQuestionById(questionId, quizId);
+  const questionToUpdate = findQuestionById(questionId, quizId);
   questionToUpdate.question = questionBody.question;
   questionToUpdate.duration = questionBody.duration;
   questionToUpdate.points = questionBody.points;
@@ -505,5 +505,3 @@ export function adminQuizQuestionUpdate(
 
   return {};
 }
-
-
