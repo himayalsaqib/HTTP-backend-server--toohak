@@ -337,8 +337,28 @@ export function quizIsInTrash(quizId: number): boolean {
   return true;
 }
 
+/**
+ * Function picks a random colour (string) from an array
+ *
+ * @returns {string} - colour
+ */
 export function generateAnsColour(): string {
   const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
   const colourIndex = Math.floor(Math.random() * answerColours.length);
   return answerColours[colourIndex];
+}
+
+/**
+ * Function swaps the questions at the given indexes
+ *
+ * @param {number} questionIndex1 - The index of the first question
+ * @param {number} questionIndex2 - The index of the second question
+ * @param {Question[]} questionArr - The array of questions
+ * @returns {Question[]}
+ */
+export function swapQuestions(questionIndex1: number, questionIndex2: number, questionArr: Question[]): Question[] {
+  const temp = questionArr[questionIndex1];
+  questionArr[questionIndex1] = questionArr[questionIndex2];
+  questionArr[questionIndex2] = temp;
+  return questionArr;
 }
