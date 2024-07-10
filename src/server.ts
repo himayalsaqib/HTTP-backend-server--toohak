@@ -102,32 +102,33 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
     return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  const token = findTokenFromSessionId(sessionId);
+  const userToken = findTokenFromSessionId(sessionId);
 
-  let response = tokenExists(token);
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = adminUserDetails(token.authUserId);
+  response = adminUserDetails(userToken.authUserId);
   res.json(response);
 });
 
 app.put('/v1/admin/user/details', (req: Request, res: Response) => {
-  const { givenSessionId, email, nameFirst, nameLast } = req.body;
-  const sessionId = parseInt(givenSessionId);
+  const { token, email, nameFirst, nameLast } = req.body;
+  const sessionId = parseInt(token);
 
-  const token = findTokenFromSessionId(sessionId);
-  if ('error' in token) {
-    return res.status(401).json(token);
+  if (sessionIdExists(sessionId) === false) {
+    return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let response = tokenExists(token);
+  const userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = adminUserDetailsUpdate(token.authUserId, email, nameFirst, nameLast);
+  response = adminUserDetailsUpdate(userToken.authUserId, email, nameFirst, nameLast);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -151,6 +152,14 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   }
 
   response = adminUserPasswordUpdate(userToken.authUserId, oldPassword, newPassword);
+  console.log('Tokennnnnnnn');
+  console.log(userToken);
+  console.log('userToken.authUserIdddddddddddd');
+  console.log(userToken.authUserId);
+  console.log('userToken.sessionnnnIdddddddddddd');
+  console.log(userToken.sessionId);
+  console.log('RESPONSEEEEE:');
+  console.log(response);
   if ('error' in response) {
     return res.status(400).json(response);
   }
