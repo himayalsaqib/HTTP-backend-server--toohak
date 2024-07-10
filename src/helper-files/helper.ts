@@ -1,4 +1,4 @@
-import { getData, Quizzes, Users } from '../dataStore';
+import { getData, Quizzes, Users, Trash } from '../dataStore';
 
 /**
  * Function checks if an authUserId exists in the dataStore
@@ -172,6 +172,33 @@ export function findQuizById(quizId: number): Quizzes | undefined {
   const data = getData();
   return data.quizzes.find(q => q.quizId === quizId);
 }
+
+/**
+ * Finds a quiz in the trash by its quiz ID
+ *
+ * @param {number} quizId - The ID of the quiz to find
+ * @returns {Quizzes | undefined} - The quiz with the specified ID | undefined
+ */
+export function findTrashedQuizById(quizId: number): Trash | undefined {
+  const data = getData();
+  return data.trash.find(q => q.quiz.quizId === quizId);
+}
+
+/**
+ * Function checks if a quiz with a matching quiz ID is in the trash
+ *
+ * @param {number} quizId - The ID of the quiz to find
+ * @returns {boolean} - true if there is a quiz in the trash, false if not
+ */
+export function quizIsInTrash(quizId: number): boolean {
+  const data = getData();
+  const quiz = data.trash.find(q => q.quiz.quizId === quizId);
+  if (quiz === undefined) {
+    return false;
+  }
+  return true;
+}
+
 
 /**
  * Loops through quiz given by quizId and sums the new duration after a question
