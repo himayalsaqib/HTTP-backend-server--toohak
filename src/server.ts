@@ -16,12 +16,12 @@ import {
   adminUserPasswordUpdate,
   adminAuthLogout
 } from './auth';
-import { 
-  quizBelongsToUser, 
-  tokenCreate, 
-  tokenExists, 
-  trashedQuizBelongsToUser, 
-  quizDoesNotExist, 
+import {
+  quizBelongsToUser,
+  tokenCreate,
+  tokenExists,
+  trashedQuizBelongsToUser,
+  quizDoesNotExist,
   findTokenFromSessionId
 } from './helper-files/serverHelper';
 import { clear } from './other';
@@ -215,7 +215,7 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: 
   }
 
   res.json(response);
-})
+});
 
 app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);

@@ -52,7 +52,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       const questionCreateBody4 = { question: 'Who should work it out on the remix next?', duration: 7, points: 8, answers: answerBody4 };
       newQuestionId = requestPost({ token: token, questionBody: questionCreateBody4 }, `/v1/admin/quiz/${quizId}/question`);
       questionId.push(newQuestionId.retval.questionId);
-    })
+    });
 
     test('Has correct return type', () => {
       // swap second and fourth question
@@ -65,7 +65,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
     test('Side effect: adminQuizinfo displays successful swap of second and fourth question', () => {
       const moveBody = { token: token, newPosition: 1 };
       requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[3]}/move`);
-      
+
       expect(requestGet({ token: token }, `/v1/admin/quiz/${quizId}`)).toStrictEqual({
         retval: {
           quizId: quizId,
@@ -171,7 +171,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       res = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
       expect(res.retval.timeLastEdited).toBeGreaterThanOrEqual(time);
       expect(res.retval.timeLastEdited).toBeLessThanOrEqual(time + 1);
-    })
+    });
   });
 
   describe('Testing questionId and newPosition errors (status code 400)', () => {
@@ -179,65 +179,65 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       // create first question
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
-      let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
+      const newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
       questionId.push(newQuestionId.retval.questionId);
 
       const moveBody = { token: token, newPosition: 1 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0] + 1}/move`);
       expect(res).toStrictEqual({ retval: error, statusCode: 400 });
-    })
+    });
 
     test('Question Id does not refer to a valid question within this quiz (no questions created)', () => {
       const moveBody = { token: token, newPosition: 0 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${1234567890}/move`);
       expect(res).toStrictEqual({ retval: error, statusCode: 400 });
-    })
+    });
 
     test('NewPosition is less than 0', () => {
       // create first question
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
-      let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
+      const newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
       questionId.push(newQuestionId.retval.questionId);
 
       const moveBody = { token: token, newPosition: -1 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0]}/move`);
       expect(res).toStrictEqual({ retval: error, statusCode: 400 });
-    })
+    });
 
     test('NewPosition is greater than n-1 where n is the number of questions', () => {
       // create first question
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
-      let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
+      const newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
       questionId.push(newQuestionId.retval.questionId);
 
       const moveBody = { token: token, newPosition: 1 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0]}/move`);
       expect(res).toStrictEqual({ retval: error, statusCode: 400 });
-    })
+    });
 
     test('NewPosition is the position of the current question', () => {
       // create first question
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
-      let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
+      const newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
       questionId.push(newQuestionId.retval.questionId);
 
       const moveBody = { token: token, newPosition: 0 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0]}/move`);
       expect(res).toStrictEqual({ retval: error, statusCode: 400 });
-    })
-  })
+    });
+  });
 
   describe('Testing token error (status code 401', () => {
     test('Token is empty (no users registered', () => {
       requestDelete({}, '/v1/clear');
-      
+
       const moveBody = { token: token, newPosition: 0 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${1234567890}/question/${questionId[1234567890]}/move`);
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
-    })
+    });
 
     test('Session ID is invalid', () => {
       // create first question
@@ -256,8 +256,8 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       const moveBody = { token: sessionId.toString, newPosition: 1 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0]}/move`);
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
-    })
-  })
+    });
+  });
 
   describe('Testing quiz ID errors (status code 403)', () => {
     beforeEach(() => {
@@ -284,7 +284,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       const questionCreateBody4 = { question: 'Who should work it out on the remix next?', duration: 7, points: 8, answers: answerBody4 };
       newQuestionId = requestPost({ token: token, questionBody: questionCreateBody4 }, `/v1/admin/quiz/${quizId}/question`);
       questionId.push(newQuestionId.retval.questionId);
-    })
+    });
 
     test('User is not an owner of this quiz', () => {
       // register another user
@@ -295,12 +295,12 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       const moveBody = { token: token2, newPosition: 1 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[3]}/move`);
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
-    })
+    });
 
     test('Quiz does not exist', () => {
       const moveBody = { token: token, newPosition: 1 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId + 1}/question/${questionId[3]}/move`);
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
-    })
-  })
+    });
+  });
 });

@@ -21,6 +21,7 @@ export function sessionIdExists(sessionId: number): boolean {
 
 /**
  * Function checks if a token with a matching sessionId exists in the dataStore
+ * and checks that the token's authUserId is in the dataStore
  *
  * @param {number} sessionId
  * @returns {{} | { error: string }}
@@ -33,7 +34,12 @@ export function tokenExists(sessionId: number): EmptyObject | ErrorObject {
   if (foundToken === undefined) {
     return { error: 'Invalid session ID.' };
   } else {
-    return {};
+    const foundAuthUserId = data.users.find(users => users.authUserId === foundToken.authUserId);
+    if (foundAuthUserId === undefined) {
+      return { error: 'Invalid session ID.' };
+    } else {
+      return {};
+    }
   }
 }
 

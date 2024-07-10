@@ -458,13 +458,13 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
 }
 
 /**
- * Given a question ID, swap the question with the question at the index 
+ * Given a question ID, swap the question with the question at the index
  * newPosition
  *
  * @param {number} questionId
  * @param {number} newPosition
  * @param {number} quizId
- * @returns {{} | { error: string }} 
+ * @returns {{} | { error: string }}
  */
 export function adminQuizQuestionMove (questionId: number, newPosition: number, quizId: number): EmptyObject | ErrorObject {
   const quiz = findQuizById(quizId);
@@ -485,7 +485,7 @@ export function adminQuizQuestionMove (questionId: number, newPosition: number, 
   if (questionIndex === newPosition) {
     return { error: 'NewPosition is the position of the current question.' };
   }
-  
+
   quiz.questions = swapQuestions(questionIndex, newPosition, quiz.questions);
 
   return {};
