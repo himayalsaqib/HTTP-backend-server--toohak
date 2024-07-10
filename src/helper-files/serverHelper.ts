@@ -20,19 +20,18 @@ export function sessionIdExists(sessionId: number): boolean {
 }
 
 /**
- * Function checks if a token with a matching sessionId and authUserId exists
- * in the dataStore
+ * Function checks if a token with a matching sessionId exists in the dataStore
  *
- * @param {Tokens} token
+ * @param {number} sessionId
  * @returns {{} | { error: string }}
  */
-export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
+export function tokenExists(sessionId: number): EmptyObject | ErrorObject {
   const data = getData();
 
-  const foundToken = data.tokens.find(foundToken => foundToken.sessionId === token.sessionId);
+  const foundToken = data.tokens.find(token => token.sessionId === sessionId);
 
-  if (foundToken === undefined || foundToken.authUserId !== token.authUserId) {
-    return { error: 'Token does not refer to a valid logged in user session' };
+  if (foundToken === undefined) {
+    return { error: 'Invalid session ID.' };
   } else {
     return {};
   }

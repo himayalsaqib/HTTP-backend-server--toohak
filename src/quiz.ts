@@ -487,8 +487,6 @@ export function adminQuizQuestionMove (questionId: number, newPosition: number, 
   }
   
   quiz.questions = swapQuestions(questionIndex, newPosition, quiz.questions);
-  let data = getData();
-  setData(data);
 
   return {};
 }

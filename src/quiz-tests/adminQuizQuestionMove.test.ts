@@ -175,7 +175,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
   });
 
   describe('Testing questionId and newPosition errors (status code 400)', () => {
-    test.only('Question Id does not refer to a valid question within this quiz (invalid Id)', () => {
+    test('Question Id does not refer to a valid question within this quiz (invalid Id)', () => {
       // create first question
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
@@ -288,7 +288,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
 
     test('User is not an owner of this quiz', () => {
       // register another user
-      userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
+      userBody = { email: 'valid1@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
       const registerUser2 = requestPost(userBody, '/v1/admin/auth/register');
       const token2 = registerUser2.retval.token;
 
