@@ -1,7 +1,6 @@
 // includes http tests for the route /v1/admin/quiz/{quizid}/question
 // NEED TO CONVERT ALL TOKENS TO TOKEN.SESSIONID
 
-import { Tokens } from '../dataStore';
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 import { QuizQuestionAnswers } from '../quiz';
 
@@ -11,21 +10,20 @@ beforeEach(() => {
 
 describe('POST /v1/amdin/quiz/{quizid}/question', () => {
   const error = { error: expect.any(String) };
-  let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
-  let quizBody: { token: Tokens, name: string, description: string };
   let quizId: number;
+  let token: string;
+  let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
+  let quizBody: { token: string, name: string, description: string };
   let answerBody: { answer: string, correct: boolean }[];
   let questionBody: { question: string, duration: number, points: number, answers: QuizQuestionAnswers[] };
-  let token: { sessionId: number, authUserId: number };
-  let token2: { sessionId: number, authUserId: number };
 
   describe('Testing successful cases (status code 200)', () => {
     let event: { quizId: number };
     beforeEach(() => {
       // register a user to create a quiz
       userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
+      const registerUser = requestPost(userBody, '/v1/admin/auth/register');
+      token = registerUser.retval.token;
       
       // create the quiz
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
@@ -163,8 +161,8 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
     beforeEach(() => {
       // register a user to create a quiz
       userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
+      const registerUser = requestPost(userBody, '/v1/admin/auth/register');
+      token = registerUser.retval.token;
 
       // create the quiz
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
@@ -332,47 +330,24 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test('Invalid user ID', () => {
-      // register user
-      userBody = { email: 'valid@gmail.com', password: 'validpa55word', nameFirst: 'John', nameLast: 'Smith' };
-      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
-
-      // create quiz
-      quizBody = { token: token, name: 'A valid quiz name', description: 'Valid quiz description' };
-      const res = requestPost(quizBody, '/v1/admin/quiz');
-
-      // make userId invalid
-      token.authUserId += 1;
-
-      // create question
-      const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Me', correct: false }];
-      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
-
-      expect(requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${res.retval.quizId}/question`)).toStrictEqual({
-        retval: error,
-        statusCode: 401
-      });
-    });
-
     test('Invalid session ID', () => {
       // register user
       userBody = { email: 'valid@gmail.com', password: 'validpa55word', nameFirst: 'John', nameLast: 'Smith' };
-      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
+      const registerUser = requestPost(userBody, '/v1/admin/auth/register');
+      token = registerUser.retval.token;
 
       // create quiz
       quizBody = { token: token, name: 'A valid quiz name', description: 'Valid quiz description' };
       const res = requestPost(quizBody, '/v1/admin/quiz');
 
       // make userId invalid
-      token.sessionId += 1;
+      const sessionId = parseInt(token) + 1;
 
       // create question
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Me', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
 
-      expect(requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${res.retval.quizId}/question`)).toStrictEqual({
+      expect(requestPost({ token: sessionId.toString(), questionBody: questionCreateBody }, `/v1/admin/quiz/${res.retval.quizId}/question`)).toStrictEqual({
         retval: error,
         statusCode: 401
       });
@@ -383,17 +358,17 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
     test('The user is not an owner of the quiz with the given quizid', () => {
       // register two users to create a quiz
       userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      const token1 = retval as { sessionId: number, authUserId: number };
+      const registerUser1 = requestPost(userBody, '/v1/admin/auth/register');
+      const token1 = registerUser1.retval.token;
 
       const userBody2 = { email: 'email@gmail.com', password: 'Password123', nameFirst: 'John', nameLast: 'Smith' };
-      const res1 = requestPost(userBody2, '/v1/admin/auth/register');
-      const token2 = res1.retval as { sessionId: number, authUserId: number };
+      const registerUser2 = requestPost(userBody2, '/v1/admin/auth/register');
+      const token2 = registerUser2.retval.token;
 
       // create a quiz for first user
       quizBody = { token: token1, name: 'Valid Quiz Name', description: 'A valid quiz description' };
-      const res = requestPost(quizBody, '/v1/admin/quiz');
-      const quizId = res.retval.quizId;
+      const createQuiz = requestPost(quizBody, '/v1/admin/quiz');
+      const quizId = createQuiz.retval.quizId;
 
       // user 2 tries to add question to user 1's quiz
       answerBody = [{ answer: 'Oak', correct: true }, { answer: 'Birch', correct: false }];
@@ -408,17 +383,18 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
     test('The quiz does not exist', () => {
       // register a user to create a quiz
       userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
+      const registerUser = requestPost(userBody, '/v1/admin/auth/register');
+      token = registerUser.retval.token;
 
       // create a quiz
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
       const res = requestPost(quizBody, '/v1/admin/quiz');
+      const quizId = res.retval.quizId;
 
       // creating a question for a quiz that does not exist
       answerBody = [{ answer: 'cats are the best!', correct: true }, { answer: 'birds are cool too', correct: false }];
       questionBody = { question: 'which animal is the best?', duration: 16, points: 10, answers: answerBody };
-      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${res.retval.quizId + 1}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId + 1}/question`)).toStrictEqual({
         retval: error,
         statusCode: 403
       });
