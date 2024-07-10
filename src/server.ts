@@ -265,14 +265,13 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
 });
 
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
-  const sessionId = parseInt(req.query.sessionId as string);
-  const authUserId = parseInt(req.query.authUserId as string);
-  const token = { sessionId: sessionId, authUserId: authUserId };
-  // const token = req.query.token;
+  const token = req.query.token as string;
+  // decode here
+  JSON.parse(decodeURIComponent(token));
   
   console.log("token:", token);
   const quizIds = JSON.parse(req.query.quizIds as string);
-  console.log("Qiizid:", quizIds); //debug
+  console.log("Quizid:", quizIds); //debug
 
   let response = tokenExists(token);
   if ('error' in response) {
