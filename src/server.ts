@@ -27,7 +27,8 @@ import {
   adminQuizInfo,
   adminQuizRestore,
   adminQuizDescriptionUpdate,
-  adminQuizCreateQuestion
+  adminQuizCreateQuestion,
+  adminQuizQuestionMove
 } from './quiz';
 import { load } from './dataStore';
 
@@ -210,6 +211,33 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
 
   res.json(response);
 });
+
+app.put('/v1/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const questionId = parseInt(req.params.questionid as string);
+  const sessionId = parseInt(req.body.token);
+  const newPosition = req.body.newPosition;
+
+  if (sessionIdExists(sessionId) === false) {
+    return (res).status(401).json({ error: 'Invalid session ID' });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = quizBelongsToUser(userToken.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizQuestionMove(questionId, newPosition, quizId);
+  
+  res.json(response);
+})
 
 app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
