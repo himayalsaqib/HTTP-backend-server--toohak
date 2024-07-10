@@ -9,7 +9,7 @@ beforeEach(() => {
 describe('POST /v1/admin/auth/logout', () => {
   const error = { error: expect.any(String) };
   let bodyRegister: { email: string, password: string, nameFirst: string, nameLast: string };
-  let token: { token: string };
+  let token: string;
 
   beforeEach(() => {
     bodyRegister = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
@@ -51,14 +51,14 @@ describe('POST /v1/admin/auth/logout', () => {
   describe('Testing token given to adminAuthLogout (status code 401)', () => {
     test('Returns error when token is empty', () => {
       requestDelete({}, '/v1/clear');
-      expect(requestPost({ token: token }, '/v1/admin/auth/logout')).toStrictEqual({
+      expect(requestPost({ token }, '/v1/admin/auth/logout')).toStrictEqual({
         retval: error,
         statusCode: 401
       });
     });
 
     test('Returns error when sessionId is not a valid logged in user session', () => {
-      const sessionId = parseInt(token.token) + 1;
+      const sessionId = parseInt(token) + 1;
       expect(requestPost({ token: sessionId.toString() }, '/v1/admin/auth/logout')).toStrictEqual({
         retval: error,
         statusCode: 401
