@@ -310,7 +310,8 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
 
 app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
   const { token } = req.body;
-  const sessionId = token.parseInt(req.body.token);
+  
+  const sessionId = token.parseInt(token.sessionId);
   const quizId = parseInt(req.params.quizid as string);
   const questionId = parseInt(req.params.questionid as string);
 

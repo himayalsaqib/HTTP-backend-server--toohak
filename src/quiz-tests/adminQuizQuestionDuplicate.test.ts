@@ -9,14 +9,14 @@ beforeEach(() => {
 
 describe('POST /v1/admin/quiz/{quizid}/question/{questionid}/duplicate', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
-  let quizBody: { token: Tokens, name: string, description: string };
-  let token: { sessionId: number, authUserId: number };
+  let quizBody: { token: string, name: string, description: string };
+  let token: string;
   const error = { error: expect.any(String) };
 
   beforeEach(() => {
     userBody = { email: 'userone@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
-    const { retval } = requestPost(userBody, '/v1/admin/auth/register');
-    token = retval as { sessionId: number, authUserId: number };
+    const registerUser = requestPost(userBody, '/v1/admin/auth/register');
+    token = registerUser.retval.token;
     quizBody = { token: token, name: 'My Quiz Name', description: 'Valid Quiz Description' };
   });
 
@@ -26,10 +26,10 @@ describe('POST /v1/admin/quiz/{quizid}/question/{questionid}/duplicate', () => {
       const quizId = createRes.retval.quizId;
       const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }] };
       const questionRes = requestPost({token, ...question }, `/v1/admin/quiz/${quizId}/question`);
-      console.log(questionRes);
+
       const questionId = questionRes.retval.questionId;
       const dupeRes = requestPost(token, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
-      console.log(token);
+
       expect(dupeRes.statusCode).toStrictEqual(200);
       expect(dupeRes.retval).toStrictEqual({ newQuestionId: expect.any(Number) });
     });
