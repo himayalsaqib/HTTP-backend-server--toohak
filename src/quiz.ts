@@ -486,6 +486,7 @@ export function adminQuizQuestionMove (questionId: number, newPosition: number, 
     return { error: 'NewPosition is the position of the current question.' };
   }
 
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
   quiz.questions = swapQuestions(questionIndex, newPosition, quiz.questions);
 
   return {};
