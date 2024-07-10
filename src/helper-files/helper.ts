@@ -176,19 +176,19 @@ export function findQuizById(quizId: number): Quizzes | undefined {
 
 /**
  * Finds a question in the data by its question ID
- * 
+ *
  * @param {number} questionId - ID of the question to find
  * @param {number} quizId - ID of the quiz to find
  * @returns {Question | undefined} - the question with the specified ID | undefined
  */
-export function findQuestionById(questionId: number, quizId: number ): Question | undefined {
+export function findQuestionById(questionId: number, quizId: number): Question | undefined {
   const quiz = findQuizById(quizId);
   return quiz.questions.find(q => q.questionId === questionId);
 }
 
 /**
  * Checks if a questionId has been used already by another question
- * 
+ *
  * @param {number} questionId
  * @param {number} quizId
  * @return {boolean} true if questionId has been used, false otherwise
@@ -207,7 +207,7 @@ export function questionIdInUse(questionId: number): boolean {
 
 /**
  * Finds an answer given the answer ID, question ID and quiz ID
- * 
+ *
  * @param {number} answerId
  * @param {number} questionId
  * @param {number} quizId
@@ -235,16 +235,16 @@ export function answerIdInUse(answerId: number): boolean {
       }
     }
   }
-  
+
   return false;
 }
 
 /**
  * Calculates the sum of question durations of a quiz given by its quiz ID
- * 
+ *
  * @param {number} quizId - ID of quiz to find
  * @param {number} questionDuration - duration of the question
- * @returns {number} - the sum of the question durations in seconds 
+ * @returns {number} - the sum of the question durations in seconds
  */
 export function calculateSumQuestionDuration(quizId: number, questionDuration: number): number {
   const quiz = findQuizById(quizId);
@@ -254,15 +254,14 @@ export function calculateSumQuestionDuration(quizId: number, questionDuration: n
 
 /**
  * Checks whether any of the answers in a question are too short or too long
- * 
+ *
  * @param {QuestionBody} questionBody
  * @param {number} minAnsLength
  * @param {number} maxAnsLength
- * @returns {boolean} - returns true if any answer is too short/long, false 
+ * @returns {boolean} - returns true if any answer is too short/long, false
  *                      otherwise
  */
 export function checkAnswerLength(questionBody: QuestionBody, minAnsLength: number, maxAnsLength: number): boolean {
-  
   for (const answer of questionBody.answers) {
     if (answer.answer.length < minAnsLength || answer.answer.length > maxAnsLength) {
       return true;
@@ -274,13 +273,13 @@ export function checkAnswerLength(questionBody: QuestionBody, minAnsLength: numb
 
 /**
  * Determines whether any answer strings are duplicates
- * 
+ *
  * @param {QuestionBody} questionBody
  * @returns {boolean} returns true if there are duplicates, false otherwise
  */
 export function checkForAnsDuplicates(questionBody: QuestionBody): boolean {
-  const answerStrings = questionBody.answers.map((a: Answer) => ( a.answer ));
-  
+  const answerStrings = questionBody.answers.map((a: Answer) => (a.answer));
+
   let i = 0;
   while (i < questionBody.answers.length) {
     const answerToCompare = answerStrings.shift();
@@ -291,23 +290,23 @@ export function checkForAnsDuplicates(questionBody: QuestionBody): boolean {
     }
     answerStrings.push(answerToCompare);
     i++;
-  } 
+  }
 
   return false;
 }
 
 /**
  * Checks for any correct answers in a question
- * 
+ *
  * @param {QuestionBody} questionBody
  * @returns {number} - returns the number of correct answers in a question
  */
 export function checkForNumCorrectAns(questionBody: QuestionBody): number {
   let numCorrectAns = 0;
-  
+
   for (const answer of questionBody.answers) {
     if (answer.correct === true) {
-      numCorrectAns++
+      numCorrectAns++;
     }
   }
 
@@ -342,6 +341,6 @@ export function quizIsInTrash(quizId: number): boolean {
 
 export function generateAnsColour(): string {
   const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
-  let colourIndex = Math.floor(Math.random() * answerColours.length);
-  return answerColours[colourIndex]
+  const colourIndex = Math.floor(Math.random() * answerColours.length);
+  return answerColours[colourIndex];
 }
