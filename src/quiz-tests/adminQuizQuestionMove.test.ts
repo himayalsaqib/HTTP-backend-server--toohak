@@ -12,9 +12,10 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
   let token: string;
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { token: string, name: string, description: string };
-  const questionId: number[] = [];
+  let questionId: number[] = [];
 
   beforeEach(() => {
+    questionId = [];
     // register a user to create a quiz
     userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
     const registerUser = requestPost(userBody, '/v1/admin/auth/register');
@@ -52,16 +53,20 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       newQuestionId = requestPost({ token: token, questionBody: questionCreateBody4 }, `/v1/admin/quiz/${quizId}/question`);
       questionId.push(newQuestionId.retval.questionId);
     })
+
     test('Has correct return type', () => {
       // swap second and fourth question
       const moveBody = { token: token, newPosition: 1 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[3]}/move`);
+
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
     });
 
     test('Side effect: adminQuizinfo displays successful swap of second and fourth question', () => {
       const moveBody = { token: token, newPosition: 1 };
-      expect(requestGet(moveBody, `/v1/admin/quiz/${quizId}`)).toStrictEqual({
+      requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[3]}/move`);
+      
+      expect(requestGet({ token: token }, `/v1/admin/quiz/${quizId}`)).toStrictEqual({
         retval: {
           quizId: quizId,
           name: quizBody.name,
@@ -124,7 +129,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
                 },
                 {
                   answerId: expect.any(Number),
-                  answer: 'Rhe Industrial Revolution',
+                  answer: 'The Industrial Revolution',
                   colour: expect.any(String),
                   correct: false
                 }
@@ -138,7 +143,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
               answers: [
                 {
                   answerId: expect.any(Number),
-                  answer: 'Chappel Roan',
+                  answer: 'Chappell Roan',
                   colour: expect.any(String),
                   correct: true
                 },
@@ -170,7 +175,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
   });
 
   describe('Testing questionId and newPosition errors (status code 400)', () => {
-    test('Question Id does not refer to a valid question within this quiz (invalid Id)', () => {
+    test.only('Question Id does not refer to a valid question within this quiz (invalid Id)', () => {
       // create first question
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };

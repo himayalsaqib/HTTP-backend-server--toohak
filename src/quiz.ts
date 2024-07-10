@@ -485,8 +485,10 @@ export function adminQuizQuestionMove (questionId: number, newPosition: number, 
   if (questionIndex === newPosition) {
     return { error: 'NewPosition is the position of the current question.' };
   }
-
+  
   quiz.questions = swapQuestions(questionIndex, newPosition, quiz.questions);
+  let data = getData();
+  setData(data);
 
   return {};
 }
