@@ -17,7 +17,7 @@ export function authUserIdExists(authUserId: number): boolean {
   }
 }
 
-/// ///////////////////////// Auth Helper Functions ////////////////////////////
+// ========================= AUTH HELPER FUNCTIONS ========================== //
 /**
  * Function checks if an email is already being used by an existing user
  *
@@ -108,7 +108,7 @@ export function findUserByEmail(email: string): Users | undefined {
   return data.users.find(user => user.email === email);
 }
 
-/// ///////////////////////// Quiz Helper Functions ////////////////////////////
+// ========================= QUIZ HELPER FUNCTIONS ========================== //
 /**
  * Function checks if a quiz name contains any invalid characters. Characters
  * are considered invalid if they are not alphanumeric or spaces e.g. @

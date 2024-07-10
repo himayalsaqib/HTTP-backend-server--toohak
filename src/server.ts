@@ -417,9 +417,6 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
   const sessionId = parseInt(token);
   const quizId = parseInt(req.params.quizid as string);
   const questionId = parseInt(req.params.questionid as string);
-  console.log('QUESTION ID');
-  console.log(questionId);
-  console.log(quizId);
 
   if (sessionIdExists(sessionId) === false) {
     return(res).status(401).json({ error: 'Invalid session ID' });

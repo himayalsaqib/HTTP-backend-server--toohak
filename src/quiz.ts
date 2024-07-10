@@ -46,9 +46,9 @@ interface QuizList {
 }
 
 export interface QuizInfo extends Omit<Quizzes, 'authUserId'> {
-  numQuestions: number,
-  questions: Question[],
-  duration: number,
+  numQuestions: number;
+  questions: Question[];
+  duration: number;
 }
 
 export interface QuizQuestionAnswers {
