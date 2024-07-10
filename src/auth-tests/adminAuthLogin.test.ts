@@ -30,7 +30,7 @@ describe('POST /v1/admin/auth/login', () => {
 
     test('User can login multiple times (have multiple tokens)', () => {
       const login1 = requestPost(bodyLogin, '/v1/admin/auth/login');
-      token = login1.retval
+      token = login1.retval;
 
       const login2 = requestPost(bodyLogin, '/v1/admin/auth/login');
       const token2 = login2.retval;

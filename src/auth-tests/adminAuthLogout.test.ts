@@ -13,35 +13,35 @@ describe('POST /v1/admin/auth/logout', () => {
 
   beforeEach(() => {
     bodyRegister = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-    const registerResponse = requestPost(bodyRegister, '/v1/admin/auth/register')
+    const registerResponse = requestPost(bodyRegister, '/v1/admin/auth/register');
     token = registerResponse.retval.token;
   });
 
   describe('Testing successful user logout (status code 200)', () => {
     test('Has the correct return type', () => {
-      expect(requestPost({token}, '/v1/admin/auth/logout')).toStrictEqual({
+      expect(requestPost({ token }, '/v1/admin/auth/logout')).toStrictEqual({
         retval: {},
         statusCode: 200
       });
     });
 
     test('Side effect: adminUserDetails returns error when called with a logged out token (invalid)', () => {
-      expect(requestPost({token}, '/v1/admin/auth/logout')).toStrictEqual({
+      expect(requestPost({ token }, '/v1/admin/auth/logout')).toStrictEqual({
         retval: {},
         statusCode: 200
       });
-      expect(requestGet({token}, '/v1/admin/user/details')).toStrictEqual({
+      expect(requestGet({ token }, '/v1/admin/user/details')).toStrictEqual({
         retval: error,
         statusCode: 401
       });
     });
 
     test('Side effect: adminAuthLogout returns error when user tries to logout same token twice', () => {
-      expect(requestPost({token}, '/v1/admin/auth/logout')).toStrictEqual({
+      expect(requestPost({ token }, '/v1/admin/auth/logout')).toStrictEqual({
         retval: {},
         statusCode: 200
       });
-      expect(requestPost({token}, '/v1/admin/auth/logout')).toStrictEqual({
+      expect(requestPost({ token }, '/v1/admin/auth/logout')).toStrictEqual({
         retval: error,
         statusCode: 401
       });

@@ -41,7 +41,7 @@ describe('PUT /v1/admin/user/password', () => {
       const changedPassword = 'anothervalid0ne';
       token += '1';
       const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
-      const res = requestPut(body, '/v1/admin/user/password')
+      const res = requestPut(body, '/v1/admin/user/password');
       expect(res.statusCode).toStrictEqual(401);
       expect(res.retval).toStrictEqual(error);
     });
@@ -67,7 +67,7 @@ describe('PUT /v1/admin/user/password', () => {
     test('The oldPassword and newPassword match exactly', () => {
       const matchingPassword = 'validpa55w0rd';
       const body = { token: token, oldPassword: originalPassword, newPassword: matchingPassword };
-      const res = requestPut(body, '/v1/admin/user/password')
+      const res = requestPut(body, '/v1/admin/user/password');
       expect(res.statusCode).toStrictEqual(400);
       expect(res.retval).toStrictEqual(error);
     });
@@ -129,13 +129,13 @@ describe('PUT /v1/admin/user/password', () => {
       const body = { email: 'email@gmail.com', password: ogPassword, nameFirst: 'John', nameLast: 'Smith' };
       const res = requestPost(body, '/v1/admin/auth/register');
       expect(res.statusCode).toStrictEqual(200);
-      expect(res.retval).toStrictEqual({ token: expect.any(String) })
+      expect(res.retval).toStrictEqual({ token: expect.any(String) });
 
       // login after registering
       const loginBody = { email: 'email@gmail.com', password: ogPassword };
       const loginRes = requestPost(loginBody, '/v1/admin/auth/login');
       expect(loginRes.statusCode).toStrictEqual(200);
-      expect(loginRes.retval).toStrictEqual({ token: expect.any(String) })
+      expect(loginRes.retval).toStrictEqual({ token: expect.any(String) });
 
       // update the password
       const changedPassword = 'an0thervalidPass';
@@ -144,8 +144,6 @@ describe('PUT /v1/admin/user/password', () => {
       const passwordRes = requestPut(passwordBody, '/v1/admin/user/password');
       expect(passwordRes.statusCode).toStrictEqual(200);
       expect(passwordRes.retval).toStrictEqual({});
-   
-
 
       // login with updated password
       const updatedLoginBody = { email: 'email@gmail.com', password: changedPassword };
