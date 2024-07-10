@@ -219,7 +219,7 @@ export function findAnswerById(answerId: number, questionId: number, quizId: num
 
 /**
  * Checks whether an answer ID has been used by another answer
- * 
+ *
  * @param {number} answerId
  * @returns {boolean} - true if answerId has been used, false otherwise
  */
