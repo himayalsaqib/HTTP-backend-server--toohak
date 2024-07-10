@@ -101,7 +101,7 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
     return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let userToken = findTokenFromSessionId(sessionId);
+  const userToken = findTokenFromSessionId(sessionId);
 
   let response = tokenExists(userToken);
   if ('error' in response) {

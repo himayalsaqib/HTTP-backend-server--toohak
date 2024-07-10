@@ -1,6 +1,5 @@
 // includes http tests for the route /v1/admin/auth/register
 
-import exp from 'constants';
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 
 beforeEach(() => {
