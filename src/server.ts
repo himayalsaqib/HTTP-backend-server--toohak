@@ -135,13 +135,20 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
 
 app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   const { token, oldPassword, newPassword } = req.body;
+  const sessionId = parseInt(token);
 
-  let response = tokenExists(token);
+  if (sessionIdExists(sessionId) === false) {
+    return(res).status(401).json({ error: 'Invalid session ID' });
+  }
+
+  let userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = adminUserPasswordUpdate(token.authUserId, oldPassword, newPassword);
+  response = adminUserPasswordUpdate(userToken.authUserId, oldPassword, newPassword);
   if ('error' in response) {
     return res.status(400).json(response);
   }
