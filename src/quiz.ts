@@ -12,10 +12,7 @@ import {
   checkForAnsDuplicates,
   checkForNumCorrectAns,
   questionIdInUse,
-  answerIdInUse,
   findQuestionById,
-  generateAnsColour,
-  updateQuizDuration,
   createAnswersArray
 } from './helper-files/helper';
 
@@ -502,7 +499,7 @@ export function adminQuizQuestionUpdate(
   questionToUpdate.answers = createAnswersArray(questionBody.answers);
 
   quiz.timeLastEdited = Math.floor(Date.now() / 1000);
-  quiz.duration = updateQuizDuration(quizId);
+  quiz.duration = quiz.questions.reduce((newDuration, question) => newDuration + question.duration, 0);
 
   setData(data);
 

@@ -1,34 +1,6 @@
 {
-  "users": [
-    {
-      "authUserId": 313259363935851,
-      "email": "valid@gmail.com",
-      "nameFirst": "Jane",
-      "nameLast": "Doe",
-      "password": "ValidPass123",
-      "previousPasswords": [
-        "ValidPass123"
-      ],
-      "numFailedLogins": 0,
-      "numSuccessfulLogins": 1
-    }
-  ],
-  "quizzes": [
-    {
-      "authUserId": 313259363935851,
-      "quizId": 2108135179957387,
-      "name": "Valid Quiz Name",
-      "timeCreated": 1720614517,
-      "description": "A valid quiz description",
-      "questions": [],
-      "duration": 0
-    }
-  ],
+  "users": [],
+  "quizzes": [],
   "trash": [],
-  "tokens": [
-    {
-      "sessionId": 7358660978497433,
-      "authUserId": 313259363935851
-    }
-  ]
+  "tokens": []
 }

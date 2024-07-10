@@ -337,6 +337,13 @@ export function checkForNumCorrectAns(questionBody: QuestionBody): number {
   return numCorrectAns;
 }
 
+/**
+ * Loops through given answers and creates a new array which contains additional
+ * fields for each object: answerId and colour.
+ *
+ * @param {QuizQuestionAnswers[]} givenAnswers
+ * @returns {Answer[]} 
+ */
 export function createAnswersArray(givenAnswers: QuizQuestionAnswers[]): Answer[] {
   const questionAnswersArray = [];
   for (const answer of givenAnswers) {
@@ -360,22 +367,4 @@ export function generateAnsColour(): string {
   const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
   const colourIndex = Math.floor(Math.random() * answerColours.length);
   return answerColours[colourIndex];
-}
-
-/**
- * Loops through quiz given by quizId and sums the new duration after a question
- * in the quiz has been updated
- *
- * @param {number} quizId 
- * @returns {number} 
- */
-export function updateQuizDuration(quizId: number): number {
-  const quiz = findQuizById(quizId);
-
-  let newDuration = 0;
-  for (const question of quiz.questions) {
-    newDuration += question.duration;
-  }
-
-  return newDuration;
 }
