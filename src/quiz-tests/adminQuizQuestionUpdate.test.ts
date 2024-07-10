@@ -1,7 +1,7 @@
 // includes http tests for the route PUT /v1/admin/quiz/{quizid}/question/{questionid}
 
-import { Tokens } from "../dataStore";
 import { requestDelete, requestGet, requestPost, requestPut } from "../helper-files/requestHelper";
+import { QuizQuestionAnswers } from "../quiz";
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');

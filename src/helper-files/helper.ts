@@ -345,3 +345,21 @@ export function generateAnsColour(): string {
   let colourIndex = Math.floor(Math.random() * answerColours.length);
   return answerColours[colourIndex]
 }
+
+/**
+ * Loops through quiz given by quizId and sums the new duration after a question
+ * in the quiz has been updated
+ *
+ * @param {number} quizId 
+ * @returns {number} 
+ */
+export function updateQuizDuration(quizId: number): number {
+  const quiz = findQuizById(quizId);
+
+  let newDuration = 0;
+  for (const question of quiz.questions) {
+    newDuration += question.duration;
+  }
+
+  return newDuration;
+}

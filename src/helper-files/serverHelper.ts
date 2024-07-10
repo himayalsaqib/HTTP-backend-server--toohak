@@ -31,11 +31,26 @@ export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
 
   const foundToken = data.tokens.find(foundToken => foundToken.sessionId === token.sessionId);
 
-  if (foundToken === undefined || foundToken.authUserId !== token.authUserId) {
+  if (foundToken === undefined || foundToken.authUserId != token.authUserId) {
     return { error: 'Token does not refer to a valid logged in user session' };
   } else {
     return {};
   }
+}
+
+/**
+ * Function checks if a sessionId exists and returns the entire token object or 
+ * an error
+ *
+ * @param {number} sessionId
+ * @returns {{} | { error: string }}
+ */
+export function findTokenFromSessionId(sessionId: number): Tokens {
+  const data = getData();
+
+  const foundToken = data.tokens.find(foundToken => foundToken.sessionId === sessionId);
+
+  return foundToken;
 }
 
 /**

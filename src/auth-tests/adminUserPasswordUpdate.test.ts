@@ -9,13 +9,13 @@ beforeEach(() => {
 describe('PUT /v1/admin/user/password', () => {
   const error = { error: expect.any(String) };
 
-  let token: { sessionId: number, authUserId: number };
+  let token: string;
   let originalPassword: string;
   beforeEach(() => {
     originalPassword = 'validpa55w0rd';
     const body = { email: 'valid123@gmail.com', password: originalPassword, nameFirst: 'Jane', nameLast: 'Smith' };
     const { retval } = requestPost(body, '/v1/admin/auth/register');
-    token = retval as { sessionId: number, authUserId: number };
+    token = retval as string;
   });
 
   describe('Testing successful cases (status code 200)', () => {
@@ -39,19 +39,9 @@ describe('PUT /v1/admin/user/password', () => {
   });
 
   describe('Testing token in /v1/admin/user/password (status code 401)', () => {
-    test('When authUserId is not valid, from /v1/admin/auth/register', () => {
-      const changedPassword = 'an0thervalid0ne';
-      token.authUserId += 1;
-      const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
-      expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
-        retval: error,
-        statusCode: 401
-      });
-    });
-
     test('When sessionId is not valid, from /v1/admin/auth/register', () => {
       const changedPassword = 'anothervalid0ne';
-      token.sessionId += 1;
+      token += '1';
       const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
         retval: error,
