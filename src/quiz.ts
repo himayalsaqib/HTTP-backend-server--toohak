@@ -277,7 +277,6 @@ export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): Empt
     }
   }
 
-
     const quizzesNotInTrash = quizIds.filter(quizId => !(data.trash.some(q => q.quiz.quizId === quizId)));
   if (quizzesNotInTrash.length > 0) {
     return { error: 'One or more Quiz IDs is not currently in the trash.' };
