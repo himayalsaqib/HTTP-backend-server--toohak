@@ -275,11 +275,11 @@ export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): Empt
   for (const quizId of quizIds) {
     const trashedQuiz = data.trash.find(q => q.quiz.quizId === quizId);
     if (!trashedQuiz) {
-      return { error: `One or more Quiz IDs refer to a quiz that doesn't exist.` };
+      return { error: 'One or more Quiz IDs refer to a quiz that doesn\'t exist.' };
     }
   }
 
-    const quizzesNotInTrash = quizIds.filter(quizId => !(data.trash.some(q => q.quiz.quizId === quizId)));
+  const quizzesNotInTrash = quizIds.filter(quizId => !(data.trash.some(q => q.quiz.quizId === quizId)));
   if (quizzesNotInTrash.length > 0) {
     return { error: 'One or more Quiz IDs is not currently in the trash.' };
   }
