@@ -1,0 +1,40 @@
+{
+  "users": [
+    {
+      "authUserId": 7610299025788811,
+      "email": "valid@gmail.com",
+      "nameFirst": "Jane",
+      "nameLast": "Doe",
+      "password": "Password12",
+      "previousPasswords": [
+        "Password12"
+      ],
+      "numFailedLogins": 0,
+      "numSuccessfulLogins": 1
+    },
+    {
+      "authUserId": 3584966760432843,
+      "email": "valid2@gmail.com",
+      "nameFirst": "John",
+      "nameLast": "Day",
+      "password": "Password12",
+      "previousPasswords": [
+        "Password12"
+      ],
+      "numFailedLogins": 0,
+      "numSuccessfulLogins": 1
+    }
+  ],
+  "quizzes": [],
+  "trash": [],
+  "tokens": [
+    {
+      "sessionId": 6915684939789959,
+      "authUserId": 7610299025788811
+    },
+    {
+      "sessionId": 4422463252789047,
+      "authUserId": 3584966760432843
+    }
+  ]
+}

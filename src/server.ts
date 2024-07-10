@@ -77,7 +77,8 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
     return res.status(400).json(response);
   }
 
-  res.json({ token: tokenCreate(response.authUserId).sessionId.toString() });
+  const token = tokenCreate(response.authUserId);
+  res.json({ token: token.sessionId.toString() });
 });
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
@@ -89,13 +90,18 @@ app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
     return res.status(400).json(response);
   }
 
-  res.json(tokenCreate(response.authUserId));
+  const token = tokenCreate(response.authUserId);
+  res.json({ token: token.sessionId.toString() });
 });
 
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
-  const sessionId = parseInt(req.query.sessionId as string);
-  const authUserId = parseInt(req.query.authUserId as string);
-  const token = { sessionId: sessionId, authUserId: authUserId };
+  const sessionId = parseInt(req.query.token as string);
+
+  if (sessionIdExists(sessionId) === false) {
+    return (res).status(401).json({ error: 'Invalid session ID' });
+  }
+
+  const token = findTokenFromSessionId(sessionId);
 
   let response = tokenExists(token);
   if ('error' in response) {
@@ -107,20 +113,21 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
 });
 
 app.put('/v1/admin/user/details', (req: Request, res: Response) => {
-  const { givenSessionId, email, nameFirst, nameLast } = req.body;
-  const sessionId = parseInt(givenSessionId);
+  const { token, email, nameFirst, nameLast } = req.body;
+  const sessionId = parseInt(token);
 
-  let token = findTokenFromSessionId(sessionId);
-  if ('error' in token) {
-    return res.status(401).json(token);
+  if (sessionIdExists(sessionId) === false) {
+    return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let response = tokenExists(token);
+  const userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = adminUserDetailsUpdate(token.authUserId, email, nameFirst, nameLast);
+  response = adminUserDetailsUpdate(userToken.authUserId, email, nameFirst, nameLast);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -130,13 +137,28 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
 
 app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   const { token, oldPassword, newPassword } = req.body;
+  const sessionId = parseInt(token);
 
-  let response = tokenExists(token);
+  if (sessionIdExists(sessionId) === false) {
+    return (res).status(401).json({ error: 'Invalid session ID' });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = adminUserPasswordUpdate(token.authUserId, oldPassword, newPassword);
+  response = adminUserPasswordUpdate(userToken.authUserId, oldPassword, newPassword);
+  console.log('Tokennnnnnnn');
+  console.log(userToken);
+  console.log('userToken.authUserIdddddddddddd');
+  console.log(userToken.authUserId);
+  console.log('userToken.sessionnnnIdddddddddddd');
+  console.log(userToken.sessionId);
+  console.log('RESPONSEEEEE:');
+  console.log(response);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -145,14 +167,21 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
-  const token = req.body;
+  const { token } = req.body;
+  const sessionId = parseInt(token);
 
-  let response = tokenExists(token);
+  if (sessionIdExists(sessionId) === false) {
+    return (res).status(401).json({ error: 'Invalid session ID' });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = adminAuthLogout(token);
+  response = adminAuthLogout(userToken);
   res.json(response);
 });
 
@@ -160,13 +189,13 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   const { token, name, description } = req.body;
-  let sessionId = parseInt(token);
+  const sessionId = parseInt(token);
 
   if (sessionIdExists(sessionId) === false) {
-    return(res).status(401).json({ error: 'Invalid session ID' });
+    return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let userToken = findTokenFromSessionId(sessionId);
+  const userToken = findTokenFromSessionId(sessionId);
 
   let response = tokenExists(userToken);
   if ('error' in response) {
@@ -186,10 +215,10 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
 
   if (sessionIdExists(sessionId) === false) {
-    return(res).status(401).json({ error: 'Invalid session ID' });
+    return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let userToken = findTokenFromSessionId(sessionId);
+  const userToken = findTokenFromSessionId(sessionId);
 
   let response = tokenExists(userToken);
   if ('error' in response) {
@@ -209,10 +238,10 @@ app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
 
   if (sessionIdExists(sessionId) === false) {
-    return(res).status(401).json({ error: 'Invalid session ID' });
+    return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let userToken = findTokenFromSessionId(sessionId);
+  const userToken = findTokenFromSessionId(sessionId);
 
   let response = tokenExists(userToken);
   if ('error' in response) {
@@ -229,10 +258,10 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   const sessionId = parseInt(token);
 
   if (sessionIdExists(sessionId) === false) {
-    return(res).status(401).json({ error: 'Invalid session ID' });
+    return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let userToken = findTokenFromSessionId(sessionId);
+  const userToken = findTokenFromSessionId(sessionId);
 
   let response = tokenExists(userToken);
   if ('error' in response) {
@@ -254,10 +283,10 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
 
   if (sessionIdExists(sessionId) === false) {
-    return(res).status(401).json({ error: 'Invalid session ID' });
+    return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let userToken = findTokenFromSessionId(sessionId);
+  const userToken = findTokenFromSessionId(sessionId);
 
   let response = tokenExists(userToken);
   if ('error' in response) {
@@ -278,10 +307,10 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   const sessionId = parseInt(token);
 
   if (sessionIdExists(sessionId) === false) {
-    return(res).status(401).json({ error: 'Invalid session ID' });
+    return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let userToken = findTokenFromSessionId(sessionId);
+  const userToken = findTokenFromSessionId(sessionId);
 
   let response = tokenExists(userToken);
   if ('error' in response) {
@@ -304,10 +333,10 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
 
   if (sessionIdExists(sessionId) === false) {
-    return(res).status(401).json({ error: 'Invalid session ID' });
+    return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let userToken = findTokenFromSessionId(sessionId);
+  const userToken = findTokenFromSessionId(sessionId);
 
   let response = tokenExists(userToken);
   if ('error' in response) {
@@ -337,10 +366,10 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
 
   if (sessionIdExists(sessionId) === false) {
-    return(res).status(401).json({ error: 'Invalid session ID' });
+    return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let userToken = findTokenFromSessionId(sessionId);
+  const userToken = findTokenFromSessionId(sessionId);
 
   let response = tokenExists(userToken);
   if ('error' in response) {

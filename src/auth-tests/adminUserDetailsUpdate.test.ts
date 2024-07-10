@@ -15,8 +15,8 @@ describe('PUT /v1/admin/user/details', () => {
   describe('Testing successful cases (status code 200)', () => {
     beforeEach(() => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
-      token = retval as string;
+      const res = requestPost(userRegister, '/v1/admin/auth/register');
+      token = res.retval.token;
       user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
     });
 
@@ -31,7 +31,7 @@ describe('PUT /v1/admin/user/details', () => {
       expect(res).toStrictEqual({
         retval: {
           user: {
-            userId: parseInt(token),
+            userId: expect.any(Number),
             name: 'Not Jane Not Doe',
             email: 'newValid1@gmail.com',
             numSuccessfulLogins: 1,
@@ -46,8 +46,8 @@ describe('PUT /v1/admin/user/details', () => {
   describe('Testing name and email errors (status code 400)', () => {
     beforeEach(() => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
-      token = retval as string;
+      const res = requestPost(userRegister, '/v1/admin/auth/register');
+      token = res.retval.token;
       user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
     });
 
