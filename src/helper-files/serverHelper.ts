@@ -82,7 +82,7 @@ export function quizBelongsToUser(authUserId: number, quizId: number): EmptyObje
  * @returns {{} | { error: string }}
  */
 export function trashedQuizzesBelongToUser(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
-  for (const quizId of quizIds) { 
+  for (const quizId of quizIds) {
     const trashedQuiz = findTrashedQuizById(quizId);
     if (trashedQuiz === undefined) {
       return {};
