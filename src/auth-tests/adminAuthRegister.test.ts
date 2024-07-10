@@ -21,10 +21,12 @@ describe('POST /v1/admin/auth/register', () => {
     test('Has the correct return type', () => {
       requestDelete({}, '/v1/clear');
       body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      expect(requestPost(body, '/v1/admin/auth/register')).toStrictEqual({
+      const registerRes = requestPost(body, '/v1/admin/auth/register');
+      expect(registerRes).toStrictEqual({
         retval: { token: expect.any(String) },
         statusCode: 200
       });
+      expect(parseInt(registerRes.retval.token)).toStrictEqual(expect.any(Number));
     });
 
     test('Side effect: adminUserDetails successfully returns registered user\'s details', () => {
@@ -53,6 +55,7 @@ describe('POST /v1/admin/auth/register', () => {
       const token2 = response.retval;
 
       expect(token2).toStrictEqual({ token: expect.any(String) });
+      expect(parseInt(token2.token)).toStrictEqual(expect.any(Number));
       expect({ token }).not.toStrictEqual(token2);
     });
   });

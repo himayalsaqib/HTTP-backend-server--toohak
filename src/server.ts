@@ -29,6 +29,7 @@ import {
   adminQuizInfo,
   adminQuizRestore,
 } from './quiz';
+import { load } from './dataStore';
 
 // Set up web app
 const app = express();
@@ -101,32 +102,33 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
     return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  const token = findTokenFromSessionId(sessionId);
+  const userToken = findTokenFromSessionId(sessionId);
 
-  let response = tokenExists(token);
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = adminUserDetails(token.authUserId);
+  response = adminUserDetails(userToken.authUserId);
   res.json(response);
 });
 
 app.put('/v1/admin/user/details', (req: Request, res: Response) => {
-  const { givenSessionId, email, nameFirst, nameLast } = req.body;
-  const sessionId = parseInt(givenSessionId);
+  const { token, email, nameFirst, nameLast } = req.body;
+  const sessionId = parseInt(token);
 
-  const token = findTokenFromSessionId(sessionId);
-  if ('error' in token) {
-    return res.status(401).json(token);
+  if (sessionIdExists(sessionId) === false) {
+    return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let response = tokenExists(token);
+  const userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = adminUserDetailsUpdate(token.authUserId, email, nameFirst, nameLast);
+  response = adminUserDetailsUpdate(userToken.authUserId, email, nameFirst, nameLast);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -441,6 +443,7 @@ app.use((req: Request, res: Response) => {
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
   console.log(`⚡️ Server started on port ${PORT} at ${HOST}`);
+  load();
 });
 
 // For coverage, handle Ctrl+C gracefully
