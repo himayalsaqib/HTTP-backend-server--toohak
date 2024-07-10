@@ -11,11 +11,11 @@ describe('POST /v1/admin/auth/register', () => {
   let body: { email: string, password: string, nameFirst: string, nameLast: string };
 
   describe('Testing successful registration (status code 200)', () => {
-    let token: { token: string };
+    let token: string;
     beforeEach(() => {
       body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const response = requestPost(body, '/v1/admin/auth/register');
-      token = response.retval;
+      token = response.retval.token;
     });
 
     test('Has the correct return type', () => {
@@ -28,7 +28,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Side effect: adminUserDetails successfully returns registered user\'s details', () => {
-      expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
+      expect(requestGet({ token }, '/v1/admin/user/details')).toStrictEqual({
         retval: {
           user: {
             userId: expect.any(Number),
@@ -53,7 +53,7 @@ describe('POST /v1/admin/auth/register', () => {
       const token2 = response.retval;
 
       expect(token2).toStrictEqual({ token: expect.any(String) });
-      expect(token).not.toStrictEqual(token2);
+      expect({ token }).not.toStrictEqual(token2);
     });
   });
 
