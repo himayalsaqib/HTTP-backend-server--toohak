@@ -139,7 +139,6 @@ describe('PUT /v1/admin/user/password', () => {
 
       // update the password
       const changedPassword = 'an0thervalidPass';
-      console.log(res.retval);
       const passwordBody = { token: res.retval.token, oldPassword: ogPassword, newPassword: changedPassword };
       const passwordRes = requestPut(passwordBody, '/v1/admin/user/password');
       expect(passwordRes.statusCode).toStrictEqual(200);
