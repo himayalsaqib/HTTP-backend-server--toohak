@@ -28,7 +28,7 @@ describe('POST /v1/admin/quiz/{quizid}/question/{questionid}/duplicate', () => {
       const questionRes = requestPost({token, ...question }, `/v1/admin/quiz/${quizId}/question`);
 
       const questionId = questionRes.retval.questionId;
-      const dupeRes = requestPost(token, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
+      const dupeRes = requestPost({token}, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
 
       expect(dupeRes.statusCode).toStrictEqual(200);
       expect(dupeRes.retval).toStrictEqual({ newQuestionId: expect.any(Number) });
@@ -40,7 +40,7 @@ describe('POST /v1/admin/quiz/{quizid}/question/{questionid}/duplicate', () => {
       const createRes = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = createRes.retval.quizId;
       const invalidQuestionId = quizId + 1;
-      const dupeRes = requestPost(token, `/v1/admin/quiz/${quizId}/question/${invalidQuestionId}/duplicate`);
+      const dupeRes = requestPost({token}, `/v1/admin/quiz/${quizId}/question/${invalidQuestionId}/duplicate`);
       expect(dupeRes.statusCode).toStrictEqual(400);
       expect(dupeRes.retval).toStrictEqual(error);
     });
@@ -52,8 +52,8 @@ describe('POST /v1/admin/quiz/{quizid}/question/{questionid}/duplicate', () => {
       const questionRes = requestPost({ token, ...question }, `/v1/admin/quiz/${quizId}/question`);
       const questionId = questionRes.retval.questionId;
 
-      requestDelete(token, `/v1/admin/quiz/${quizId}/question/${questionId}`);
-      const dupeQues = requestPost(token, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
+      requestDelete({token}, `/v1/admin/quiz/${quizId}/question/${questionId}`);
+      const dupeQues = requestPost({token}, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
 
       expect(dupeQues.statusCode).toStrictEqual(400);
       expect(dupeQues).toStrictEqual(error);
@@ -66,8 +66,8 @@ describe('POST /v1/admin/quiz/{quizid}/question/{questionid}/duplicate', () => {
       const questionRes = requestPost({ token, ...question }, `/v1/admin/quiz/${quizId}/question`);
       const questionId = questionRes.retval.questionId;
 
-      requestPut(token, `/v1/admin/quiz/${quizId}/question/${questionId}/move`);
-      const dupeQues = requestPost(token, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
+      requestPut({token}, `/v1/admin/quiz/${quizId}/question/${questionId}/move`);
+      const dupeQues = requestPost({token}, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
 
       expect(dupeQues.statusCode).toStrictEqual(400);
       expect(dupeQues).toStrictEqual(error);
@@ -75,23 +75,8 @@ describe('POST /v1/admin/quiz/{quizid}/question/{questionid}/duplicate', () => {
   });
 
   describe('Testing for invalid and empty token (status code 401', () => {
-    test('Returns error when authUserId is not a valid user', () => {
-      token.authUserId += 1;
-      const createRes = requestPost(quizBody, '/v1/admin/quiz');
-      const quizId = createRes.retval.quizId;
-
-      const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }] };
-      const questionRes = requestPost({ token, ...question }, `/v1/admin/quiz/${quizId}/question`);
-
-      const questionId = questionRes.retval.questionId;
-      const dupeRes = requestPost(token, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
-
-      expect(dupeRes.statusCode).toStrictEqual(401);
-      expect(dupeRes.retval).toStrictEqual(error);
-    });
-
     test('Returns error when sessionId is invalid', () => {
-      token.sessionId += 1;
+      token += "1";
       const createRes = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = createRes.retval.quizId;
 
@@ -99,7 +84,7 @@ describe('POST /v1/admin/quiz/{quizid}/question/{questionid}/duplicate', () => {
       const questionRes = requestPost({ token, ...question }, `/v1/admin/quiz/${quizId}/question`);
 
       const questionId = questionRes.retval.questionId;
-      const dupeRes = requestPost(token, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
+      const dupeRes = requestPost({token}, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
 
       expect(dupeRes.statusCode).toStrictEqual(401);
       expect(dupeRes.retval).toStrictEqual(error);
