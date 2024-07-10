@@ -24,7 +24,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
       const registerUser = requestPost(userBody, '/v1/admin/auth/register');
       token = registerUser.retval.token;
-      
+
       // create the quiz
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
       const res = requestPost(quizBody, '/v1/admin/quiz');
@@ -174,7 +174,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: 'valid', correct: true }, { answer: 'also valid', correct: false }];
       questionBody = { question: 'bad', duration: 5, points: 3, answers: answerBody };
 
-      expect(requestPost({token: token, questionBody: questionBody}, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
         retval: error,
         statusCode: 400
       });

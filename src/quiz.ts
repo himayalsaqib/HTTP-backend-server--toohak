@@ -13,7 +13,6 @@ import {
   checkForNumCorrectAns,
   questionIdInUse,
   answerIdInUse,
-  findQuestionById,
   generateAnsColour
 } from './helper-files/helper';
 
@@ -336,8 +335,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN) === true) {
     return { error: 'The answer cannot be longer than 30 characters or shorter than 1 character.' };
   }
-  
-  
+
   if (checkForAnsDuplicates(questionBody) === true) {
     return { error: 'Answers cannot be duplicates of each other in the same question.' };
   }
@@ -390,7 +388,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     answers: questionAnswersArray
   };
 
-  // set timeLastEditied as the same as timeCreated for quiz
+  // set timeLastEditied as the same as timeCreated for question
   quiz.timeLastEdited = Math.floor(Date.now() / 1000);
   quiz.duration += questionBody.duration;
 
