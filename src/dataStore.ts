@@ -29,7 +29,7 @@ export interface Quizzes {
   timeLastEdited: number,
   description: string,
   questions: Question[];
-  duration?: number;
+  duration: number;
 }
 
 export interface Question {
