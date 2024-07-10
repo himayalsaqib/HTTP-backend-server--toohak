@@ -190,7 +190,6 @@ export function findQuestionById(questionId: number, quizId: number): Question |
  * Checks if a questionId has been used already by another question
  *
  * @param {number} questionId
- * @param {number} quizId
  * @return {boolean} true if questionId has been used, false otherwise
  */
 export function questionIdInUse(questionId: number): boolean {
@@ -220,9 +219,8 @@ export function findAnswerById(answerId: number, questionId: number, quizId: num
 
 /**
  * Checks whether an answer ID has been used by another answer
+ * 
  * @param {number} answerId
- * @param {number} questionId
- * @param {number} quizId
  * @returns {boolean} - true if answerId has been used, false otherwise
  */
 export function answerIdInUse(answerId: number): boolean {
