@@ -21,7 +21,7 @@ describe('DELETE /v1/clear', () => {
 
     test('Error returned by /v1/admin/user/details after clearing a registered user', () => {
       // test return of '/v1/admin/auth/register'
-      expect(token).toStrictEqual( expect.any(String) );
+      expect(token).toStrictEqual(expect.any(String));
 
       // login the user again
       const loginBody = { email: 'email@gmail.com', password: 'password123' };
@@ -31,7 +31,7 @@ describe('DELETE /v1/clear', () => {
       });
 
       // get the details of the user
-      expect(requestGet({token}, '/v1/admin/user/details')).toStrictEqual({
+      expect(requestGet({ token }, '/v1/admin/user/details')).toStrictEqual({
         retval: {
           user: {
             userId: expect.any(Number),
@@ -48,7 +48,7 @@ describe('DELETE /v1/clear', () => {
       requestDelete({}, '/v1/clear');
 
       // call the route to give the details of the cleared user, return error
-      expect(requestGet({token}, '/v1/admin/user/details')).toStrictEqual({
+      expect(requestGet({ token }, '/v1/admin/user/details')).toStrictEqual({
         retval: error,
         statusCode: 401
       });

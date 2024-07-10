@@ -35,7 +35,7 @@ export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
 
   //if (foundToken === undefined || foundToken.authUserId !== decodedToken.authUserId) {
 
-  if (foundToken === undefined || foundToken.authUserId != token.authUserId) {
+  if (foundToken === undefined || foundToken.authUserId !== token.authUserId) {
     return { error: 'Token does not refer to a valid logged in user session' };
   } else {
     return {};
@@ -43,7 +43,7 @@ export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
 }
 
 /**
- * Function checks if a sessionId exists and returns the entire token object or 
+ * Function checks if a sessionId exists and returns the entire token object or
  * an error
  *
  * @param {number} sessionId
