@@ -158,19 +158,19 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2] };
-      
+
       // get current time
       const time = Math.floor(Date.now() / 1000);
       let res = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      expect(res).toStrictEqual({ 
-        retval: { questionId: expect.any(Number) }, 
-        statusCode: 200 
+      expect(res).toStrictEqual({
+        retval: { questionId: expect.any(Number) },
+        statusCode: 200
       });
 
       res = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
       expect(res.retval.timeLastEdited).toBeGreaterThanOrEqual(time);
       expect(res.retval.timeLastEdited).toBeLessThanOrEqual(time + 1);
-    })
+    });
   });
 
   describe('Testing errors in questionBody (status code 400)', () => {
