@@ -32,25 +32,25 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
       let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval);
+      questionId.push(newQuestionId.retval.questionId);
 
       // create second question
       const answerBody2 = [{ answer: 'Chappell Roan', correct: true }, { answer: 'Sabrina Carpenter', correct: false }];
       const questionCreateBody2 = { question: 'Who is your favourite artist\'s favourite artist?', duration: 5, points: 6, answers: answerBody2 };
       newQuestionId = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval);
+      questionId.push(newQuestionId.retval.questionId);
 
       // create third question
-      const answerBody3 = [{ answer: 'The girl, so confusing version with lorde', correct: true }, { answer: 'The Industrial Revolution', correct: false }];
+      const answerBody3 = [{ answer: 'Brat summer', correct: true }, { answer: 'The Industrial Revolution', correct: false }];
       const questionCreateBody3 = { question: 'Which has had the greatest cultural impact?', duration: 6, points: 7, answers: answerBody3 };
       newQuestionId = requestPost({ token: token, questionBody: questionCreateBody3 }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval);
+      questionId.push(newQuestionId.retval.questionId);
 
       // create fourth question
-      const answerBody4 = [{ answer: 'No', correct: true }, { answer: 'Yes', correct: false }];
-      const questionCreateBody4 = { question: 'Does anyone actually care about the English monarchy?', duration: 7, points: 8, answers: answerBody4 };
+      const answerBody4 = [{ answer: 'Trisha/Ethan', correct: true }, { answer: 'Enya/Drew', correct: false }];
+      const questionCreateBody4 = { question: 'Who should work it out on the remix next?', duration: 7, points: 8, answers: answerBody4 };
       newQuestionId = requestPost({ token: token, questionBody: questionCreateBody4 }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval);
+      questionId.push(newQuestionId.retval.questionId);
     })
     test('Has correct return type', () => {
       // swap second and fourth question
@@ -92,19 +92,19 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
             },
             {
               questionId: questionId[3],
-              question: 'Does anyone actually care about the English monarchy?',
+              question: 'Who should work it out on the remix next?',
               duration: 7,
               points: 8,
               answers: [
                 {
                   answerId: expect.any(Number),
-                  answer: 'No',
+                  answer: 'Trisha/Ethan',
                   colour: expect.any(String),
                   correct: true
                 },
                 {
                   answerId: expect.any(Number),
-                  answer: 'Yes',
+                  answer: 'Enya/Drew',
                   colour: expect.any(String),
                   correct: false
                 }
@@ -118,7 +118,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
               answers: [
                 {
                   answerId: expect.any(Number),
-                  answer: 'The girl, so confusing version with lorde',
+                  answer: 'Brat summer',
                   colour: expect.any(String),
                   correct: true
                 },
@@ -175,7 +175,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
       let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval);
+      questionId.push(newQuestionId.retval.questionId);
 
       const moveBody = { token: token, newPosition: 1 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0] + 1}/move`);
@@ -193,7 +193,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
       let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval);
+      questionId.push(newQuestionId.retval.questionId);
 
       const moveBody = { token: token, newPosition: -1 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0]}/move`);
@@ -205,7 +205,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
       let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval);
+      questionId.push(newQuestionId.retval.questionId);
 
       const moveBody = { token: token, newPosition: 1 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0]}/move`);
@@ -217,7 +217,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
       let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval);
+      questionId.push(newQuestionId.retval.questionId);
 
       const moveBody = { token: token, newPosition: 0 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0]}/move`);
@@ -239,13 +239,13 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
       let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval);
+      questionId.push(newQuestionId.retval.questionId);
 
       // create second question
       const answerBody2 = [{ answer: 'Chappell Roan', correct: true }, { answer: 'Sabrina Carpenter', correct: false }];
       const questionCreateBody2 = { question: 'Who is your favourite artist\'s favourite artist?', duration: 5, points: 6, answers: answerBody2 };
       newQuestionId = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval);
+      questionId.push(newQuestionId.retval.questionId);
 
       const sessionId = parseInt(token) + 1;
       const moveBody = { token: sessionId.toString, newPosition: 1 };
@@ -260,25 +260,25 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
       let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval);
+      questionId.push(newQuestionId.retval.questionId);
 
       // create second question
       const answerBody2 = [{ answer: 'Chappell Roan', correct: true }, { answer: 'Sabrina Carpenter', correct: false }];
       const questionCreateBody2 = { question: 'Who is your favourite artist\'s favourite artist?', duration: 5, points: 6, answers: answerBody2 };
       newQuestionId = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval);
+      questionId.push(newQuestionId.retval.questionId);
 
       // create third question
-      const answerBody3 = [{ answer: 'The girl, so confusing version with lorde', correct: true }, { answer: 'The Industrial Revolution', correct: false }];
+      const answerBody3 = [{ answer: 'Brat summer', correct: true }, { answer: 'The Industrial Revolution', correct: false }];
       const questionCreateBody3 = { question: 'Which has had the greatest cultural impact?', duration: 6, points: 7, answers: answerBody3 };
       newQuestionId = requestPost({ token: token, questionBody: questionCreateBody3 }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval);
+      questionId.push(newQuestionId.retval.questionId);
 
       // create fourth question
-      const answerBody4 = [{ answer: 'No', correct: true }, { answer: 'Yes', correct: false }];
-      const questionCreateBody4 = { question: 'Does anyone actually care about the English monarchy?', duration: 7, points: 8, answers: answerBody4 };
+      const answerBody4 = [{ answer: 'Trisha/Ethan', correct: true }, { answer: 'Enya/Drew', correct: false }];
+      const questionCreateBody4 = { question: 'Who should work it out on the remix next?', duration: 7, points: 8, answers: answerBody4 };
       newQuestionId = requestPost({ token: token, questionBody: questionCreateBody4 }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval);
+      questionId.push(newQuestionId.retval.questionId);
     })
 
     test('User is not an owner of this quiz', () => {

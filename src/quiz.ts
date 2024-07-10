@@ -474,16 +474,16 @@ export function adminQuizQuestionMove (questionId: number, newPosition: number, 
 
   const question = findQuestionById(questionId, quizId);
   if (question === undefined) {
-    return { error: 'Question Id does not refer to a valid question within this quiz' };
+    return { error: 'Question Id does not refer to a valid question within this quiz.' };
   }
 
   if (newPosition < MIN_QUESTION_INDEX || newPosition > quiz.questions.length - 1) {
-    return { error: 'New position is less than 0 or new position is greater than n-1 where n is the number of questions' };
+    return { error: 'New position is less than 0 or new position is greater than n-1 where n is the number of questions.' };
   }
 
   const questionIndex = quiz.questions.findIndex(q => q.questionId === questionId);
   if (questionIndex === newPosition) {
-    return { error: 'NewPosition is the position of the current question' };
+    return { error: 'NewPosition is the position of the current question.' };
   }
 
   quiz.questions = swapQuestions(questionIndex, newPosition, quiz.questions);
