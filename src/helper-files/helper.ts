@@ -1,4 +1,5 @@
-import { getData, Quizzes, Users, Trash } from '../dataStore';
+import { Answer, getData, Question, Quizzes, Users, Trash } from '../dataStore';
+import { QuestionBody } from '../quiz';
 
 /**
  * Function checks if an authUserId exists in the dataStore
@@ -174,6 +175,146 @@ export function findQuizById(quizId: number): Quizzes | undefined {
 }
 
 /**
+ * Finds a question in the data by its question ID
+ * 
+ * @param {number} questionId - ID of the question to find
+ * @param {number} quizId - ID of the quiz to find
+ * @returns {Question | undefined} - the question with the specified ID | undefined
+ */
+export function findQuestionById(questionId: number, quizId: number ): Question | undefined {
+  const quiz = findQuizById(quizId);
+  return quiz.questions.find(q => q.questionId === questionId);
+}
+
+/**
+ * Checks if a questionId has been used already by another question
+ * 
+ * @param {number} questionId
+ * @param {number} quizId
+ * @return {boolean} true if questionId has been used, false otherwise
+ */
+export function questionIdInUse(questionId: number): boolean {
+  const data = getData();
+  for (const quiz of data.quizzes) {
+    const question = findQuestionById(questionId, quiz.quizId);
+    if (question !== undefined) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Finds an answer given the answer ID, question ID and quiz ID
+ * 
+ * @param {number} answerId
+ * @param {number} questionId
+ * @param {number} quizId
+ * @return { Answer | undefined }
+ */
+export function findAnswerById(answerId: number, questionId: number, quizId: number): Answer | undefined {
+  const question = findQuestionById(questionId, quizId);
+  return question.answers.find(a => a.answerId === answerId);
+}
+
+/**
+ * Checks whether an answer ID has been used by another answer
+ * @param {number} answerId
+ * @param {number} questionId
+ * @param {number} quizId
+ * @returns {boolean} - true if answerId has been used, false otherwise
+ */
+export function answerIdInUse(answerId: number): boolean {
+  const data = getData();
+  for (const quiz of data.quizzes) {
+    for (const question of quiz.questions) {
+      const answer = findAnswerById(answerId, question.questionId, quiz.quizId);
+      if (answer !== undefined) {
+        return true;
+      }
+    }
+  }
+  
+  return false;
+}
+
+/**
+ * Calculates the sum of question durations of a quiz given by its quiz ID
+ * 
+ * @param {number} quizId - ID of quiz to find
+ * @param {number} questionDuration - duration of the question
+ * @returns {number} - the sum of the question durations in seconds 
+ */
+export function calculateSumQuestionDuration(quizId: number, questionDuration: number): number {
+  const quiz = findQuizById(quizId);
+
+  return quiz.duration + questionDuration;
+}
+
+/**
+ * Checks whether any of the answers in a question are too short or too long
+ * 
+ * @param {QuestionBody} questionBody
+ * @param {number} minAnsLength
+ * @param {number} maxAnsLength
+ * @returns {boolean} - returns true if any answer is too short/long, false 
+ *                      otherwise
+ */
+export function checkAnswerLength(questionBody: QuestionBody, minAnsLength: number, maxAnsLength: number): boolean {
+  
+  for (const answer of questionBody.answers) {
+    if (answer.answer.length < minAnsLength || answer.answer.length > maxAnsLength) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Determines whether any answer strings are duplicates
+ * 
+ * @param {QuestionBody} questionBody
+ * @returns {boolean} returns true if there are duplicates, false otherwise
+ */
+export function checkForAnsDuplicates(questionBody: QuestionBody): boolean {
+  const answerStrings = questionBody.answers.map((a: Answer) => ( a.answer ));
+  
+  let i = 0;
+  while (i < questionBody.answers.length) {
+    const answerToCompare = answerStrings.shift();
+    for (const answer1 of answerStrings) {
+      if (answerToCompare.localeCompare(answer1) === 0) {
+        return true;
+      }
+    }
+    answerStrings.push(answerToCompare);
+    i++;
+  } 
+
+  return false;
+}
+
+/**
+ * Checks for any correct answers in a question
+ * 
+ * @param {QuestionBody} questionBody
+ * @returns {number} - returns the number of correct answers in a question
+ */
+export function checkForNumCorrectAns(questionBody: QuestionBody): number {
+  let numCorrectAns = 0;
+  
+  for (const answer of questionBody.answers) {
+    if (answer.correct === true) {
+      numCorrectAns++
+    }
+  }
+
+  return numCorrectAns;
+}
+
+/**
  * Finds a quiz in the trash by its quiz ID
  *
  * @param {number} quizId - The ID of the quiz to find
@@ -199,21 +340,8 @@ export function quizIsInTrash(quizId: number): boolean {
   return true;
 }
 
-
-/**
- * Loops through quiz given by quizId and sums the new duration after a question
- * in the quiz has been updated
- *
- * @param {number} quizId 
- * @returns {number} 
- */
-export function updateQuizDuration(quizId: number): number {
-  const quiz = findQuizById(quizId);
-
-  let newDuration = 0;
-  for (const question of quiz.questions) {
-    newDuration += question.duration;
-  }
-
-  return newDuration;
+export function generateAnsColour(): string {
+  const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+  let colourIndex = Math.floor(Math.random() * answerColours.length);
+  return answerColours[colourIndex]
 }
