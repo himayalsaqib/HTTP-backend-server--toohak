@@ -11,14 +11,14 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 	const error = { error: expect.any(String) };
 
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
-  let token: { sessionId: number, authUserId: number };
-	let quizBody: { token: Tokens, name: string, description: string };
+  let token: string;
+	let quizBody: { token: string, name: string, description: string };
   let quizId: number;
 	let questionBody: { question: string, duration: number, points: number, answers: QuizQuestionAnswers[] };
 	let question: { questionId: number };
 	
 	let updateBody: {
-		token: Tokens,
+		token: string,
 		questionBody: {
 			question: string,
 			duration: number,
@@ -31,7 +31,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 		// regsitering a user
     userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
     const registerResponse = requestPost(userBody, '/v1/admin/auth/register');
-    token = registerResponse.retval as { sessionId: number, authUserId: number };
+    token = registerResponse.retval.token;
 
 		// creating a quiz
     quizBody = { token: token, name: 'Quiz Name', description: 'Quiz description' };
@@ -82,7 +82,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 			let res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
 			expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 
-			res = requestGet(token, `/v1/admin/quiz/${quizId}`);
+			res = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
 			expect(res.retval).toStrictEqual({
 				quizId: quizId,
 				name: quizBody.name,
@@ -121,7 +121,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 			let res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
 			expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 
-			res = requestGet(token, `/v1/admin/quiz/${quizId}`);
+			res = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
 			expect(res.retval.timeLastEdited).toBeGreaterThanOrEqual(requestTime);
 			expect(res.retval.timeLastEdited).toBeLessThanOrEqual(requestTime + 1);
 		});
@@ -271,16 +271,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 
 	describe('Testing token errors (status code 401)', () => {
 		test('Returns error when token is empty', () => {
-			updateBody.token = { sessionId: undefined, authUserId: undefined };
-      const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
-			expect(res).toStrictEqual({
-				retval: error,
-				statusCode: 401
-			});
-		});
-
-		test('Returns error when authUserId is not a valid user', () => {
-			updateBody.token.authUserId++;
+			requestDelete({}, '/v1/clear');
       const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
 			expect(res).toStrictEqual({
 				retval: error,
@@ -289,7 +280,8 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 		});
 
 		test('Returns error when sessionId is not a valid user session', () => {
-			updateBody.token.sessionId++;
+			const sessionId = parseInt(token) + 1;
+      updateBody.token = sessionId.toString();
       const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
 			expect(res).toStrictEqual({
 				retval: error,
@@ -302,7 +294,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 		test('Returns error when user is not an owner of the quiz', () => {
 			const user2 = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'John', nameLast: 'Doe' };
     	let res = requestPost(user2, '/v1/admin/auth/register');
-    	updateBody.token = res.retval as { sessionId: number, authUserId: number };
+    	updateBody.token = res.retval.token;
 
 			res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
 			expect(res).toStrictEqual({

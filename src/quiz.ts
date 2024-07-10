@@ -318,6 +318,10 @@ export function adminQuizRestore (authUserId: number, quizId: number): EmptyObje
  trashedQuiz.quiz.timeLastEdited = Math.floor(Date.now() / 1000);
 
  data.quizzes.push(trashedQuiz.quiz);
+ setData(data);
+
+ return {};
+}
 
 /**
  * Update the description of the relevant quiz
