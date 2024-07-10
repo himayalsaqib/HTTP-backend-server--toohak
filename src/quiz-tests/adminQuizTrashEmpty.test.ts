@@ -27,7 +27,6 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
 
       requestDelete({ token }, `/v1/admin/quiz/${quizId}`);
       quizIds.push(quizId);
-      console.log('Quiz Deleted Quiz', i, quizId);
     }
   });
 
@@ -40,7 +39,6 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
 
     test('Side effect (successful update): adminQuizTrash does not show permanently deleted quizzes', () => {
       const quizIdsToDelete = JSON.stringify([quizIds[0], quizIds[1]]);
-      console.log('quizIds to delete', quizIdsToDelete);
       requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty');
 
       const trashRes = requestGet({ token }, '/v1/admin/quiz/trash');
