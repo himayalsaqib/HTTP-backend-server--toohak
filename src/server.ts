@@ -26,7 +26,8 @@ import {
   adminQuizTrash,
   adminQuizInfo,
   adminQuizRestore,
-  adminQuizDescriptionUpdate
+  adminQuizDescriptionUpdate,
+  adminQuizCreateQuestion
 } from './quiz';
 import { load } from './dataStore';
 
@@ -321,6 +322,40 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
     return res.status(403).json(response);
   }
   response = adminQuizDescriptionUpdate(userToken.authUserId, quizId, description);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
+app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
+  const { token, questionBody } = req.body;
+  const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(token);
+
+  if (sessionIdExists(sessionId) === false) {
+    return (res).status(401).json({ error: 'Invalid session ID' });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = quizBelongsToUser(userToken.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = quizDoesNotExist(quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizCreateQuestion(userToken.authUserId, quizId, questionBody);
   if ('error' in response) {
     return res.status(400).json(response);
   }
