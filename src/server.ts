@@ -1,4 +1,4 @@
-import express, { json, query, Request, Response } from 'express';
+import express, { json, Request, Response } from 'express';
 import { echo } from './newecho';
 import morgan from 'morgan';
 import config from './config.json';
@@ -16,7 +16,7 @@ import {
   adminUserPasswordUpdate,
   adminAuthLogout
 } from './auth';
-import { quizBelongsToUser, quizzesBelongToUser, tokenCreate, tokenExists, trashedQuizBelongsToUser, quizDoesNotExist, findTokenFromSessionId, sessionIdExists } from './helper-files/serverHelper';
+import { quizBelongsToUser, trashedQuizzesBelongToUser, tokenCreate, tokenExists, trashedQuizBelongsToUser, quizDoesNotExist, findTokenFromSessionId, sessionIdExists, quizzesDoNotExist } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
   adminQuizCreate,
@@ -185,7 +185,6 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   response = adminAuthLogout(userToken);
   res.json(response);
 });
-
 
 // ============================== QUIZ ROUTES =============================== //
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
@@ -363,27 +362,28 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
 });
 
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
-  //const token = req.query.token as string;
-  // decode here
   const sessionId = parseInt(req.query.token as string);
-  // JSON.parse(decodeURIComponent(token));
   const quizIds = JSON.parse(req.query.quizIds as string);
 
-
   if (sessionIdExists(sessionId) === false) {
-    return(res).status(401).json({ error: 'Invalid session ID' });
+    return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
-  let userToken = findTokenFromSessionId(sessionId);
+  const userToken = findTokenFromSessionId(sessionId);
 
   let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = quizzesBelongToUser(userToken.authUserId, quizIds);
+  response = trashedQuizzesBelongToUser(userToken.authUserId, quizIds);
   if ('error' in response) {
-    return res.status(400).json(response);
+    return res.status(403).json(response);
+  }
+
+  response = quizzesDoNotExist(quizIds);
+  if ('error' in response) {
+    return res.status(403).json(response);
   }
 
   response = adminQuizTrashEmpty(userToken.authUserId, quizIds);
@@ -415,10 +415,6 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   response = adminQuizInfo(userToken.authUserId, quizId);
   res.json(response);
 });
-
-
-
-
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
