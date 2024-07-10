@@ -131,7 +131,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
     });
   });
 
-  describe('Testing questionId and parameters given to adminQuizQuestionUpdate (status code 400)', () => {
+  describe('Testing parameters given to adminQuizQuestionUpdate (status code 400)', () => {
     describe('Testing questionId errors', () => {
       test('Question Id is not a valid question in the quiz', () => {
         questionId++;
