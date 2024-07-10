@@ -16,17 +16,19 @@ import {
   adminUserPasswordUpdate,
   adminAuthLogout
 } from './auth';
-import { quizBelongsToUser, quizzesBelongToUser, tokenCreate, tokenExists } from './helper-files/serverHelper';
+import { quizBelongsToUser, tokenCreate, tokenExists, trashedQuizBelongsToUser, quizDoesNotExist } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
   adminQuizCreate,
   adminQuizRemove,
   adminQuizList,
-  adminQuizInfo,
   adminQuizNameUpdate,
-  adminQuizDescriptionUpdate,
-  adminQuizTrashEmpty
+  adminQuizTrash,
+  adminQuizInfo,
+  adminQuizRestore,
+  adminQuizDescriptionUpdate
 } from './quiz';
+import { load } from './dataStore';
 
 // Set up web app
 const app = express();
@@ -204,26 +206,6 @@ app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
   res.json(response);
 });
 
-app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
-  const sessionId = parseInt(req.query.sessionId as string);
-  const authUserId = parseInt(req.query.authUserId as string);
-  const token = { sessionId: sessionId, authUserId: authUserId };
-  console.log("quizinfo token", token);
-  const quizId = parseInt(req.params.quizid as string);
-
-  let response = tokenExists(token);
-  if ('error' in response) {
-    return res.status(401).json(response);
-  }
-  response = quizBelongsToUser(token.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = adminQuizInfo(token.authUserId, quizId);
-  res.json(response);
-});
-
 app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   const { token, name } = req.body;
   const quizId = parseInt(req.params.quizid as string);
@@ -239,6 +221,24 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   response = adminQuizNameUpdate(token.authUserId, quizId, name);
   if ('error' in response) {
     return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
+app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.query.sessionId as string);
+  const authUserId = parseInt(req.query.authUserId as string);
+  const token = { sessionId: sessionId, authUserId: authUserId };
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = adminQuizTrash(token.authUserId);
+  if ('error' in response) {
+    return res.status(401).json(response);
   }
 
   res.json(response);
@@ -264,30 +264,49 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   res.json(response);
 });
 
-app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
-  const token = req.query.token as string;
-  // decode here
-  JSON.parse(decodeURIComponent(token));
-  
-  console.log("token:", token);
-  const quizIds = JSON.parse(req.query.quizIds as string);
-  console.log("Quizid:", quizIds); //debug
+app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
+  const token = req.body;
+  const quizId = parseInt(req.params.quizid as string);
 
   let response = tokenExists(token);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = quizzesBelongToUser(token.authUserId, quizIds);
+  response = trashedQuizBelongsToUser(token.authUserId, quizId);
   if ('error' in response) {
     return res.status(403).json(response);
   }
 
-  response = adminQuizTrashEmpty(token.authUserId, quizIds);
+  response = quizDoesNotExist(quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizRestore(token.authUserId, quizId);
   if ('error' in response) {
     return res.status(400).json(response);
   }
-  
+
+  res.json(response);
+});
+
+app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.query.sessionId as string);
+  const authUserId = parseInt(req.query.authUserId as string);
+  const token = { sessionId: sessionId, authUserId: authUserId };
+  const quizId = parseInt(req.params.quizid as string);
+
+  let response = tokenExists(token);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+  response = quizBelongsToUser(token.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizInfo(token.authUserId, quizId);
   res.json(response);
 });
 
@@ -314,6 +333,7 @@ app.use((req: Request, res: Response) => {
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
   console.log(`⚡️ Server started on port ${PORT} at ${HOST}`);
+  load();
 });
 
 // For coverage, handle Ctrl+C gracefully

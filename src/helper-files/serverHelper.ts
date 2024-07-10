@@ -1,5 +1,5 @@
 import { ErrorObject, EmptyObject, Tokens, getData, setData } from '../dataStore';
-import { findQuizById } from './helper';
+import { findQuizById, findTrashedQuizById } from './helper';
 
 /**
  * Function checks if a sessionId already exists in the dataStore
@@ -55,7 +55,6 @@ export function quizBelongsToUser(authUserId: number, quizId: number): EmptyObje
     return {};
   }
 }
-
 /**
  * Function checks if all quizzes in the given list belong to a given current user
  *
@@ -68,6 +67,40 @@ export function quizzesBelongToUser(authUserId: number, quizIds: number[]): Empt
     const quiz = findQuizById(quizId);
     if (quiz === undefined || quiz.authUserId !== authUserId) {
       return { error: 'One or more Quiz IDs refer to a quiz that this current user does not own.' };
+
+    }
+  }
+}
+
+/*
+ * Function checks if a quiz in the trash belongs to a given current user
+ *
+ * @param {number} authUserId
+ * @param {number} quizId
+ * @returns {{} | { error: string }}
+ */
+export function trashedQuizBelongsToUser(authUserId: number, quizId: number): EmptyObject | ErrorObject {
+  const trashedQuiz = findTrashedQuizById(quizId);
+
+  if (trashedQuiz === undefined) {
+    return {};
+  } else if (trashedQuiz.quiz.authUserId !== authUserId) {
+    return { error: 'User is not an owner of this quiz' };
+  } return {};
+}
+
+/**
+ * Function checks if a quiz exists in either trash or quizzes
+ *
+ * @param {number} quizId
+ * @returns {{} | { error: string }}
+ */
+export function quizDoesNotExist(quizId: number): EmptyObject | ErrorObject {
+  const trashedQuiz = findTrashedQuizById(quizId);
+  if (trashedQuiz === undefined) {
+    const quiz = findQuizById(quizId);
+    if (quiz === undefined) {
+      return { error: 'Quiz does not exist' };
     }
   }
   return {};
