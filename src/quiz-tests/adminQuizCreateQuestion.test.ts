@@ -1,5 +1,4 @@
 // includes http tests for the route /v1/admin/quiz/{quizid}/question
-// NEED TO CONVERT ALL TOKENS TO TOKEN.SESSIONID
 
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 import { QuizQuestionAnswers } from '../quiz';
