@@ -18,7 +18,6 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
   let questionBody: { question: string, duration: number, points: number, answers: QuizQuestionAnswers[] };
 
   describe('Testing successful cases (status code 200)', () => {
-    let event: { quizId: number };
     beforeEach(() => {
       // register a user to create a quiz
       userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
@@ -28,7 +27,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       // create the quiz
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
       const res = requestPost(quizBody, '/v1/admin/quiz');
-      event = res.retval;
+      quizId = res.retval.quizId;
     });
 
     test('Has correct return type', () => {
@@ -37,26 +36,26 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       const answerBody2 = { answer: 'Prince William', correct: false };
       questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2] };
 
-      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${event.quizId}/question`)).toStrictEqual({
+      expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
         retval: { questionId: expect.any(Number) },
         statusCode: 200
       });
     });
 
-    test.skip('Side effect - Successful listing of information about a quiz with one question', () => {
+    test.only('Side effect - Successful listing of information about a quiz with one question', () => {
       // create question
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2] };
-      const res = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${event.quizId}/question`);
+      const res = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
 
       // use GET /v1/admin/quiz/{quizid}
-      expect(requestGet({ token: token }, `/v1/admin/quiz/${event.quizId}`)).toStrictEqual({
+      expect(requestGet({ token: token }, `/v1/admin/quiz/${quizId}`)).toStrictEqual({
         retval: {
-          quizId: event.quizId,
+          quizId: quizId,
           name: quizBody.name,
           timeCreated: expect.any(Number),
-          timeLastEditied: expect.any(Number),
+          timeLastEdited: expect.any(Number),
           description: quizBody.description,
           numQuestions: 1,
           questions: [
@@ -87,24 +86,24 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test.skip('Side effect - Successful listing of information about a quiz with multiple questions', () => {
+    test('Side effect - Successful listing of information about a quiz with multiple questions', () => {
       // create question
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
-      const res = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${event.quizId}/question`);
+      const res = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
 
       // create second question
       const answerBody2 = [{ answer: 'Chappell Roan', correct: true }, { answer: 'Sabrina Carpenter', correct: false }];
       const questionCreateBody2 = { question: 'Who is your favourite artist\'s favourite artist?', duration: 5, points: 7, answers: answerBody2 };
-      const res2 = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${event.quizId}/question`);
+      const res2 = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${quizId}/question`);
 
       // use GET /v1/admin/quiz/{quizid}
-      expect(requestGet({ token: token }, `/v1/admin/quiz/${event.quizId}`)).toStrictEqual({
+      expect(requestGet({ token: token }, `/v1/admin/quiz/${quizId}`)).toStrictEqual({
         retval: {
-          quizId: event.quizId,
+          quizId: quizId,
           name: quizBody.name,
           timeCreated: expect.any(Number),
-          timeLastEditied: expect.any(Number),
+          timeLastEdited: expect.any(Number),
           description: quizBody.description,
           numQuestions: 2,
           questions: [

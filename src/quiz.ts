@@ -352,10 +352,6 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     return { error: 'Quiz ID does not refer to a quiz that exists.' };
   }
 
-  if (quiz.authUserId !== authUserId) {
-    return { error: 'Quiz ID does not refer a quiz that this user owns.' };
-  }
-
   let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   while (questionIdInUse(newQuestionId) === true) {
     newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -388,6 +384,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     answers: questionAnswersArray
   };
 
+  console.log(newQuestion);
   // set timeLastEditied as the same as timeCreated for question
   quiz.timeLastEdited = Math.floor(Date.now() / 1000);
   quiz.duration += questionBody.duration;
