@@ -7,7 +7,7 @@ import { QuizQuestionAnswers } from '../quiz';
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
-   
+
 describe('POST /v1/amdin/quiz/{quizid}/question', () => {
   const error = { error: expect.any(String) };
   let quizId: number;
