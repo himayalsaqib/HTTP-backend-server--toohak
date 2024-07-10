@@ -1,7 +1,7 @@
 // includes http tests for the route PUT /v1/admin/quiz/{quizid}/question/{questionid}
 
 import { requestDelete, requestGet, requestPost, requestPut } from "../helper-files/requestHelper";
-import { QuizQuestionAnswers } from "../quiz";
+import { QuestionBody } from "../quiz";
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
@@ -14,18 +14,10 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
   let token: string;
 	let quizBody: { token: string, name: string, description: string };
   let quizId: number;
-	let questionBody: { question: string, duration: number, points: number, answers: QuizQuestionAnswers[] };
+	let createBody: { token: string, questionBody: QuestionBody };
 	let questionId: number;
 	
-	let updateBody: {
-		token: string,
-		questionBody: {
-			question: string,
-			duration: number,
-			points: number,
-			answers: QuizQuestionAnswers[]
-		}
-	};
+	let updateBody: { token: string, questionBody: QuestionBody };
 	
   beforeEach(() => {
 		// regsitering a user
@@ -39,37 +31,24 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
     quizId = quizResponse.retval.quizId;
 
 		// creating a quiz question
-		const answers = [
-			{ answer: 'Prince Charles', correct: true },
-			{ answer: 'Prince William', correct: false }
-		];
-		questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answers };
-		const createResponse = requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`);
+		createBody = { token: token, questionBody: {
+			question: 'Who is the Monarch of England?', duration: 5, points: 5, answers: [
+				{ answer: 'Prince Charles', correct: true },
+				{ answer: 'Prince William', correct: false }
+			]
+		}};
+		const createResponse = requestPost(createBody, `/v1/admin/quiz/${quizId}/question`);
 		questionId = createResponse.retval.questionId;
 
-		updateBody = {
-			token: token,
-			questionBody: {
-				question: 'The sun is a ...',
-				duration: 5,
-				points: 5,
-				answers: [
-					{
-						answer: 'star',
-						correct: true
-					},
-					{
-						answer: 'planet',
-						correct: false
-					}
-				]
-			}
-		};
+		updateBody = { token: token, questionBody: {
+			question: 'The sun is a ...', duration: 5, points: 10, answers: [
+				{ answer: 'star', correct: true },
+				{ answer: 'planet', correct: false}
+			]
+		}};
   });
 
   describe('Testing successful quiz question update (status code 200)', () => {
-		// how to test colour is one of given colours
-
 		test('Has the correct return type', () => {
 			const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 			expect(res).toStrictEqual({
@@ -89,13 +68,13 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 				timeCreated: expect.any(Number),
 				timeLastEdited: expect.any(Number),
 				description: quizBody.description,
-				numQuestion: 1,
+				numQuestions: 1,
 				questions: [
 					{
 						questionId: questionId,
 						question: updateBody.questionBody.question,
-						duration: 5,
-						points: 5,
+						duration: updateBody.questionBody.duration,
+						points: updateBody.questionBody.points,
 						answers: [
 							{
 								answerId: expect.any(Number),
@@ -111,7 +90,8 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 							}
 						]
 					}
-				]
+				],
+				duration: 5
 			});
 			expect(res.statusCode).toStrictEqual(200);
 		});
@@ -124,6 +104,18 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 			res = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
 			expect(res.retval.timeLastEdited).toBeGreaterThanOrEqual(requestTime);
 			expect(res.retval.timeLastEdited).toBeLessThanOrEqual(requestTime + 1);
+		});
+
+		test.each([
+			{ update: 'increase', newDuration: 2 },
+			{ update: 'decrease', newDuration: -2 }
+		])('Side effect: adminQuizInfo displays duration $update', ({ update, newDuration }) => {
+			updateBody.questionBody.duration += newDuration;
+			let res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
+			expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
+
+			res = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
+			expect(res.retval.duration).toStrictEqual(updateBody.questionBody.duration);
 		});
   });
 
