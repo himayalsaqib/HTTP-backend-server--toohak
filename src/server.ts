@@ -417,6 +417,9 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
   const sessionId = parseInt(token);
   const quizId = parseInt(req.params.quizid as string);
   const questionId = parseInt(req.params.questionid as string);
+  console.log('QUESTION ID');
+  console.log(questionId);
+  console.log(quizId);
 
   if (sessionIdExists(sessionId) === false) {
     return(res).status(401).json({ error: 'Invalid session ID' });
@@ -434,7 +437,7 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
     return res.status(403).json(response);
   }
 
-  response = adminQuizQuestionUpdate(token.authUserId, quizId, questionId, questionBody);
+  response = adminQuizQuestionUpdate(userToken.authUserId, quizId, questionId, questionBody);
   if ('error' in response) {
     return res.status(400).json(response);
   }

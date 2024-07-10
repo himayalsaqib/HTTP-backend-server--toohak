@@ -15,7 +15,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 	let quizBody: { token: string, name: string, description: string };
   let quizId: number;
 	let questionBody: { question: string, duration: number, points: number, answers: QuizQuestionAnswers[] };
-	let question: { questionId: number };
+	let questionId: number;
 	
 	let updateBody: {
 		token: string,
@@ -45,7 +45,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 		];
 		questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answers };
 		const createResponse = requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`);
-		question = createResponse.retval;
+		questionId = createResponse.retval.questionId;
 
 		updateBody = {
 			token: token,
@@ -71,7 +71,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 		// how to test colour is one of given colours
 
 		test('Has the correct return type', () => {
-			const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+			const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 			expect(res).toStrictEqual({
 				retval: {},
 				statusCode: 200
@@ -79,7 +79,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 		});
 
 		test('Side effect: adminQuizInfo returns updated info about quiz question', () => {
-			let res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+			let res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 			expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 
 			res = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
@@ -92,7 +92,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 				numQuestion: 1,
 				questions: [
 					{
-						questionId: question.questionId,
+						questionId: questionId,
 						question: updateBody.questionBody.question,
 						duration: 5,
 						points: 5,
@@ -118,7 +118,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 
 		test('Side effect: adminQuizInfo displays updated timeLastEdited', () => {
 			const requestTime = Math.floor(Date.now() / 1000);
-			let res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+			let res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 			expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 
 			res = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
@@ -130,8 +130,8 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 	describe('Testing questionId and parameters given to adminQuizQuestionUpdate (status code 400)', () => {
 		describe('Testing questionId errors', () => {
 			test('Question Id is not a valid question in the quiz', () => {
-				question.questionId++;
-				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+				questionId++;
+				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 				expect(res).toStrictEqual({
 					retval: error,
 					statusCode: 400
@@ -142,7 +142,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 		describe('Testing question parameter\'s errors', () => {
 			test('Question string is less than 5 characters', () => {
 				updateBody.questionBody.question = 'What';
-				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 				expect(res).toStrictEqual({
 					retval: error,
 					statusCode: 400
@@ -151,7 +151,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 
 			test('Question string is more than 50 characters', () => {
 				updateBody.questionBody.question = 'This is a reallyreally long question: What is earth?';
-				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 				expect(res).toStrictEqual({
 					retval: error,
 					statusCode: 400
@@ -160,7 +160,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 
 			test('Question duration is not a positive number', () => {
 				updateBody.questionBody.duration = 0;
-				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 				expect(res).toStrictEqual({
 					retval: error,
 					statusCode: 400
@@ -169,7 +169,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 
 			test('Sum of question durations in the quiz exceeds 3 minutes if question is updated', () => {
 				updateBody.questionBody.duration = 181;
-				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 				expect(res).toStrictEqual({
 					retval: error,
 					statusCode: 400
@@ -178,7 +178,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 
 			test('Question points is less than 1', () => {
 				updateBody.questionBody.points = 0;
-				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 				expect(res).toStrictEqual({
 					retval: error,
 					statusCode: 400
@@ -187,7 +187,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 
 			test('Question points are more than 10', () => {
 				updateBody.questionBody.points = 11;
-				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 				expect(res).toStrictEqual({
 					retval: error,
 					statusCode: 400
@@ -199,7 +199,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 			test('Question has less than 2 answers', () => {
 				const oneAnswer = [{ answer: 'Star', correct: true }];
 				updateBody.questionBody.answers = oneAnswer;
-				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 				expect(res).toStrictEqual({
 					retval: error,
 					statusCode: 400
@@ -217,7 +217,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 					{ answer: 'satellite', correct: false },
 				];
 				updateBody.questionBody.answers = sevenAnswers;
-				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 				expect(res).toStrictEqual({
 					retval: error,
 					statusCode: 400
@@ -227,7 +227,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 			test('Answer string is less than 1 character', () => {
 				const badAnswer = { answer: '', correct: false };
 				updateBody.questionBody.answers.push(badAnswer);
-				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 				expect(res).toStrictEqual({
 					retval: error,
 					statusCode: 400
@@ -237,7 +237,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 			test('Answer string is more than 30 character', () => {
 				const badAnswer = { answer: 'a reallyreallyreally long answer', correct: false };
 				updateBody.questionBody.answers.push(badAnswer);
-				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 				expect(res).toStrictEqual({
 					retval: error,
 					statusCode: 400
@@ -247,7 +247,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 			test('Any answer strings of the question are duplicates of one another', () => {
 				const badAnswer = { answer: 'planet', correct: false };
 				updateBody.questionBody.answers.push(badAnswer);
-				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 				expect(res).toStrictEqual({
 					retval: error,
 					statusCode: 400
@@ -260,7 +260,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 					{ answer: 'planet', correct: false },
 				];
 				updateBody.questionBody.answers = badAnswers;
-				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+				const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 				expect(res).toStrictEqual({
 					retval: error,
 					statusCode: 400
@@ -272,7 +272,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 	describe('Testing token errors (status code 401)', () => {
 		test('Returns error when token is empty', () => {
 			requestDelete({}, '/v1/clear');
-      const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+      const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 			expect(res).toStrictEqual({
 				retval: error,
 				statusCode: 401
@@ -282,7 +282,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 		test('Returns error when sessionId is not a valid user session', () => {
 			const sessionId = parseInt(token) + 1;
       updateBody.token = sessionId.toString();
-      const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+      const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 			expect(res).toStrictEqual({
 				retval: error,
 				statusCode: 401
@@ -296,7 +296,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
     	let res = requestPost(user2, '/v1/admin/auth/register');
     	updateBody.token = res.retval.token;
 
-			res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+			res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 			expect(res).toStrictEqual({
 				retval: error,
 				statusCode: 403
@@ -305,7 +305,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 
 		test('Returns error when quiz doesn\'t exist', () => {
 			quizId++;
-			const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${question.questionId}`);
+			const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
 			expect(res).toStrictEqual({
 				retval: error,
 				statusCode: 403
