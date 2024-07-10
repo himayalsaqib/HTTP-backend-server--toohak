@@ -10,14 +10,16 @@ beforeEach(() => {
 describe('DELETE /v1/admin/quiz/trash/empty', () => {
   const error = { error: expect.any(String) };
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
-  let quizBody: { token: Tokens, name: string, description: string };
-  let token: { sessionId: number, authUserId: number };
+  let quizBody: { token: string, name: string, description: string };
+  let token: string;
   let quizIds: number[];
+  
 
   beforeEach(() => {
     userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
     const registerResponse = requestPost(userBody, '/v1/admin/auth/register');
-    token = registerResponse.retval as { sessionId: number, authUserId: number };
+    token = registerResponse.retval.token;
+    
 
     // Create 5 quizzes and put them in the trash
     quizIds = [];
@@ -26,16 +28,17 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
       const quizResponse = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = quizResponse.retval.quizId;
 
-      requestDelete(token, `/v1/admin/quiz/${quizId}`);
+      requestDelete({ token }, `/v1/admin/quiz/${quizId}`);
       quizIds.push(quizId);
     }
   });
 
   describe('Testing for correct return type (status code 200)', () => {
-    test('Successfully deletes specific quizzes from trash', () => {
+    test.only('Successfully deletes specific quizzes from trash', () => {
       const quizIdsToDelete = JSON.stringify([quizIds[1], quizIds[2]]);
       console.log("Quiz IDs to delete:", quizIdsToDelete); //debug
-      const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty');
+      console.log("token:", token, typeof token);
+      const res = requestDelete({ token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty');
       console.log("Response:", res); //debug
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
   });
@@ -45,7 +48,7 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
 
       const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty');
 
-      requestGet(token, '/v1/admin/quiz/trash');
+      requestGet({ token }, '/v1/admin/quiz/trash');
       expect(res).toStrictEqual({
         retval: {
           quizzes: [
@@ -87,15 +90,8 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
   });
 
   describe('Testing token errors (status code 401)', () => {
-    test('Invalid authUserId', () => {
-      token.authUserId += 1;
-      const quizIdsToDelete = JSON.stringify([quizIds[1], quizIds[2]]);
-      const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty');
-      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
-    });
-
     test('Given invalid session ID', () => {
-      token.sessionId += 1;
+      token += '1';
       const quizIdsToDelete = JSON.stringify([quizIds[1], quizIds[2]]);
       const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty');
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
@@ -113,18 +109,18 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
     test('One or more of the Quiz IDs refers to a quiz that this current user does not own', () => {
       const otherUserBody = { email: 'otherUser@gmail.com', password: 'Password23', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
       const otherUserResponse = requestPost(otherUserBody, '/v1/admin/auth/register');
-      const otherUserToken = otherUserResponse.retval as { sessionId: number, authUserId: number };
+      const otherUserToken: string = otherUserResponse.retval.token;
       
       // otherUser creates 2 quizzes and puts them in trash
       quizBody = { token: otherUserToken, name: `Other user quiz 1`, description: `Other user description 1` };
       const quizResponse1 = requestPost(quizBody, '/v1/admin/quiz');
       const otherUserQuiz1 = quizResponse1.retval.quizId;
-      requestDelete(otherUserToken, `/v1/admin/quiz/${otherUserQuiz1}`);
+      requestDelete({ token: otherUserToken }, `/v1/admin/quiz/${otherUserQuiz1}`);
 
       quizBody = { token: token, name: `Other user quiz 2`, description: `Other user description 2` };
       const quizResponse2 = requestPost(quizBody, '/v1/admin/quiz');
       const otherUserQuiz2 = quizResponse2.retval.quizId;
-      requestDelete(otherUserToken, `/v1/admin/quiz/${otherUserQuiz2}`);
+      requestDelete({ token: otherUserToken }, `/v1/admin/quiz/${otherUserQuiz2}`);
 
       // Current user attempts to delete 2 own quizzes and 2 otherUser quizzes
       const userQuizIdsDelete = [quizIds[1], quizIds[2]];
