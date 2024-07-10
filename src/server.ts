@@ -28,6 +28,7 @@ import {
   adminQuizRestore,
   adminQuizDescriptionUpdate
 } from './quiz';
+import { load } from './dataStore';
 
 // Set up web app
 const app = express();
@@ -406,6 +407,7 @@ app.use((req: Request, res: Response) => {
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
   console.log(`⚡️ Server started on port ${PORT} at ${HOST}`);
+  load();
 });
 
 // For coverage, handle Ctrl+C gracefully
