@@ -13,7 +13,7 @@ describe('POST /v1/admin/auth/logout', () => {
 
   beforeEach(() => {
     bodyRegister = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-    const registerResponse = requestPost(bodyRegister, '/v1/admin/auth/register')
+    const registerResponse = requestPost(bodyRegister, '/v1/admin/auth/register');
     token = registerResponse.retval.token;
   });
 
