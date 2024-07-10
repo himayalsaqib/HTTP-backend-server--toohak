@@ -155,18 +155,18 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
         },
         statusCode: 200
       });
-
-      test('Side effect: adminQuizInfo displays correct timeLastEdited', () => {
-        const time = Math.floor(Date.now() / 1000);
-        const moveBody = { token: token, newPosition: 1 };
-        let res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[3]}/move`);
-        expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
-
-        res = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
-        expect(res.retval.timeLastEdited).toBeGreaterThanOrEqual(time);
-        expect(res.retval.timeLastEdited).toBeLessThanOrEqual(time + 1);
-      })
     });
+
+    test('Side effect: adminQuizInfo displays correct timeLastEdited', () => {
+      const time = Math.floor(Date.now() / 1000);
+      const moveBody = { token: token, newPosition: 1 };
+      let res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[3]}/move`);
+      expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
+
+      res = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
+      expect(res.retval.timeLastEdited).toBeGreaterThanOrEqual(time);
+      expect(res.retval.timeLastEdited).toBeLessThanOrEqual(time + 1);
+    })
   });
 
   describe('Testing questionId and newPosition errors (status code 400)', () => {
