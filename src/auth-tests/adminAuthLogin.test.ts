@@ -1,5 +1,6 @@
 // includes http tests for the route /v1/admin/auth/login
 
+import { log } from 'console';
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 
 beforeEach(() => {
@@ -21,10 +22,12 @@ describe('POST /v1/admin/auth/login', () => {
 
   describe('Testing user login (status code 200)', () => {
     test('Has the correct return type and value of authUserId', () => {
-      expect(requestPost(bodyLogin, '/v1/admin/auth/login')).toStrictEqual({
+      const loginRes = requestPost(bodyLogin, '/v1/admin/auth/login')
+      expect(loginRes).toStrictEqual({
         retval: { token: expect.any(String) },
         statusCode: 200
       });
+      expect(parseInt(loginRes.retval.token)).toStrictEqual(expect.any(Number));
     });
 
     test('User can login multiple times (have multiple tokens)', () => {
@@ -35,6 +38,7 @@ describe('POST /v1/admin/auth/login', () => {
       const token2 = login2.retval;
 
       expect(token2).toStrictEqual({ token: expect.any(String) });
+      expect(parseInt(token2.token)).toStrictEqual(expect.any(Number));
       expect({ token }).not.toStrictEqual(token2);
     });
 
