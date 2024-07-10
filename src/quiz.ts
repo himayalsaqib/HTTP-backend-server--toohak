@@ -322,7 +322,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     return { error: 'The question cannot have more than 6 answers or less than 2 answers.' };
   }
 
-  if (questionBody.duration < 0) {
+  if (questionBody.duration <= 0) {
     return { error: 'The question duration must be a positive number.' };
   }
 
@@ -337,8 +337,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN) === true) {
     return { error: 'The answer cannot be longer than 30 characters or shorter than 1 character.' };
   }
-  
-  
+
   if (checkForAnsDuplicates(questionBody) === true) {
     return { error: 'Answers cannot be duplicates of each other in the same question.' };
   }
@@ -353,10 +352,6 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
 
   if (quizIdInUse(quizId) === false) {
     return { error: 'Quiz ID does not refer to a quiz that exists.' };
-  }
-
-  if (quiz.authUserId !== authUserId) {
-    return { error: 'Quiz ID does not refer a quiz that this user owns.' };
   }
 
   let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -391,7 +386,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     answers: questionAnswersArray
   };
 
-  // set timeLastEditied as the same as timeCreated for quiz
+  // set timeLastEditied as the same as timeCreated for question
   quiz.timeLastEdited = Math.floor(Date.now() / 1000);
   quiz.duration += questionBody.duration;
 

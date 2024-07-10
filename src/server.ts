@@ -331,23 +331,22 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
-  // const sessionId = parseInt(req.body.token);
-  // const { questionBody } = req.body;
   const { token, questionBody } = req.body;
   const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(token);
 
-  // in prep of sessionId functions
-  // let token = findTokenFromSessionId(sessionId);
-  // if ('error' in token) {
-  //   return res.status(401).json(token);
-  // }
+  if (sessionIdExists(sessionId) === false) {
+    return (res).status(401).json({ error: 'Invalid session ID' });
+  }
 
-  let response = tokenExists(token);
+  const userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = quizBelongsToUser(token.authUserId, quizId);
+  response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
     return res.status(403).json(response);
   }
@@ -357,7 +356,7 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
     return res.status(403).json(response);
   }
 
-  response = adminQuizCreateQuestion(token.authUserId, quizId, questionBody);
+  response = adminQuizCreateQuestion(userToken.authUserId, quizId, questionBody);
   if ('error' in response) {
     return res.status(400).json(response);
   }
