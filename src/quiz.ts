@@ -513,9 +513,6 @@ export function adminQuizQuestionUpdate(
     return { error: 'Question Id does not refer to a valid question within this quiz.'};
   }
 
-  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
-  quiz.duration = updateQuizDuration(quizId);
-
   let questionToUpdate = findQuestionById(questionId, quizId);
   questionToUpdate.question = questionBody.question;
   questionToUpdate.duration = questionBody.duration;
@@ -534,6 +531,9 @@ export function adminQuizQuestionUpdate(
       correct: questionBody.answers[index].correct
     });
   }
+
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  quiz.duration = updateQuizDuration(quizId);
 
   setData(data);
 
