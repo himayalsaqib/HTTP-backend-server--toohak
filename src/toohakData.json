@@ -1,6 +1,56 @@
 {
-  "users": [],
-  "quizzes": [],
+  "users": [
+    {
+      "authUserId": 5663888771302839,
+      "email": "valid@gmail.com",
+      "nameFirst": "Jane",
+      "nameLast": "Doe",
+      "password": "Password12",
+      "previousPasswords": [
+        "Password12"
+      ],
+      "numFailedLogins": 0,
+      "numSuccessfulLogins": 1
+    }
+  ],
+  "quizzes": [
+    {
+      "authUserId": 5663888771302839,
+      "quizId": 7548443152663485,
+      "name": "Quiz Name",
+      "timeCreated": 1720617236,
+      "timeLastEdited": 1720617236,
+      "description": "Quiz description",
+      "questions": [
+        {
+          "questionId": 1239924661295225,
+          "question": "Who is the Monarch of England?",
+          "duration": 5,
+          "points": 5,
+          "answers": [
+            {
+              "answerId": 3323648277500359,
+              "answer": "Prince Charles",
+              "colour": "orange",
+              "correct": true
+            },
+            {
+              "answerId": 9002039135598007,
+              "answer": "Prince William",
+              "colour": "red",
+              "correct": false
+            }
+          ]
+        }
+      ],
+      "duration": 5
+    }
+  ],
   "trash": [],
-  "tokens": []
+  "tokens": [
+    {
+      "sessionId": 8430717723592781,
+      "authUserId": 5663888771302839
+    }
+  ]
 }
