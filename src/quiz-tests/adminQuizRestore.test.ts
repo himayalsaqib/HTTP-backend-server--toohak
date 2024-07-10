@@ -1,6 +1,5 @@
 // includes http tests for the route /v1/admin/quiz/{quizid}/restore
 
-import { Tokens } from '../dataStore';
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 
 beforeEach(() => {
@@ -9,16 +8,16 @@ beforeEach(() => {
 
 describe('POST /v1/admin/quiz/:quizid/restore', () => {
   const error = { error: expect.any(String) };
-  let token: { sessionId: number, authUserId: number };
+  let token: string;
   let quizId: number;
   let user: { email: string, password: string, nameFirst: string, nameLast: string };
-  let quiz: { token: Tokens, name: string, description: string };
+  let quiz: { token: string, name: string, description: string };
 
   beforeEach(() => {
     // register a user
     user = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-    const { retval } = requestPost(user, '/v1/admin/auth/register');
-    token = retval as { sessionId: number, authUserId: number };
+    const registerUser = requestPost(user, '/v1/admin/auth/register');
+    token = registerUser.retval.token;
 
     // create a quiz
     quiz = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
@@ -29,19 +28,19 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
   describe('Testing successful cases (status code 200)', () => {
     beforeEach(() => {
       // delete the quiz
-      requestDelete(token, `/v1/admin/quiz/${quizId}`);
+      requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
     });
 
     test('Has correct return type', () => {
-      const res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
+      const res = requestPost({ token: token }, `/v1/admin/quiz/${quizId}/restore`);
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
     });
 
     test('Side effect (successful restoration): adminQuizList returns details of restored quiz', () => {
-      let res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
+      let res = requestPost({ token: token }, `/v1/admin/quiz/${quizId}/restore`);
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 
-      res = requestGet(token, '/v1/admin/quiz/list');
+      res = requestGet({ token: token }, '/v1/admin/quiz/list');
       expect(res).toStrictEqual({
         retval: {
           quizzes: [{ quizId: quizId, name: 'Valid Quiz Name' }]
@@ -52,19 +51,19 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
 
     test('Side effect (successful restoration): adminQuizInfo displays correct timeLastEdited', () => {
       const time = Math.floor(Date.now() / 1000);
-      let res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
+      let res = requestPost({ token: token }, `/v1/admin/quiz/${quizId}/restore`);
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 
-      res = requestGet(token, `/v1/admin/quiz/${quizId}`);
+      res = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
       expect(res.retval.timeLastEdited).toBeGreaterThanOrEqual(time);
       expect(res.retval.timeLastEdited).toBeLessThanOrEqual(time + 1);
     });
 
     test('Side effect (successful restoration): adminQuizTrash does not display restored quiz', () => {
-      let res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
+      let res = requestPost({ token: token }, `/v1/admin/quiz/${quizId}/restore`);
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 
-      res = requestGet(token, '/v1/admin/quiz/trash');
+      res = requestGet({ token: token }, '/v1/admin/quiz/trash');
       expect(res).toStrictEqual({ retval: { quizzes: [] }, statusCode: 200 });
     });
   });
@@ -72,7 +71,7 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
   describe('Testing quiz name error (status code 400)', () => {
     beforeEach(() => {
       // delete the quiz
-      requestDelete(token, `/v1/admin/quiz/${quizId}`);
+      requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
 
       // create a quiz with the same name as the deleted quiz
       quiz = { token: token, name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
@@ -80,14 +79,14 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
     });
 
     test('Quiz name of the restored quiz is already used by another active quiz', () => {
-      const res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
+      const res = requestPost({ token: token }, `/v1/admin/quiz/${quizId}/restore`);
       expect(res).toStrictEqual({ retval: error, statusCode: 400 });
     });
   });
 
   describe('Testing error for a quiz that has not been deleted (status code 400)', () => {
     test('Quiz ID refers to a quiz that is not currently in the trash', () => {
-      const res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
+      const res = requestPost({ token: token }, `/v1/admin/quiz/${quizId}/restore`);
       expect(res).toStrictEqual({ retval: error, statusCode: 400 });
     });
   });
@@ -95,24 +94,18 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
   describe('Testing token errors (status code 401)', () => {
     beforeEach(() => {
       // delete the quiz
-      requestDelete(token, `/v1/admin/quiz/${quizId}`);
+      requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
     });
 
     test('Token is empty (no users registered)', () => {
       requestDelete({}, '/v1/clear');
-      const res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
+      const res = requestPost({ token: token }, `/v1/admin/quiz/${quizId}/restore`);
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
 
     test('Session ID is invalid', () => {
-      token.sessionId += 1;
-      const res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
-      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
-    });
-
-    test('User ID is invalid', () => {
-      token.authUserId += 1;
-      const res = requestPost(token, `/v1/admin/quiz/${quizId}/restore`);
+      const sessionId = parseInt(token) + 1;
+      const res = requestPost({ token: sessionId.toString() }, `/v1/admin/quiz/${quizId}/restore`);
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
   });
@@ -120,14 +113,14 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
   describe('Testing quizId errors (status code 403)', () => {
     beforeEach(() => {
       // delete the quiz
-      requestDelete(token, `/v1/admin/quiz/${quizId}`);
+      requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
     });
 
     test('Current user does not own the quiz', () => {
       // register a second user
       const user2 = { email: 'valid2@gmail.com', password: 'Password12', nameFirst: 'Jamie', nameLast: 'David' };
-      const { retval } = requestPost(user2, '/v1/admin/auth/register');
-      const token2 = retval as { sessionId: number, authUserId: number };
+      const registerUser2 = requestPost(user2, '/v1/admin/auth/register');
+      const token2 = registerUser2.retval.token;
 
       // create a quiz for the second user
       quiz = { token: token2, name: 'Other Valid Quiz Name', description: 'Other Valid Quiz Description' };
@@ -135,15 +128,15 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
       const quizId2 = createQuizRes2.retval.quizId;
 
       // delete second user's quiz
-      requestDelete(token2, `/v1/admin/quiz/${quizId2}`);
+      requestDelete({ token: token2 }, `/v1/admin/quiz/${quizId2}`);
 
       // first user tries to restore second user's deleted quiz
-      const res = requestPost(token, `/v1/admin/quiz/${quizId2}/restore`);
+      const res = requestPost({ token: token }, `/v1/admin/quiz/${quizId2}/restore`);
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
     });
 
     test('Quiz ID does not exist', () => {
-      const res = requestPost(token, `/v1/admin/quiz/${quizId + 1}/restore`);
+      const res = requestPost({ token: token }, `/v1/admin/quiz/${quizId + 1}/restore`);
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
     });
   });
