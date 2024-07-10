@@ -157,7 +157,7 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
-  const token = req.body;
+const {token} = req.body;
   const sessionId = parseInt(token);
 
   if (sessionIdExists(sessionId) === false) {
