@@ -1,13 +1,13 @@
 {
   "users": [
     {
-      "authUserId": 6586949203655031,
+      "authUserId": 313259363935851,
       "email": "valid@gmail.com",
       "nameFirst": "Jane",
       "nameLast": "Doe",
-      "password": "Password12",
+      "password": "ValidPass123",
       "previousPasswords": [
-        "Password12"
+        "ValidPass123"
       ],
       "numFailedLogins": 0,
       "numSuccessfulLogins": 1
@@ -15,11 +15,11 @@
   ],
   "quizzes": [
     {
-      "authUserId": 6586949203655031,
-      "quizId": 5829214333067481,
-      "name": "Quiz Name",
-      "timeCreated": 1720594267,
-      "description": "Quiz description",
+      "authUserId": 313259363935851,
+      "quizId": 2108135179957387,
+      "name": "Valid Quiz Name",
+      "timeCreated": 1720614517,
+      "description": "A valid quiz description",
       "questions": [],
       "duration": 0
     }
@@ -27,8 +27,8 @@
   "trash": [],
   "tokens": [
     {
-      "sessionId": 8727221073786097,
-      "authUserId": 6586949203655031
+      "sessionId": 7358660978497433,
+      "authUserId": 313259363935851
     }
   ]
 }

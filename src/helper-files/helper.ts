@@ -1,5 +1,5 @@
 import { Answer, getData, Question, Quizzes, Users, Trash } from '../dataStore';
-import { QuestionBody } from '../quiz';
+import { QuestionBody, QuizQuestionAnswers } from '../quiz';
 
 /**
  * Function checks if an authUserId exists in the dataStore
@@ -175,6 +175,32 @@ export function findQuizById(quizId: number): Quizzes | undefined {
 }
 
 /**
+ * Finds a quiz in the trash by its quiz ID
+ *
+ * @param {number} quizId - The ID of the quiz to find
+ * @returns {Quizzes | undefined} - The quiz with the specified ID | undefined
+ */
+export function findTrashedQuizById(quizId: number): Trash | undefined {
+  const data = getData();
+  return data.trash.find(q => q.quiz.quizId === quizId);
+}
+
+/**
+ * Function checks if a quiz with a matching quiz ID is in the trash
+ *
+ * @param {number} quizId - The ID of the quiz to find
+ * @returns {boolean} - true if there is a quiz in the trash, false if not
+ */
+export function quizIsInTrash(quizId: number): boolean {
+  const data = getData();
+  const quiz = data.trash.find(q => q.quiz.quizId === quizId);
+  if (quiz === undefined) {
+    return false;
+  }
+  return true;
+}
+
+/**
  * Finds a question in the data by its question ID
  *
  * @param {number} questionId - ID of the question to find
@@ -311,30 +337,23 @@ export function checkForNumCorrectAns(questionBody: QuestionBody): number {
   return numCorrectAns;
 }
 
-/**
- * Finds a quiz in the trash by its quiz ID
- *
- * @param {number} quizId - The ID of the quiz to find
- * @returns {Quizzes | undefined} - The quiz with the specified ID | undefined
- */
-export function findTrashedQuizById(quizId: number): Trash | undefined {
-  const data = getData();
-  return data.trash.find(q => q.quiz.quizId === quizId);
-}
+export function createAnswersArray(givenAnswers: QuizQuestionAnswers[]): Answer[] {
+  const questionAnswersArray = [];
+  for (const answer of givenAnswers) {
+    let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    while (answerIdInUse(newAnswerId) === true) {
+      newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    }
 
-/**
- * Function checks if a quiz with a matching quiz ID is in the trash
- *
- * @param {number} quizId - The ID of the quiz to find
- * @returns {boolean} - true if there is a quiz in the trash, false if not
- */
-export function quizIsInTrash(quizId: number): boolean {
-  const data = getData();
-  const quiz = data.trash.find(q => q.quiz.quizId === quizId);
-  if (quiz === undefined) {
-    return false;
+    questionAnswersArray.push({
+      answerId: newAnswerId,
+      answer: answer.answer,
+      colour: generateAnsColour(),
+      correct: answer.correct
+    });
   }
-  return true;
+
+  return questionAnswersArray;
 }
 
 export function generateAnsColour(): string {

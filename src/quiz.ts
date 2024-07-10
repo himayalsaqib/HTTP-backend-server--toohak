@@ -15,7 +15,8 @@ import {
   answerIdInUse,
   findQuestionById,
   generateAnsColour,
-  updateQuizDuration
+  updateQuizDuration,
+  createAnswersArray
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -359,31 +360,12 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
-  // create answers to the question
-  const questionAnswersArray = [];
-  for (const answer of questionBody.answers) {
-    let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-    while (answerIdInUse(newAnswerId) === true) {
-      newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-    }
-
-    const answerColour = generateAnsColour();
-
-    const newAnswer = {
-      answerId: newAnswerId,
-      answer: answer.answer,
-      colour: answerColour,
-      correct: answer.correct
-    };
-    questionAnswersArray.push(newAnswer);
-  }
-
   const newQuestion = {
     questionId: newQuestionId,
     question: questionBody.question,
     duration: questionBody.duration,
     points: questionBody.points,
-    answers: questionAnswersArray
+    answers: createAnswersArray(questionBody.answers)
   };
 
   // set timeLastEditied as the same as timeCreated for question
@@ -517,20 +499,7 @@ export function adminQuizQuestionUpdate(
   questionToUpdate.question = questionBody.question;
   questionToUpdate.duration = questionBody.duration;
   questionToUpdate.points = questionBody.points;
-  questionToUpdate.answers = [];
-  for (const index in questionBody.answers) {
-    let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-    while (answerIdInUse(newAnswerId) === true) {
-      newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-    }
- 
-    questionToUpdate.answers.push({
-      answerId: newAnswerId,
-      answer: questionBody.answers[index].answer,
-      colour: generateAnsColour(), 
-      correct: questionBody.answers[index].correct
-    });
-  }
+  questionToUpdate.answers = createAnswersArray(questionBody.answers);
 
   quiz.timeLastEdited = Math.floor(Date.now() / 1000);
   quiz.duration = updateQuizDuration(quizId);
