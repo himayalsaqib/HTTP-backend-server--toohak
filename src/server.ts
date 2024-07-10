@@ -158,13 +158,20 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
 
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   const token = req.body;
+  const sessionId = parseInt(token);
 
-  let response = tokenExists(token.sessionId);
+  if (sessionIdExists(sessionId) === false) {
+    return(res).status(401).json({ error: 'Invalid session ID' });
+  }
+
+  let userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = adminAuthLogout(token.sessionId);
+  response = adminAuthLogout(userToken);
   res.json(response);
 });
 
