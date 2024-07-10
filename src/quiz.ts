@@ -320,7 +320,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     return { error: 'The question cannot have more than 6 answers or less than 2 answers.' };
   }
 
-  if (questionBody.duration < 0) {
+  if (questionBody.duration <= 0) {
     return { error: 'The question duration must be a positive number.' };
   }
 
