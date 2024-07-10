@@ -102,7 +102,7 @@ describe('GET /v1/admin/quiz/list', () => {
 
     test('Returns error when sessionId is invalid', () => {
       const sessionId = parseInt(token) + 1;
-      expect(requestGet({token: sessionId.toString }, '/v1/admin/quiz/list')).toStrictEqual({
+      expect(requestGet({ token: sessionId.toString }, '/v1/admin/quiz/list')).toStrictEqual({
         retval: error,
         statusCode: 401
       });
