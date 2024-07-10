@@ -14,7 +14,8 @@ import {
   questionIdInUse,
   answerIdInUse,
   findQuestionById,
-  generateAnsColour
+  generateAnsColour,
+  updateQuizDuration
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -484,25 +485,22 @@ export function adminQuizQuestionUpdate(
   if (questionBody.duration <= 0) {
     return { error: 'Question duration is not a positive number.'};
   }
-  // sum of quiz questions duration exceeds 3 minutes. function
   if (calculateSumQuestionDuration(quizId, questionBody.duration) > MAX_QUIZ_QUESTIONS_DURATION) {
     return { error: 'Sum of the question durations in the quiz exceeds 3 minutes.' };
   }
   if (questionBody.points < MIN_POINT_VALUE || questionBody.points > MAX_POINT_VALUE) {
     return { error: 'Points awarded for the question are less than 1 or greater than 10.' };
   }
-  // The length of any answer is shorter than 1 character long, or longer than 30 characters long. function
   if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN) === true) {
     return { error: 'length of any answer is shorter than 1 character, or longer than 30 characters.' };
   }
-  // Any answer strings are duplicates of one another (within the same question). function
   if (checkForAnsDuplicates(questionBody) === true) {
     return { error: 'Any answer strings are duplicates of one another.' };
   }
-  // There are no correct answers. function
   if (checkForNumCorrectAns(questionBody) < MIN_CORRECT_ANS) {
     return { error: 'There are no correct answers.' };
   }
+
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
@@ -516,20 +514,18 @@ export function adminQuizQuestionUpdate(
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
   }
-  
-  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
-
   if (questionIdInUse(questionId) === false) {
     return { error: 'Question Id does not refer to a valid question within this quiz.'};
   }
 
-  let questionToUpdate = findQuestionById(questionId, quizId);
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  quiz.duration = updateQuizDuration(quizId);
 
+  let questionToUpdate = findQuestionById(questionId, quizId);
   questionToUpdate.question = questionBody.question;
   questionToUpdate.duration = questionBody.duration;
   questionToUpdate.points = questionBody.points;
   questionToUpdate.answers = [];
-  const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
   for (const index in questionBody.answers) {
     let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     while (answerIdInUse(newAnswerId) === true) {
@@ -539,12 +535,10 @@ export function adminQuizQuestionUpdate(
     questionToUpdate.answers.push({
       answerId: newAnswerId,
       answer: questionBody.answers[index].answer,
-      colour: answerColours[index], //assign a colour based on its index
+      colour: generateAnsColour(), 
       correct: questionBody.answers[index].correct
     });
   }
-
-  //update quiz duration.
 
   setData(data);
 
