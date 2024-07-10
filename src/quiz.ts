@@ -285,7 +285,10 @@ export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): Empt
   }
 
   for (const quizId of quizIds) {
+    // Find index of quiz with matching quizId in data.trash
     const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
+
+    // If quizId match found remove from data.trash at that index
     if (index !== -1) {
       data.trash.splice(index, 1);
     }
