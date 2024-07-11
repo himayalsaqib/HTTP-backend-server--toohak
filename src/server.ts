@@ -442,8 +442,6 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   if ('error' in response) {
     return res.status(403).json(response);
   }
-  console.log('quizidddddddddddd:');
-  console.log(quizId);
 
   response = adminQuizQuestionDuplicate(userToken.authUserId, quizId, questionId);
   if ('error' in response) {
