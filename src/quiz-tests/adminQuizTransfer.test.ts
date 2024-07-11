@@ -165,7 +165,8 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
 
   describe('Testing token errors (status code 401)', () => {
     test('Token is empty (no users registered)', () => {
-      transferBody = { token: null, userEmail: 'validemail@gmail.com' };
+      requestDelete({}, '/v1/clear');
+      transferBody = { token: token, userEmail: 'validemail@gmail.com' };
       const res = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
       expect(res).toStrictEqual({
         retval: error,
