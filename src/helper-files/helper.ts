@@ -382,6 +382,12 @@ export function generateAnsColour(): string {
  * @returns {Question[]}
  */
 export function swapQuestions(questionIndex1: number, questionIndex2: number, questionArr: Question[]): Question[] {
+  if (questionIndex1 < questionIndex2) {
+    let temp = questionIndex1;
+    questionIndex1 = questionIndex2;
+    questionIndex2 = temp;
+  }
+
   const question1 = questionArr.splice(questionIndex1, 1);
   const question2 = questionArr.splice(questionIndex2, 1);
 
