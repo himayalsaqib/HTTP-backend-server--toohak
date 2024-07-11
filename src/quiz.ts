@@ -457,12 +457,26 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
 /**
  * Transfer ownership of a quiz to a different user based on their email
  * 
- * @param {number} authUserId 
- * @param {number} quizId 
- * @param {string} userEmail 
+ * @param {number} authUserId - of user currently owning the quiz
+ * @param {number} quizId - of the quiz to be transfered
+ * @param {string} userEmail - of the user to which the quiz is being
+ *                             transferred to
  * @returns {{} | { error: string }} 
  */
 export function adminQuizTransfer(authUserId: number, quizId: number, userEmail: string) : EmptyObject | ErrorObject {
+
+  // userEmail is not a real user
+    // look through users[] to see if email exists i.e. not registered
+
+  // userEmail is the current logged in user
+    // find if userEmail is in users[].email
+
+  // quizId refers to a quiz that has a name that is already used by the target user
+    // look through userEmail quizzes to see if one of their quizzes has the same name
+    // as the quiz found with quizID
+
+  // transferring the quiz
+  // update timeLastEdited
 
   return {};
 }
