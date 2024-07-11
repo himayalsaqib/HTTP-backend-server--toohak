@@ -278,7 +278,7 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const resQuestionCreate = requestPost({ token: token, questionBody: question }, `/v1/admin/quiz/${quizId}/question`);
       const questionId = resQuestionCreate.retval.questionId;
 
-      quizId += '1';
+      quizId += 1;
       const dupeQues = requestPost({ token }, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
       expect(dupeQues.statusCode).toStrictEqual(403);
       expect(dupeQues.retval).toStrictEqual(error);
