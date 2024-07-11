@@ -44,7 +44,7 @@ describe('POST /v1/admin/quiz', () => {
     test('Side effect (successful quiz creation): adminQuizInfo displays correct timeCreated', () => {
       const time = Math.floor(Date.now() / 1000);
       const res = requestPost(quizBody, '/v1/admin/quiz');
-      
+
       const infoRes = requestGet({ token: token }, `/v1/admin/quiz/${res.retval.quizId}`);
       expect(infoRes.retval.timeCreated).toBeGreaterThanOrEqual(time);
       expect(infoRes.retval.timeCreated).toBeLessThanOrEqual(time + 1);
