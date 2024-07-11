@@ -100,6 +100,7 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
 
   describe('Testing quizId errors (status code 403)', () => {
     test('One or more of the Quiz IDs refers to a quiz that this current user does not own', () => {
+      // Register otherUser
       const otherUserBody = { email: 'otherUser@gmail.com', password: 'Password23', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
       const otherUserResponse = requestPost(otherUserBody, '/v1/admin/auth/register');
       const otherUserToken: string = otherUserResponse.retval.token;
@@ -123,7 +124,24 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
     });
     test("One or more of the Quiz IDs refers to a quiz that doesn't exist", () => {
-      const quizIdsToDelete = JSON.stringify([quizIds[1], 9999, 10000]); // not sure about this
+      requestDelete({}, '/v1/clear');
+
+      // Register a user
+      userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+      const registerResponse = requestPost(userBody, '/v1/admin/auth/register');
+      token = registerResponse.retval.token;
+
+      // Create one quiz
+      quizBody = { token: token, name: `Quiz 1`, description: `Description 1` };
+      const quizResponse = requestPost(quizBody, '/v1/admin/quiz');
+      const quizId = quizResponse.retval.quizId;
+
+      // Put quiz in trash
+      requestDelete({ token }, `/v1/admin/quiz/${quizId}`);
+      quizIds.push(quizId);
+
+      // Delete a quiz that does not exist
+      const quizIdsToDelete = JSON.stringify([quizIds[1] + 1]);
 
       const res = requestDelete({ token: token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty');
       expect(res).toStrictEqual({ retval: error, statusCode: 403 });
