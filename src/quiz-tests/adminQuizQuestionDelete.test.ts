@@ -53,7 +53,7 @@ describe('DELETE /v1/admin/quiz/:quizid/question/:questionid', () => {
   });
 
   describe('Testing successful cases (status code 200)', () => {
-    test('Successfully deletes a question', () => {
+    test('Has correct return type', () => {
       const res = requestDelete({ token: token }, `/v1/admin/quiz/${quizId}/question/${questionId}`);
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
     });
