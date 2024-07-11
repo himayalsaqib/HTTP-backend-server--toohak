@@ -445,7 +445,7 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
  * @returns {{} | { error: string }}
  */
 export function adminQuizQuestionUpdate(
-  authUserId: number, 
+  authUserId: number,
   quizId: number,
   questionId: number,
   questionBody: QuestionBody

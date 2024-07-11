@@ -192,7 +192,6 @@ export function findTrashedQuizById(quizId: number): Trash | undefined {
  * @returns {boolean} - true if there is a quiz in the trash, false if not
  */
 export function quizIsInTrash(quizId: number): boolean {
-  const data = getData();
   const quiz = findTrashedQuizById(quizId);
   if (quiz === undefined) {
     return false;
