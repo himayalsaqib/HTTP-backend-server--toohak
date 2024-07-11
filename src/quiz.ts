@@ -12,8 +12,11 @@ import {
   checkForAnsDuplicates,
   checkForNumCorrectAns,
   questionIdInUse,
-  answerIdInUse,
-  generateAnsColour
+  swapQuestions,
+  findQuestionById,
+  createAnswersArray,
+  adminEmailInUse,
+  findUserByEmail
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -21,13 +24,14 @@ const MIN_QUIZ_NAME_LEN = 3;
 const MAX_QUIZ_NAME_LEN = 30;
 const MAX_DESCRIPTION_LEN = 100;
 
+const MIN_QUESTION_INDEX = 0;
 const MIN_QUESTION_LEN = 5;
 const MAX_QUESTION_LEN = 50;
 
 const MIN_NUM_ANSWERS = 2;
 const MAX_NUM_ANSWERS = 6;
 
-const MAX_QUIZ_QUESTIONS_DURATION = 180; // 3 minutes in seconds
+const MAX_QUIZ_QUESTIONS_DURATION = 180;
 
 const MIN_POINT_VALUE = 1;
 const MAX_POINT_VALUE = 10;
@@ -44,9 +48,9 @@ interface QuizList {
 }
 
 export interface QuizInfo extends Omit<Quizzes, 'authUserId'> {
-  numQuestions: number,
-  questions: Question[],
-  duration: number,
+  numQuestions: number;
+  questions: Question[];
+  duration: number;
 }
 
 export interface QuizQuestionAnswers {
@@ -58,7 +62,7 @@ export interface QuestionBody {
   question: string;
   duration: number;
   points: number;
-  answers: QuizQuestionAnswers[]; // not 100% certain of this
+  answers: QuizQuestionAnswers[];
 }
 
 /// ////////////////////////////// Functions ///////////////////////////////////
@@ -357,31 +361,12 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
-  // create answers to the question
-  const questionAnswersArray = [];
-  for (const answer of questionBody.answers) {
-    let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-    while (answerIdInUse(newAnswerId) === true) {
-      newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-    }
-
-    const answerColour = generateAnsColour();
-
-    const newAnswer = {
-      answerId: newAnswerId,
-      answer: answer.answer,
-      colour: answerColour,
-      correct: answer.correct
-    };
-    questionAnswersArray.push(newAnswer);
-  }
-
   const newQuestion = {
     questionId: newQuestionId,
     question: questionBody.question,
     duration: questionBody.duration,
     points: questionBody.points,
-    answers: questionAnswersArray
+    answers: createAnswersArray(questionBody.answers)
   };
 
   // set timeLastEditied as the same as timeCreated for question
@@ -395,12 +380,12 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
 }
 
 /**
- * Restores a quiz from trash
- *
- * @param {number} authUserId
- * @param {number} quizId
- * @returns {{} | { error: string }}
- */
+* Restores a quiz from trash
+*
+* @param {number} authUserId
+* @param {number} quizId
+* @returns {{} | { error: string }}
+*/
 export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
@@ -451,6 +436,152 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
   }
 
   return { quizzes: trashList };
+}
+
+/**
+ * Given a question ID, swap the question with the question at the index
+ * newPosition
+ *
+ * @param {number} questionId
+ * @param {number} newPosition
+ * @param {number} quizId
+ * @returns {{} | { error: string }}
+ */
+export function adminQuizQuestionMove (questionId: number, newPosition: number, quizId: number): EmptyObject | ErrorObject {
+  const quiz = findQuizById(quizId);
+  if (quiz === undefined) {
+    return { error: 'Quiz does not exist.' };
+  }
+
+  const question = findQuestionById(questionId, quizId);
+  if (question === undefined) {
+    return { error: 'Question Id does not refer to a valid question within this quiz.' };
+  }
+
+  if (newPosition < MIN_QUESTION_INDEX || newPosition > quiz.questions.length - 1) {
+    return { error: 'New position is less than 0 or new position is greater than n-1 where n is the number of questions.' };
+  }
+
+  const questionIndex = quiz.questions.findIndex(q => q.questionId === questionId);
+  if (questionIndex === newPosition) {
+    return { error: 'NewPosition is the position of the current question.' };
+  }
+
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  quiz.questions = swapQuestions(questionIndex, newPosition, quiz.questions);
+
+  return {};
+}
+
+/**
+ * Update the description of the relevant quiz
+ *
+ * @param {number} authUserId
+ * @param {number} quizId
+ * @param {number} questionId
+ * @param {QuestionBody} questionBody
+ * @returns {{} | { error: string }}
+ */
+export function adminQuizQuestionUpdate(
+  authUserId: number,
+  quizId: number,
+  questionId: number,
+  questionBody: QuestionBody
+): EmptyObject | ErrorObject {
+  if (questionBody.question.length < MIN_QUESTION_LEN || questionBody.question.length > MAX_QUESTION_LEN) {
+    return { error: 'Question  is less than 5 characters or greater than 50 characters.' };
+  }
+  if (questionBody.answers.length < MIN_NUM_ANSWERS || questionBody.answers.length > MAX_NUM_ANSWERS) {
+    return { error: 'Question has more than 6 answers or less than 2 answers.' };
+  }
+  if (questionBody.duration <= 0) {
+    return { error: 'Question duration is not a positive number.' };
+  }
+  if (calculateSumQuestionDuration(quizId, questionBody.duration) > MAX_QUIZ_QUESTIONS_DURATION) {
+    return { error: 'Sum of the question durations in the quiz exceeds 3 minutes.' };
+  }
+  if (questionBody.points < MIN_POINT_VALUE || questionBody.points > MAX_POINT_VALUE) {
+    return { error: 'Points awarded for the question are less than 1 or greater than 10.' };
+  }
+  if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN) === true) {
+    return { error: 'length of any answer is shorter than 1 character, or longer than 30 characters.' };
+  }
+  if (checkForAnsDuplicates(questionBody) === true) {
+    return { error: 'Any answer strings are duplicates of one another.' };
+  }
+  if (checkForNumCorrectAns(questionBody) < MIN_CORRECT_ANS) {
+    return { error: 'There are no correct answers.' };
+  }
+  if (authUserIdExists(authUserId) === false) {
+    return { error: 'AuthUserId is not a valid user.' };
+  }
+  if (quizIdInUse(quizId) === false) {
+    return { error: 'Quiz ID does not refer to a valid quiz.' };
+  }
+
+  const data = getData();
+  const quiz = findQuizById(quizId);
+
+  if (quiz.authUserId !== authUserId) {
+    return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
+  }
+  if (questionIdInUse(questionId) === false) {
+    return { error: 'Question Id does not refer to a valid question within this quiz.' };
+  }
+
+  const questionToUpdate = findQuestionById(questionId, quizId);
+  questionToUpdate.question = questionBody.question;
+  questionToUpdate.duration = questionBody.duration;
+  questionToUpdate.points = questionBody.points;
+  questionToUpdate.answers = createAnswersArray(questionBody.answers);
+
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  // updating duration for the quiz
+  quiz.duration = quiz.questions.reduce((newDuration, question) => newDuration + question.duration, 0);
+
+  setData(data);
+
+  return {};
+}
+
+/**
+ * Transfer ownership of a quiz to a different user based on their email
+ *
+ * @param {number} authUserId - of user currently owning the quiz
+ * @param {number} quizId - of the quiz to be transfered owned by authUserId
+ * @param {string} userEmail - of the user to which the quiz is being
+ *                             transferred to (the target user)
+ * @returns {{} | { error: string }}
+ */
+export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string) : EmptyObject | ErrorObject {
+  const data = getData();
+
+  if (adminEmailInUse(userEmail) === false) {
+    return { error: 'The given user email is not a real user.' };
+  }
+
+  const newUser = findUserByEmail(userEmail);
+  if (newUser.authUserId === authUserId) {
+    return { error: 'The user email refers to the current logged in user.' };
+  }
+
+  if (quizIdInUse(quizId) === false) {
+    return { error: 'Quiz ID does not refer to a valid quiz.' };
+  }
+
+  // quiz to transfer
+  const quiz = findQuizById(quizId);
+  if (quizNameInUse(newUser.authUserId, quiz.name) === true) {
+    return { error: 'Quiz ID already refers to a quiz that has a name that is already used by the target user. ' };
+  }
+
+  // transferring the quiz
+  quiz.authUserId = newUser.authUserId;
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+
+  setData(data);
+
+  return {};
 }
 
 /**
