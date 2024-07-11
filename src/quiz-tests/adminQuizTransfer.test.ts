@@ -10,14 +10,12 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
   const error = { error: expect.any(String) };
   let token: string;
   let token2: string;
-  let token3: string;
   let userBody1: { email: string, password: string, nameFirst: string, nameLast: string };
   let userBody2: { email: string, password: string, nameFirst: string, nameLast: string };
   let userBody3: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { token: string, name: string, description: string };
   let transferBody: { token: string, userEmail: string };
   let quizId: number;
-  let quizId2: number;
   let userEmail: string;
 
   describe('Testing successful cases (status code 200)', () => {
@@ -135,8 +133,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
     test('Quiz Id refers to a quiz that has a name that is already used by the target user', () => {
       // create quiz for user2 with same name
       quizBody = { token: token2, name: 'Valid Quiz Name', description: 'Another valid quiz description' };
-      const res = requestPost(quizBody, '/v1/admin/quiz');
-      quizId2 = res.retval.quizId;
+      requestPost(quizBody, '/v1/admin/quiz');
 
       transferBody = { token: token, userEmail: userBody2.email };
       const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
@@ -202,18 +199,16 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
 
       // register user3
       userBody3 = { email: 'email@gmail.com', password: 'aPassw0rd', nameFirst: 'Betty', nameLast: 'Miller' };
-      const registerUser3 = requestPost(userBody3, '/v1/admin/auth/register');
-      token3 = registerUser3.retval.token
+      requestPost(userBody3, '/v1/admin/auth/register');
 
       // create quiz for user1
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
       const res = requestPost(quizBody, '/v1/admin/quiz');
       quizId = res.retval.quizId;
-      
+
       // create quiz for user2
       quizBody = { token: token2, name: 'Valid Quiz Name', description: 'A valid quiz description' };
-      const res2 = requestPost(quizBody, '/v1/admin/quiz');
-      quizId2 = res2.retval.quizId;
+      requestPost(quizBody, '/v1/admin/quiz');
     });
 
     test('User is not an owner of this quiz', () => {
