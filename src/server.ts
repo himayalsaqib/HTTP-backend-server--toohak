@@ -422,23 +422,28 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
 
 app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
   const { token } = req.body;
-  
-  const sessionId = token.parseInt(token.sessionId);
+
+  const sessionId = parseInt(token);
   const quizId = parseInt(req.params.quizid as string);
   const questionId = parseInt(req.params.questionid as string);
 
-  
-  let response = tokenExists(token);
+  if (sessionIdExists(sessionId) === false) {
+    return (res).status(401).json({ error: 'Invalid session ID' });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
-  response = quizBelongsToUser(token.authUserId, quizId);
+  response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
     return res.status(403).json(response);
   }
 
-  response = adminQuizQuestionDuplicate(token.authUserId, quizId, questionId);
+  response = adminQuizQuestionDuplicate(userToken.authUserId, quizId, questionId);
   if ('error' in response) {
     return res.status(400).json(response);
   }
