@@ -41,7 +41,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test('Has the correct colour', () => {
+    test('Answer correctly is given a colour from the given colours array', () => {
       // create question
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
@@ -51,7 +51,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
 
       const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
       expect(colours).toContain(res.retval.questions[0].answers[0].colour);
-    })
+    });
 
     test('Side effect - Successful listing of information about a quiz with one question', () => {
       // create question
