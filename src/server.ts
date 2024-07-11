@@ -463,7 +463,6 @@ app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
   const userToken = findTokenFromSessionId(sessionId);
 
   let response = tokenExists(userToken);
-
   if ('error' in response) {
     return res.status(401).json(response);
   }
