@@ -9,17 +9,83 @@ beforeEach(() => {
 describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
   const error = { error: expect.any(String) };
   let token: string;
+  let token2: string;
+  let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { token: string, name: string, description: string };
+  let transferBody: { token: string, userEmail: string };
   let quizId: number;
+  let userEmail: string;
 
   describe('Testing successful cases (status code 200)', () => {
     beforeEach(() => {
-    
+      // register user1
+      userBody = { email: 'valid@gmail.com', password: 'Password123', nameFirst: 'Jane', nameLast: 'Doe' };
+      const registerUser1 = requestPost(userBody, '/v1/admin/auth/register');
+      token = registerUser1.retval.token;
+
+      // register user2
+      userBody = { email: 'newEmail@gmail.com', password: 'ValidPa55word', nameFirst: 'John', nameLast: 'Smith' };
+      const registerUser2 = requestPost(userBody, '/v1/admin/auth/register');
+      token2 = registerUser2.retval.token2;
+
+      // create quiz for user1
+      quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+      quizId = res.retval.quizId;
+
+      userEmail = 'newEmail@gmail.com';
+      transferBody = { token: token, userEmail: userEmail };
     });  
     
-    test.todo('Has the correct return type');
+    test('Has the correct return type', () => {
+      const res = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
+      expect(res).toStrictEqual({
+        retval: {},
+        statusCode: 200
+      });
+    });
 
-    test.todo('Side effect: the quiz is no longer listed for that user and is listed to the other user');
+    test('Side effect: the quiz is no longer listed for that user and is listed to the other user', () => {
+      const res = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
+      expect(res).toStrictEqual({
+        retval: {},
+        statusCode: 200
+      });
+
+      let listQuizzes = requestGet({ token: token }, '/v1/admin/quiz/list');
+      expect(listQuizzes).toStrictEqual({
+        retval: {
+          quizzes: []
+        }, 
+        statusCode: 200
+      });
+
+      listQuizzes = requestGet({ token: token2 }, '/v1/admin/quiz/list');
+      expect(listQuizzes).toStrictEqual({
+        retval: {
+          quizzes: [
+            {
+              quizId: quizId,
+              name: quizBody.name
+            }
+          ]
+        }, 
+        statusCode: 200
+      });
+    });
+
+    test('Side effect: the correct timeLastEdited is given when displaying quiz information', () => {
+      const res = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
+      const time = Math.floor(Date.now() / 1000);
+      expect(res).toStrictEqual({
+        retval: {},
+        statusCode: 200
+      });
+
+      const quizInfo = requestGet({ token: token2 }, `/v1/admin/quiz/${quizId}`);
+      expect(quizInfo.retval.timeLastEdited).toBeGreaterThanOrEqual(time);
+      expect(quizInfo.retval.timeLastEdited).toBeLessThanOrEqual(time + 1);
+    });
   });
 
   describe('Testing userEmail and quiz name errors (status code 400)', () => {
@@ -35,7 +101,14 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
   });
 
   describe('Testing token errors (status code 401)', () => {
-    test.todo('Token is empty (no users registered)');
+    test('Token is empty (no users registered)', () => {   
+      transferBody = { token: token, userEmail: 'validemail@gmail.com' };
+      const res = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
+      expect(res).toStrictEqual({
+        retval: error,
+        statusCode: 401
+      });
+    });
 
     test.todo('Session ID is invalid');
   });
