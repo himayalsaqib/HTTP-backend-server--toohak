@@ -142,7 +142,35 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       });
     });
 
-    test.todo('Session ID is invalid');
+    test('Session ID is invalid', () => {
+      // register user1
+      userBody1 = { email: 'valid@gmail.com', password: 'Password123', nameFirst: 'Jane', nameLast: 'Doe' };
+      const registerUser1 = requestPost(userBody1, '/v1/admin/auth/register');
+      token = registerUser1.retval.token;
+
+      // make sessionId invalid
+      const sessionId = parseInt(token) + 1;
+
+      // register user2
+      userBody2 = { email: 'newEmail@gmail.com', password: 'ValidPa55word', nameFirst: 'John', nameLast: 'Smith' };
+      const registerUser2 = requestPost(userBody2, '/v1/admin/auth/register');
+      token2 = registerUser2.retval.token2;
+
+      // create quiz for user1
+      quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+      quizId = res.retval.quizId;
+
+      // userEmail is not associated with token
+      userEmail = 'newEmail@gmail.com';
+      transferBody = { token: sessionId.toString(), userEmail: userEmail };
+
+      const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
+      expect(transfer).toStrictEqual({
+        retval: error,
+        statusCode: 401
+      });
+    });
   });
 
   describe('Testing quiz ID errors (status code 403)', () => {
