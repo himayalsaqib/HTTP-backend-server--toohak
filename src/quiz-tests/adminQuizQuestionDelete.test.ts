@@ -118,7 +118,7 @@ describe('DELETE /v1/admin/quiz/:quizid/question/:questionid', () => {
     });
   });
 
-  describe('Testing parameters given to adminQuizQuestionUpdate (status code 400)', () => {
+  describe('Testing parameters given to adminQuizQuestionDelete (status code 400)', () => {
     describe('Testing questionId errors', () => {
       test('Question Id does not refer to a valid question within this quiz', () => {
         const res = requestDelete({ token: token }, `/v1/admin/quiz/${quizId}/question/${questionId + 1}`);
