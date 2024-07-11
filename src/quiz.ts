@@ -510,12 +510,12 @@ export function adminQuizQuestionUpdate(
 
 /**
  * Transfer ownership of a quiz to a different user based on their email
- * 
+ *
  * @param {number} authUserId - of user currently owning the quiz
  * @param {number} quizId - of the quiz to be transfered owned by authUserId
  * @param {string} userEmail - of the user to which the quiz is being
  *                             transferred to (the target user)
- * @returns {{} | { error: string }} 
+ * @returns {{} | { error: string }}
  */
 export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string) : EmptyObject | ErrorObject {
   const data = getData();
@@ -541,7 +541,7 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
   if (quizNameInUse(newUser.authUserId, quiz.name) === true) {
     return { error: 'Quiz ID already refers to a quiz that has a name that is already used by the target user. ' };
   }
-    
+
   // transferring the quiz
   quiz.authUserId = newUser.authUserId;
   quiz.timeLastEdited = Math.floor(Date.now() / 1000);

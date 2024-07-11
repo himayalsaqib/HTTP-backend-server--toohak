@@ -32,7 +32,6 @@ import {
   adminQuizTransfer
 } from './quiz';
 import { load } from './dataStore';
-import { RequestOptions } from 'https';
 
 // Set up web app
 const app = express();
@@ -456,7 +455,7 @@ app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
   const { token, userEmail } = req.body;
   const sessionId = parseInt(token);
   const quizId = parseInt(req.params.quizid as string);
-  
+
   if (sessionIdExists(sessionId) === false) {
     return (res).status(401).json({ error: 'Invalid session ID' });
   }
