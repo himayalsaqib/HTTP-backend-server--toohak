@@ -27,7 +27,7 @@ const MAX_QUESTION_LEN = 50;
 const MIN_NUM_ANSWERS = 2;
 const MAX_NUM_ANSWERS = 6;
 
-const MAX_QUIZ_QUESTIONS_DURATION = 180; // 3 minutes in seconds
+const MAX_QUIZ_QUESTIONS_DURATION = 180;
 
 const MIN_POINT_VALUE = 1;
 const MAX_POINT_VALUE = 10;
