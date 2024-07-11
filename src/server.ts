@@ -178,6 +178,7 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
 });
 
 // ============================== QUIZ ROUTES =============================== //
+
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   const { token, name, description } = req.body;
   const sessionId = parseInt(token);

@@ -132,7 +132,7 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
       token = registerResponse.retval.token;
 
       // Create one quiz
-      quizBody = { token: token, name: `Quiz 1`, description: `Description 1` };
+      quizBody = { token: token, name: 'Quiz 1', description: 'Description 1' };
       const quizResponse = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = quizResponse.retval.quizId;
 
