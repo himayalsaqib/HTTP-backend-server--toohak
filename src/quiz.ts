@@ -520,11 +520,10 @@ export function adminQuizQuestionUpdate(
 export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string) : EmptyObject | ErrorObject {
   const data = getData();
 
-  // userEmail is not a real user
   if (adminEmailInUse(userEmail) === false) {
     return { error: 'The given user email is not a real user.' };
   }
-  // userEmail is the current logged in users
+
   const newUser = findUserByEmail(userEmail);
   if (newUser.authUserId === authUserId) {
     return { error: 'The user email refers to the current logged in user.' };
@@ -534,10 +533,8 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
     return { error: 'Quiz ID does not refer to a valid quiz.' };
   }
 
-  // quizId refers to a quiz that has a name that is already used by the target user
   // quiz to transfer
   const quiz = findQuizById(quizId);
-  // find quizzes for user email
   if (quizNameInUse(newUser.authUserId, quiz.name) === true) {
     return { error: 'Quiz ID already refers to a quiz that has a name that is already used by the target user. ' };
   }
