@@ -24,7 +24,7 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
     let quizId: number;
     let questionId: number;
 
-    beforeEach(() => {
+    test('Successfully duplicate a quiz question', () => {
       // Create a quiz
       const resQuizCreate = requestPost(quizBody, '/v1/admin/quiz');
       quizId = resQuizCreate.retval.quizId;
@@ -35,12 +35,132 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2] };
       const resQuestionCreate = requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`);
       questionId = resQuestionCreate.retval.questionId;
-    });
-
-    test('Successfully duplicate a quiz question', () => {
       const dupeQuestion = requestPost({ token: token }, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
       expect(dupeQuestion.statusCode).toBe(200);
       expect(dupeQuestion.retval).toStrictEqual({ newQuestionId: expect.any(Number) });
+    });
+
+    test('Duplicated question is immediately after where source question is', () => {
+      const quiz = requestPost(quizBody, '/v1/admin/quiz');
+      const quizId = quiz.retval.quizId;
+
+      const answerBody1 = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
+      const questionCreateBody1 = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody1 };
+
+      const answerBody2 = [{ answer: 'Washington, D.C.', correct: true }, { answer: 'New York', correct: false }];
+      const questionCreateBody2 = { question: 'What is the capital of the USA?', duration: 3, points: 5, answers: answerBody2 };
+
+      const answerBody3 = [{ answer: 'Elephant', correct: true }, { answer: 'Lion', correct: false }];
+      const questionCreateBody3 = { question: 'What is the largest land animal?', duration: 2, points: 5, answers: answerBody3 };
+
+      // Create three questions
+      const res1 = requestPost({ token: token, questionBody: questionCreateBody1 }, `/v1/admin/quiz/${quizId}/question`);
+      const questionId1 = res1.retval.questionId;
+
+      const res2 = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${quizId}/question`);
+      const questionId2 = res2.retval.questionId;
+
+      const res3 = requestPost({ token: token, questionBody: questionCreateBody3 }, `/v1/admin/quiz/${quizId}/question`);
+      const questionId3 = res3.retval.questionId;
+
+      // Duplicate the second question
+      const dupeRes = requestPost({ token }, `/v1/admin/quiz/${quizId}/question/${questionId2}/duplicate`);
+      const dupeQuestionId = dupeRes.retval.newQuestionId;
+
+      expect(requestGet({ token }, `/v1/admin/quiz/${quizId}`)).toStrictEqual({
+        retval: {
+          quizId: quizId,
+          name: quizBody.name,
+          timeCreated: expect.any(Number),
+          timeLastEdited: expect.any(Number),
+          description: quizBody.description,
+          numQuestions: 4,
+          questions: [
+            {
+              questionId: questionId1,
+              question: questionCreateBody1.question,
+              duration: questionCreateBody1.duration,
+              points: questionCreateBody1.points,
+              answers: [
+                {
+                  answerId: expect.any(Number),
+                  answer: answerBody1[0].answer,
+                  colour: expect.any(String),
+                  correct: answerBody1[0].correct
+                },
+                {
+                  answerId: expect.any(Number),
+                  answer: answerBody1[1].answer,
+                  colour: expect.any(String),
+                  correct: answerBody1[1].correct
+                }
+              ]
+            },
+            {
+              questionId: questionId2,
+              question: questionCreateBody2.question,
+              duration: questionCreateBody2.duration,
+              points: questionCreateBody2.points,
+              answers: [
+                {
+                  answerId: expect.any(Number),
+                  answer: answerBody2[0].answer,
+                  colour: expect.any(String),
+                  correct: answerBody2[0].correct
+                },
+                {
+                  answerId: expect.any(Number),
+                  answer: answerBody2[1].answer,
+                  colour: expect.any(String),
+                  correct: answerBody2[1].correct
+                }
+              ]
+            },
+            {
+              questionId: dupeQuestionId,
+              question: questionCreateBody2.question,
+              duration: questionCreateBody2.duration,
+              points: questionCreateBody2.points,
+              answers: [
+                {
+                  answerId: expect.any(Number),
+                  answer: answerBody2[0].answer,
+                  colour: expect.any(String),
+                  correct: answerBody2[0].correct
+                },
+                {
+                  answerId: expect.any(Number),
+                  answer: answerBody2[1].answer,
+                  colour: expect.any(String),
+                  correct: answerBody2[1].correct
+                }
+              ]
+            },
+            {
+              questionId: questionId3,
+              question: questionCreateBody3.question,
+              duration: questionCreateBody3.duration,
+              points: questionCreateBody3.points,
+              answers: [
+                {
+                  answerId: expect.any(Number),
+                  answer: answerBody3[0].answer,
+                  colour: expect.any(String),
+                  correct: answerBody3[0].correct
+                },
+                {
+                  answerId: expect.any(Number),
+                  answer: answerBody3[1].answer,
+                  colour: expect.any(String),
+                  correct: answerBody3[1].correct
+                }
+              ]
+            }
+          ],
+          duration: expect.any(Number)
+        },
+        statusCode: 200
+      });
     });
   });
 
