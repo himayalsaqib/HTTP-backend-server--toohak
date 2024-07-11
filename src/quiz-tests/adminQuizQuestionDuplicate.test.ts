@@ -244,7 +244,7 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       expect(dupeQues.retval).toStrictEqual(error);
     });
 
-    test.skip('Side effect: returns error when trying to duplicate deleted quiz question', () => {
+    test('Side effect: returns error when trying to duplicate deleted quiz question', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = res.retval.quizId;
       const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }] };
