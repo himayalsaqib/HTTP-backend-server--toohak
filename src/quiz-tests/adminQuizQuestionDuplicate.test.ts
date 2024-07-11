@@ -137,24 +137,11 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       expect(dupeQues.statusCode).toBe(403);
       expect(dupeQues.retval).toStrictEqual(error);
     });
-
-    test.skip('Side effect: returns error when trying to duplicate quiz question that has been moved to another quiz', () => {
-      const res = requestPost(quizBody, '/v1/admin/quiz');
-      const quizId = res.retval.quizId;
-      const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }] };
-      const questionRes = requestPost({ token, ...question }, `/v1/admin/quiz/${quizId}/question`);
-      const questionId = questionRes.retval.questionId;
-
-      requestPut({ token }, `/v1/admin/quiz/${quizId}/question/${questionId}/move`);
-      const dupeQues = requestPost({ token }, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
-
-      expect(dupeQues.statusCode).toBe(403);
-      expect(dupeQues.retval).toStrictEqual(error);
-    });
   });
 
-  describe('Side effect testing', () => {
-    test('Duplicated question is immediately after where source question is and timeLastEdited is updated', () => {
+  describe('Other side effect testing', () => {
+    test('Duplicated question is immediately after where source question is, timeLastEdited is updated', () => {
+
       const quiz = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = quiz.retval.quizId;
 
@@ -176,11 +163,11 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
 
       const res3 = requestPost({ token: token, questionBody: questionCreateBody3 }, `/v1/admin/quiz/${quizId}/question`);
       const questionId3 = res3.retval.questionId;
+
       // Duplicate the second question
       const dupeRes = requestPost({ token }, `/v1/admin/quiz/${quizId}/question/${questionId2}/duplicate`);
       const dupeQuestionId = dupeRes.retval.newQuestionId;
 
-      // const quizDetails = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
       expect(requestGet({ token }, `/v1/admin/quiz/${quizId}`)).toStrictEqual({
         retval: {
           quizId: quizId,
@@ -275,14 +262,6 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
         },
         statusCode: 200
       });
-
-      // expect(quizDetails.retval.questions[1].questionId).toBe(questionId2);
-      // expect(quizDetails.retval.questions[2].questionId).toBe(dupeQuestionId);
-      // expect(quizDetails.retval.questions[3].questionId).toBe(questionId3);
-
-      // Check that the timeLastEdited is updated
-      // const time = Math.floor(Date.now() / 1000);
-      // expect(quizDetails.retval.timeLastEdited).toBeGreaterThan(time);
     });
   });
 });
