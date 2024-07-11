@@ -468,13 +468,11 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   if (sessionIdExists(sessionId) === false) {
     return (res).status(401).json({ error: 'Invalid session ID' });
   }
-let response = tokenExists(sessionId);
+  let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
   const userToken = findTokenFromSessionId(sessionId);
-
-  
 
   response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
