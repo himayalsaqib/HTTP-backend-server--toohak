@@ -164,11 +164,9 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
     });
 
     test('Side effect:timeLastEdited is updated when duplicating a quiz question', () => {
-      // Create a quiz
       const resQuizCreate = requestPost(quizBody, '/v1/admin/quiz');
       quizId = resQuizCreate.retval.quizId;
 
-      // Create question
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
       const questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2] };
