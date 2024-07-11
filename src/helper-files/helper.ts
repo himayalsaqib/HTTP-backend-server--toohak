@@ -193,7 +193,7 @@ export function findTrashedQuizById(quizId: number): Trash | undefined {
  */
 export function quizIsInTrash(quizId: number): boolean {
   const data = getData();
-  const quiz = data.trash.find(q => q.quiz.quizId === quizId);
+  const quiz = findTrashedQuizById(quizId);
   if (quiz === undefined) {
     return false;
   }
