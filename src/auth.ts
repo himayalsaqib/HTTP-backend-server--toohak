@@ -1,4 +1,4 @@
-// includes auth functions 
+// includes auth functions
 
 import { setData, getData, ErrorObject, EmptyObject, Tokens } from './dataStore';
 import validator from 'validator';
