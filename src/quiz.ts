@@ -13,7 +13,9 @@ import {
   checkForNumCorrectAns,
   questionIdInUse,
   answerIdInUse,
-  generateAnsColour
+  generateAnsColour,
+  adminEmailInUse,
+  findUserByEmail
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -458,25 +460,39 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
  * Transfer ownership of a quiz to a different user based on their email
  * 
  * @param {number} authUserId - of user currently owning the quiz
- * @param {number} quizId - of the quiz to be transfered
+ * @param {number} quizId - of the quiz to be transfered owned by authUserId
  * @param {string} userEmail - of the user to which the quiz is being
- *                             transferred to
+ *                             transferred to (the target user)
  * @returns {{} | { error: string }} 
  */
-export function adminQuizTransfer(authUserId: number, quizId: number, userEmail: string) : EmptyObject | ErrorObject {
+export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string) : EmptyObject | ErrorObject {
 
   // userEmail is not a real user
-    // look through users[] to see if email exists i.e. not registered
-
-  // userEmail is the current logged in user
-    // find if userEmail is in users[].email
+  if (adminEmailInUse(userEmail) === false) {
+    return { error: 'The given user email is not a real user.' };
+  }
+  // userEmail is the current logged in users
+  const newUser = findUserByEmail(userEmail);
+  if (newUser.authUserId === authUserId) {
+    return { error: 'The user email refers to the current logged in user.' };
+  }
 
   // quizId refers to a quiz that has a name that is already used by the target user
-    // look through userEmail quizzes to see if one of their quizzes has the same name
-    // as the quiz found with quizID
+  // quiz to transfer
+  const quiz = findQuizById(quizId);
+  // find quizzes for user email
+  if (quizNameInUse(newUser.authUserId, quiz.name) === true) {
+    return { error: 'Quiz ID already refers to a quiz that has a name that is already used by the target user. ' };
+  }
 
+  const data = getData();
   // transferring the quiz
+  
+
+
   // update timeLastEdited
+
+  setData(data);
 
   return {};
 }
