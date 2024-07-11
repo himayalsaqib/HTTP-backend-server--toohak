@@ -462,16 +462,12 @@ app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
   const sessionId = parseInt(token);
   const quizId = parseInt(req.params.quizid as string);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response = tokenExists(userToken);
+  let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
+
+  const userToken = findTokenFromSessionId(sessionId);
 
   response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
