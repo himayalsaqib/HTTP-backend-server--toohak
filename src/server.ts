@@ -1,6 +1,8 @@
-import express, { json, query, Request, Response } from 'express';
+// Contains all routes for toohak server
+
+import express, { json, Request, Response } from 'express';
 import { echo } from './newecho';
-import morgan from 'morgan';
+import morgan, { token } from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import YAML from 'yaml';
@@ -16,21 +18,31 @@ import {
   adminUserPasswordUpdate,
   adminAuthLogout
 } from './auth';
-import { quizBelongsToUser, tokenCreate, tokenExists, trashedQuizBelongsToUser, quizDoesNotExist, findTokenFromSessionId, sessionIdExists } from './helper-files/serverHelper';
+import {
+  quizBelongsToUser,
+  tokenCreate,
+  tokenExists,
+  trashedQuizBelongsToUser,
+  quizDoesNotExist,
+  findTokenFromSessionId
+} from './helper-files/serverHelper';
 import { clear } from './other';
 import {
   adminQuizCreate,
   adminQuizRemove,
   adminQuizList,
   adminQuizNameUpdate,
+  adminQuizQuestionUpdate,
   adminQuizTrash,
   adminQuizInfo,
   adminQuizRestore,
   adminQuizDescriptionUpdate,
   adminQuizCreateQuestion,
-  adminQuizQuestionDelete
+  adminQuizQuestionDelete,
+  adminQuizQuestionMove
 } from './quiz';
 import { load } from './dataStore';
+import { convertCompilerOptionsFromJson } from 'typescript';
 
 // Set up web app
 const app = express();
@@ -99,16 +111,12 @@ app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response = tokenExists(userToken);
+  let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
+
+  const userToken = findTokenFromSessionId(sessionId);
 
   response = adminUserDetails(userToken.authUserId);
   res.json(response);
@@ -118,16 +126,12 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
   const { token, email, nameFirst, nameLast } = req.body;
   const sessionId = parseInt(token);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response = tokenExists(userToken);
+  let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
+
+  const userToken = findTokenFromSessionId(sessionId);
 
   response = adminUserDetailsUpdate(userToken.authUserId, email, nameFirst, nameLast);
   if ('error' in response) {
@@ -141,26 +145,14 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   const { token, oldPassword, newPassword } = req.body;
   const sessionId = parseInt(token);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response = tokenExists(userToken);
+  let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
+  const userToken = findTokenFromSessionId(sessionId);
+
   response = adminUserPasswordUpdate(userToken.authUserId, oldPassword, newPassword);
-  console.log('Tokennnnnnnn');
-  console.log(userToken);
-  console.log('userToken.authUserIdddddddddddd');
-  console.log(userToken.authUserId);
-  console.log('userToken.sessionnnnIdddddddddddd');
-  console.log(userToken.sessionId);
-  console.log('RESPONSEEEEE:');
-  console.log(response);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -172,16 +164,12 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   const { token } = req.body;
   const sessionId = parseInt(token);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response = tokenExists(userToken);
+  let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
+
+  const userToken = findTokenFromSessionId(sessionId);
 
   response = adminAuthLogout(userToken);
   res.json(response);
@@ -193,18 +181,40 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   const { token, name, description } = req.body;
   const sessionId = parseInt(token);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response = tokenExists(userToken);
+  let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
 
+  const userToken = findTokenFromSessionId(sessionId);
+
   response = adminQuizCreate(userToken.authUserId, name, description);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
+app.put('/v1/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const questionId = parseInt(req.params.questionid as string);
+  const sessionId = parseInt(req.body.token);
+  const newPosition = req.body.newPosition;
+
+  let response = tokenExists(sessionId);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  response = quizBelongsToUser(userToken.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizQuestionMove(questionId, newPosition, quizId);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -216,16 +226,12 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(req.query.token as string);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response = tokenExists(userToken);
+  let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
+
+  const userToken = findTokenFromSessionId(sessionId);
 
   response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
@@ -239,16 +245,12 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
 app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response = tokenExists(userToken);
+  let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
+
+  const userToken = findTokenFromSessionId(sessionId);
 
   response = adminQuizList(userToken.authUserId);
   res.json(response);
@@ -259,16 +261,13 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(token);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
+  let response = tokenExists(sessionId);
+  if ('error' in response) {
+    return res.status(401).json(response);
   }
 
   const userToken = findTokenFromSessionId(sessionId);
 
-  let response = tokenExists(userToken);
-  if ('error' in response) {
-    return res.status(401).json(response);
-  }
   response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
     return res.status(403).json(response);
@@ -284,16 +283,12 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
 app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response = tokenExists(userToken);
+  let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
+
+  const userToken = findTokenFromSessionId(sessionId);
 
   response = adminQuizTrash(userToken.authUserId);
   if ('error' in response) {
@@ -308,20 +303,18 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(token);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
+  let response = tokenExists(sessionId);
+  if ('error' in response) {
+    return res.status(401).json(response);
   }
 
   const userToken = findTokenFromSessionId(sessionId);
 
-  let response = tokenExists(userToken);
-  if ('error' in response) {
-    return res.status(401).json(response);
-  }
   response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
     return res.status(403).json(response);
   }
+
   response = adminQuizDescriptionUpdate(userToken.authUserId, quizId, description);
   if ('error' in response) {
     return res.status(400).json(response);
@@ -335,16 +328,12 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(token);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response = tokenExists(userToken);
+  let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
+
+  const userToken = findTokenFromSessionId(sessionId);
 
   response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
@@ -368,16 +357,12 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   const sessionId = parseInt(req.body.token);
   const quizId = parseInt(req.params.quizid as string);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response = tokenExists(userToken);
+  let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
+
+  const userToken = findTokenFromSessionId(sessionId);
 
   response = trashedQuizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
@@ -402,16 +387,13 @@ app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
   const quizId = parseInt(req.params.quizid as string);
   const questionId = parseInt(req.params.questionid as string);
 
-  if (!sessionIdExists(sessionId)) {
-    return res.status(401).json({ error: 'Invalid session ID' });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response = tokenExists(userToken);
+  let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
+
+  const userToken = findTokenFromSessionId(sessionId);
+  console.log("token", userToken);
 
   response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
@@ -430,22 +412,45 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
   const quizId = parseInt(req.params.quizid as string);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
+  let response = tokenExists(sessionId);
+  if ('error' in response) {
+    return res.status(401).json(response);
   }
 
   const userToken = findTokenFromSessionId(sessionId);
 
-  let response = tokenExists(userToken);
-  if ('error' in response) {
-    return res.status(401).json(response);
-  }
   response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
     return res.status(403).json(response);
   }
 
   response = adminQuizInfo(userToken.authUserId, quizId);
+  res.json(response);
+});
+
+app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
+  const { token, questionBody } = req.body;
+  const sessionId = parseInt(token);
+  const quizId = parseInt(req.params.quizid as string);
+  const questionId = parseInt(req.params.questionid as string);
+
+  let response = tokenExists(sessionId);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  response = quizBelongsToUser(userToken.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizQuestionUpdate(userToken.authUserId, quizId, questionId, questionBody);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
   res.json(response);
 });
 

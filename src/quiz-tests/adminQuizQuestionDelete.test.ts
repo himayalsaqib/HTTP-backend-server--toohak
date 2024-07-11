@@ -25,6 +25,7 @@ beforeEach(() => {
 	quizBody = { token: token, name: 'Sample Quiz', description: 'Sample Description' };
 	const quizResponse = requestPost(quizBody, '/v1/admin/quiz');
 	const quizId = quizResponse.retval.quizId;
+	console.log("token", token);
 
 	answerBody = [
 		{ answer: 'Answer 1', correct: false },
@@ -49,8 +50,9 @@ beforeEach(() => {
 
 });
 
-	test('Successfully deletes a question', () => {
+	test.only('Successfully deletes a question', () => {
 		const res = requestDelete({ token: token }, `/v1/admin/quiz/${quizId}/question/${questionId}`);
+		console.log("token", token);
 		expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 	});
 

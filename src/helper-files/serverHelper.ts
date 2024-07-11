@@ -20,22 +20,26 @@ export function sessionIdExists(sessionId: number): boolean {
 }
 
 /**
- * Function checks if a token with a matching sessionId and authUserId exists
- * in the dataStore
+ * Function checks if a token with a matching sessionId exists in the dataStore
+ * and checks that the token's authUserId is in the dataStore
  *
- * @param {Tokens} token
+ * @param {number} sessionId
  * @returns {{} | { error: string }}
  */
-export function tokenExists(token: string): EmptyObject | ErrorObject {
+export function tokenExists(sessionId: number): EmptyObject | ErrorObject {
   const data = getData();
-  const decodedToken: Tokens = JSON.parse(decodeURIComponent(token));
 
-  const foundToken = data.tokens.find(foundToken => foundToken.sessionId === decodedToken.sessionId);
+  const foundToken = data.tokens.find(token => token.sessionId === sessionId);
 
-  if (foundToken === undefined || foundToken.authUserId !== decodedToken.authUserId) {
-    return { error: 'Token does not refer to a valid logged in user session' };
+  if (foundToken === undefined) {
+    return { error: 'Invalid session ID.' };
   } else {
-    return {};
+    const foundAuthUserId = data.users.find(users => users.authUserId === foundToken.authUserId);
+    if (foundAuthUserId === undefined) {
+      return { error: 'Invalid session ID.' };
+    } else {
+      return {};
+    }
   }
 }
 
@@ -127,9 +131,9 @@ export function quizDoesNotExist(quizId: number): EmptyObject | ErrorObject {
  * adds it to dataStore.
  *
  * @param {number} authUserId
- * @returns 
+ * @returns {Tokens}
  */
-export function tokenCreate(authUserId: number): { token: string } {
+export function tokenCreate(authUserId: number): Tokens {
   let newSessionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   while (sessionIdExists(newSessionId)) {
     newSessionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -144,5 +148,5 @@ export function tokenCreate(authUserId: number): { token: string } {
   data.tokens.push(newToken);
   setData(data);
 
-  return { token: encodeURIComponent(JSON.stringify(newToken)) };
+  return newToken;
 }
