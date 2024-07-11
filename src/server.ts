@@ -16,7 +16,7 @@ import {
   adminUserPasswordUpdate,
   adminAuthLogout
 } from './auth';
-import { quizBelongsToUser, trashedQuizzesBelongToUser, tokenCreate, tokenExists, trashedQuizBelongsToUser, quizDoesNotExist, findTokenFromSessionId, sessionIdExists, quizzesDoNotExist } from './helper-files/serverHelper';
+import { quizBelongsToUser, trashedQuizzesBelongToUser, tokenCreate, tokenExists, trashedQuizBelongsToUser, quizDoesNotExist, findTokenFromSessionId, sessionIdExists, quizzesDoNotExist, handleResponse } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
   adminQuizCreate,
@@ -364,13 +364,20 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
   const quizIds = JSON.parse(req.query.quizIds as string);
-
-  if (sessionIdExists(sessionId) === false) {
+ 
+  if (!sessionIdExists(sessionId)) {
     return (res).status(401).json({ error: 'Invalid session ID' });
   }
 
   const userToken = findTokenFromSessionId(sessionId);
+  const result = adminQuizTrashEmpty(userToken.authUserId, quizIds);
 
+  handleResponse(result, res);
+
+});
+
+
+/*
   let response = tokenExists(userToken);
   if ('error' in response) {
     return res.status(401).json(response);
@@ -391,7 +398,7 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
     return res.status(400).json(response);
   }
   res.json(response);
-});
+  */
 
 app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
