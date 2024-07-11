@@ -1,16 +1,17 @@
 // includes http tests for the route /v1/admin/quiz/{quizid}/transfer
 
-import { requestPost, requestDelete, requestGet } from "../helper-files/requestHelper";
+import { requestPost, requestDelete, requestGet } from '../helper-files/requestHelper';
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
-})
+});
 
 describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
   const error = { error: expect.any(String) };
   let token: string;
   let token2: string;
-  let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
+  let userBody1: { email: string, password: string, nameFirst: string, nameLast: string };
+  let userBody2: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { token: string, name: string, description: string };
   let transferBody: { token: string, userEmail: string };
   let quizId: number;
@@ -19,13 +20,13 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
   describe('Testing successful cases (status code 200)', () => {
     beforeEach(() => {
       // register user1
-      userBody = { email: 'valid@gmail.com', password: 'Password123', nameFirst: 'Jane', nameLast: 'Doe' };
-      const registerUser1 = requestPost(userBody, '/v1/admin/auth/register');
+      userBody1 = { email: 'valid@gmail.com', password: 'Password123', nameFirst: 'Jane', nameLast: 'Doe' };
+      const registerUser1 = requestPost(userBody1, '/v1/admin/auth/register');
       token = registerUser1.retval.token;
 
       // register user2
-      userBody = { email: 'newEmail@gmail.com', password: 'ValidPa55word', nameFirst: 'John', nameLast: 'Smith' };
-      const registerUser2 = requestPost(userBody, '/v1/admin/auth/register');
+      userBody2 = { email: 'newEmail@gmail.com', password: 'ValidPa55word', nameFirst: 'John', nameLast: 'Smith' };
+      const registerUser2 = requestPost(userBody2, '/v1/admin/auth/register');
       token2 = registerUser2.retval.token2;
 
       // create quiz for user1
@@ -33,6 +34,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       quizId = res.retval.quizId;
 
+      // userEmail is not associated with token
       userEmail = 'newEmail@gmail.com';
       transferBody = { token: token, userEmail: userEmail };
     });  
@@ -90,12 +92,42 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
 
   describe('Testing userEmail and quiz name errors (status code 400)', () => {
     beforeEach(() => {
-    
+      // register user1
+      userBody1 = { email: 'valid@gmail.com', password: 'Password123', nameFirst: 'Jane', nameLast: 'Doe' };
+      const registerUser1 = requestPost(userBody1, '/v1/admin/auth/register');
+      token = registerUser1.retval.token;
+
+      // register user2
+      userBody2 = { email: 'newEmail@gmail.com', password: 'ValidPa55word', nameFirst: 'John', nameLast: 'Smith' };
+      const registerUser2 = requestPost(userBody2, '/v1/admin/auth/register');
+      token2 = registerUser2.retval.token2;
+
+      // create quiz for user1
+      quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+      quizId = res.retval.quizId;
     });
   
-    test.todo('userEmail is not a real user');
+    test('userEmail is not a real user', () => {
+      transferBody = { token: token, userEmail: 'notUserEmail@gmail.com'};
+      const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
+      expect(transfer).toStrictEqual({
+        retval: error,
+        statusCode: 400
+      });
+    });
 
-    test.todo('userEmail is the current logged in user');
+    test('userEmail is the current logged in user', () => {
+      // logout user2
+      requestPost( { token: token2 }, '/v1/admin/auth/logout');
+
+      transferBody = { token: token, userEmail: userBody2.email };
+      const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId}/question`);
+      expect(transfer).toStrictEqual({
+        retval: error,
+        statusCode: 400
+      });
+    });
 
     test.todo('Quiz Id refers to a quiz that has a name that is already used by the target user');
   });
