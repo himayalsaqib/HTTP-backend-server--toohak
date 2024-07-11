@@ -40,6 +40,15 @@ describe('POST /v1/admin/quiz', () => {
       expect(listRes.retval).toStrictEqual({ quizzes: [{ quizId: res.retval.quizId, name: 'Valid Quiz Name' }, { quizId: res2.retval.quizId, name: 'Other Quiz Name' }] });
       expect(listRes.statusCode).toStrictEqual(200);
     });
+
+    test('Side effect (successful quiz creation): adminQuizInfo displays correct timeCreated', () => {
+      const time = Math.floor(Date.now() / 1000);
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+
+      const infoRes = requestGet({ token: token }, `/v1/admin/quiz/${res.retval.quizId}`);
+      expect(infoRes.retval.timeCreated).toBeGreaterThanOrEqual(time);
+      expect(infoRes.retval.timeCreated).toBeLessThanOrEqual(time + 1);
+    });
   });
 
   describe('Testing token errors (status code 401)', () => {
