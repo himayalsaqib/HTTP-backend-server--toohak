@@ -74,12 +74,13 @@ describe('GET /v1/admin/quiz/trash', () => {
       expect(trashRes).toStrictEqual({ retval: { quizzes: [] }, statusCode: 200 });
     });
 
-    test.skip('Side effect: correctly displays empty trash after trash has been emptied', () => {
+    test('Side effect: correctly displays empty trash after trash has been emptied', () => {
       let res = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = res.retval.quizId;
       requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
 
-      res = requestDelete({ token: token }, '/v1/admin/quiz/trash/empty');
+      const quizIds = JSON.stringify([quizId]);
+      res = requestDelete({ token: token, quizIds: quizIds }, '/v1/admin/quiz/trash/empty');
       const trashRes = requestGet({ token: token }, '/v1/admin/quiz/trash');
       expect(trashRes.statusCode).toStrictEqual(200);
       expect(trashRes).toStrictEqual({ retval: { quizzes: [] }, statusCode: 200 });
