@@ -395,12 +395,12 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
 
   const userToken = findTokenFromSessionId(sessionId);
 
-  response = trashedQuizzesBelongToUser(userToken.authUserId, quizIds);
+  response = quizzesDoNotExist(quizIds);
   if ('error' in response) {
     return res.status(403).json(response);
   }
 
-  response = quizzesDoNotExist(quizIds);
+  response = trashedQuizzesBelongToUser(userToken.authUserId, quizIds);
   if ('error' in response) {
     return res.status(403).json(response);
   }
