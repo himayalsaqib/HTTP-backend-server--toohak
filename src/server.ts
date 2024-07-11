@@ -27,7 +27,6 @@ import {
   findTokenFromSessionId,
   quizParametersErrorChecking,
   quizzesDoNotExist,
-  findTokenFromSessionId
 } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
@@ -394,19 +393,14 @@ app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
   const quizId = parseInt(req.params.quizid as string);
   const questionId = parseInt(req.params.questionid as string);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  const parameterResponse = quizParametersErrorChecking(sessionId, quizId);
+  if ('error' in parameterResponse.retVal) {
+    return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = findTokenFromSessionId(sessionId);
+  const userToken = parameterResponse.retVal;
 
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = adminQuizQuestionDelete(userToken.authUserId, quizId, questionId);
+  const response = adminQuizQuestionDelete(userToken.authUserId, quizId, questionId);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -452,12 +446,7 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
 
   const userToken = findTokenFromSessionId(sessionId);
 
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = adminQuizInfo(userToken.authUserId, quizId);
+  const response = adminQuizInfo(userToken.authUserId, quizId);
   res.json(response);
 });
 
@@ -494,7 +483,7 @@ app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
 
   const userToken = parameterResponse.retVal;
 
-  let response = adminQuizTransfer(quizId, userToken.authUserId, userEmail);
+  const response = adminQuizTransfer(quizId, userToken.authUserId, userEmail);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -508,18 +497,14 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   const quizId = parseInt(req.params.quizid as string);
   const questionId = parseInt(req.params.questionid as string);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
-  }
-  const userToken = findTokenFromSessionId(sessionId);
-
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
+  const parameterResponse = quizParametersErrorChecking(sessionId, quizId);
+  if ('error' in parameterResponse.retVal) {
+    return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  response = adminQuizQuestionDuplicate(userToken.authUserId, quizId, questionId);
+  const userToken = parameterResponse.retVal;
+
+  const response = adminQuizQuestionDuplicate(userToken.authUserId, quizId, questionId);
   if ('error' in response) {
     return res.status(400).json(response);
   }
