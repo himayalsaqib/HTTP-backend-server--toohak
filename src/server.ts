@@ -2,7 +2,7 @@
 
 import express, { json, Request, Response } from 'express';
 import { echo } from './newecho';
-import morgan, { token } from 'morgan';
+import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import YAML from 'yaml';
@@ -43,7 +43,6 @@ import {
   adminQuizTransfer
 } from './quiz';
 import { load } from './dataStore';
-import { convertCompilerOptionsFromJson } from 'typescript';
 
 // Set up web app
 const app = express();
@@ -394,7 +393,6 @@ app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
   }
 
   const userToken = findTokenFromSessionId(sessionId);
-  console.log('token', userToken);
 
   response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {

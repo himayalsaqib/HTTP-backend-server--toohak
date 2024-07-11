@@ -301,7 +301,7 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
   return {};
 }
 
-/*
+/**
  * Create a new stub for question for a particular quiz.
  * When this route is called, and a question is created, the timeLastEdited is set
  * as the same as the created time, and the colours of all the answers of that
@@ -545,6 +545,15 @@ export function adminQuizQuestionUpdate(
   return {};
 }
 
+/**
+ * Deletes a question from the relevent quiz
+ * Additionally, updates the quiz's duration and last edited time.
+ *
+ * @param {number} authUserId
+ * @param {number} quizId
+ * @param {number} questionId
+ * @returns {{} | { error: string }}
+ */
 export function adminQuizQuestionDelete(authUserId: number, quizId: number, questionId: number): EmptyObject | ErrorObject {
   const data = getData();
   const quiz = findQuizById(quizId);

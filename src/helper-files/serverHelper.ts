@@ -74,6 +74,7 @@ export function quizBelongsToUser(authUserId: number, quizId: number): EmptyObje
     return {};
   }
 }
+
 /**
  * Function checks if all quizzes in the given list belong to a given current user
  *
@@ -82,7 +83,7 @@ export function quizBelongsToUser(authUserId: number, quizId: number): EmptyObje
  * @returns {{} | { error: string }}
  */
 export function quizzesBelongToUser(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
-  for (const quizId of quizIds) { // for loop
+  for (const quizId of quizIds) {
     const quiz = findQuizById(quizId);
     if (quiz === undefined || quiz.authUserId !== authUserId) {
       return { error: 'One or more Quiz IDs refer to a quiz that this current user does not own.' };
