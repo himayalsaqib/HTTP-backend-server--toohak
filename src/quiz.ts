@@ -613,12 +613,16 @@ export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, 
   }
 
   const question = quiz.questions[questionIndex];
+  let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  while (questionIdInUse(newQuestionId) === true) {
+    newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  }
   const newQuestion: Question = {
     ...question,
-    questionId: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
+    questionId: newQuestionId,
   };
-
-  quiz.questions?.splice(questionIndex + 1, 0, newQuestion);
+  
+  quiz.questions.splice(questionIndex + 1, 0, newQuestion);
   quiz.duration = (quiz.duration || 0) + newQuestion.duration;
 
   if (quiz.duration > 180) {
