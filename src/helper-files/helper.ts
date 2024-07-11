@@ -383,7 +383,7 @@ export function generateAnsColour(): string {
  */
 export function swapQuestions(questionIndex1: number, questionIndex2: number, questionArr: Question[]): Question[] {
   if (questionIndex1 < questionIndex2) {
-    let temp = questionIndex1;
+    const temp = questionIndex1;
     questionIndex1 = questionIndex2;
     questionIndex2 = temp;
   }

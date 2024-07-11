@@ -324,7 +324,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       // create second question
       const answerBody2 = [{ answer: 'Chappell Roan', correct: true }, { answer: 'Sabrina Carpenter', correct: false }];
       const questionCreateBody2 = { question: 'Who is your favourite artist\'s favourite artist?', duration: 5, points: 6, answers: answerBody2 };
-      let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${quizId}/question`);
+      const newQuestionId = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${quizId}/question`);
       questionId.push(newQuestionId.retval.questionId);
 
       const sessionId = parseInt(token) + 1;
