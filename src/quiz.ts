@@ -481,7 +481,7 @@ export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, 
     return { error: 'Question Id does not refer to a valid question in the quiz.' };
   }
 
-  const question = quiz.questions![questionIndex];
+  const question = quiz.questions[questionIndex];
   const newQuestion: Question = {
     ...question,
     questionId: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
