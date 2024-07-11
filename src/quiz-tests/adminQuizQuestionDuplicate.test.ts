@@ -162,6 +162,34 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
         statusCode: 200
       });
     });
+
+    test('Side effect:timeLastEdited is updated when duplicating a quiz question', () => {
+      // Create a quiz
+      const resQuizCreate = requestPost(quizBody, '/v1/admin/quiz');
+      quizId = resQuizCreate.retval.quizId;
+
+      // Create question
+      const answerBody1 = { answer: 'Prince Charles', correct: true };
+      const answerBody2 = { answer: 'Prince William', correct: false };
+      const questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2] };
+      const resQuestionCreate = requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`);
+      questionId = resQuestionCreate.retval.questionId;
+
+      // Check initial timeLastEdited
+      const initialQuiz = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
+      const initialTimeLastEdited = initialQuiz.retval.timeLastEdited;
+
+      // Duplicate the question
+      const dupeQuestion = requestPost({ token: token }, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
+      expect(dupeQuestion.statusCode).toStrictEqual(200);
+
+      // Check updated timeLastEdited
+      const updatedQuiz = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
+      const updatedTimeLastEdited = updatedQuiz.retval.timeLastEdited;
+
+      expect(updatedTimeLastEdited).toBeGreaterThanOrEqual(initialTimeLastEdited);
+      expect(updatedTimeLastEdited).toBeLessThanOrEqual(initialTimeLastEdited + 1);
+    });
   });
 
   describe('Testing for invalid questionId (status code 400)', () => {
