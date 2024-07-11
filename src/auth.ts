@@ -1,3 +1,5 @@
+// includes auth functions 
+
 import { setData, getData, ErrorObject, EmptyObject, Tokens } from './dataStore';
 import validator from 'validator';
 import {

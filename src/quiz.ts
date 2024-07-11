@@ -1,3 +1,5 @@
+// includes quiz functions
+
 import { setData, getData, ErrorObject, EmptyObject, Quizzes, Question, Answer } from './dataStore';
 import {
   authUserIdExists,
