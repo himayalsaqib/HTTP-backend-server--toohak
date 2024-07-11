@@ -20,7 +20,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
   let updateBody: { token: string, questionBody: QuestionBody };
 
   beforeEach(() => {
-    // regsitering a user
+    // registering a user
     userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
     const registerResponse = requestPost(userBody, '/v1/admin/auth/register');
     token = registerResponse.retval.token;
@@ -46,6 +46,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
     const createResponse = requestPost(createBody, `/v1/admin/quiz/${quizId}/question`);
     questionId = createResponse.retval.questionId;
 
+    // initialising body for update question route
     updateBody = {
       token: token,
       questionBody: {

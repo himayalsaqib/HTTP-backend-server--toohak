@@ -445,7 +445,7 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
  * @returns {{} | { error: string }}
  */
 export function adminQuizQuestionUpdate(
-  authUserId: number,
+  authUserId: number, 
   quizId: number,
   questionId: number,
   questionBody: QuestionBody
@@ -499,6 +499,7 @@ export function adminQuizQuestionUpdate(
   questionToUpdate.answers = createAnswersArray(questionBody.answers);
 
   quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  // updating duration for the quiz
   quiz.duration = quiz.questions.reduce((newDuration, question) => newDuration + question.duration, 0);
 
   setData(data);

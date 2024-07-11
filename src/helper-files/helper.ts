@@ -342,7 +342,7 @@ export function checkForNumCorrectAns(questionBody: QuestionBody): number {
  * fields for each object: answerId and colour.
  *
  * @param {QuizQuestionAnswers[]} givenAnswers
- * @returns {Answer[]}
+ * @returns {Answer[]} returns the answers array for a quiz's questions
  */
 export function createAnswersArray(givenAnswers: QuizQuestionAnswers[]): Answer[] {
   const questionAnswersArray = [];
