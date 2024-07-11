@@ -1,6 +1,6 @@
 // http tests for adminQuizQuestionDuplicate
 
-import { requestDelete, requestPost, requestPut, requestGet } from '../helper-files/requestHelper';
+import { requestDelete, requestPost, requestGet } from '../helper-files/requestHelper';
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
@@ -141,7 +141,6 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
 
   describe('Other side effect testing', () => {
     test('Duplicated question is immediately after where source question is, timeLastEdited is updated', () => {
-
       const quiz = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = quiz.retval.quizId;
 
