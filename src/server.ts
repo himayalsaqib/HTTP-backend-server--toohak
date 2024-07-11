@@ -460,7 +460,6 @@ app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
 
 app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
   const { token } = req.body;
-
   const sessionId = parseInt(token);
   const quizId = parseInt(req.params.quizid as string);
   const questionId = parseInt(req.params.questionid as string);

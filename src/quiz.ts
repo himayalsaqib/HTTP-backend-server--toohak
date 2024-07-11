@@ -623,9 +623,9 @@ export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, 
   };
   
   quiz.questions.splice(questionIndex + 1, 0, newQuestion);
-  quiz.duration = (quiz.duration || 0) + newQuestion.duration;
+  quiz.duration = quiz.duration + newQuestion.duration;
 
-  if (quiz.duration > 180) {
+  if (quiz.duration > MAX_QUIZ_QUESTIONS_DURATION) {
     quiz.questions.splice(questionIndex + 1, 1);
     return { error: 'Duplicating this question exceeds the maximum quiz duration of 3 minutes.' };
   }
