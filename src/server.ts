@@ -27,7 +27,8 @@ import {
   adminQuizInfo,
   adminQuizRestore,
   adminQuizDescriptionUpdate,
-  adminQuizCreateQuestion
+  adminQuizCreateQuestion,
+  adminQuizQuestionDelete
 } from './quiz';
 import { load } from './dataStore';
 
@@ -389,6 +390,35 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   }
 
   response = adminQuizRestore(userToken.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
+app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.query.token as string);
+  const quizId = parseInt(req.params.quizid as string);
+  const questionId = parseInt(req.params.questionid as string);
+
+  if (!sessionIdExists(sessionId)) {
+    return res.status(401).json({ error: 'Invalid session ID' });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  let response = tokenExists(userToken);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  response = quizBelongsToUser(userToken.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizQuestionDelete(userToken.authUserId, quizId, questionId);
   if ('error' in response) {
     return res.status(400).json(response);
   }

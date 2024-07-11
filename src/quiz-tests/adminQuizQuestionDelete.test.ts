@@ -6,7 +6,7 @@ beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
-describe('DELETE /v1/admin/quiz/{quizid}/question/{questionid}', () => {
+describe('DELETE /v1/admin/quiz/:quizid/question/:questionid', () => {
     const error = { error: expect.any(String) };
     let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
     let quizBody: { token: string, name: string, description: string };
