@@ -14,7 +14,9 @@ import {
   questionIdInUse,
   swapQuestions,
   findQuestionById,
-  createAnswersArray
+  createAnswersArray,
+  adminEmailInUse,
+  findUserByEmail
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -29,7 +31,7 @@ const MAX_QUESTION_LEN = 50;
 const MIN_NUM_ANSWERS = 2;
 const MAX_NUM_ANSWERS = 6;
 
-const MAX_QUIZ_QUESTIONS_DURATION = 180; // 3 minutes in seconds
+const MAX_QUIZ_QUESTIONS_DURATION = 180;
 
 const MIN_POINT_VALUE = 1;
 const MAX_POINT_VALUE = 10;
@@ -578,6 +580,46 @@ export function adminQuizQuestionUpdate(
   quiz.timeLastEdited = Math.floor(Date.now() / 1000);
   // updating duration for the quiz
   quiz.duration = quiz.questions.reduce((newDuration, question) => newDuration + question.duration, 0);
+
+  setData(data);
+
+  return {};
+}
+
+/**
+ * Transfer ownership of a quiz to a different user based on their email
+ *
+ * @param {number} authUserId - of user currently owning the quiz
+ * @param {number} quizId - of the quiz to be transfered owned by authUserId
+ * @param {string} userEmail - of the user to which the quiz is being
+ *                             transferred to (the target user)
+ * @returns {{} | { error: string }}
+ */
+export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string) : EmptyObject | ErrorObject {
+  const data = getData();
+
+  if (adminEmailInUse(userEmail) === false) {
+    return { error: 'The given user email is not a real user.' };
+  }
+
+  const newUser = findUserByEmail(userEmail);
+  if (newUser.authUserId === authUserId) {
+    return { error: 'The user email refers to the current logged in user.' };
+  }
+
+  if (quizIdInUse(quizId) === false) {
+    return { error: 'Quiz ID does not refer to a valid quiz.' };
+  }
+
+  // quiz to transfer
+  const quiz = findQuizById(quizId);
+  if (quizNameInUse(newUser.authUserId, quiz.name) === true) {
+    return { error: 'Quiz ID already refers to a quiz that has a name that is already used by the target user. ' };
+  }
+
+  // transferring the quiz
+  quiz.authUserId = newUser.authUserId;
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
 
   setData(data);
 
