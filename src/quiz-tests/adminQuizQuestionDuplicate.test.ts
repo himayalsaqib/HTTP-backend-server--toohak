@@ -199,6 +199,20 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       expect(dupeRes.statusCode).toBe(400);
       expect(dupeRes.retval).toStrictEqual(error);
     });
+
+    test('Side effect: returns error when trying to duplicate deleted quiz question', () => {
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+      const quizId = res.retval.quizId;
+      const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }, { answer: 'Sample Answer2', correct: false }] };
+      const questionRes = requestPost({ token: token, questionBody: question }, `/v1/admin/quiz/${quizId}/question`);
+      const questionId = questionRes.retval.questionId;
+
+      requestDelete({ token }, `/v1/admin/quiz/${quizId}/question/${questionId}`);
+      const dupeQues = requestPost({ token }, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
+
+      expect(dupeQues.statusCode).toBe(400);
+      expect(dupeQues.retval).toStrictEqual(error);
+    });
   });
 
   describe('Testing for invalid and empty token (status code 401', () => {
@@ -267,20 +281,6 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       quizId += '1';
       const dupeQues = requestPost({ token }, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
       expect(dupeQues.statusCode).toStrictEqual(403);
-      expect(dupeQues.retval).toStrictEqual(error);
-    });
-
-    test.skip('Side effect: returns error when trying to duplicate deleted quiz question', () => {
-      const res = requestPost(quizBody, '/v1/admin/quiz');
-      const quizId = res.retval.quizId;
-      const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }] };
-      const questionRes = requestPost({ token, ...question }, `/v1/admin/quiz/${quizId}/question`);
-      const questionId = questionRes.retval.questionId;
-
-      requestDelete({ token }, `/v1/admin/quiz/${quizId}/question/${questionId}`);
-      const dupeQues = requestPost({ token }, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
-
-      expect(dupeQues.statusCode).toBe(403);
       expect(dupeQues.retval).toStrictEqual(error);
     });
   });
