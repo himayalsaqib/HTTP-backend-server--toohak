@@ -518,6 +518,7 @@ export function adminQuizQuestionUpdate(
  * @returns {{} | { error: string }} 
  */
 export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string) : EmptyObject | ErrorObject {
+  const data = getData();
 
   // userEmail is not a real user
   if (adminEmailInUse(userEmail) === false) {
@@ -529,6 +530,10 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
     return { error: 'The user email refers to the current logged in user.' };
   }
 
+  if (quizIdInUse(quizId) === false) {
+    return { error: 'Quiz ID does not refer to a valid quiz.' };
+  }
+
   // quizId refers to a quiz that has a name that is already used by the target user
   // quiz to transfer
   const quiz = findQuizById(quizId);
@@ -536,13 +541,10 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
   if (quizNameInUse(newUser.authUserId, quiz.name) === true) {
     return { error: 'Quiz ID already refers to a quiz that has a name that is already used by the target user. ' };
   }
-
-  const data = getData();
+    
   // transferring the quiz
-  
-
-
-  // update timeLastEdited
+  quiz.authUserId = newUser.authUserId;
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
 
   setData(data);
 
