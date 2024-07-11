@@ -1,4 +1,4 @@
-// http tests for adminQuizQuestionDuplicate
+// http tests for /v1/admin/quiz/{quizId}/question/{questionId}/duplicate
 
 import { requestDelete, requestPost, requestGet } from '../helper-files/requestHelper';
 
