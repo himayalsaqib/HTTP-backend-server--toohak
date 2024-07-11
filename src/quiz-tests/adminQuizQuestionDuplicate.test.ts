@@ -163,7 +163,7 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       });
     });
 
-    test('Side effect:timeLastEdited is updated when duplicating a quiz question', () => {
+    test('Side effect: timeLastEdited is updated when duplicating a quiz question', () => {
       const resQuizCreate = requestPost(quizBody, '/v1/admin/quiz');
       quizId = resQuizCreate.retval.quizId;
 
