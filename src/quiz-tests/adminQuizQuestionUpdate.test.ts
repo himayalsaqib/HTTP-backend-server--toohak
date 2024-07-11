@@ -75,6 +75,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 
       const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
       expect(colours).toContain(res.retval.questions[0].answers[0].colour);
+      expect(colours).toContain(res.retval.questions[0].answers[1].colour);
     });
 
     test('Side effect: adminQuizInfo returns updated info about quiz question', () => {
