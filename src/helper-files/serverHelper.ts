@@ -1,4 +1,3 @@
-import { REPLCommand } from 'repl';
 import { ErrorObject, EmptyObject, Tokens, getData, setData } from '../dataStore';
 import { findQuizById, findTrashedQuizById } from './helper';
 

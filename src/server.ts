@@ -19,7 +19,6 @@ import {
   adminAuthLogout
 } from './auth';
 import {
-  quizBelongsToUser,
   tokenCreate,
   tokenExists,
   trashedQuizBelongsToUser,
@@ -223,7 +222,7 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
     return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = parameterResponse.retVal
+  const userToken = parameterResponse.retVal;
 
   const response = adminQuizRemove(userToken.authUserId, quizId);
   res.json(response);
@@ -253,7 +252,7 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
     return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = parameterResponse.retVal
+  const userToken = parameterResponse.retVal;
 
   const response = adminQuizNameUpdate(userToken.authUserId, quizId, name);
   if ('error' in response) {
@@ -291,7 +290,7 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
     return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = parameterResponse.retVal
+  const userToken = parameterResponse.retVal;
 
   const response = adminQuizDescriptionUpdate(userToken.authUserId, quizId, description);
   if ('error' in response) {
@@ -311,7 +310,7 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
     return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = parameterResponse.retVal
+  const userToken = parameterResponse.retVal;
 
   let response = quizDoesNotExist(quizId);
   if ('error' in response) {
@@ -364,7 +363,7 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
     return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = parameterResponse.retVal
+  const userToken = parameterResponse.retVal;
 
   const response = adminQuizInfo(userToken.authUserId, quizId);
   res.json(response);
@@ -381,7 +380,7 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
     return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = parameterResponse.retVal
+  const userToken = parameterResponse.retVal;
 
   const response = adminQuizQuestionUpdate(userToken.authUserId, quizId, questionId, questionBody);
   if ('error' in response) {
