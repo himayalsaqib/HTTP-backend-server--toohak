@@ -1,7 +1,6 @@
 import { ErrorObject, EmptyObject, Tokens, getData, setData } from '../dataStore';
 import { findQuizById, findTrashedQuizById } from './helper';
 
-
 /**
  * Function checks if a sessionId already exists in the dataStore
  *
