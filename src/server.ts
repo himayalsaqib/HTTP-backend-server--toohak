@@ -404,16 +404,12 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
   const quizId = parseInt(req.params.quizid as string);
   const questionId = parseInt(req.params.questionid as string);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response = tokenExists(userToken);
+  let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
   }
+
+  const userToken = findTokenFromSessionId(sessionId);
 
   response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {

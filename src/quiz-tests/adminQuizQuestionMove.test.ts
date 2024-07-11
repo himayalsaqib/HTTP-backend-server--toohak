@@ -62,7 +62,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
     });
 
-    test('Side effect: adminQuizinfo displays successful swap of second and fourth question', () => {
+    test('Side effect: adminQuizinfo displays successful swap of second with fourth question', () => {
       const moveBody = { token: token, newPosition: 1 };
       requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[3]}/move`);
 
@@ -156,7 +156,107 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
               ]
             }
           ],
-          duration: expect.any(Number)
+          duration: 22
+        },
+        statusCode: 200
+      });
+    });
+
+    test('Side effect: adminQuizinfo displays successful swap of fourth with second question', () => {
+      const moveBody = { token: token, newPosition: 3 };
+      requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[1]}/move`);
+
+      expect(requestGet({ token: token }, `/v1/admin/quiz/${quizId}`)).toStrictEqual({
+        retval: {
+          quizId: quizId,
+          name: quizBody.name,
+          timeCreated: expect.any(Number),
+          timeLastEdited: expect.any(Number),
+          description: quizBody.description,
+          numQuestions: 4,
+          questions: [
+            {
+              questionId: questionId[0],
+              question: 'Who is the Monarch of England?',
+              duration: 4,
+              points: 5,
+              answers: [
+                {
+                  answerId: expect.any(Number),
+                  answer: 'Prince Charles',
+                  colour: expect.any(String),
+                  correct: true
+                },
+                {
+                  answerId: expect.any(Number),
+                  answer: 'Prince William',
+                  colour: expect.any(String),
+                  correct: false
+                }
+              ]
+            },
+            {
+              questionId: questionId[3],
+              question: 'Who should work it out on the remix next?',
+              duration: 7,
+              points: 8,
+              answers: [
+                {
+                  answerId: expect.any(Number),
+                  answer: 'Trisha/Ethan',
+                  colour: expect.any(String),
+                  correct: true
+                },
+                {
+                  answerId: expect.any(Number),
+                  answer: 'Enya/Drew',
+                  colour: expect.any(String),
+                  correct: false
+                }
+              ]
+            },
+            {
+              questionId: questionId[2],
+              question: 'Which has had the greatest cultural impact?',
+              duration: 6,
+              points: 7,
+              answers: [
+                {
+                  answerId: expect.any(Number),
+                  answer: 'Brat summer',
+                  colour: expect.any(String),
+                  correct: true
+                },
+                {
+                  answerId: expect.any(Number),
+                  answer: 'The Industrial Revolution',
+                  colour: expect.any(String),
+                  correct: false
+                }
+              ]
+            },
+            {
+              questionId: questionId[1],
+              question: 'Who is your favourite artist\'s favourite artist?',
+              duration: 5,
+              points: 6,
+              answers: [
+                {
+                  answerId: expect.any(Number),
+                  answer: 'Chappell Roan',
+                  colour: expect.any(String),
+                  correct: true
+                },
+                {
+                  answerId: expect.any(Number),
+                  answer: 'Sabrina Carpenter',
+                  colour: expect.any(String),
+                  correct: false
+                }
+              ]
+            }
+          ],
+          duration: 22
         },
         statusCode: 200
       });
