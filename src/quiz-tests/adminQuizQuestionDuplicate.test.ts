@@ -20,11 +20,11 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
     quizBody = { token: token, name: 'My Quiz Name', description: 'Valid Quiz Description' };
   });
 
-  describe('Testing for correct return type (status code 200)', () => {
+  describe('Successfully duplicate quiz question (status code 200)', () => {
     let quizId: number;
     let questionId: number;
 
-    test('Successfully duplicate a quiz question', () => {
+    test('Testing for correct return type', () => {
       // Create a quiz
       const resQuizCreate = requestPost(quizBody, '/v1/admin/quiz');
       quizId = resQuizCreate.retval.quizId;
