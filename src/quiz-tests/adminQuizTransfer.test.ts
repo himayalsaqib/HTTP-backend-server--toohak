@@ -119,10 +119,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
     });
 
     test('userEmail is the current logged in user', () => {
-      // logout user2
-      requestPost({ token: token2 }, '/v1/admin/auth/logout');
-
-      transferBody = { token: token, userEmail: userBody2.email };
+      transferBody = { token: token, userEmail: userBody1.email };
       const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId}/question`);
       expect(transfer).toStrictEqual({
         retval: error,
