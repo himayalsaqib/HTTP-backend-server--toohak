@@ -1,5 +1,15 @@
+import { REPLCommand } from 'repl';
 import { ErrorObject, EmptyObject, Tokens, getData, setData } from '../dataStore';
 import { findQuizById, findTrashedQuizById } from './helper';
+
+// ============================ TYPE ANNOTATIONS ============================ //
+
+export interface Response {
+  retVal: ErrorObject | Tokens;
+  code?: number;
+}
+
+// =============================== FUNCTIONS ================================ //
 
 /**
  * Function checks if a sessionId already exists in the dataStore
@@ -133,4 +143,29 @@ export function tokenCreate(authUserId: number): Tokens {
   setData(data);
 
   return newToken;
+}
+
+/**
+ * Function takes sessionId and quizId and first checks token/sessionId errors.
+ * If no errors, obtaining token and checking if quizId and authUserId match
+ * If no errors, returning valid token.
+ *
+ * @param {number} sessionId
+ * @param {number} quizId
+ * @returns {Response}
+ */
+export function quizParametersErrorChecking(sessionId: number, quizId: number): Response {
+  let response = tokenExists(sessionId);
+  if ('error' in response) {
+    return { retVal: response, code: 401 };
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  response = quizBelongsToUser(userToken.authUserId, quizId);
+  if ('error' in response) {
+    return { retVal: response, code: 403 };
+  }
+
+  return { retVal: userToken };
 }
