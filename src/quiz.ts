@@ -60,7 +60,7 @@ export interface QuestionBody {
   question: string;
   duration: number;
   points: number;
-  answers: QuizQuestionAnswers[]; // not 100% certain of this
+  answers: QuizQuestionAnswers[];
 }
 
 /// ////////////////////////////// Functions ///////////////////////////////////
