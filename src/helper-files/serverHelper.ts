@@ -82,19 +82,16 @@ export function quizBelongsToUser(authUserId: number, quizId: number): EmptyObje
  * @param {number[]} quizIds
  * @returns {{} | { error: string }}
  */
-export function trashedQuizzesBelongToUser(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
+export function quizzesBelongToUser(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
   for (const quizId of quizIds) {
-    const trashedQuiz = findTrashedQuizById(quizId);
-    if (trashedQuiz === undefined) {
-      return {};
-    } else if (trashedQuiz.quiz.authUserId !== authUserId) {
+    const quiz = findQuizById(quizId);
+    if (quiz === undefined || quiz.authUserId !== authUserId) {
       return { error: 'One or more Quiz IDs refer to a quiz that this current user does not own.' };
     }
   }
-  return {};
 }
 
-/*
+/**
  * Function checks if a quiz in the trash belongs to a given current user
  *
  * @param {number} authUserId
@@ -109,6 +106,25 @@ export function trashedQuizBelongsToUser(authUserId: number, quizId: number): Em
   } else if (trashedQuiz.quiz.authUserId !== authUserId) {
     return { error: 'User is not an owner of this quiz' };
   } return {};
+}
+
+/**
+ * Function checks if all quizzes in the given list that are in the trash belong to a given current user
+ *
+ * @param {number} authUserId
+ * @param {number[]} quizIds
+ * @returns {{} | { error: string }}
+ */
+export function trashedQuizzesBelongToUser(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
+  for (const quizId of quizIds) {
+    const trashedQuiz = findTrashedQuizById(quizId);
+    if (trashedQuiz === undefined) {
+      return {};
+    } else if (trashedQuiz.quiz.authUserId !== authUserId) {
+      return { error: 'One or more Quiz IDs refer to a quiz that this current user does not own.' };
+    }
+  }
+  return {};
 }
 
 /**
