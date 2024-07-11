@@ -453,3 +453,16 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
 
   return { quizzes: trashList };
 }
+
+/**
+ * Transfer ownership of a quiz to a different user based on their email
+ * 
+ * @param {number} authUserId 
+ * @param {number} quizId 
+ * @param {string} userEmail 
+ * @returns {{} | { error: string }} 
+ */
+export function adminQuizTransfer(authUserId: number, quizId: number, userEmail: string) : EmptyObject | ErrorObject {
+
+  return {};
+}
