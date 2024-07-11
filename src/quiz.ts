@@ -301,43 +301,6 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
   return {};
 }
 
-/**
- * Permanently deletes specified quizzes from the trash
- *
- * @param {number} authUserId
- * @param {number[]} quizIds
- * @returns {{} | { error: string }}
- */
-export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-
-  const data = getData();
-
-  for (const quizId of quizIds) {
-    const trashedQuiz = data.trash.find(q => q.quiz.quizId === quizId);
-    if (!trashedQuiz) {
-      return { error: `One or more Quiz IDs refer to a quiz that doesn't exist.` };
-    }
-  }
-
-    const quizzesNotInTrash = quizIds.filter(quizId => !(data.trash.some(q => q.quiz.quizId === quizId)));
-  if (quizzesNotInTrash.length > 0) {
-    return { error: 'One or more Quiz IDs is not currently in the trash.' };
-  }
-
-  for (const quizId of quizIds) {
-    const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
-    if (index !== -1) {
-      data.trash.splice(index, 1);
-    }
-  }
-
-  setData(data);
-
-  return {};
-}
 /*
  * Create a new stub for question for a particular quiz.
  * When this route is called, and a question is created, the timeLastEdited is set
@@ -583,34 +546,21 @@ export function adminQuizQuestionUpdate(
 }
 
 export function adminQuizQuestionDelete(authUserId: number, quizId: number, questionId: number): EmptyObject | ErrorObject {
-  if (!authUserIdExists(authUserId)) {
-    return { error: 'Token is empty or invalid', code: 401 };
-  }
-
   const data = getData();
   const quiz = findQuizById(quizId);
 
-  if (!quiz) {
-    return { error: 'Quiz does not exist'};
-  }
-
-  if (quiz.authUserId !== authUserId) {
-    return { error: 'User is not an owner of this quiz'}
-  }
-
   const questionIndex = quiz.questions.findIndex(q => q.questionId === questionId);
   if (questionIndex === -1) {
-    return { error: 'Question Id does not refer to a valid question within this quiz'}
+    return { error: 'Question Id does not refer to a valid question within this quiz' };
   }
 
   quiz.questions.splice(questionIndex, 1);
   quiz.duration = quiz.questions.reduce((total, q) => total + q.duration, 0);
-  quiz.timeLastEdited = Math.floor(Date.now() / 1000); 
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
 
   setData(data);
 
   return {};
-
 }
 /**
  * Transfer ownership of a quiz to a different user based on their email
@@ -651,4 +601,3 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
 
   return {};
 }
-

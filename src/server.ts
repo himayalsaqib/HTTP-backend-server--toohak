@@ -394,7 +394,7 @@ app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
   }
 
   const userToken = findTokenFromSessionId(sessionId);
-  console.log("token", userToken);
+  console.log('token', userToken);
 
   response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
