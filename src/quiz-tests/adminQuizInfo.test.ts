@@ -34,9 +34,9 @@ describe('GET /v1/admin/quiz:quizid', () => {
           name: 'Original Quiz Name',
           timeCreated: expect.any(Number),
           description: 'Quiz description',
-          numQuestions: expect.any(Number),
+          numQuestions: 0,
           questions: [],
-          duration: expect.any(Number)
+          duration: 0
         },
         statusCode: 200
       });
@@ -53,9 +53,9 @@ describe('GET /v1/admin/quiz:quizid', () => {
           timeCreated: expect.any(Number),
           timeLastEdited: expect.any(Number),
           description: 'Quiz description',
-          numQuestions: expect.any(Number),
+          numQuestions: 0,
           questions: [],
-          duration: expect.any(Number)
+          duration: 0
         },
         statusCode: 200
       });

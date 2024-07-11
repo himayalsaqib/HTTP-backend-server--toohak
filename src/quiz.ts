@@ -34,6 +34,7 @@ const MIN_NUM_ANSWERS = 2;
 const MAX_NUM_ANSWERS = 6;
 
 const MAX_QUIZ_QUESTIONS_DURATION = 180;
+const MIN_QUIZ_QUESTIONS_DURATION = 0;
 
 const MIN_POINT_VALUE = 1;
 const MAX_POINT_VALUE = 10;
@@ -326,7 +327,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     return { error: 'The question cannot have more than 6 answers or less than 2 answers.' };
   }
 
-  if (questionBody.duration <= 0) {
+  if (questionBody.duration <= MIN_QUIZ_QUESTIONS_DURATION) {
     return { error: 'The question duration must be a positive number.' };
   }
 
@@ -529,7 +530,7 @@ export function adminQuizQuestionUpdate(
   if (questionBody.answers.length < MIN_NUM_ANSWERS || questionBody.answers.length > MAX_NUM_ANSWERS) {
     return { error: 'Question has more than 6 answers or less than 2 answers.' };
   }
-  if (questionBody.duration <= 0) {
+  if (questionBody.duration <= MIN_QUIZ_QUESTIONS_DURATION) {
     return { error: 'Question duration is not a positive number.' };
   }
   if (calculateSumQuestionDuration(quizId, questionBody.duration) > MAX_QUIZ_QUESTIONS_DURATION) {
