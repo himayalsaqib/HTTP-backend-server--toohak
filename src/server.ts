@@ -426,23 +426,18 @@ app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
   const { token, userEmail } = req.body;
   const sessionId = parseInt(token);
   const quizId = parseInt(req.params.quizid as string);
-
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  response = quizDoesNotExist(quizId);
+  
+  let response = quizDoesNotExist(quizId);
   if ('error' in response) {
     return res.status(403).json(response);
   }
 
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
+  const parameterResponse = quizParametersErrorChecking(sessionId, quizId);
+  if ('error' in parameterResponse.retVal) {
+    return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
+
+  const userToken = parameterResponse.retVal;
 
   response = adminQuizTransfer(quizId, userToken.authUserId, userEmail);
   if ('error' in response) {
