@@ -603,7 +603,7 @@ export function adminQuizQuestionDelete(authUserId: number, quizId: number, ques
   // Remove question from question array at specified index
   quiz.questions.splice(questionIndex, 1);
   quiz.duration = quiz.questions.reduce((total, q) => total + q.duration, 0);
-  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  quiz.timeLastEdited = currentTime();
 
   setData(data);
 
@@ -695,7 +695,7 @@ export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, 
     return { error: 'Duplicating this question exceeds the maximum quiz duration of 3 minutes.' };
   }
 
-  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  quiz.timeLastEdited = currentTime();
   setData(data);
 
   return { newQuestionId: newQuestion.questionId };
