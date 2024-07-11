@@ -42,7 +42,7 @@ describe('POST /v1/admin/auth/login', () => {
     });
 
     test('Side effect: correctly updates user details after a failed login', () => {
-      bodyLogin = { email: 'valid@gmail.com', password: 'Password34' };
+      bodyLogin.password = 'Password34';
       requestPost(bodyLogin, '/v1/admin/auth/login');
       expect(requestGet({ token }, '/v1/admin/user/details')).toStrictEqual({
         retval: {
@@ -60,9 +60,10 @@ describe('POST /v1/admin/auth/login', () => {
 
     test('Side effect: correctly updates user details after successful login', () => {
       // first a failed login, then a successful login
-      bodyLogin = { email: 'valid@gmail.com', password: 'Password34' };
+      bodyLogin.password = 'Password34';
       requestPost(bodyLogin, '/v1/admin/auth/login');
-      bodyLogin = { email: 'valid@gmail.com', password: 'Password12' };
+
+      bodyLogin.password = 'Password12';
       const loginResponse = requestPost(bodyLogin, '/v1/admin/auth/login');
       token = loginResponse.retval.token;
 
@@ -83,7 +84,7 @@ describe('POST /v1/admin/auth/login', () => {
 
   describe('Testing email given to adminAuthLogin (status code 400)', () => {
     test('Returns error when email address does not exist', () => {
-      bodyLogin = { email: 'valid1@gmail.com', password: 'Password12' };
+      bodyLogin.email = 'valid1@gmail.com';
       expect(requestPost(bodyLogin, '/v1/admin/auth/login')).toStrictEqual({
         retval: error,
         statusCode: 400
@@ -93,7 +94,7 @@ describe('POST /v1/admin/auth/login', () => {
 
   describe('Testing password given to adminAuthLogin (status code 400)', () => {
     test('Returns error when password does not match given email', () => {
-      bodyLogin = { email: 'valid@gmail.com', password: 'Password34' };
+      bodyLogin.password = 'Password34';
       expect(requestPost(bodyLogin, '/v1/admin/auth/login')).toStrictEqual({
         retval: error,
         statusCode: 400

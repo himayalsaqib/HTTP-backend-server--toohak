@@ -41,6 +41,19 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       });
     });
 
+    test('Answer correctly is given a colour from the given colours array', () => {
+      // create question
+      const answerBody1 = { answer: 'Prince Charles', correct: true };
+      const answerBody2 = { answer: 'Prince William', correct: false };
+      questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2] };
+      requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`);
+      const res = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
+
+      const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+      expect(colours).toContain(res.retval.questions[0].answers[0].colour);
+      expect(colours).toContain(res.retval.questions[0].answers[1].colour);
+    });
+
     test('Side effect - Successful listing of information about a quiz with one question', () => {
       // create question
       const answerBody1 = { answer: 'Prince Charles', correct: true };
