@@ -1,3 +1,5 @@
+// Includes helper functions for auth.ts and quiz.ts
+
 import { Answer, getData, Question, Quizzes, Users, Trash } from '../dataStore';
 import { QuestionBody, QuizQuestionAnswers } from '../quiz';
 
@@ -362,8 +364,37 @@ export function createAnswersArray(givenAnswers: QuizQuestionAnswers[]): Answer[
   return questionAnswersArray;
 }
 
+/**
+ * Function picks a random colour (string) from an array
+ *
+ * @returns {string} - colour
+ */
 export function generateAnsColour(): string {
   const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
   const colourIndex = Math.floor(Math.random() * answerColours.length);
   return answerColours[colourIndex];
+}
+
+/**
+ * Function swaps the questions at the given indexes
+ *
+ * @param {number} questionIndex1 - The index of the first question
+ * @param {number} questionIndex2 - The index of the second question
+ * @param {Question[]} questionArr - The array of questions
+ * @returns {Question[]}
+ */
+export function swapQuestions(questionIndex1: number, questionIndex2: number, questionArr: Question[]): Question[] {
+  if (questionIndex1 < questionIndex2) {
+    const temp = questionIndex1;
+    questionIndex1 = questionIndex2;
+    questionIndex2 = temp;
+  }
+
+  const question1 = questionArr.splice(questionIndex1, 1);
+  const question2 = questionArr.splice(questionIndex2, 1);
+
+  questionArr.splice(questionIndex2, 0, question1[0]);
+  questionArr.splice(questionIndex1, 0, question2[0]);
+
+  return questionArr;
 }
