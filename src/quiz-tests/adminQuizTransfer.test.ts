@@ -37,8 +37,8 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       // userEmail is not associated with token
       userEmail = 'newEmail@gmail.com';
       transferBody = { token: token, userEmail: userEmail };
-    });  
-    
+    });
+
     test('Has the correct return type', () => {
       const res = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
       expect(res).toStrictEqual({
@@ -58,7 +58,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       expect(listQuizzes).toStrictEqual({
         retval: {
           quizzes: []
-        }, 
+        },
         statusCode: 200
       });
 
@@ -71,7 +71,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
               name: quizBody.name
             }
           ]
-        }, 
+        },
         statusCode: 200
       });
     });
@@ -107,9 +107,9 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       const res = requestPost(quizBody, '/v1/admin/quiz');
       quizId = res.retval.quizId;
     });
-  
+
     test('userEmail is not a real user', () => {
-      transferBody = { token: token, userEmail: 'notUserEmail@gmail.com'};
+      transferBody = { token: token, userEmail: 'notUserEmail@gmail.com' };
       const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
       expect(transfer).toStrictEqual({
         retval: error,
@@ -119,7 +119,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
 
     test('userEmail is the current logged in user', () => {
       // logout user2
-      requestPost( { token: token2 }, '/v1/admin/auth/logout');
+      requestPost({ token: token2 }, '/v1/admin/auth/logout');
 
       transferBody = { token: token, userEmail: userBody2.email };
       const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId}/question`);
@@ -133,7 +133,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
   });
 
   describe('Testing token errors (status code 401)', () => {
-    test('Token is empty (no users registered)', () => {   
+    test('Token is empty (no users registered)', () => {
       transferBody = { token: token, userEmail: 'validemail@gmail.com' };
       const res = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
       expect(res).toStrictEqual({
@@ -147,9 +147,9 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
 
   describe('Testing quiz ID errors (status code 403)', () => {
     beforeEach(() => {
-    
+
     });
-  
+
     test.todo('User is not an owner of this quiz');
 
     test.todo('The quiz does not exist');
