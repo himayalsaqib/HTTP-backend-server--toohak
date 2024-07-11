@@ -412,7 +412,6 @@ export function adminQuizRestore (authUserId: number, quizId: number): EmptyObje
 
   return {};
 }
-
 /**
  * Given a user id, view all quizzes in trash
  *
@@ -648,4 +647,56 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
   setData(data);
 
   return {};
+}
+
+/**
+ * Duplicates a quiz question
+ *
+ * @param {number} authUserId
+ * @param {number} quizId
+ * @param {number} questionId
+ * @returns {{ newQuestionId: number} | { error: string }} - returns new question ID or an error message
+ */
+export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, questionId: number): {newQuestionId: number} | ErrorObject {
+  const data = getData();
+
+  if (authUserIdExists(authUserId) === false) {
+    return { error: 'AuthUserId does not refer to a valid user id.' };
+  }
+  if (quizIdInUse(quizId) === false) {
+    return { error: 'Quiz Id does not refer to a valid quiz.' };
+  }
+
+  const quiz = findQuizById(quizId);
+  if (quiz.authUserId !== authUserId) {
+    return { error: 'Quiz does not belong to the user.' };
+  }
+
+  const questionIndex = quiz.questions?.findIndex(q => q.questionId === questionId);
+  if (questionIndex === undefined || questionIndex === -1) {
+    return { error: 'Question Id does not refer to a valid question in the quiz.' };
+  }
+
+  const question = quiz.questions[questionIndex];
+  let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  while (questionIdInUse(newQuestionId) === true) {
+    newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  }
+  const newQuestion: Question = {
+    ...question,
+    questionId: newQuestionId,
+  };
+
+  quiz.questions.splice(questionIndex + 1, 0, newQuestion);
+  quiz.duration = quiz.duration + newQuestion.duration;
+
+  if (quiz.duration > MAX_QUIZ_QUESTIONS_DURATION) {
+    quiz.questions.splice(questionIndex + 1, 1);
+    return { error: 'Duplicating this question exceeds the maximum quiz duration of 3 minutes.' };
+  }
+
+  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  setData(data);
+
+  return { newQuestionId: newQuestion.questionId };
 }

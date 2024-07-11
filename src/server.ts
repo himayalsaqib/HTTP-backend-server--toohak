@@ -27,6 +27,7 @@ import {
   quizDoesNotExist,
   quizzesDoNotExist,
   findTokenFromSessionId
+
 } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
@@ -43,7 +44,8 @@ import {
   adminQuizCreateQuestion,
   adminQuizQuestionDelete,
   adminQuizQuestionMove,
-  adminQuizTransfer
+  adminQuizQuestionDuplicate,
+  adminQuizTransfer,
 } from './quiz';
 import { load } from './dataStore';
 
@@ -475,7 +477,6 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   }
 
   const userToken = findTokenFromSessionId(sessionId);
-
   response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
     return res.status(403).json(response);
@@ -534,6 +535,31 @@ app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
   }
 
   response = adminQuizTransfer(quizId, userToken.authUserId, userEmail);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
+app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
+  const { token } = req.body;
+  const sessionId = parseInt(token);
+  const quizId = parseInt(req.params.quizid as string);
+  const questionId = parseInt(req.params.questionid as string);
+
+  let response = tokenExists(sessionId);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+  const userToken = findTokenFromSessionId(sessionId);
+
+  response = quizBelongsToUser(userToken.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizQuestionDuplicate(userToken.authUserId, quizId, questionId);
   if ('error' in response) {
     return res.status(400).json(response);
   }
