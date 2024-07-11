@@ -621,7 +621,7 @@ export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, 
     ...question,
     questionId: newQuestionId,
   };
-  
+
   quiz.questions.splice(questionIndex + 1, 0, newQuestion);
   quiz.duration = quiz.duration + newQuestion.duration;
 
