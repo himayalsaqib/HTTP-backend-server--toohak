@@ -1,3 +1,5 @@
+// includes http tests for the route /v1/clear
+
 import { requestDelete, requestPost, requestGet } from '../helper-files/requestHelper';
 
 describe('DELETE /v1/clear', () => {

@@ -3,20 +3,6 @@ import { findQuizById, findTrashedQuizById } from './helper';
 
 
 /**
- * Function to handle response formatting
- *
- * @param result
- * @param res
- */
-export function handleResponse(result: EmptyObject | ErrorObject & { code?: number }, res: any) {
-  if ('error' in result) {
-    res.status(result.code).json({ error: result.error });
-  } else {
-    res.json(result);
-  }
-}
-
-/**
  * Function checks if a sessionId already exists in the dataStore
  *
  * @param {number} sessionId
@@ -35,25 +21,27 @@ export function sessionIdExists(sessionId: number): boolean {
 }
 
 /**
- * Function checks if a token with a matching sessionId and authUserId exists
- * in the dataStore
+ * Function checks if a token with a matching sessionId exists in the dataStore
+ * and checks that the token's authUserId is in the dataStore
  *
- * @param {Tokens} token
+ * @param {number} sessionId
  * @returns {{} | { error: string }}
  */
-export function tokenExists(token: Tokens): EmptyObject | ErrorObject {
+export function tokenExists(sessionId: number): EmptyObject | ErrorObject {
   const data = getData();
   // const decodedToken: Tokens = JSON.parse(decodeURIComponent(token));
 
-  const foundToken = data.tokens.find(foundToken => foundToken.sessionId === token.sessionId);
-  // const foundToken = data.tokens.find(foundToken => foundToken.sessionId === decodedToken.sessionId);
+  const foundToken = data.tokens.find(token => token.sessionId === sessionId);
 
-  // if (foundToken === undefined || foundToken.authUserId !== decodedToken.authUserId) {
-
-  if (foundToken === undefined || foundToken.authUserId !== token.authUserId) {
-    return { error: 'Token does not refer to a valid logged in user session' };
+  if (foundToken === undefined) {
+    return { error: 'Invalid session ID.' };
   } else {
-    return {};
+    const foundAuthUserId = data.users.find(users => users.authUserId === foundToken.authUserId);
+    if (foundAuthUserId === undefined) {
+      return { error: 'Invalid session ID.' };
+    } else {
+      return {};
+    }
   }
 }
 

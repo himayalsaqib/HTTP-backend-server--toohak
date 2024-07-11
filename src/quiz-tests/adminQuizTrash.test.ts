@@ -1,4 +1,4 @@
-// tests for adminQuizTrash function
+// includes http tests for the route /v1/admin/quiz/trash
 
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 
