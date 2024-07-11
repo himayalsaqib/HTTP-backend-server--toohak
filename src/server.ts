@@ -24,8 +24,8 @@ import {
   tokenExists,
   trashedQuizBelongsToUser,
   quizDoesNotExist,
-  findTokenFromSessionId,
-  sessionIdExists
+  findTokenFromSessionId
+
 } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
@@ -464,9 +464,6 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   const quizId = parseInt(req.params.quizid as string);
   const questionId = parseInt(req.params.questionid as string);
 
-  if (sessionIdExists(sessionId) === false) {
-    return (res).status(401).json({ error: 'Invalid session ID' });
-  }
   let response = tokenExists(sessionId);
   if ('error' in response) {
     return res.status(401).json(response);
