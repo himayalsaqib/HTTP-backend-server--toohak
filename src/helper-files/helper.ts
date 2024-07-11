@@ -1,5 +1,5 @@
 import { Answer, getData, Question, Quizzes, Users, Trash } from '../dataStore';
-import { QuestionBody } from '../quiz';
+import { QuestionBody, QuizQuestionAnswers } from '../quiz';
 
 /**
  * Function checks if an authUserId exists in the dataStore
@@ -17,7 +17,7 @@ export function authUserIdExists(authUserId: number): boolean {
   }
 }
 
-/// ///////////////////////// Auth Helper Functions ////////////////////////////
+// ========================= AUTH HELPER FUNCTIONS ========================== //
 /**
  * Function checks if an email is already being used by an existing user
  *
@@ -108,7 +108,7 @@ export function findUserByEmail(email: string): Users | undefined {
   return data.users.find(user => user.email === email);
 }
 
-/// ///////////////////////// Quiz Helper Functions ////////////////////////////
+// ========================= QUIZ HELPER FUNCTIONS ========================== //
 /**
  * Function checks if a quiz name contains any invalid characters. Characters
  * are considered invalid if they are not alphanumeric or spaces e.g. @
@@ -172,6 +172,31 @@ export function quizIdInUse(quizId: number): boolean {
 export function findQuizById(quizId: number): Quizzes | undefined {
   const data = getData();
   return data.quizzes.find(q => q.quizId === quizId);
+}
+
+/**
+ * Finds a quiz in the trash by its quiz ID
+ *
+ * @param {number} quizId - The ID of the quiz to find
+ * @returns {Quizzes | undefined} - The quiz with the specified ID | undefined
+ */
+export function findTrashedQuizById(quizId: number): Trash | undefined {
+  const data = getData();
+  return data.trash.find(q => q.quiz.quizId === quizId);
+}
+
+/**
+ * Function checks if a quiz with a matching quiz ID is in the trash
+ *
+ * @param {number} quizId - The ID of the quiz to find
+ * @returns {boolean} - true if there is a quiz in the trash, false if not
+ */
+export function quizIsInTrash(quizId: number): boolean {
+  const quiz = findTrashedQuizById(quizId);
+  if (quiz === undefined) {
+    return false;
+  }
+  return true;
 }
 
 /**
@@ -312,29 +337,29 @@ export function checkForNumCorrectAns(questionBody: QuestionBody): number {
 }
 
 /**
- * Finds a quiz in the trash by its quiz ID
+ * Loops through given answers and creates a new array which contains additional
+ * fields for each object: answerId and colour.
  *
- * @param {number} quizId - The ID of the quiz to find
- * @returns {Quizzes | undefined} - The quiz with the specified ID | undefined
+ * @param {QuizQuestionAnswers[]} givenAnswers
+ * @returns {Answer[]} returns the answers array for a quiz's questions
  */
-export function findTrashedQuizById(quizId: number): Trash | undefined {
-  const data = getData();
-  return data.trash.find(q => q.quiz.quizId === quizId);
-}
+export function createAnswersArray(givenAnswers: QuizQuestionAnswers[]): Answer[] {
+  const questionAnswersArray = [];
+  for (const answer of givenAnswers) {
+    let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    while (answerIdInUse(newAnswerId) === true) {
+      newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    }
 
-/**
- * Function checks if a quiz with a matching quiz ID is in the trash
- *
- * @param {number} quizId - The ID of the quiz to find
- * @returns {boolean} - true if there is a quiz in the trash, false if not
- */
-export function quizIsInTrash(quizId: number): boolean {
-  const data = getData();
-  const quiz = data.trash.find(q => q.quiz.quizId === quizId);
-  if (quiz === undefined) {
-    return false;
+    questionAnswersArray.push({
+      answerId: newAnswerId,
+      answer: answer.answer,
+      colour: generateAnsColour(),
+      correct: answer.correct
+    });
   }
-  return true;
+
+  return questionAnswersArray;
 }
 
 /**
