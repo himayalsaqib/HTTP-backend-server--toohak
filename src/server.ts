@@ -41,6 +41,7 @@ import {
   adminQuizRestore,
   adminQuizDescriptionUpdate,
   adminQuizCreateQuestion,
+  adminQuizQuestionDelete,
   adminQuizQuestionMove,
   adminQuizTransfer
 } from './quiz';
@@ -300,6 +301,34 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   res.json(response);
 });
 
+app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.query.token as string);
+  const quizIds = JSON.parse(req.query.quizIds as string);
+
+  let response = tokenExists(sessionId);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  response = quizzesDoNotExist(quizIds);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = trashedQuizzesBelongToUser(userToken.authUserId, quizIds);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizTrashEmpty(userToken.authUserId, quizIds);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+  res.json(response);
+});
+
 app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   const { token, description } = req.body;
   const quizId = parseInt(req.params.quizid as string);
@@ -384,6 +413,31 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   res.json(response);
 });
 
+app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.query.token as string);
+  const quizId = parseInt(req.params.quizid as string);
+  const questionId = parseInt(req.params.questionid as string);
+
+  let response = tokenExists(sessionId);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  response = quizBelongsToUser(userToken.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizQuestionDelete(userToken.authUserId, quizId, questionId);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
   const quizIds = JSON.parse(req.query.quizIds as string);
@@ -409,7 +463,6 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   if ('error' in response) {
     return res.status(400).json(response);
   }
-  res.json(response);
 });
 
 app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
