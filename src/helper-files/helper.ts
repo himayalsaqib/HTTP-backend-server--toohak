@@ -1,3 +1,5 @@
+// Includes helper functions for auth.ts and quiz.ts
+
 import { Answer, getData, Question, Quizzes, Users, Trash } from '../dataStore';
 import { QuestionBody, QuizQuestionAnswers } from '../quiz';
 
