@@ -10,11 +10,14 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
   const error = { error: expect.any(String) };
   let token: string;
   let token2: string;
+  let token3: string;
   let userBody1: { email: string, password: string, nameFirst: string, nameLast: string };
   let userBody2: { email: string, password: string, nameFirst: string, nameLast: string };
+  let userBody3: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { token: string, name: string, description: string };
   let transferBody: { token: string, userEmail: string };
   let quizId: number;
+  let quizId2: number;
   let userEmail: string;
 
   describe('Testing successful cases (status code 200)', () => {
@@ -27,7 +30,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       // register user2
       userBody2 = { email: 'newEmail@gmail.com', password: 'ValidPa55word', nameFirst: 'John', nameLast: 'Smith' };
       const registerUser2 = requestPost(userBody2, '/v1/admin/auth/register');
-      token2 = registerUser2.retval.token2;
+      token2 = registerUser2.retval.token;
 
       // create quiz for user1
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
@@ -100,7 +103,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       // register user2
       userBody2 = { email: 'newEmail@gmail.com', password: 'ValidPa55word', nameFirst: 'John', nameLast: 'Smith' };
       const registerUser2 = requestPost(userBody2, '/v1/admin/auth/register');
-      token2 = registerUser2.retval.token2;
+      token2 = registerUser2.retval.token;
 
       // create quiz for user1
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
@@ -154,7 +157,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       // register user2
       userBody2 = { email: 'newEmail@gmail.com', password: 'ValidPa55word', nameFirst: 'John', nameLast: 'Smith' };
       const registerUser2 = requestPost(userBody2, '/v1/admin/auth/register');
-      token2 = registerUser2.retval.token2;
+      token2 = registerUser2.retval.token;
 
       // create quiz for user1
       quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
@@ -175,11 +178,54 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
 
   describe('Testing quiz ID errors (status code 403)', () => {
     beforeEach(() => {
+      // register user1
+      userBody1 = { email: 'valid@gmail.com', password: 'Password123', nameFirst: 'Jane', nameLast: 'Doe' };
+      const registerUser1 = requestPost(userBody1, '/v1/admin/auth/register');
+      token = registerUser1.retval.token;
 
+      // register user2
+      userBody2 = { email: 'newEmail@gmail.com', password: 'ValidPa55word', nameFirst: 'John', nameLast: 'Smith' };
+      const registerUser2 = requestPost(userBody2, '/v1/admin/auth/register');
+      token2 = registerUser2.retval.token;
+
+      // register user3
+      userBody3 = { email: 'email@gmail.com', password: 'aPassw0rd', nameFirst: 'Betty', nameLast: 'Miller' };
+      const registerUser3 = requestPost(userBody3, '/v1/admin/auth/register');
+      token3 = registerUser3.retval.token
+
+      // create quiz for user1
+      quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+      quizId = res.retval.quizId;
+      
+      // create quiz for user2
+      quizBody = { token: token2, name: 'Valid Quiz Name', description: 'A valid quiz description' };
+      const res2 = requestPost(quizBody, '/v1/admin/quiz');
+      quizId2 = res2.retval.quizId;
+
+      // userEmail is not associated with token
+      
     });
 
-    test.todo('User is not an owner of this quiz');
+    test('User is not an owner of this quiz', () => {
+      userEmail = 'email@gmail.com';
+      transferBody = { token: token2, userEmail: userEmail };
 
-    test.todo('The quiz does not exist');
+      // transfer user2's quiz to user3 with user1's quizId
+      const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
+      expect(transfer).toStrictEqual({
+        retval: error,
+        statusCode: 403
+      });
+    });
+
+    test('The quiz does not exist', () => {
+      transferBody = { token: token, userEmail: userBody2.email };
+      const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId + 1}/transfer`);
+      expect(transfer).toStrictEqual({
+        retval: error,
+        statusCode: 403
+      });
+    });
   });
 });
