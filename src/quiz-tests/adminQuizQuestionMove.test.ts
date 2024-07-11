@@ -25,20 +25,20 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
     quizBody = { token: token, name: 'Valid Quiz Name', description: 'A valid quiz description' };
     const res = requestPost(quizBody, '/v1/admin/quiz');
     quizId = res.retval.quizId;
+
+    // create first question
+    const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
+    const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
+    const newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
+    questionId.push(newQuestionId.retval.questionId);
   });
 
   describe('Testing successful cases (status code 200)', () => {
     beforeEach(() => {
-      // create first question
-      const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
-      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
-      let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval.questionId);
-
       // create second question
       const answerBody2 = [{ answer: 'Chappell Roan', correct: true }, { answer: 'Sabrina Carpenter', correct: false }];
       const questionCreateBody2 = { question: 'Who is your favourite artist\'s favourite artist?', duration: 5, points: 6, answers: answerBody2 };
-      newQuestionId = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${quizId}/question`);
+      let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${quizId}/question`);
       questionId.push(newQuestionId.retval.questionId);
 
       // create third question
@@ -276,54 +276,35 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
 
   describe('Testing questionId and newPosition errors (status code 400)', () => {
     test('Question Id does not refer to a valid question within this quiz (invalid Id)', () => {
-      // create first question
-      const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
-      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
-      const newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval.questionId);
-
       const moveBody = { token: token, newPosition: 1 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0] + 1}/move`);
       expect(res).toStrictEqual({ retval: error, statusCode: 400 });
     });
 
     test('Question Id does not refer to a valid question within this quiz (no questions created)', () => {
+      // create a new quiz
+      quizBody = { token: token, name: 'New Valid Quiz Name', description: 'A new valid quiz description' };
+      const quizRes = requestPost(quizBody, '/v1/admin/quiz');
+      quizId = quizRes.retval.quizId;
+
       const moveBody = { token: token, newPosition: 0 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${1234567890}/move`);
       expect(res).toStrictEqual({ retval: error, statusCode: 400 });
     });
 
     test('NewPosition is less than 0', () => {
-      // create first question
-      const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
-      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
-      const newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval.questionId);
-
       const moveBody = { token: token, newPosition: -1 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0]}/move`);
       expect(res).toStrictEqual({ retval: error, statusCode: 400 });
     });
 
     test('NewPosition is greater than n-1 where n is the number of questions', () => {
-      // create first question
-      const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
-      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
-      const newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval.questionId);
-
       const moveBody = { token: token, newPosition: 1 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0]}/move`);
       expect(res).toStrictEqual({ retval: error, statusCode: 400 });
     });
 
     test('NewPosition is the position of the current question', () => {
-      // create first question
-      const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
-      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
-      const newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval.questionId);
-
       const moveBody = { token: token, newPosition: 0 };
       const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0]}/move`);
       expect(res).toStrictEqual({ retval: error, statusCode: 400 });
@@ -340,16 +321,10 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
     });
 
     test('Session ID is invalid', () => {
-      // create first question
-      const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
-      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
-      let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval.questionId);
-
       // create second question
       const answerBody2 = [{ answer: 'Chappell Roan', correct: true }, { answer: 'Sabrina Carpenter', correct: false }];
       const questionCreateBody2 = { question: 'Who is your favourite artist\'s favourite artist?', duration: 5, points: 6, answers: answerBody2 };
-      newQuestionId = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${quizId}/question`);
+      let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${quizId}/question`);
       questionId.push(newQuestionId.retval.questionId);
 
       const sessionId = parseInt(token) + 1;
@@ -361,16 +336,10 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
 
   describe('Testing quiz ID errors (status code 403)', () => {
     beforeEach(() => {
-      // create first question
-      const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
-      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
-      let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody }, `/v1/admin/quiz/${quizId}/question`);
-      questionId.push(newQuestionId.retval.questionId);
-
       // create second question
       const answerBody2 = [{ answer: 'Chappell Roan', correct: true }, { answer: 'Sabrina Carpenter', correct: false }];
       const questionCreateBody2 = { question: 'Who is your favourite artist\'s favourite artist?', duration: 5, points: 6, answers: answerBody2 };
-      newQuestionId = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${quizId}/question`);
+      let newQuestionId = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${quizId}/question`);
       questionId.push(newQuestionId.retval.questionId);
 
       // create third question
