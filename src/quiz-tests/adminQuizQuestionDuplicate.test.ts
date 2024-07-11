@@ -155,15 +155,8 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
 
   describe('Side effect testing', () => {
     test('Duplicated question is immediately after where source question is and timeLastEdited is updated', () => {
-      // const user = { email: 'userone@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
-      // const registerUser = requestPost(user, '/v1/admin/auth/register');
-      // const tokenUser = registerUser.retval.token;
-      // console.log(tokenUser);
       const quiz = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = quiz.retval.quizId;
-      console.log(quiz);
-      //const quizId = resQuizCreate.retval.quizId;
-      console.log(quizId);
 
       const answerBody1 = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody1 = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody1 };
@@ -183,19 +176,11 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
 
       const res3 = requestPost({ token: token, questionBody: questionCreateBody3 }, `/v1/admin/quiz/${quizId}/question`);
       const questionId3 = res3.retval.questionId;
-      console.log('questionid111111111:');
-      console.log(questionId1);
-      console.log(questionId2);
-      console.log(questionId3);
-
       // Duplicate the second question
       const dupeRes = requestPost({ token }, `/v1/admin/quiz/${quizId}/question/${questionId2}/duplicate`);
-      const dupeQuestionId = dupeRes.retval.questionId;
+      const dupeQuestionId = dupeRes.retval.newQuestionId;
 
-      //const quizDetails = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
-      console.log('questionid2:');
-      console.log(questionId2);
-
+      // const quizDetails = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
       expect(requestGet({ token }, `/v1/admin/quiz/${quizId}`)).toStrictEqual({
         retval: {
           quizId: quizId,
