@@ -23,7 +23,9 @@ import {
   tokenCreate,
   tokenExists,
   trashedQuizBelongsToUser,
+  trashedQuizzesBelongToUser,
   quizDoesNotExist,
+  quizzesDoNotExist,
   findTokenFromSessionId
 } from './helper-files/serverHelper';
 import { clear } from './other';
@@ -34,6 +36,7 @@ import {
   adminQuizNameUpdate,
   adminQuizQuestionUpdate,
   adminQuizTrash,
+  adminQuizTrashEmpty,
   adminQuizInfo,
   adminQuizRestore,
   adminQuizDescriptionUpdate,
@@ -378,6 +381,34 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
     return res.status(400).json(response);
   }
 
+  res.json(response);
+});
+
+app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.query.token as string);
+  const quizIds = JSON.parse(req.query.quizIds as string);
+
+  let response = tokenExists(sessionId);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  response = quizzesDoNotExist(quizIds);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = trashedQuizzesBelongToUser(userToken.authUserId, quizIds);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizTrashEmpty(userToken.authUserId, quizIds);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
   res.json(response);
 });
 
