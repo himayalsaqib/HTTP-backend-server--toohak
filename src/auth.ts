@@ -267,8 +267,11 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
  * @returns {{} | { error: string }}
  */
 export function adminAuthLogout(token: Tokens): EmptyObject | ErrorObject {
-  const data = getData();
+  if (authUserIdExists(token.authUserId) === false) {
+    return { error: 'AuthUserId is not a valid user.' };
+  }
 
+  const data = getData();
   const index = data.tokens.findIndex(currToken => currToken === token);
   data.tokens.splice(index, 1);
 
