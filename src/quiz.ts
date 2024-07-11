@@ -440,6 +440,39 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
 }
 
 /**
+ * Permanently deletes specified quizzes from the trash
+ *
+ * @param {number} authUserId
+ * @param {number[]} quizIds
+ * @returns {{} | { error: string }}
+ */
+export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
+  const data = getData();
+
+  // Find the first quizId in quizIds that is not in data.trash for every quizId
+  const quizNotInTrash = quizIds.find(quizId => data.trash.every(q => q.quiz.quizId !== quizId));
+
+  // If not undefined, there is at least one quizId not in data.trash and return error
+  if (quizNotInTrash !== undefined) {
+    return { error: 'One or more Quiz IDs is not currently in the trash.' };
+  }
+
+  for (const quizId of quizIds) {
+    // Find index of quiz with matching quizId in data.trash
+    const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
+
+    // If quizId match found remove from data.trash at that index
+    if (index !== -1) {
+      data.trash.splice(index, 1);
+    }
+  }
+
+  setData(data);
+
+  return {};
+}
+
+/**
  * Given a question ID, swap the question with the question at the index
  * newPosition
  *
@@ -555,6 +588,10 @@ export function adminQuizQuestionUpdate(
  * @returns {{} | { error: string }}
  */
 export function adminQuizQuestionDelete(authUserId: number, quizId: number, questionId: number): EmptyObject | ErrorObject {
+  if (authUserIdExists(authUserId) === false) {
+    return { error: 'AuthUserId does not refer to a valid user id.' };
+  }
+
   const data = getData();
   const quiz = findQuizById(quizId);
 
@@ -563,6 +600,7 @@ export function adminQuizQuestionDelete(authUserId: number, quizId: number, ques
     return { error: 'Question Id does not refer to a valid question within this quiz' };
   }
 
+  // Remove question from question array at specified index
   quiz.questions.splice(questionIndex, 1);
   quiz.duration = quiz.questions.reduce((total, q) => total + q.duration, 0);
   quiz.timeLastEdited = Math.floor(Date.now() / 1000);
