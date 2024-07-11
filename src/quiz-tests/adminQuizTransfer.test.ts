@@ -132,7 +132,19 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       });
     });
 
-    test.todo('Quiz Id refers to a quiz that has a name that is already used by the target user');
+    test('Quiz Id refers to a quiz that has a name that is already used by the target user', () => {
+      // create quiz for user2 with same name
+      quizBody = { token: token2, name: 'Valid Quiz Name', description: 'Another valid quiz description' };
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+      quizId2 = res.retval.quizId;
+
+      transferBody = { token: token, userEmail: userBody2.email };
+      const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
+      expect(transfer).toStrictEqual({
+        retval: error,
+        statusCode: 400
+      });
+    });
   });
 
   describe('Testing token errors (status code 401)', () => {
