@@ -267,21 +267,30 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  */
 export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
+    return { error: 'Token is empty of invalid', code: 401 };
   }
 
   const data = getData();
 
   for (const quizId of quizIds) {
-    const trashedQuiz = data.trash.find(q => q.quiz.quizId === quizId);
-    if (!trashedQuiz) {
-      return { error: 'One or more Quiz IDs refer to a quiz that doesn\'t exist.' };
+    const trashedQuiz = findTrashedQuizById(quizId);
+    const quiz = findQuizById(quizId);
+
+    if (trashedQuiz === undefined && quiz === undefined) {
+      return { error: 'One or more Quiz IDs refer to a quiz that doesn\'t exist.', code: 403 };
+    }
+  }
+
+  for (const quizId of quizIds) {
+    const trashedQuiz = findTrashedQuizById(quizId);
+    if (trashedQuiz.quiz.authUserId !== authUserId && trashedQuiz !== undefined) {
+      return { error: 'User is not an owner of this quiz', code: 403 };
     }
   }
 
   const quizzesNotInTrash = quizIds.filter(quizId => !(data.trash.some(q => q.quiz.quizId === quizId)));
   if (quizzesNotInTrash.length > 0) {
-    return { error: 'One or more Quiz IDs is not currently in the trash.' };
+    return { error: 'One or more Quiz IDs is not currently in the trash.', code: 400 };
   }
 
   for (const quizId of quizIds) {
