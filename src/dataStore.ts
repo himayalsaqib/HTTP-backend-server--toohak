@@ -22,14 +22,14 @@ export interface Users {
 }
 
 export interface Quizzes {
-  authUserId: number;
-  quizId: number;
-  name: string;
-  timeCreated: number;
-  timeLastEdited: number;
-  description: string;
-  questions?: Question[];
-  duration?: number;
+  authUserId: number,
+  quizId: number,
+  name: string,
+  timeCreated: number,
+  timeLastEdited: number,
+  description: string,
+  questions: Question[];
+  duration: number;
 }
 
 export interface Question {
