@@ -214,9 +214,6 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       quizBody = { token: token2, name: 'Valid Quiz Name', description: 'A valid quiz description' };
       const res2 = requestPost(quizBody, '/v1/admin/quiz');
       quizId2 = res2.retval.quizId;
-
-      // userEmail is not associated with token
-      
     });
 
     test('User is not an owner of this quiz', () => {
