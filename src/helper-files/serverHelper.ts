@@ -1,6 +1,21 @@
 import { ErrorObject, EmptyObject, Tokens, getData, setData } from '../dataStore';
 import { findQuizById, findTrashedQuizById } from './helper';
 
+
+/**
+ * Function to handle response formatting
+ *
+ * @param result
+ * @param res
+ */
+export function handleResponse(result: EmptyObject | ErrorObject & { code?: number }, res: any) {
+  if ('error' in result) {
+    res.status(result.code).json({ error: result.error });
+  } else {
+    res.json(result);
+  }
+}
+
 /**
  * Function checks if a sessionId already exists in the dataStore
  *
