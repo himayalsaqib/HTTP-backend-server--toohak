@@ -39,7 +39,8 @@ import {
   adminQuizDescriptionUpdate,
   adminQuizCreateQuestion,
   adminQuizQuestionDelete,
-  adminQuizQuestionMove
+  adminQuizQuestionMove,
+  adminQuizTransfer
 } from './quiz';
 import { load } from './dataStore';
 import { convertCompilerOptionsFromJson } from 'typescript';
@@ -447,6 +448,36 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
   }
 
   response = adminQuizQuestionUpdate(userToken.authUserId, quizId, questionId, questionBody);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
+app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
+  const { token, userEmail } = req.body;
+  const sessionId = parseInt(token);
+  const quizId = parseInt(req.params.quizid as string);
+
+  let response = tokenExists(sessionId);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  response = quizDoesNotExist(quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = quizBelongsToUser(userToken.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizTransfer(quizId, userToken.authUserId, userEmail);
   if ('error' in response) {
     return res.status(400).json(response);
   }
