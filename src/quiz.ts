@@ -273,24 +273,15 @@ export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): Empt
   const data = getData();
 
   for (const quizId of quizIds) {
-    const trashedQuiz = findTrashedQuizById(quizId);
-    const quiz = findQuizById(quizId);
-
-    if (trashedQuiz === undefined && quiz === undefined) {
-      return { error: 'One or more Quiz IDs refer to a quiz that doesn\'t exist.', code: 403 };
-    }
-  }
-
-  for (const quizId of quizIds) {
-    const trashedQuiz = findTrashedQuizById(quizId);
-    if (trashedQuiz.quiz.authUserId !== authUserId && trashedQuiz !== undefined) {
-      return { error: 'User is not an owner of this quiz', code: 403 };
+    const trashedQuiz = data.trash.find(q => q.quiz.quizId === quizId);
+    if (!trashedQuiz) {
+      return { error: 'One or more Quiz IDs refer to a quiz that doesn\'t exist.' };
     }
   }
 
   const quizzesNotInTrash = quizIds.filter(quizId => !(data.trash.some(q => q.quiz.quizId === quizId)));
   if (quizzesNotInTrash.length > 0) {
-    return { error: 'One or more Quiz IDs is not currently in the trash.', code: 400 };
+    return { error: 'One or more Quiz IDs is not currently in the trash.' };
   }
 
   for (const quizId of quizIds) {
@@ -307,6 +298,7 @@ export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): Empt
 
   return {};
 }
+
 
 /**
  * Given a user id, view all quizzes in trash
