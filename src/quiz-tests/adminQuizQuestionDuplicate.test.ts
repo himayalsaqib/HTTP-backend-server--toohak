@@ -81,7 +81,7 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
 
   describe('Testing for valid token, user not owner of quiz, quiz does not exist (status code 403)', () => {
     test('Returns error when user is not owner of quiz', () => {
-      // creater user
+      // Create user
       const user = { email: 'userone@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
       const registerUser = requestPost(user, '/v1/admin/auth/register');
       const tokenOne = registerUser.retval.token;
@@ -105,7 +105,7 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
     });
 
     test('Returns error when quiz does not exist', () => {
-      // creater user
+      // Create user
       const user = { email: 'userone@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
       const registerUser = requestPost(user, '/v1/admin/auth/register');
       const tokenUser = registerUser.retval.token;
