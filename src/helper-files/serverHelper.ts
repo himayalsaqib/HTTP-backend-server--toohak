@@ -80,7 +80,7 @@ export function quizBelongsToUser(authUserId: number, quizId: number): EmptyObje
   const quiz = findQuizById(quizId);
 
   if (quiz === undefined || quiz.authUserId !== authUserId) {
-    return { error: 'User is not an owner of this quiz' };
+    return { error: 'User is not an owner of this quiz or quiz does not exist' };
   } else {
     return {};
   }

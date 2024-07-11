@@ -434,17 +434,7 @@ app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
 
   const userToken = parameterResponse.retVal;
 
-  let response = quizDoesNotExist(quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = trashedQuizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = adminQuizTransfer(quizId, userToken.authUserId, userEmail);
+  let response = adminQuizTransfer(quizId, userToken.authUserId, userEmail);
   if ('error' in response) {
     return res.status(400).json(response);
   }
