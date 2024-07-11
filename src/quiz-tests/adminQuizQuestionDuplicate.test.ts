@@ -20,7 +20,7 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
     quizBody = { token: token, name: 'My Quiz Name', description: 'Valid Quiz Description' };
   });
 
-  describe('Successfully duplicate quiz question (status code 200)', () => {
+  describe('Testing for successful duplication of quiz question (status code 200)', () => {
     let quizId: number;
     let questionId: number;
 
