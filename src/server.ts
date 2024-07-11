@@ -19,15 +19,14 @@ import {
   adminAuthLogout
 } from './auth';
 import {
-  quizBelongsToUser,
   tokenCreate,
   tokenExists,
   trashedQuizBelongsToUser,
   trashedQuizzesBelongToUser,
   quizDoesNotExist,
+  findTokenFromSessionId,
+  quizParametersErrorChecking,
   quizzesDoNotExist,
-  findTokenFromSessionId
-
 } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
@@ -207,19 +206,12 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: 
   const sessionId = parseInt(req.body.token);
   const newPosition = req.body.newPosition;
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  const parameterResponse = quizParametersErrorChecking(sessionId, quizId);
+  if ('error' in parameterResponse.retVal) {
+    return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = findTokenFromSessionId(sessionId);
-
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = adminQuizQuestionMove(questionId, newPosition, quizId);
+  const response = adminQuizQuestionMove(questionId, newPosition, quizId);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -231,19 +223,14 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(req.query.token as string);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  const parameterResponse = quizParametersErrorChecking(sessionId, quizId);
+  if ('error' in parameterResponse.retVal) {
+    return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = findTokenFromSessionId(sessionId);
+  const userToken = parameterResponse.retVal;
 
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = adminQuizRemove(userToken.authUserId, quizId);
+  const response = adminQuizRemove(userToken.authUserId, quizId);
   res.json(response);
 });
 
@@ -266,18 +253,14 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(token);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  const parameterResponse = quizParametersErrorChecking(sessionId, quizId);
+  if ('error' in parameterResponse.retVal) {
+    return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = findTokenFromSessionId(sessionId);
+  const userToken = parameterResponse.retVal;
 
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-  response = adminQuizNameUpdate(userToken.authUserId, quizId, name);
+  const response = adminQuizNameUpdate(userToken.authUserId, quizId, name);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -336,19 +319,14 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(token);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  const parameterResponse = quizParametersErrorChecking(sessionId, quizId);
+  if ('error' in parameterResponse.retVal) {
+    return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = findTokenFromSessionId(sessionId);
+  const userToken = parameterResponse.retVal;
 
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = adminQuizDescriptionUpdate(userToken.authUserId, quizId, description);
+  const response = adminQuizDescriptionUpdate(userToken.authUserId, quizId, description);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -361,19 +339,14 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(token);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  const parameterResponse = quizParametersErrorChecking(sessionId, quizId);
+  if ('error' in parameterResponse.retVal) {
+    return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = findTokenFromSessionId(sessionId);
+  const userToken = parameterResponse.retVal;
 
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = quizDoesNotExist(quizId);
+  let response = quizDoesNotExist(quizId);
   if ('error' in response) {
     return res.status(403).json(response);
   }
@@ -420,19 +393,14 @@ app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
   const quizId = parseInt(req.params.quizid as string);
   const questionId = parseInt(req.params.questionid as string);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  const parameterResponse = quizParametersErrorChecking(sessionId, quizId);
+  if ('error' in parameterResponse.retVal) {
+    return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = findTokenFromSessionId(sessionId);
+  const userToken = parameterResponse.retVal;
 
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = adminQuizQuestionDelete(userToken.authUserId, quizId, questionId);
+  const response = adminQuizQuestionDelete(userToken.authUserId, quizId, questionId);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -471,18 +439,14 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
   const quizId = parseInt(req.params.quizid as string);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  const parameterResponse = quizParametersErrorChecking(sessionId, quizId);
+  if ('error' in parameterResponse.retVal) {
+    return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
   const userToken = findTokenFromSessionId(sessionId);
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
 
-  response = adminQuizInfo(userToken.authUserId, quizId);
+  const response = adminQuizInfo(userToken.authUserId, quizId);
   res.json(response);
 });
 
@@ -492,19 +456,14 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
   const quizId = parseInt(req.params.quizid as string);
   const questionId = parseInt(req.params.questionid as string);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  const parameterResponse = quizParametersErrorChecking(sessionId, quizId);
+  if ('error' in parameterResponse.retVal) {
+    return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = findTokenFromSessionId(sessionId);
+  const userToken = parameterResponse.retVal;
 
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = adminQuizQuestionUpdate(userToken.authUserId, quizId, questionId, questionBody);
+  const response = adminQuizQuestionUpdate(userToken.authUserId, quizId, questionId, questionBody);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -517,24 +476,14 @@ app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
   const sessionId = parseInt(token);
   const quizId = parseInt(req.params.quizid as string);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  const parameterResponse = quizParametersErrorChecking(sessionId, quizId);
+  if ('error' in parameterResponse.retVal) {
+    return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  const userToken = findTokenFromSessionId(sessionId);
+  const userToken = parameterResponse.retVal;
 
-  response = quizDoesNotExist(quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = adminQuizTransfer(quizId, userToken.authUserId, userEmail);
+  const response = adminQuizTransfer(quizId, userToken.authUserId, userEmail);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -548,18 +497,14 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   const quizId = parseInt(req.params.quizid as string);
   const questionId = parseInt(req.params.questionid as string);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
-  }
-  const userToken = findTokenFromSessionId(sessionId);
-
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
+  const parameterResponse = quizParametersErrorChecking(sessionId, quizId);
+  if ('error' in parameterResponse.retVal) {
+    return res.status(parameterResponse.code).json(parameterResponse.retVal);
   }
 
-  response = adminQuizQuestionDuplicate(userToken.authUserId, quizId, questionId);
+  const userToken = parameterResponse.retVal;
+
+  const response = adminQuizQuestionDuplicate(userToken.authUserId, quizId, questionId);
   if ('error' in response) {
     return res.status(400).json(response);
   }

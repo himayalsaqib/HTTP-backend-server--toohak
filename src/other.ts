@@ -1,3 +1,5 @@
+// includes other functions (clear)
+
 import { setData, EmptyObject, Data } from './dataStore';
 
 /**
