@@ -16,7 +16,6 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
   let quizId: number;
   let createBody: { token: string, questionBody: QuestionBody };
   let questionId: number;
-
   let updateBody: { token: string, questionBody: QuestionBody };
 
   beforeEach(() => {

@@ -474,7 +474,6 @@ export function adminQuizQuestionUpdate(
   if (checkForNumCorrectAns(questionBody) < MIN_CORRECT_ANS) {
     return { error: 'There are no correct answers.' };
   }
-
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
