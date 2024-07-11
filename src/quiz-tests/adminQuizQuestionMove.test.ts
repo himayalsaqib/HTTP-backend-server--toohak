@@ -1,4 +1,4 @@
-// contains the HTTP tests for adminQuizQuestionMove from quiz.ts
+// includes http tests for the route /v1/admin/quiz/{quizid}/question/{questionid}/move
 
 import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
 
