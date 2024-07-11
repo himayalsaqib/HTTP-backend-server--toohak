@@ -40,6 +40,21 @@ export function tokenExists(token: string): EmptyObject | ErrorObject {
 }
 
 /**
+ * Function checks if a sessionId exists and returns the entire token object or
+ * an error
+ *
+ * @param {number} sessionId
+ * @returns {{} | { error: string }}
+ */
+export function findTokenFromSessionId(sessionId: number): Tokens {
+  const data = getData();
+
+  const foundToken = data.tokens.find(foundToken => foundToken.sessionId === sessionId);
+
+  return foundToken;
+}
+
+/**
  * Function checks if a quiz belongs to a given current user
  *
  * @param {number} authUserId

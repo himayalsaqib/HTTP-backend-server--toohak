@@ -9,45 +9,47 @@ beforeEach(() => {
 describe('POST /v1/admin/auth/login', () => {
   const error = { error: expect.any(String) };
   let bodyRegister: { email: string, password: string, nameFirst: string, nameLast: string };
-  let token: { sessionId: number, authUserId: number };
+  let token: string;
   let bodyLogin: { email: string, password: string };
 
   beforeEach(() => {
     bodyRegister = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-    const { retval } = requestPost(bodyRegister, '/v1/admin/auth/register');
-    token = retval as { sessionId: number, authUserId: number };
+    const registerResponse = requestPost(bodyRegister, '/v1/admin/auth/register');
+    token = registerResponse.retval.token;
+    bodyLogin = { email: 'valid@gmail.com', password: 'Password12' };
   });
 
   describe('Testing user login (status code 200)', () => {
-    bodyLogin = { email: 'valid@gmail.com', password: 'Password12' };
-
     test('Has the correct return type and value of authUserId', () => {
-      expect(requestPost(bodyLogin, '/v1/admin/auth/login')).toStrictEqual({
-        retval: { sessionId: expect.any(Number), authUserId: token.authUserId },
+      const loginRes = requestPost(bodyLogin, '/v1/admin/auth/login');
+      expect(loginRes).toStrictEqual({
+        retval: { token: expect.any(String) },
         statusCode: 200
       });
+      expect(parseInt(loginRes.retval.token)).toStrictEqual(expect.any(Number));
     });
 
     test('User can login multiple times (have multiple tokens)', () => {
       const login1 = requestPost(bodyLogin, '/v1/admin/auth/login');
-      token = login1.retval as { sessionId: number, authUserId: number };
+      token = login1.retval.token;
 
       const login2 = requestPost(bodyLogin, '/v1/admin/auth/login');
-      const token2 = login2.retval as { sessionId: number, authUserId: number };
+      const token2 = login2.retval;
 
-      expect(token2).toStrictEqual({ sessionId: expect.any(Number), authUserId: token.authUserId });
-      expect(token.sessionId).not.toStrictEqual(token2.sessionId);
+      expect(token2).toStrictEqual({ token: expect.any(String) });
+      expect(parseInt(token2.token)).toStrictEqual(expect.any(Number));
+      expect({ token }).not.toStrictEqual(token2);
     });
 
     test('Side effect: correctly updates user details after a failed login', () => {
       bodyLogin = { email: 'valid@gmail.com', password: 'Password34' };
       requestPost(bodyLogin, '/v1/admin/auth/login');
-      expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
+      expect(requestGet({ token }, '/v1/admin/user/details')).toStrictEqual({
         retval: {
           user: {
-            userId: token.authUserId,
-            name: 'Jane Doe',
-            email: 'valid@gmail.com',
+            userId: expect.any(Number),
+            name: `${bodyRegister.nameFirst} ${bodyRegister.nameLast}`,
+            email: bodyRegister.email,
             numSuccessfulLogins: 1,
             numFailedPasswordsSinceLastLogin: 1,
           }
@@ -61,15 +63,15 @@ describe('POST /v1/admin/auth/login', () => {
       bodyLogin = { email: 'valid@gmail.com', password: 'Password34' };
       requestPost(bodyLogin, '/v1/admin/auth/login');
       bodyLogin = { email: 'valid@gmail.com', password: 'Password12' };
-      const { retval } = requestPost(bodyLogin, '/v1/admin/auth/login');
-      token = retval as { sessionId: number, authUserId: number };
+      const loginResponse = requestPost(bodyLogin, '/v1/admin/auth/login');
+      token = loginResponse.retval.token;
 
-      expect(requestGet(token, '/v1/admin/user/details')).toStrictEqual({
+      expect(requestGet({ token }, '/v1/admin/user/details')).toStrictEqual({
         retval: {
           user: {
-            userId: token.authUserId,
-            name: 'Jane Doe',
-            email: 'valid@gmail.com',
+            userId: expect.any(Number),
+            name: `${bodyRegister.nameFirst} ${bodyRegister.nameLast}`,
+            email: bodyRegister.email,
             numSuccessfulLogins: 2,
             numFailedPasswordsSinceLastLogin: 0,
           }

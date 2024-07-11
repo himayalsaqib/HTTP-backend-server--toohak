@@ -1,6 +1,5 @@
 // includes http tests for the route /v1/admin/user/details PUT
 
-import { Tokens } from '../dataStore';
 import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
 
 beforeEach(() => {
@@ -9,15 +8,15 @@ beforeEach(() => {
 
 describe('PUT /v1/admin/user/details', () => {
   const error = { error: expect.any(String) };
-  let user: { token: Tokens, email: string, nameFirst: string, nameLast: string };
+  let user: { token: string, email: string, nameFirst: string, nameLast: string };
   let userRegister: { email: string, password: string, nameFirst: string, nameLast: string };
-  let token: { sessionId: number, authUserId: number };
+  let token: string;
 
   describe('Testing successful cases (status code 200)', () => {
     beforeEach(() => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
+      const res = requestPost(userRegister, '/v1/admin/auth/register');
+      token = res.retval.token;
       user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
     });
 
@@ -28,11 +27,11 @@ describe('PUT /v1/admin/user/details', () => {
 
     test('Side effect (successful update): adminUserDetails returns newly updated properties', () => {
       requestPut(user, '/v1/admin/user/details');
-      const res = requestGet(token, '/v1/admin/user/details');
+      const res = requestGet({ token: token }, '/v1/admin/user/details');
       expect(res).toStrictEqual({
         retval: {
           user: {
-            userId: token.authUserId,
+            userId: expect.any(Number),
             name: 'Not Jane Not Doe',
             email: 'newValid1@gmail.com',
             numSuccessfulLogins: 1,
@@ -47,8 +46,8 @@ describe('PUT /v1/admin/user/details', () => {
   describe('Testing name and email errors (status code 400)', () => {
     beforeEach(() => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
+      const res = requestPost(userRegister, '/v1/admin/auth/register');
+      token = res.retval.token;
       user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
     });
 
@@ -122,24 +121,14 @@ describe('PUT /v1/admin/user/details', () => {
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
 
-    test('AuthUserId is not valid', () => {
-      userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
-      user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
-
-      user.token.authUserId += 1;
-      const res = requestPut(user, '/v1/admin/user/details');
-      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
-    });
-
     test('SessionId is not valid', () => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
-      token = retval as { sessionId: number, authUserId: number };
+      token = retval as string;
       user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
 
-      user.token.sessionId += 1;
+      const sessionId = parseInt(user.token) + 1;
+      user.token = sessionId.toString();
       const res = requestPut(user, '/v1/admin/user/details');
       expect(res).toStrictEqual({ retval: error, statusCode: 401 });
     });
