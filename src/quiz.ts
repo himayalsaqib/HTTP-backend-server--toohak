@@ -325,7 +325,7 @@ export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): Empt
   // Find the first quizId in quizIds that is not in data.trash for every quizId
   const quizNotInTrash = quizIds.find(quizId => data.trash.every(q => q.quiz.quizId !== quizId));
 
-  // If not undefined, there is at least one quizId not in data.trash
+  // If not undefined, there is at least one quizId not in data.trash and return error
   if (quizNotInTrash !== undefined) {
     return { error: 'One or more Quiz IDs is not currently in the trash.' };
   }

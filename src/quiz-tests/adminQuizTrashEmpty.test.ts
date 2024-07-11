@@ -31,7 +31,7 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
   });
 
   describe('Testing for correct return type (status code 200)', () => {
-    test('Successfully deletes specific quizzes from trash', () => {
+    test('Has correct return type', () => {
       const quizIdsToDelete = JSON.stringify([quizIds[0], quizIds[1]]);
       const res = requestDelete({ token, quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty');
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
