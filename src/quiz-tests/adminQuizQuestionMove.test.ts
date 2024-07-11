@@ -330,8 +330,8 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
     });
   });
 
-  describe('Testing token error (status code 401', () => {
-    test('Token is empty (no users registered', () => {
+  describe('Testing token error (status code 401)', () => {
+    test('Token is empty (no users registered)', () => {
       requestDelete({}, '/v1/clear');
 
       const moveBody = { token: token, newPosition: 0 };
