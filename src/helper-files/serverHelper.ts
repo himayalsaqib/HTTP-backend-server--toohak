@@ -103,7 +103,7 @@ export function trashedQuizzesBelongToUser(authUserId: number, quizIds: number[]
   return {};
 }
 
-/*
+/**
  * Function checks if a quiz in the trash belongs to a given current user
  *
  * @param {number} authUserId
