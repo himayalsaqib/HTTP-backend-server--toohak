@@ -398,3 +398,12 @@ export function swapQuestions(questionIndex1: number, questionIndex2: number, qu
 
   return questionArr;
 }
+
+/**
+ * Function gets the current time in seconds to 10 significant figures
+ *
+ * @returns {number} time
+ */
+export function currentTime(): number {
+  return Math.floor(Date.now() / 1000);
+}

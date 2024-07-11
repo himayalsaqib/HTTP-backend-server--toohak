@@ -16,7 +16,8 @@ import {
   findQuestionById,
   createAnswersArray,
   adminEmailInUse,
-  findUserByEmail
+  findUserByEmail,
+  currentTime
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -135,7 +136,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     authUserId: authUserId,
     quizId: newQuizId,
     name: name,
-    timeCreated: Math.floor(Date.now() / 1000),
+    timeCreated: currentTime(),
     timeLastEdited: <number> undefined,
     description: description,
     questions: emptyQuestions,
@@ -168,7 +169,7 @@ export function adminQuizRemove (authUserId: number, quizId: number): EmptyObjec
   if (quiz.authUserId !== authUserId) {
     return { error: 'Quiz does not belong to user.' };
   }
-  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  quiz.timeLastEdited = currentTime();
   data.trash.push({ quiz: quiz });
   data.quizzes.splice(quizIndex, 1);
   setData(data);
@@ -259,7 +260,7 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
     return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
   }
   quiz.name = name;
-  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  quiz.timeLastEdited = currentTime();
 
   const data = getData();
   setData(data);
@@ -293,7 +294,7 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
   }
 
   quiz.description = description;
-  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  quiz.timeLastEdited = currentTime();
 
   const data = getData();
   setData(data);
@@ -370,7 +371,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
   };
 
   // set timeLastEditied as the same as timeCreated for question
-  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  quiz.timeLastEdited = currentTime();
   quiz.duration += questionBody.duration;
 
   quiz.questions.push(newQuestion);
@@ -404,7 +405,7 @@ export function adminQuizRestore (authUserId: number, quizId: number): EmptyObje
   const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
   data.trash.splice(index, 1);
 
-  trashedQuiz.quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  trashedQuiz.quiz.timeLastEdited = currentTime();
 
   data.quizzes.push(trashedQuiz.quiz);
   setData(data);
@@ -500,7 +501,7 @@ export function adminQuizQuestionMove (questionId: number, newPosition: number, 
     return { error: 'NewPosition is the position of the current question.' };
   }
 
-  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  quiz.timeLastEdited = currentTime();
   quiz.questions = swapQuestions(questionIndex, newPosition, quiz.questions);
 
   return {};
@@ -568,7 +569,7 @@ export function adminQuizQuestionUpdate(
   questionToUpdate.points = questionBody.points;
   questionToUpdate.answers = createAnswersArray(questionBody.answers);
 
-  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  quiz.timeLastEdited = currentTime();
   // updating duration for the quiz
   quiz.duration = quiz.questions.reduce((newDuration, question) => newDuration + question.duration, 0);
 
@@ -602,7 +603,7 @@ export function adminQuizQuestionDelete(authUserId: number, quizId: number, ques
   // Remove question from question array at specified index
   quiz.questions.splice(questionIndex, 1);
   quiz.duration = quiz.questions.reduce((total, q) => total + q.duration, 0);
-  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  quiz.timeLastEdited = currentTime();
 
   setData(data);
 
@@ -641,7 +642,7 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
 
   // transferring the quiz
   quiz.authUserId = newUser.authUserId;
-  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  quiz.timeLastEdited = currentTime();
 
   setData(data);
 
@@ -694,7 +695,7 @@ export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, 
     return { error: 'Duplicating this question exceeds the maximum quiz duration of 3 minutes.' };
   }
 
-  quiz.timeLastEdited = Math.floor(Date.now() / 1000);
+  quiz.timeLastEdited = currentTime();
   setData(data);
 
   return { newQuestionId: newQuestion.questionId };
