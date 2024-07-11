@@ -69,6 +69,15 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
       });
     });
 
+    test('Answer correctly is given a colour from the given colours array', () => {
+      requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
+      const res = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
+
+      const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+      expect(colours).toContain(res.retval.questions[0].answers[0].colour);
+      expect(colours).toContain(res.retval.questions[0].answers[1].colour);
+    });
+
     test('Side effect: adminQuizInfo returns updated info about quiz question', () => {
       let res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });

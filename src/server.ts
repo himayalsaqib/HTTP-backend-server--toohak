@@ -22,9 +22,11 @@ import {
   tokenCreate,
   tokenExists,
   trashedQuizBelongsToUser,
+  trashedQuizzesBelongToUser,
   quizDoesNotExist,
   findTokenFromSessionId,
   quizParametersErrorChecking,
+  quizzesDoNotExist,
 } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
@@ -34,11 +36,13 @@ import {
   adminQuizNameUpdate,
   adminQuizQuestionUpdate,
   adminQuizTrash,
+  adminQuizTrashEmpty,
   adminQuizInfo,
   adminQuizRestore,
   adminQuizDescriptionUpdate,
   adminQuizCreateQuestion,
-  adminQuizQuestionMove
+  adminQuizQuestionMove,
+  adminQuizTransfer
 } from './quiz';
 import { load } from './dataStore';
 
@@ -354,6 +358,34 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   res.json(response);
 });
 
+app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.query.token as string);
+  const quizIds = JSON.parse(req.query.quizIds as string);
+
+  let response = tokenExists(sessionId);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  response = quizzesDoNotExist(quizIds);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = trashedQuizzesBelongToUser(userToken.authUserId, quizIds);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizTrashEmpty(userToken.authUserId, quizIds);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+  res.json(response);
+});
+
 app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
   const quizId = parseInt(req.params.quizid as string);
@@ -383,6 +415,36 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
   const userToken = parameterResponse.retVal;
 
   const response = adminQuizQuestionUpdate(userToken.authUserId, quizId, questionId, questionBody);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
+app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
+  const { token, userEmail } = req.body;
+  const sessionId = parseInt(token);
+  const quizId = parseInt(req.params.quizid as string);
+
+  let response = tokenExists(sessionId);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  response = quizDoesNotExist(quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = quizBelongsToUser(userToken.authUserId, quizId);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = adminQuizTransfer(quizId, userToken.authUserId, userEmail);
   if ('error' in response) {
     return res.status(400).json(response);
   }
