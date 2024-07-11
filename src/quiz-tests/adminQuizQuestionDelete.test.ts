@@ -1,6 +1,6 @@
 // contains HTTP tests for adminQuizQuestionDelete function 
 
-import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
+import { requestDelete, requestGet, requestPost} from '../helper-files/requestHelper';
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
@@ -24,8 +24,7 @@ beforeEach(() => {
 
 	quizBody = { token: token, name: 'Sample Quiz', description: 'Sample Description' };
 	const quizResponse = requestPost(quizBody, '/v1/admin/quiz');
-	const quizId = quizResponse.retval.quizId;
-	console.log("token", token);
+	quizId = quizResponse.retval.quizId;
 
 	answerBody = [
 		{ answer: 'Answer 1', correct: false },
@@ -41,18 +40,18 @@ beforeEach(() => {
 		answers: answerBody
 	};
 
-	const questionResponse = requestPost(questionBody, `/v1/admin/quiz/${quizId}/question`);
+	const createBody = { token: token, questionBody: questionBody};
+	const questionResponse = requestPost(createBody, `/v1/admin/quiz/${quizId}/question`);
   questionId = questionResponse.retval.questionId;
 
-	questionBody.question = 'Sample Question 2?';
-  const questionResponse2 = requestPost(questionBody, `/v1/admin/quiz/${quizId}/question`);
+	createBody.questionBody.question = 'Sample Question 2?';
+  const questionResponse2 = requestPost(createBody, `/v1/admin/quiz/${quizId}/question`);
   questionId2 = questionResponse2.retval.questionId;
 
 });
 
-	test.only('Successfully deletes a question', () => {
+	test('Successfully deletes a question', () => {
 		const res = requestDelete({ token: token }, `/v1/admin/quiz/${quizId}/question/${questionId}`);
-		console.log("token", token);
 		expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 	});
 
@@ -106,6 +105,15 @@ beforeEach(() => {
 		expect(res.statusCode).toStrictEqual(200);
 	});
 
+	test('Side effect: adminQuizInfo displays updated timeLastEdited', () => {
+		const requestTime = Math.floor(Date.now() / 1000);
+		requestDelete({ token: token }, `/v1/admin/quiz/${quizId}/question/${questionId}`);
+
+		const res = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
+		expect(res.retval.timeLastEdited).toBeGreaterThanOrEqual(requestTime);
+		expect(res.retval.timeLastEdited).toBeLessThanOrEqual(requestTime + 1);
+	});
+
 	describe('Testing parameters given to adminQuizQuestionUpdate (status code 400)', () => {
 		describe('Testing questionId errors', () => {
 		  test('Question Id does not refer to a valid question within this quiz', () => {
@@ -125,9 +133,8 @@ beforeEach(() => {
 
 		test('Returns error when sessionId is not a valid user session', () => {
 			const sessionId = parseInt(token) + 1;
-			const res = requestDelete({ token: token }, `/v1/admin/quiz/${quizId}/question/${questionId}`);
-			expect(res).toStrictEqual({ retval: error, statusCode: 401
-			});
+			const res = requestDelete({ token: sessionId.toString() }, `/v1/admin/quiz/${quizId}/question/${questionId}`);
+			expect(res).toStrictEqual({ retval: error, statusCode: 401 });
 		});
 	});
 
