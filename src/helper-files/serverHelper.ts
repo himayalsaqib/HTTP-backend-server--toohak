@@ -28,7 +28,6 @@ export function sessionIdExists(sessionId: number): boolean {
  */
 export function tokenExists(sessionId: number): EmptyObject | ErrorObject {
   const data = getData();
-  // const decodedToken: Tokens = JSON.parse(decodeURIComponent(token));
 
   const foundToken = data.tokens.find(token => token.sessionId === sessionId);
 
@@ -169,6 +168,6 @@ export function tokenCreate(authUserId: number): Tokens {
   const data = getData();
   data.tokens.push(newToken);
   setData(data);
-  // return { token: encodeURIComponent(JSON.stringify(newToken)) };
+
   return newToken;
 }
