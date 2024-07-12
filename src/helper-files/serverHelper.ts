@@ -6,7 +6,8 @@ import { findQuizById, findTrashedQuizById } from './helper';
 // ============================ TYPE ANNOTATIONS ============================ //
 
 export interface Response {
-  retVal: ErrorObject | Tokens;
+  error?: ErrorObject;
+  userToken?: Tokens;
   code?: number;
 }
 
@@ -208,18 +209,18 @@ export function tokenCreate(authUserId: number): Tokens {
  * @param {number} quizId
  * @returns {Response}
  */
-export function quizParametersErrorChecking(sessionId: number, quizId: number): Response {
+export function quizRoutesErrorChecking(sessionId: number, quizId: number): Response {
   let response = tokenExists(sessionId);
   if ('error' in response) {
-    return { retVal: response, code: 401 };
+    return { error: response, code: 401 };
   }
 
   const userToken = findTokenFromSessionId(sessionId);
 
   response = quizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
-    return { retVal: response, code: 403 };
+    return { error: response, code: 403 };
   }
 
-  return { retVal: userToken };
+  return { userToken: userToken };
 }
