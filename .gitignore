@@ -1,4 +1,5 @@
-package-lock.json
+*.json
+!package.json
 node_modules
 build
 .DS_store
