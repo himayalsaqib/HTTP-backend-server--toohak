@@ -42,32 +42,28 @@ interface UserDetails {
  */
 export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string): { authUserId: number } | ErrorObject {
   if (adminEmailInUse(email)) {
-    return { error: 'Email address is used by another user.' };
+    throw new Error('Email address is used by another user.');
   }
   if (!validator.isEmail(email)) {
-    return { error: 'Invalid email address.' };
+    throw new Error('Invalid email address.');
   }
   if (password.length < MIN_PASSWORD_LENGTH) {
-    return { error: 'Invalid password is less than 8 characters.' };
+    throw new Error('Invalid password is less than 8 characters.');
   }
   if (!adminPasswordHasValidChars(password)) {
-    return { error: 'Invalid password does not meet requirements.' };
+    throw new Error('Invalid password does not meet requirements.');
   }
   if (nameFirst.length < MIN_NAME_LENGTH || nameFirst.length > MAX_NAME_LENGTH) {
-    return {
-      error: 'Invalid first name is less than 2 characters or more than 20 characters.'
-    };
+    throw new Error('Invalid first name is less than 2 characters or more than 20 characters.');
   }
   if (!adminUserNameIsValid(nameFirst)) {
-    return { error: 'Invalid first name does not meet requirements.' };
+    throw new Error('Invalid first name does not meet requirements.');
   }
   if (nameLast.length < MIN_NAME_LENGTH || nameLast.length > MAX_NAME_LENGTH) {
-    return {
-      error: 'Invalid last name is less than 2 characters or more than 20 characters.'
-    };
+    throw new Error('Invalid last name is less than 2 characters or more than 20 characters.');
   }
   if (!adminUserNameIsValid(nameLast)) {
-    return { error: 'Invalid last name does not meet requirements.' };
+    throw new Error('Invalid last name does not meet requirements.');
   }
 
   const data = getData();
@@ -77,7 +73,7 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
     newAuthUserId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
-  const newUser = {
+  data.users.push({
     authUserId: newAuthUserId,
     email: email,
     nameFirst: nameFirst,
@@ -86,9 +82,7 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
     previousPasswords: [getHashOf(password)],
     numFailedLogins: INITIAL_NUM_FAILED_LOGINS,
     numSuccessfulLogins: INITIAL_NUM_SUCCESSFUL_LOGINS,
-  };
-
-  data.users.push(newUser);
+  });
 
   setData(data);
 
