@@ -89,14 +89,13 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
 
-  const response = adminAuthRegister(email, password, nameFirst, nameLast);
-
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminAuthRegister(email, password, nameFirst, nameLast);
+    const token = tokenCreate(response.authUserId);
+    res.json({ token: token.sessionId.toString() });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
-
-  const token = tokenCreate(response.authUserId);
-  res.json({ token: token.sessionId.toString() });
 });
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
