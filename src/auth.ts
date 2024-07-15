@@ -9,7 +9,8 @@ import {
   authUserIdExists,
   adminCheckPasswordHistory,
   findUserById,
-  findUserByEmail
+  findUserByEmail,
+  getHashOf
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables ///////////////////////////////
@@ -81,8 +82,8 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
     email: email,
     nameFirst: nameFirst,
     nameLast: nameLast,
-    password: password,
-    previousPasswords: [password],
+    password: getHashOf(password),
+    previousPasswords: [getHashOf(password)],
     numFailedLogins: INITIAL_NUM_FAILED_LOGINS,
     numSuccessfulLogins: INITIAL_NUM_SUCCESSFUL_LOGINS,
   };
@@ -109,7 +110,7 @@ export function adminAuthLogin(email: string, password: string): { authUserId: n
   const user = findUserByEmail(email);
   const data = getData();
 
-  if (user.password === password) {
+  if (user.password === getHashOf(password)) {
     user.numFailedLogins = INITIAL_NUM_FAILED_LOGINS;
     user.numSuccessfulLogins++;
     setData(data);
