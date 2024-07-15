@@ -101,14 +101,13 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  const response = adminAuthLogin(email, password);
-
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminAuthLogin(email, password);
+    const token = tokenCreate(response.authUserId);
+    res.json({ token: token.sessionId.toString() });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
-
-  const token = tokenCreate(response.authUserId);
-  res.json({ token: token.sessionId.toString() });
 });
 
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
