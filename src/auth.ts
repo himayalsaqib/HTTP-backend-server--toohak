@@ -38,9 +38,9 @@ interface UserDetails {
  * @param {string} password
  * @param {string} nameFirst
  * @param {string} nameLast
- * @returns {{ authUserId: number } | { error: string }}
+ * @returns {{ authUserId: number }}
  */
-export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string): { authUserId: number } | ErrorObject {
+export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string): { authUserId: number } {
   if (adminEmailInUse(email)) {
     throw new Error('Email address is used by another user.');
   }
