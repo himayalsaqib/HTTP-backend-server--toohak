@@ -2,6 +2,7 @@
 
 import { Answer, getData, Question, Quizzes, Users, Trash } from '../dataStore';
 import { QuestionBody, QuizQuestionAnswers } from '../quiz';
+import crypto from 'crypto';
 
 /**
  * Function checks if an authUserId exists in the dataStore
@@ -108,6 +109,16 @@ export function findUserById(authUserId: number): Users | undefined {
 export function findUserByEmail(email: string): Users | undefined {
   const data = getData();
   return data.users.find(user => user.email === email);
+}
+
+/**
+ * generates a sha256 hash for given password
+ *
+ * @param {string} password 
+ * @returns {string} hash of password
+ */
+export function getHashOf(password: string): string {
+  return crypto.createHash('sha256').update(password).digest('hex');
 }
 
 // ========================= QUIZ HELPER FUNCTIONS ========================== //
