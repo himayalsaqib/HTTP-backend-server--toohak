@@ -94,12 +94,12 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
  *
  * @param {string} email
  * @param {string} password
- * @returns {{ authUserId: number } | { error: string }}
+ * @returns {{ authUserId: number }}
  */
 
-export function adminAuthLogin(email: string, password: string): { authUserId: number } | ErrorObject {
+export function adminAuthLogin(email: string, password: string): { authUserId: number } {
   if (!adminEmailInUse(email)) {
-    return { error: 'Email address does not exist.' };
+    throw new Error('Email address does not exist.');
   }
   const user = findUserByEmail(email);
   const data = getData();
@@ -114,7 +114,7 @@ export function adminAuthLogin(email: string, password: string): { authUserId: n
     user.numFailedLogins++;
     setData(data);
 
-    return { error: 'Password is not correct for the given email.' };
+    throw new Error('Password is not correct for the given email.');
   }
 }
 
