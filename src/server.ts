@@ -183,17 +183,18 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   res.json(response);
 });
 
-app.get('/v1/admin/user/details', (req: Request, res: Response) => {
+app.get('/v2/admin/user/details', (req: Request, res: Response) => {
   const sessionId = parseInt(req.header('token'));
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
   }
 
   const userToken = findTokenFromSessionId(sessionId);
 
-  response = adminUserDetails(userToken.authUserId);
+  const response = adminUserDetails(userToken.authUserId);
   res.json(response);
 });
 
