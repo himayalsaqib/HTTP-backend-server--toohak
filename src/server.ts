@@ -167,6 +167,25 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   res.json(response);
 });
 
+app.put('/v2/admin/user/password', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token'));
+  const { oldPassword, newPassword } = req.body;
+
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+  const response = adminUserPasswordUpdate(userToken.authUserId, oldPassword, newPassword);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   const { token } = req.body;
   const sessionId = parseInt(token);
