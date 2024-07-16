@@ -1,4 +1,5 @@
-// includes HTTP tests for the route /v1/admin/user/password
+// includes HTTP tests for the route /v1/admin/user/password and 
+// route /v2/admin/user/password
 
 import { requestDelete, requestPut, requestPost } from '../helper-files/requestHelper';
 
@@ -154,6 +155,7 @@ describe('PUT /v1/admin/user/password', () => {
 });
 
 describe('PUT /v2/admin/user/password', () => {
+  let error = { error: expect.any(String) };
   let token: string;
   let originalPassword: string;
   beforeEach(() => {
@@ -242,7 +244,7 @@ describe('PUT /v2/admin/user/password', () => {
     test('The newPassword is less than 8 characters', () => {
       const changedPassword = 'inva1d';
       const body = { oldPassword: originalPassword, newPassword: changedPassword };
-      expect(requestPut(body, '/v2/admin/user/password', { token: token })).toThrow({
+      expect(requestPut(body, '/v2/admin/user/password', { token: token })).toStrictEqual({
         retval: error,
         statusCode: 400
       });
