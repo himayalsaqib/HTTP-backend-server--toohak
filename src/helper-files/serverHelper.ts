@@ -49,7 +49,7 @@ export function tokenExists(sessionId: number): void {
     const foundAuthUserId = data.users.find(users => users.authUserId === foundToken.authUserId);
     if (foundAuthUserId === undefined) {
       throw new Error('Invalid session ID.');
-    } 
+    }
   }
 }
 
@@ -80,7 +80,7 @@ export function quizBelongsToUser(authUserId: number, quizId: number): void {
 
   if (quiz === undefined || quiz.authUserId !== authUserId) {
     throw new Error('User is not an owner of this quiz or quiz does not exist');
-  } 
+  }
 }
 
 /**
@@ -206,10 +206,8 @@ export function tokenCreate(authUserId: number): Tokens {
  * @returns {Response}
  */
 export function quizRoutesErrorChecking(sessionId: number, quizId: number): Response {
-  let response;
-  
   try {
-    response = tokenExists(sessionId);
+    tokenExists(sessionId);
   } catch (error) {
     return { error: error.message, code: 401 };
   }
@@ -217,7 +215,7 @@ export function quizRoutesErrorChecking(sessionId: number, quizId: number): Resp
   const userToken = findTokenFromSessionId(sessionId);
 
   try {
-    response = quizBelongsToUser(userToken.authUserId, quizId);
+    quizBelongsToUser(userToken.authUserId, quizId);
   } catch (error) {
     return { error: error.message, code: 403 };
   }
