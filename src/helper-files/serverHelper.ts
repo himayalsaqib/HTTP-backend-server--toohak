@@ -36,22 +36,20 @@ export function sessionIdExists(sessionId: number): boolean {
  * and checks that the token's authUserId is in the dataStore
  *
  * @param {number} sessionId
- * @returns {{} | { error: string }}
+ * @returns {void}
  */
-export function tokenExists(sessionId: number): EmptyObject | ErrorObject {
+export function tokenExists(sessionId: number): void {
   const data = getData();
 
   const foundToken = data.tokens.find(token => token.sessionId === sessionId);
 
   if (foundToken === undefined) {
-    return { error: 'Invalid session ID.' };
+    throw new Error('Invalid session ID.');
   } else {
     const foundAuthUserId = data.users.find(users => users.authUserId === foundToken.authUserId);
     if (foundAuthUserId === undefined) {
-      return { error: 'Invalid session ID.' };
-    } else {
-      return {};
-    }
+      throw new Error('Invalid session ID.');
+    } 
   }
 }
 
@@ -210,16 +208,20 @@ export function tokenCreate(authUserId: number): Tokens {
  * @returns {Response}
  */
 export function quizRoutesErrorChecking(sessionId: number, quizId: number): Response {
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return { error: response, code: 401 };
+  let response;
+  
+  try {
+    response = tokenExists(sessionId);
+  } catch (error) {
+    return { error: error.message, code: 401 };
   }
 
   const userToken = findTokenFromSessionId(sessionId);
 
-  response = quizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return { error: response, code: 403 };
+  try {
+    response = quizBelongsToUser(userToken.authUserId, quizId);
+  } catch (error) {
+    return { error: error.message, code: 403 };
   }
 
   return { userToken: userToken };
