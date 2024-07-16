@@ -130,10 +130,6 @@ export function adminAuthLogin(email: string, password: string): { authUserId: n
  * @returns {{ user: UserDetails }}
  */
 export function adminUserDetails(authUserId: number): { user: UserDetails } {
-  if (!authUserIdExists(authUserId)) {
-    throw new Error('AuthUserId is not a valid user.');
-  }
-
   const user = findUserById(authUserId);
 
   return {
