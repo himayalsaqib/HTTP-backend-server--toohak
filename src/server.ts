@@ -115,12 +115,12 @@ app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  let response;
+  try {
+    response = tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json(error.message);
   }
-
-  
 
   const userToken = findTokenFromSessionId(sessionId);
 
@@ -132,9 +132,11 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
   const { token, email, nameFirst, nameLast } = req.body;
   const sessionId = parseInt(token);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  let response;
+  try {
+    response = tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json(error.message);
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -151,9 +153,11 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   const { token, oldPassword, newPassword } = req.body;
   const sessionId = parseInt(token);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  let response;
+  try {
+    response = tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json(error.message);
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -170,9 +174,11 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   const { token } = req.body;
   const sessionId = parseInt(token);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  let response;
+  try {
+    response = tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json(error.message);
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -187,9 +193,11 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   const { token, name, description } = req.body;
   const sessionId = parseInt(token);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  let response;
+  try {
+    response = tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json(error.message);
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -239,9 +247,11 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
 app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  let response;
+  try {
+    response = tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json(error.message);
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -273,9 +283,11 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
 app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  let response;
+  try {
+    response = tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json(error.message);
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -292,9 +304,11 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
   const quizIds = JSON.parse(req.query.quizIds as string);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  let response;
+  try {
+    response = tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json(error.message);
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -365,9 +379,11 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   const sessionId = parseInt(req.body.token);
   const quizId = parseInt(req.params.quizid as string);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  let response;
+  try {
+    response = tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json(error.message);
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -414,9 +430,11 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   const sessionId = parseInt(req.query.token as string);
   const quizIds = JSON.parse(req.query.quizIds as string);
 
-  let response = tokenExists(sessionId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  let response;
+  try {
+    response = tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json(error.message);
   }
 
   const userToken = findTokenFromSessionId(sessionId);
