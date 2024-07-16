@@ -162,7 +162,7 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
 
   // check oldPassword
   if (user) {
-    if (oldPassword !== user.password) {
+    if (getHashOf(oldPassword) !== user.password) {
       return { error: 'Old password is not the correct old password.' };
     }
   }
@@ -175,7 +175,7 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
   // check newPassword
   if (user.authUserId === authUserId) {
     // check previousPassword
-    if (adminCheckPasswordHistory(authUserId, newPassword) === true) {
+    if (adminCheckPasswordHistory(authUserId, getHashOf(newPassword)) === true) {
       return { error: 'New password has already been used before by this user.' };
     }
   }
@@ -192,8 +192,8 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
 
   // update password for user
   if (user.authUserId === authUserId) {
-    user.previousPasswords.push(newPassword);
-    user.password = newPassword;
+    user.previousPasswords.push(getHashOf(newPassword));
+    user.password = getHashOf(newPassword);
   }
   const data = getData();
   setData(data);
