@@ -63,11 +63,7 @@ export function adminUserNameIsValid(name: string): boolean {
  * @returns {boolean} true if password has neccessary chars otherwise false
  */
 export function adminPasswordHasValidChars(password: string): boolean {
-  if (/\d/.test(password) && /[a-zA-Z]/.test(password)) {
-    return true;
-  } else {
-    return false;
-  }
+  return /\d/.test(password) && /[a-zA-Z]/.test(password);
 }
 
 /**
