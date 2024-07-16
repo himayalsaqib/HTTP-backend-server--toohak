@@ -119,7 +119,7 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   try {
     response = tokenExists(sessionId);
   } catch (error) {
-    return res.status(401).json(error.message);
+    return res.status(401).json({ error: error.message });
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -136,7 +136,7 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
   try {
     response = tokenExists(sessionId);
   } catch (error) {
-    return res.status(401).json(error.message);
+    return res.status(401).json({ error: error.message });
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -157,7 +157,7 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   try {
     response = tokenExists(sessionId);
   } catch (error) {
-    return res.status(401).json(error.message);
+    return res.status(401).json({ error: error.message });
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -178,7 +178,7 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   try {
     response = tokenExists(sessionId);
   } catch (error) {
-    return res.status(401).json(error.message);
+    return res.status(401).json({ error: error.message });
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -197,7 +197,7 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   try {
     response = tokenExists(sessionId);
   } catch (error) {
-    return res.status(401).json(error.message);
+    return res.status(401).json({ error: error.message });
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -218,7 +218,7 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: 
 
   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
   if ('error' in errorCheckResponse) {
-    return res.status(errorCheckResponse.code).json(errorCheckResponse.error);
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
   const response = adminQuizQuestionMove(questionId, newPosition, quizId);
@@ -235,7 +235,7 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
 
   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
   if ('error' in errorCheckResponse) {
-    return res.status(errorCheckResponse.code).json(errorCheckResponse.error);
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
   const userToken = errorCheckResponse.userToken;
@@ -251,7 +251,7 @@ app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
   try {
     response = tokenExists(sessionId);
   } catch (error) {
-    return res.status(401).json(error.message);
+    return res.status(401).json({ error: error.message });
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -267,7 +267,7 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
 
   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
   if ('error' in errorCheckResponse) {
-    return res.status(errorCheckResponse.code).json(errorCheckResponse.error);
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
   const userToken = errorCheckResponse.userToken;
@@ -287,7 +287,7 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   try {
     response = tokenExists(sessionId);
   } catch (error) {
-    return res.status(401).json(error.message);
+    return res.status(401).json({ error: error.message });
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -308,7 +308,7 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   try {
     response = tokenExists(sessionId);
   } catch (error) {
-    return res.status(401).json(error.message);
+    return res.status(401).json({ error: error.message });
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -337,7 +337,7 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
 
   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
   if ('error' in errorCheckResponse) {
-    return res.status(errorCheckResponse.code).json(errorCheckResponse.error);
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
   const userToken = errorCheckResponse.userToken;
@@ -357,7 +357,7 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
 
   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
   if ('error' in errorCheckResponse) {
-    return res.status(errorCheckResponse.code).json(errorCheckResponse.error);
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
   const userToken = errorCheckResponse.userToken;
@@ -383,7 +383,7 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   try {
     response = tokenExists(sessionId);
   } catch (error) {
-    return res.status(401).json(error.message);
+    return res.status(401).json({ error: error.message });
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -413,7 +413,7 @@ app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
 
   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
   if ('error' in errorCheckResponse) {
-    return res.status(errorCheckResponse.code).json(errorCheckResponse.error);
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
   const userToken = errorCheckResponse.userToken;
@@ -434,7 +434,7 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   try {
     response = tokenExists(sessionId);
   } catch (error) {
-    return res.status(401).json(error.message);
+    return res.status(401).json({ error: error.message });
   }
 
   const userToken = findTokenFromSessionId(sessionId);
@@ -461,7 +461,7 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
 
   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
   if ('error' in errorCheckResponse) {
-    return res.status(errorCheckResponse.code).json(errorCheckResponse.error);
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
   const userToken = errorCheckResponse.userToken;
@@ -478,7 +478,7 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
 
   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
   if ('error' in errorCheckResponse) {
-    return res.status(errorCheckResponse.code).json(errorCheckResponse.error);
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
   const userToken = errorCheckResponse.userToken;
@@ -498,7 +498,7 @@ app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
 
   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
   if ('error' in errorCheckResponse) {
-    return res.status(errorCheckResponse.code).json(errorCheckResponse.error);
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
   const userToken = errorCheckResponse.userToken;
@@ -519,7 +519,7 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
 
   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
   if ('error' in errorCheckResponse) {
-    return res.status(errorCheckResponse.code).json(errorCheckResponse.error);
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
   const userToken = errorCheckResponse.userToken;
