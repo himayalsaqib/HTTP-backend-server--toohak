@@ -266,13 +266,9 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
  * i.e. delete the given token from the tokens array
  *
  * @param {Tokens} token
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
-export function adminAuthLogout(token: Tokens): EmptyObject | ErrorObject {
-  if (authUserIdExists(token.authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-
+export function adminAuthLogout(token: Tokens): EmptyObject {
   const data = getData();
   const index = data.tokens.findIndex(currToken => currToken === token);
   data.tokens.splice(index, 1);
