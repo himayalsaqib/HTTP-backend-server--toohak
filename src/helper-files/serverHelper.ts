@@ -73,16 +73,14 @@ export function findTokenFromSessionId(sessionId: number): Tokens {
  *
  * @param {number} authUserId
  * @param {number} quizId
- * @returns {{} | { error: string }}
+ * @returns {}
  */
-export function quizBelongsToUser(authUserId: number, quizId: number): EmptyObject | ErrorObject {
+export function quizBelongsToUser(authUserId: number, quizId: number): void {
   const quiz = findQuizById(quizId);
 
   if (quiz === undefined || quiz.authUserId !== authUserId) {
-    return { error: 'User is not an owner of this quiz or quiz does not exist' };
-  } else {
-    return {};
-  }
+    throw new Error('User is not an owner of this quiz or quiz does not exist');
+  } 
 }
 
 /**
