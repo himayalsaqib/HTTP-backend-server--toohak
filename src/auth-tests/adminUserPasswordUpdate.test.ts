@@ -152,3 +152,7 @@ describe('PUT /v1/admin/user/password', () => {
     });
   });
 });
+
+describe('PUT /v2/admin/user/password', () => {
+
+});
