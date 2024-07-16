@@ -127,11 +127,11 @@ export function adminAuthLogin(email: string, password: string): { authUserId: n
  * Given an admin user's authUserId, return details about the user.
  *
  * @param {number} authUserId
- * @returns {{ user: UserDetails } | { error: string }}
+ * @returns {{ user: UserDetails }}
  */
-export function adminUserDetails(authUserId: number): { user: UserDetails } | ErrorObject {
+export function adminUserDetails(authUserId: number): { user: UserDetails } {
   if (!authUserIdExists(authUserId)) {
-    return { error: 'AuthUserId is not a valid user.' };
+    throw new Error('AuthUserId is not a valid user.');
   }
 
   const user = findUserById(authUserId);
