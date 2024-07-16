@@ -120,6 +120,8 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
     return res.status(401).json(response);
   }
 
+  
+
   const userToken = findTokenFromSessionId(sessionId);
 
   response = adminUserDetails(userToken.authUserId);
