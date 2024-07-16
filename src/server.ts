@@ -179,6 +179,20 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   res.json(response);
 });
 
+app.get('/v1/admin/user/details', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token'));
+
+  let response = tokenExists(sessionId);
+  if ('error' in response) {
+    return res.status(401).json(response);
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  response = adminUserDetails(userToken.authUserId);
+  res.json(response);
+});
+
 // ============================== QUIZ ROUTES =============================== //
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
