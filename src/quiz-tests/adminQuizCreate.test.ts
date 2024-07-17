@@ -1,4 +1,4 @@
-// includes http tests for the route /v1/admin/quiz and /v2/admin/quiz 
+// includes http tests for the route /v1/admin/quiz and /v2/admin/quiz
 
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 
@@ -113,7 +113,7 @@ describe('POST /v1/admin/quiz', () => {
   });
 });
 
-//////////////////////////////////////////////////////////////////////////////
+/// ///////////////////////////////////////////////////////////////////////////
 
 describe('POST /v2/admin/quiz', () => {
   const error = { error: expect.any(String) };
