@@ -151,9 +151,9 @@ export function adminUserDetails(authUserId: number): { user: UserDetails } {
  * @param {number} authUserId
  * @param {string} oldPassword
  * @param {string} newPassword
- * @returns {{} | { error: string }} empty
+ * @returns {{}} empty object
  */
-export function adminUserPasswordUpdate(authUserId: number, oldPassword: string, newPassword: string): EmptyObject | ErrorObject {
+export function adminUserPasswordUpdate(authUserId: number, oldPassword: string, newPassword: string): EmptyObject {
   const user = findUserById(authUserId);
 
   // check oldPassword
