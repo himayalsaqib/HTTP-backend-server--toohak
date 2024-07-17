@@ -182,6 +182,12 @@ app.put('/v2/admin/user/password', (req: Request, res: Response) => {
   if ('error' in response) {
     return res.status(400).json(response);
   }
+  // try {
+  //   const response = adminUserPasswordUpdate(userToken.authUserId, oldPassword, newPassword);
+  //   res.json(response);
+  // } catch (error) {
+  //   return res.status(400).json({ error: error.message });
+  // }
 
   res.json(response);
 });
