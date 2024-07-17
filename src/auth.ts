@@ -146,44 +146,37 @@ export function adminUserDetails(authUserId: number): { user: UserDetails } {
  * @param {number} authUserId
  * @param {string} oldPassword
  * @param {string} newPassword
- * @returns {{} | { error: string }} empty
+ * @returns {{}} empty object
  */
-export function adminUserPasswordUpdate(authUserId: number, oldPassword: string, newPassword: string): EmptyObject | ErrorObject {
-  // check for valid user
-  if (!authUserIdExists(authUserId)) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-
+export function adminUserPasswordUpdate(authUserId: number, oldPassword: string, newPassword: string): EmptyObject {
   const user = findUserById(authUserId);
 
   // check oldPassword
   if (user) {
     if (getHashOf(oldPassword) !== user.password) {
-      return { error: 'Old password is not the correct old password.' };
+      throw new Error('Old password is not the correct old password.');
     }
   }
 
   // check for match
   if (oldPassword === newPassword) {
-    return { error: 'Old password matches new password exactly.' };
+    throw new Error('Old password matches new password exactly.');
   }
 
   // check newPassword
   if (user.authUserId === authUserId) {
     // check previousPassword
-    if (adminCheckPasswordHistory(authUserId, getHashOf(newPassword)) === true) {
-      return { error: 'New password has already been used before by this user.' };
+    if (adminCheckPasswordHistory(authUserId, getHashOf(newPassword))) {
+      throw new Error('New password has already been used before by this user.');
     }
   }
 
   if (newPassword.length < MIN_PASSWORD_LENGTH) {
-    return { error: 'Invalid new password is less than 8 characters.' };
+    throw new Error('Invalid new password is less than 8 characters.');
   }
 
   if (!adminPasswordHasValidChars(newPassword)) {
-    return {
-      error: 'New password must contain at least one number and one letter.'
-    };
+    throw new Error('New password must contain at least one number and one letter.');
   }
 
   // update password for user
