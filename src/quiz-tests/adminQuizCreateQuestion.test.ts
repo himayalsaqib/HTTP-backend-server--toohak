@@ -1,7 +1,7 @@
 // includes http tests for the route /v1/admin/quiz/{quizid}/question
 
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
-import { QuizQuestionAnswers } from '../quiz';
+import { QuizAnswerColours, QuizQuestionAnswers } from '../quiz';
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
@@ -49,7 +49,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`);
       const res = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
 
-      const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+      const colours = Object.values(QuizAnswerColours);
       expect(colours).toContain(res.retval.questions[0].answers[0].colour);
       expect(colours).toContain(res.retval.questions[0].answers[1].colour);
     });
@@ -80,13 +80,13 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
                 {
                   answerId: expect.any(Number),
                   answer: answerBody1.answer,
-                  colour: expect.any(String),
+                  colour: expect.any(QuizAnswerColours),
                   correct: answerBody1.correct
                 },
                 {
                   answerId: expect.any(Number),
                   answer: answerBody2.answer,
-                  colour: expect.any(String),
+                  colour: expect.any(QuizAnswerColours),
                   correct: answerBody2.correct
                 }
               ]
@@ -128,13 +128,13 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
                 {
                   answerId: expect.any(Number),
                   answer: answerBody[0].answer,
-                  colour: expect.any(String),
+                  colour: expect.any(QuizAnswerColours),
                   correct: answerBody[0].correct
                 },
                 {
                   answerId: expect.any(Number),
                   answer: answerBody[1].answer,
-                  colour: expect.any(String),
+                  colour: expect.any(QuizAnswerColours),
                   correct: answerBody[1].correct
                 }
               ]
@@ -148,13 +148,13 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
                 {
                   answerId: expect.any(Number),
                   answer: answerBody2[0].answer,
-                  colour: expect.any(String),
+                  colour: expect.any(QuizAnswerColours),
                   correct: answerBody2[0].correct
                 },
                 {
                   answerId: expect.any(Number),
                   answer: answerBody2[1].answer,
-                  colour: expect.any(String),
+                  colour: expect.any(QuizAnswerColours),
                   correct: answerBody2[1].correct
                 }
               ]

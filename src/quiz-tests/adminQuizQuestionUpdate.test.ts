@@ -2,7 +2,7 @@
 // and /v2/admin/quiz/{quizid}/question/{questionid}
 
 import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
-import { QuestionBody } from '../quiz';
+import { QuestionBody, QuizAnswerColours } from '../quiz';
 
 const ERROR = { error: expect.any(String) };
 
@@ -74,7 +74,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
       requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
       const res = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
 
-      const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+      const colours = Object.values(QuizAnswerColours);
       expect(colours).toContain(res.retval.questions[0].answers[0].colour);
       expect(colours).toContain(res.retval.questions[0].answers[1].colour);
     });
@@ -101,13 +101,13 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
               {
                 answerId: expect.any(Number),
                 answer: 'star',
-                colour: expect.any(String),
+                colour: expect.any(QuizAnswerColours),
                 correct: true
               },
               {
                 answerId: expect.any(Number),
                 answer: 'planet',
-                colour: expect.any(String),
+                colour: expect.any(QuizAnswerColours),
                 correct: false
               }
             ]
@@ -390,7 +390,7 @@ describe('PUT /v2/admin/quiz/{quizid}/question/{questionid}', () => {
       requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
       const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
 
-      const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+      const colours = Object.values(QuizAnswerColours);
       expect(colours).toContain(res.retval.questions[0].answers[0].colour);
       expect(colours).toContain(res.retval.questions[0].answers[1].colour);
     });
@@ -417,13 +417,13 @@ describe('PUT /v2/admin/quiz/{quizid}/question/{questionid}', () => {
               {
                 answerId: expect.any(Number),
                 answer: 'star',
-                colour: expect.any(String),
+                colour: expect.any(QuizAnswerColours),
                 correct: true
               },
               {
                 answerId: expect.any(Number),
                 answer: 'planet',
-                colour: expect.any(String),
+                colour: expect.any(QuizAnswerColours),
                 correct: false
               }
             ]
