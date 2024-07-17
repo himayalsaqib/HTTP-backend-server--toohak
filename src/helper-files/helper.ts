@@ -1,6 +1,6 @@
 // Includes helper functions for auth.ts and quiz.ts
 
-import { Answer, getData, Question, Quizzes, Users, Trash } from '../dataStore';
+import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
 import { QuestionBody, QuizQuestionAnswers } from '../quiz';
 
 /**
@@ -406,4 +406,15 @@ export function swapQuestions(questionIndex1: number, questionIndex2: number, qu
  */
 export function currentTime(): number {
   return Math.floor(Date.now() / 1000);
+}
+
+/**
+ * Finds a quiz session in the data by its session ID
+ *
+ * @param {number} sessionId - The ID of the quiz session to find
+ * @returns {QuizSessions | undefined} 
+ */
+export function findQuizSessionById(sessionId: number): QuizSessions | undefined {
+  const data = getData();
+  return data.quizSessions.find(session => session.sessionId === sessionId);
 }

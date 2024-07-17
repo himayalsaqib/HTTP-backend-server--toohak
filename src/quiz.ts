@@ -1,6 +1,6 @@
 // includes quiz functions
 
-import { setData, getData, ErrorObject, EmptyObject, Quizzes, Question, Answer } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, Question, Answer } from './dataStore';
 import {
   authUserIdExists,
   quizNameHasValidChars,
@@ -19,7 +19,8 @@ import {
   createAnswersArray,
   adminEmailInUse,
   findUserByEmail,
-  currentTime
+  currentTime,
+  findQuizSessionById
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -45,6 +46,10 @@ const MAX_ANS_LEN = 30;
 
 const MIN_CORRECT_ANS = 1;
 
+const MAX_AUTO_START_NUM = 50;
+
+const MAX_ACTIVE_QUIZ_SESSIONS = 10;
+
 /// /////////////////////////// Type Annotations ///////////////////////////////
 interface QuizList {
   quizId: number;
@@ -53,11 +58,11 @@ interface QuizList {
 
 // excludes authUserId, active session and inactive sessions
 export interface QuizInfo {
-  quizId: number,
-  name: string,
-  timeCreated: number,
-  timeLastEdited: number,
-  description: string,
+  quizId: number;
+  name: string;
+  timeCreated: number;
+  timeLastEdited: number;
+  description: string;
   numQuestions: number;
   questions: Question[];
   duration: number;
@@ -681,7 +686,7 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
  * @param {number} questionId
  * @returns {{ newQuestionId: number} | { error: string }} - returns new question ID or an error message
  */
-export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, questionId: number): {newQuestionId: number} | ErrorObject {
+export function adminQuizQuestionDuplicate(authUserId: number, quizId: number, questionId: number): {newQuestionId: number} | ErrorObject {
   const data = getData();
 
   if (authUserIdExists(authUserId) === false) {
@@ -723,4 +728,57 @@ export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, 
   setData(data);
 
   return { newQuestionId: newQuestion.questionId };
+}
+
+export function adminQuizSessionStart(quizId: number, autoStartNum: number): { sessionId: number } {
+  const quiz = findQuizById(quizId);
+
+  if (autoStartNum > MAX_AUTO_START_NUM) {
+    throw new Error('AutoStartNum is a number greater than 50.');
+  }
+  if (quiz.activeSessions.length === MAX_ACTIVE_QUIZ_SESSIONS) {
+    throw new Error('10 sessions that are not in END state currently exist for this quiz.');
+  }
+  if (quiz.questions.length === 0) {
+    throw new Error('The quiz does not have any questions in it.');
+  }
+  if (quizIsInTrash(quizId)) {
+    throw new Error('The quiz is in trash.');
+  }
+
+  const newSessionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  while (findQuizSessionById(newSessionId) !== undefined) {
+    Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  }
+
+  const data = getData();
+
+  // adding new sessionId to active sessions array for this quiz
+  quiz.activeSessions.push(newSessionId);
+
+  // copying quiz from quizzes array so any edits while session is running do 
+  // not affect the active session. ignoring authUserId and active/inactive session
+  const quizInfoForSession = {
+    quizId: quizId,
+    name: quiz.name,
+    timeCreated: quiz.timeCreated,
+    timeLastEdited: quiz.timeLastEdited,
+    description: quiz.description,
+    numQuestions: quiz.questions.length,
+    questions: quiz.questions,
+    duration: quiz.duration,
+  };
+
+  data.quizSessions.push({
+    sessionId: newSessionId,
+    state: QuizSessionState.LOBBY,
+    atQuestion: 1,
+    players: [],
+    autoStartNum: autoStartNum,
+    quiz: quizInfoForSession,
+    usersRankedByScore: [],
+    questionResults: [],
+  });
+
+  return { sessionId: newSessionId };
 }
