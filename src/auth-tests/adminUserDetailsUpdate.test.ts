@@ -130,8 +130,6 @@ describe('PUT /v1/admin/user/details', () => {
   });
 });
 
-//////////////////////////////////////////////////////////////////////////////
-
 describe('PUT /v2/admin/user/details', () => {
   let user: { email: string, nameFirst: string, nameLast: string };
   let userRegister: { email: string, password: string, nameFirst: string, nameLast: string };
