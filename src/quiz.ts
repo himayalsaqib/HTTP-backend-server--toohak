@@ -105,9 +105,6 @@ export function adminQuizList(authUserId: number): { quizzes: QuizList[] } | Err
  * @returns {{ quizId: number } | { error: string }} - assigns a quizId | error
  */
 export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } | ErrorObject {
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
   if (quizNameHasValidChars(name) === false) {
     return {
       error: 'Name contains invalid characters. Valid characters are alphanumeric and spaces.'
