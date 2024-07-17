@@ -166,7 +166,7 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
   // check newPassword
   if (user.authUserId === authUserId) {
     // check previousPassword
-    if (adminCheckPasswordHistory(authUserId, getHashOf(newPassword)) === true) {
+    if (adminCheckPasswordHistory(authUserId, getHashOf(newPassword))) {
       throw new Error('New password has already been used before by this user.');
     }
   }
