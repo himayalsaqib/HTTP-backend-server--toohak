@@ -160,12 +160,14 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
   if (user) {
     if (oldPassword !== user.password) {
       return { error: 'Old password is not the correct old password.' };
+      // throw new Error();
     }
   }
 
   // check for match
   if (oldPassword === newPassword) {
     return { error: 'Old password matches new password exactly.' };
+    // throw new Error();
   }
 
   // check newPassword
@@ -173,16 +175,19 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
     // check previousPassword
     if (adminCheckPasswordHistory(authUserId, newPassword) === true) {
       return { error: 'New password has already been used before by this user.' };
+      // throw new Error();
     }
   }
 
   if (newPassword.length < MIN_PASSWORD_LENGTH) {
     return { error: 'Invalid new password is less than 8 characters.' };
+    // throw new Error();
   }
 
   if (!adminPasswordHasValidChars(newPassword)) {
     return {
       error: 'New password must contain at least one number and one letter.'
+      // throw new Error();
     };
   }
 
