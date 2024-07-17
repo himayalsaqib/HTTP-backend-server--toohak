@@ -12,14 +12,14 @@ import {
   findUserByEmail
 } from './helper-files/helper';
 
-/// //////////////////////////// Global Variables ///////////////////////////////
+// ============================ GLOBAL VARIABLES ============================ //
 const MIN_PASSWORD_LENGTH = 8;
 const MIN_NAME_LENGTH = 2;
 const MAX_NAME_LENGTH = 20;
 const INITIAL_NUM_FAILED_LOGINS = 0;
 const INITIAL_NUM_SUCCESSFUL_LOGINS = 1;
 
-/// /////////////////////////// Type Annotations ///////////////////////////////
+// ============================ TYPE ANNOTATIONS ============================ //
 interface UserDetails {
   userId: number;
   name: string;
@@ -28,7 +28,7 @@ interface UserDetails {
   numFailedPasswordsSinceLastLogin: number;
 }
 
-/// ////////////////////////////// Functions ///////////////////////////////////
+// =============================== FUNCTIONS ================================ //
 /**
  * Register a user with an email, password, and names, then returns their
  * authUserId value
