@@ -751,8 +751,6 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
-  const data = getData();
-
   // adding new sessionId to active sessions array for this quiz
   quiz.activeSessions.push(newSessionId);
 
@@ -769,6 +767,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     duration: quiz.duration,
   };
 
+  const data = getData();
   data.quizSessions.push({
     sessionId: newSessionId,
     state: QuizSessionState.LOBBY,
