@@ -1,7 +1,7 @@
 // Includes data structure for toohak and data functions
 
 import fs from 'fs';
-import { QuizInfo } from './quiz';
+import { QuizInfo, QuizSessionState } from './quiz';
 
 const path = __dirname + '/toohakData.json';
 
@@ -52,7 +52,7 @@ export interface Answer {
 
 export interface QuizSessions {
   sessionId: number;
-  state: string;
+  state: QuizSessionState;
   atQuestion: number;
   players: string[];
   autoStartNum: number;

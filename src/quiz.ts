@@ -75,6 +75,18 @@ export interface QuestionBody {
   answers: QuizQuestionAnswers[];
 }
 
+/// //////////////////////////////// Enums /////////////////////////////////////
+
+export enum QuizSessionState {
+  LOBBY = 'LOBBY',
+  QUESTION_COUNTDOWN = 'QUESTION_COUNTDOWN',
+  QUESTION_OPEN = 'QUESTION_OPEN',
+  QUESTION_CLOSE = 'QUESTION_CLOSE',
+  ANSWER_SHOW = 'ANSWER_SHOW',
+  FINAL_RESULTS = 'FINAL_RESULTS',
+  END = 'END'
+}
+
 /// ////////////////////////////// Functions ///////////////////////////////////
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.

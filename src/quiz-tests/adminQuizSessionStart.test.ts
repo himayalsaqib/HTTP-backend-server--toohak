@@ -1,7 +1,7 @@
 // includes http tests for the route POST /v1/admin/quiz/{quizid}/session/{sessionid}
 
 import { requestDelete, requestGet, requestPost } from "../helper-files/requestHelper";
-import { QuestionBody } from "../quiz";
+import { QuestionBody, QuizSessionState } from "../quiz";
 
 beforeEach(() => {
 	requestDelete({}, '/v1/clear');
@@ -79,7 +79,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
 
       res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(res.retval).toStrictEqual({
-        state: 'LOBBY',
+        state: QuizSessionState.LOBBY,
         atQuestion: 1,
         players: [],
         metadata: {
