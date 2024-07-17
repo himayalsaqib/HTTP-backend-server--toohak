@@ -517,14 +517,17 @@ export function adminQuizQuestionMove (questionId: number, newPosition: number, 
  * @param {number} quizId
  * @param {number} questionId
  * @param {QuestionBody} questionBody
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
 export function adminQuizQuestionUpdate(
   authUserId: number,
   quizId: number,
   questionId: number,
   questionBody: QuestionBody
-): EmptyObject | ErrorObject {
+): EmptyObject {
+  if (questionIdInUse(questionId) === false) {
+    return { error: 'Question Id does not refer to a valid question within this quiz.' };
+  }
   if (questionBody.question.length < MIN_QUESTION_LEN || questionBody.question.length > MAX_QUESTION_LEN) {
     return { error: 'Question  is less than 5 characters or greater than 50 characters.' };
   }
@@ -549,32 +552,18 @@ export function adminQuizQuestionUpdate(
   if (checkForNumCorrectAns(questionBody) < MIN_CORRECT_ANS) {
     return { error: 'There are no correct answers.' };
   }
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-  if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz ID does not refer to a valid quiz.' };
-  }
 
   const data = getData();
   const quiz = findQuizById(quizId);
-
-  if (quiz.authUserId !== authUserId) {
-    return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
-  }
-  if (questionIdInUse(questionId) === false) {
-    return { error: 'Question Id does not refer to a valid question within this quiz.' };
-  }
+  quiz.timeLastEdited = currentTime();
+  // updating duration for the quiz
+  quiz.duration = quiz.questions.reduce((newDuration, question) => newDuration + question.duration, 0);
 
   const questionToUpdate = findQuestionById(questionId, quizId);
   questionToUpdate.question = questionBody.question;
   questionToUpdate.duration = questionBody.duration;
   questionToUpdate.points = questionBody.points;
   questionToUpdate.answers = createAnswersArray(questionBody.answers);
-
-  quiz.timeLastEdited = currentTime();
-  // updating duration for the quiz
-  quiz.duration = quiz.questions.reduce((newDuration, question) => newDuration + question.duration, 0);
 
   setData(data);
 
