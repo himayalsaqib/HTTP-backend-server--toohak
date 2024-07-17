@@ -44,12 +44,7 @@ export function tokenExists(sessionId: number): void {
   const foundToken = data.tokens.find(token => token.sessionId === sessionId);
 
   if (foundToken === undefined) {
-    throw new Error('Invalid session ID.');
-  } else {
-    const foundAuthUserId = data.users.find(users => users.authUserId === foundToken.authUserId);
-    if (foundAuthUserId === undefined) {
-      throw new Error('Invalid session ID.');
-    }
+    throw new Error('SessionId is invalid (does not refer to valid logged in user session)');
   }
 }
 
