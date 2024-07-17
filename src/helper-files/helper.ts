@@ -110,7 +110,7 @@ export function findUserByEmail(email: string): Users | undefined {
 /**
  * generates a sha256 hash for given password
  *
- * @param {string} password 
+ * @param {string} password
  * @returns {string} hash of password
  */
 export function getHashOf(password: string): string {
