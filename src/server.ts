@@ -202,6 +202,26 @@ app.get('/v2/admin/user/details', (req: Request, res: Response) => {
   res.json(response);
 });
 
+app.put('/v2/admin/user/details', (req: Request, res: Response) => {
+  const { email, nameFirst, nameLast } = req.body;
+  const sessionId = parseInt(req.header('token'));
+  
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  const response = adminUserDetailsUpdate(userToken.authUserId, email, nameFirst, nameLast);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
 // ============================== QUIZ ROUTES =============================== //
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
