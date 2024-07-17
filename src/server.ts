@@ -91,27 +91,25 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
 
-  const response = adminAuthRegister(email, password, nameFirst, nameLast);
-
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminAuthRegister(email, password, nameFirst, nameLast);
+    const token = tokenCreate(response.authUserId);
+    res.json({ token: token.sessionId.toString() });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
-
-  const token = tokenCreate(response.authUserId);
-  res.json({ token: token.sessionId.toString() });
 });
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  const response = adminAuthLogin(email, password);
-
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminAuthLogin(email, password);
+    const token = tokenCreate(response.authUserId);
+    res.json({ token: token.sessionId.toString() });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
-
-  const token = tokenCreate(response.authUserId);
-  res.json({ token: token.sessionId.toString() });
 });
 
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
@@ -160,13 +158,12 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   }
 
   const userToken = findTokenFromSessionId(sessionId);
-
-  const response = adminUserPasswordUpdate(userToken.authUserId, oldPassword, newPassword);
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminUserPasswordUpdate(userToken.authUserId, oldPassword, newPassword);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
-
-  res.json(response);
 });
 
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
@@ -220,6 +217,25 @@ app.put('/v2/admin/user/details', (req: Request, res: Response) => {
   }
 
   res.json(response);
+});
+
+app.put('/v2/admin/user/password', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token'));
+  const { oldPassword, newPassword } = req.body;
+
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+  try {
+    const response = adminUserPasswordUpdate(userToken.authUserId, oldPassword, newPassword);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
 });
 
 // ============================== QUIZ ROUTES =============================== //
