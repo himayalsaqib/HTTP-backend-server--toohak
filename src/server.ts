@@ -86,6 +86,8 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
 
 // ============================== AUTH ROUTES =============================== //
 
+// VERSION 1 //
+
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
 
@@ -180,6 +182,23 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   const userToken = findTokenFromSessionId(sessionId);
 
   const response = adminAuthLogout(userToken);
+  res.json(response);
+});
+
+// VERSION 2 //
+
+app.get('/v2/admin/user/details', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token'));
+
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  const response = adminUserDetails(userToken.authUserId);
   res.json(response);
 });
 
