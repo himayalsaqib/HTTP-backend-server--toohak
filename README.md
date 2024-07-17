@@ -1659,14 +1659,13 @@ The remaining time will be Q&A led by a tutor. That tutor may not necessarily be
     <td>Automarking (Testing & Implementation)</td>
     <td>60%</td>
     <td>
-      <ul>
+    <ul>
       <li>Correct implementation of specified functions.</li>
       <li>Correctly written tests based on the specification requirements.</li>
       <li>Code coverage.</li>
       <li>Correctly linted code.</li>
     </ul>
      Whilst we look at your group's work as a whole, if we feel that materially unequal contributions occurred between group members we will assess your individual contribution against this criteria.
-
      Note: <b>Up to 10% of the automarking will be done on iteration 2 routes that we still expect to be functional / backwards compatible.</b>
   </td>
   </tr>
@@ -1686,6 +1685,7 @@ The remaining time will be Q&A led by a tutor. That tutor may not necessarily be
   <tr>
     <td>General Code Quality</td>
     <td>5%</td>
+    <td>
       <ul>
         <li>Appropriate use of Javascript data structures (arrays, objects, etc.).</li>
         <li>Appropriate style as described in section 7.4.</li>
