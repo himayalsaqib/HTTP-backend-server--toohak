@@ -9,7 +9,8 @@ import {
   authUserIdExists,
   adminCheckPasswordHistory,
   findUserById,
-  findUserByEmail
+  findUserByEmail,
+  getHashOf
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables ///////////////////////////////
@@ -37,36 +38,32 @@ interface UserDetails {
  * @param {string} password
  * @param {string} nameFirst
  * @param {string} nameLast
- * @returns {{ authUserId: number } | { error: string }}
+ * @returns {{ authUserId: number }}
  */
-export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string): { authUserId: number } | ErrorObject {
+export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string): { authUserId: number } {
   if (adminEmailInUse(email)) {
-    return { error: 'Email address is used by another user.' };
+    throw new Error('Email address is used by another user.');
   }
   if (!validator.isEmail(email)) {
-    return { error: 'Invalid email address.' };
+    throw new Error('Invalid email address.');
   }
   if (password.length < MIN_PASSWORD_LENGTH) {
-    return { error: 'Invalid password is less than 8 characters.' };
+    throw new Error('Invalid password is less than 8 characters.');
   }
   if (!adminPasswordHasValidChars(password)) {
-    return { error: 'Invalid password does not meet requirements.' };
+    throw new Error('Invalid password does not meet requirements.');
   }
   if (nameFirst.length < MIN_NAME_LENGTH || nameFirst.length > MAX_NAME_LENGTH) {
-    return {
-      error: 'Invalid first name is less than 2 characters or more than 20 characters.'
-    };
+    throw new Error('Invalid first name is less than 2 characters or more than 20 characters.');
   }
   if (!adminUserNameIsValid(nameFirst)) {
-    return { error: 'Invalid first name does not meet requirements.' };
+    throw new Error('Invalid first name does not meet requirements.');
   }
   if (nameLast.length < MIN_NAME_LENGTH || nameLast.length > MAX_NAME_LENGTH) {
-    return {
-      error: 'Invalid last name is less than 2 characters or more than 20 characters.'
-    };
+    throw new Error('Invalid last name is less than 2 characters or more than 20 characters.');
   }
   if (!adminUserNameIsValid(nameLast)) {
-    return { error: 'Invalid last name does not meet requirements.' };
+    throw new Error('Invalid last name does not meet requirements.');
   }
 
   const data = getData();
@@ -76,18 +73,16 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
     newAuthUserId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
-  const newUser = {
+  data.users.push({
     authUserId: newAuthUserId,
     email: email,
     nameFirst: nameFirst,
     nameLast: nameLast,
-    password: password,
-    previousPasswords: [password],
+    password: getHashOf(password),
+    previousPasswords: [getHashOf(password)],
     numFailedLogins: INITIAL_NUM_FAILED_LOGINS,
     numSuccessfulLogins: INITIAL_NUM_SUCCESSFUL_LOGINS,
-  };
-
-  data.users.push(newUser);
+  });
 
   setData(data);
 
@@ -99,17 +94,17 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
  *
  * @param {string} email
  * @param {string} password
- * @returns {{ authUserId: number } | { error: string }}
+ * @returns {{ authUserId: number }}
  */
 
-export function adminAuthLogin(email: string, password: string): { authUserId: number } | ErrorObject {
+export function adminAuthLogin(email: string, password: string): { authUserId: number } {
   if (!adminEmailInUse(email)) {
-    return { error: 'Email address does not exist.' };
+    throw new Error('Email address does not exist.');
   }
   const user = findUserByEmail(email);
   const data = getData();
 
-  if (user.password === password) {
+  if (user.password === getHashOf(password)) {
     user.numFailedLogins = INITIAL_NUM_FAILED_LOGINS;
     user.numSuccessfulLogins++;
     setData(data);
@@ -119,7 +114,7 @@ export function adminAuthLogin(email: string, password: string): { authUserId: n
     user.numFailedLogins++;
     setData(data);
 
-    return { error: 'Password is not correct for the given email.' };
+    throw new Error('Password is not correct for the given email.');
   }
 }
 
@@ -158,7 +153,7 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
 
   // check oldPassword
   if (user) {
-    if (oldPassword !== user.password) {
+    if (getHashOf(oldPassword) !== user.password) {
       throw new Error('Old password is not the correct old password.');
     }
   }
@@ -171,7 +166,7 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
   // check newPassword
   if (user.authUserId === authUserId) {
     // check previousPassword
-    if (adminCheckPasswordHistory(authUserId, newPassword) === true) {
+    if (adminCheckPasswordHistory(authUserId, getHashOf(newPassword)) === true) {
       throw new Error('New password has already been used before by this user.');
     }
   }
@@ -186,8 +181,8 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
 
   // update password for user
   if (user.authUserId === authUserId) {
-    user.previousPasswords.push(newPassword);
-    user.password = newPassword;
+    user.previousPasswords.push(getHashOf(newPassword));
+    user.password = getHashOf(newPassword);
   }
   const data = getData();
   setData(data);
