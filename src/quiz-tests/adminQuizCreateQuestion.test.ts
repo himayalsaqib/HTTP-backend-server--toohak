@@ -774,6 +774,10 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
         statusCode: 400
       });
     });
+
+    test.todo('The thumbnailUrl is an empty string');
+    test.todo('The thumbnailUrl does not end with one of the following filetypes (case insensitive): jpg, jpeg, png');
+    test.todo(`The thumbnailUrl does not begin with 'http://' or 'https://'`);
   });
 
   describe('Testing token errors (status code 401)', () => {
