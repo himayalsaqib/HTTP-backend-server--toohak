@@ -149,7 +149,7 @@ describe('PUT /v2/admin/user/details', () => {
     });
 
     test('Side effect (successful update): adminUserDetails returns newly updated properties', () => {
-      requestPut(user, '/v2/admin/user/details');
+      requestPut(user, '/v2/admin/user/details', { token });
       const res = requestGet({}, '/v2/admin/user/details', { token });
       expect(res).toStrictEqual({
         retval: {
