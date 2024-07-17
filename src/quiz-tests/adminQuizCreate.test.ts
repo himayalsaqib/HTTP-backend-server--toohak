@@ -6,8 +6,9 @@ beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
+const ERROR = { error: expect.any(String) };
+
 describe('POST /v1/admin/quiz', () => {
-  const error = { error: expect.any(String) };
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { token: string, name: string, description: string };
   let token: string;
@@ -56,14 +57,14 @@ describe('POST /v1/admin/quiz', () => {
       const sessionId = parseInt(token) + 1;
       quizBody = { token: sessionId.toString(), name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
       const res = requestPost(quizBody, '/v1/admin/quiz');
-      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
+      expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
 
     test('Token is empty (no users are registered)', () => {
       requestDelete({}, '/v1/clear');
       const res = requestPost(quizBody, '/v1/admin/quiz');
 
-      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
+      expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
   });
 
@@ -73,21 +74,21 @@ describe('POST /v1/admin/quiz', () => {
         quizBody = { token: token, name: 'Invalid Quiz Name !@#$%^&*()', description: 'Valid Quiz Description' };
         const res = requestPost(quizBody, '/v1/admin/quiz');
 
-        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
 
       test('Quiz name is less than 3 characters', () => {
         quizBody = { token: token, name: 'Hi', description: 'Valid Quiz Description' };
         const res = requestPost(quizBody, '/v1/admin/quiz');
 
-        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
 
       test('Quiz name is more than 30 characters', () => {
         quizBody = { token: token, name: '1234567890 1234567890 1234567890', description: 'Valid Quiz Description' };
         const res = requestPost(quizBody, '/v1/admin/quiz');
 
-        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
 
       test('Quiz name already used by current user for another quiz', () => {
@@ -97,7 +98,7 @@ describe('POST /v1/admin/quiz', () => {
         quizBody = { token: token, name: 'Name In Use', description: 'Different Quiz' };
         const res = requestPost(quizBody, '/v1/admin/quiz');
 
-        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
     });
 
@@ -107,7 +108,7 @@ describe('POST /v1/admin/quiz', () => {
         quizBody = { token: token, name: 'Valid Quiz Name', description: longString };
         const res = requestPost(quizBody, '/v1/admin/quiz');
 
-        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
     });
   });
@@ -116,7 +117,6 @@ describe('POST /v1/admin/quiz', () => {
 /// ///////////////////////////////////////////////////////////////////////////
 
 describe('POST /v2/admin/quiz', () => {
-  const error = { error: expect.any(String) };
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { name: string, description: string };
   let token: string;
@@ -166,14 +166,14 @@ describe('POST /v2/admin/quiz', () => {
       quizBody = { name: 'Valid Quiz Name', description: 'Valid Quiz Description' };
       const res = requestPost(quizBody, '/v2/admin/quiz', { token: sessionId });
 
-      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
+      expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
 
     test('Token is empty (no users are registered)', () => {
       requestDelete({}, '/v1/clear');
       const res = requestPost(quizBody, '/v2/admin/quiz', { token });
 
-      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
+      expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
   });
 
@@ -183,21 +183,21 @@ describe('POST /v2/admin/quiz', () => {
         quizBody = { name: 'Invalid Quiz Name !@#$%^&*()', description: 'Valid Quiz Description' };
         const res = requestPost(quizBody, '/v2/admin/quiz', { token });
 
-        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
 
       test('Quiz name is less than 3 characters', () => {
         quizBody = { name: 'Hi', description: 'Valid Quiz Description' };
         const res = requestPost(quizBody, '/v2/admin/quiz', { token });
 
-        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
 
       test('Quiz name is more than 30 characters', () => {
         quizBody = { name: '1234567890 1234567890 1234567890', description: 'Valid Quiz Description' };
         const res = requestPost(quizBody, '/v2/admin/quiz', { token });
 
-        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
 
       test('Quiz name already used by current user for another quiz', () => {
@@ -207,7 +207,7 @@ describe('POST /v2/admin/quiz', () => {
         quizBody = { name: 'Name In Use', description: 'Different Quiz' };
         const res = requestPost(quizBody, '/v2/admin/quiz', { token });
 
-        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
     });
 
@@ -217,7 +217,7 @@ describe('POST /v2/admin/quiz', () => {
         quizBody = { name: 'Valid Quiz Name', description: longString };
         const res = requestPost(quizBody, '/v2/admin/quiz', { token });
 
-        expect(res).toStrictEqual({ retval: error, statusCode: 400 });
+        expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
     });
   });
