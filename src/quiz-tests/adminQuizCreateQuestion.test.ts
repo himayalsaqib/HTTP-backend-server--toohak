@@ -437,9 +437,9 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
   let quizId: number;
   let token: string;
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
-  let quizBody: { token: string, name: string, description: string };
+  let quizBody: { name: string, description: string };
   let answerBody: { answer: string, correct: boolean }[];
-  let questionBody: { question: string, duration: number, points: number, answers: QuizQuestionAnswers[] };
+  let questionBody: { question: string, duration: number, points: number, answers: QuizQuestionAnswers[], thumbnailUrl: string };
 
   describe('Testing successful cases (status code 200)', () => {
     beforeEach(() => {
@@ -500,6 +500,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
               questionId: res.retval.questionId,
               question: questionCreateBody.question,
               duration: questionCreateBody.duration,
+              thumbnailUrl: expect.any(String),
               points: questionCreateBody.points,
               answers: [
                 {
@@ -517,7 +518,8 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
               ]
             }
           ],
-          duration: expect.any(Number)
+          duration: expect.any(Number),
+          thumbnailUrl: expect.any(String),
         },
         statusCode: 200
       });
