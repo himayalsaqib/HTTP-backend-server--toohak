@@ -13,14 +13,14 @@ describe('PUT /v1/admin/user/details', () => {
   let userRegister: { email: string, password: string, nameFirst: string, nameLast: string };
   let token: string;
 
-  describe('Testing successful cases (status code 200)', () => {
-    beforeEach(() => {
-      userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const res = requestPost(userRegister, '/v1/admin/auth/register');
-      token = res.retval.token;
-      user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
-    });
+  beforeEach(() => {
+    userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+    const res = requestPost(userRegister, '/v1/admin/auth/register');
+    token = res.retval.token;
+    user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
+  });
 
+  describe('Testing successful cases (status code 200)', () => {
     test('Successful update has correct return type', () => {
       const res = requestPut(user, '/v1/admin/user/details');
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
@@ -45,13 +45,6 @@ describe('PUT /v1/admin/user/details', () => {
   });
 
   describe('Testing name and email errors (status code 400)', () => {
-    beforeEach(() => {
-      userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const res = requestPost(userRegister, '/v1/admin/auth/register');
-      token = res.retval.token;
-      user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
-    });
-
     describe('Testing error returns for email', () => {
       test('Email is currently used by another user', () => {
         userRegister.email = 'newValid1@gmail.com';
@@ -144,14 +137,14 @@ describe('PUT /v2/admin/user/details', () => {
   let userRegister: { email: string, password: string, nameFirst: string, nameLast: string };
   let token: string;
 
-  describe('Testing successful cases (status code 200)', () => {
-    beforeEach(() => {
-      userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const res = requestPost(userRegister, '/v1/admin/auth/register');
-      token = res.retval.token;
-      user = { email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
-    });
+  beforeEach(() => {
+    userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+    const res = requestPost(userRegister, '/v1/admin/auth/register');
+    token = res.retval.token;
+    user = { email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
+  });
 
+  describe('Testing successful cases (status code 200)', () => {
     test('Successful update has correct return type', () => {
       const res = requestPut(user, '/v1/admin/user/details', { token });
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
@@ -176,13 +169,6 @@ describe('PUT /v2/admin/user/details', () => {
   });
 
   describe('Testing name and email errors (status code 400)', () => {
-    beforeEach(() => {
-      userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
-      const res = requestPost(userRegister, '/v1/admin/auth/register');
-      token = res.retval.token;
-      user = { email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
-    });
-
     describe('Testing error returns for email', () => {
       test('Email is currently used by another user', () => {
         userRegister.email = 'newValid1@gmail.com';
