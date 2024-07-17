@@ -20,9 +20,7 @@ export interface Response {
  * @returns {boolean} true if sessionId is valid otherwise false
  */
 export function sessionIdExists(sessionId: number): boolean {
-  const data = getData();
-
-  const token = data.tokens.find(token => token.sessionId === sessionId);
+  const token = findTokenFromSessionId(sessionId);
 
   if (token === undefined) {
     return false;
@@ -39,9 +37,7 @@ export function sessionIdExists(sessionId: number): boolean {
  * @returns {void}
  */
 export function tokenExists(sessionId: number): void {
-  const data = getData();
-
-  const foundToken = data.tokens.find(token => token.sessionId === sessionId);
+  const foundToken = findTokenFromSessionId(sessionId);
 
   if (foundToken === undefined) {
     throw new Error('SessionId is invalid (does not refer to valid logged in user session)');
