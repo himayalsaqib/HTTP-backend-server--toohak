@@ -166,12 +166,6 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-  // const response = adminUserPasswordUpdate(userToken.authUserId, oldPassword, newPassword);
-  // if ('error' in response) {
-  //   return res.status(400).json(response);
-  // }
-
-  // res.json(response);
 });
 
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
@@ -218,18 +212,12 @@ app.put('/v2/admin/user/password', (req: Request, res: Response) => {
   }
 
   const userToken = findTokenFromSessionId(sessionId);
-  // const response = adminUserPasswordUpdate(userToken.authUserId, oldPassword, newPassword);
-  // if ('error' in response) {
-  //   return res.status(400).json(response);
-  // }
   try {
     const response = adminUserPasswordUpdate(userToken.authUserId, oldPassword, newPassword);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-
-  //res.json(response);
 });
 
 // ============================== QUIZ ROUTES =============================== //
