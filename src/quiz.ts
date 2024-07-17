@@ -388,9 +388,6 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
 * @returns {{} | { error: string }}
 */
 export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
   if (quizIsInTrash(quizId) === false) {
     return { error: 'Quiz ID refers to a quiz that is not currently in the trash' };
   }
