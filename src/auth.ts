@@ -159,36 +159,36 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
   // check oldPassword
   if (user) {
     if (oldPassword !== user.password) {
-      return { error: 'Old password is not the correct old password.' };
-      // throw new Error();
+      // return { error: 'Old password is not the correct old password.' };
+      throw new Error('Old password is not the correct old password.');
     }
   }
 
   // check for match
   if (oldPassword === newPassword) {
-    return { error: 'Old password matches new password exactly.' };
-    // throw new Error();
+    // return { error: 'Old password matches new password exactly.' };
+    throw new Error('Old password matches new password exactly.');
   }
 
   // check newPassword
   if (user.authUserId === authUserId) {
     // check previousPassword
     if (adminCheckPasswordHistory(authUserId, newPassword) === true) {
-      return { error: 'New password has already been used before by this user.' };
-      // throw new Error();
+      // return { error: 'New password has already been used before by this user.' };
+      throw new Error('New password has already been used before by this user.');
     }
   }
 
   if (newPassword.length < MIN_PASSWORD_LENGTH) {
-    return { error: 'Invalid new password is less than 8 characters.' };
-    // throw new Error();
+    // return { error: 'Invalid new password is less than 8 characters.' };
+    throw new Error('Invalid new password is less than 8 characters.');
   }
 
   if (!adminPasswordHasValidChars(newPassword)) {
-    return {
-      error: 'New password must contain at least one number and one letter.'
-      // throw new Error();
-    };
+    // return {
+    //   error: 'New password must contain at least one number and one letter.'
+    // };
+    throw new Error('New password must contain at least one number and one letter.');
   }
 
   // update password for user
