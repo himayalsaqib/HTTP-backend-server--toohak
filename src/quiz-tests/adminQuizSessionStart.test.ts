@@ -1,15 +1,15 @@
 // includes http tests for the route POST /v1/admin/quiz/{quizid}/session/{sessionid}
 
-import { requestDelete, requestGet, requestPost } from "../helper-files/requestHelper";
-import { QuestionBody, QuizSessionState } from "../quiz";
+import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
+import { QuestionBody, QuizSessionState } from '../quiz';
 
 beforeEach(() => {
-	requestDelete({}, '/v1/clear');
+  requestDelete({}, '/v1/clear');
 });
 
 describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
-	const error = { error: expect.any(String) };
-	let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
+  const error = { error: expect.any(String) };
+  let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let token: string;
   let quizBody: { name: string, description: string };
   let quizId: number;
@@ -61,7 +61,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({ retval: { sessionId: expect.any(Number) }, statusCode: 200 });
       const sessionId = res.retval.sessionId;
-      
+
       res = requestGet({}, `/v1/admin/quiz/${quizId}/sessions`, { token });
       expect(res).toStrictEqual({
         retval: {
@@ -103,7 +103,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
             }
           ],
           duration: createBody.questionBody.duration,
-          thumbnailUrl: '' //idk about this.
+          thumbnailUrl: '' // idk about this.
         }
       });
       expect(res.statusCode).toStrictEqual(200);
@@ -137,7 +137,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
     });
 
     test.skip('The Quiz does not have any questions in it', () => {
-      // deleting existing question 
+      // deleting existing question
       requestDelete({}, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
 
       const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });

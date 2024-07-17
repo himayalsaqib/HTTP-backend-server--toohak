@@ -412,7 +412,7 @@ export function currentTime(): number {
  * Finds a quiz session in the data by its session ID
  *
  * @param {number} sessionId - The ID of the quiz session to find
- * @returns {QuizSessions | undefined} 
+ * @returns {QuizSessions | undefined}
  */
 export function findQuizSessionById(sessionId: number): QuizSessions | undefined {
   const data = getData();
