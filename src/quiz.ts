@@ -61,7 +61,6 @@ export interface QuizInfo {
   numQuestions: number;
   questions: Question[];
   duration: number;
-  thumbnailUrl: string;
 }
 
 export interface QuizQuestionAnswers {
@@ -141,6 +140,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
   }
 
   const emptyQuestions: Question[] = [];
+  const emptySessions: number[] = [];
 
   const newQuiz = {
     authUserId: authUserId,
@@ -151,9 +151,8 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     description: description,
     questions: emptyQuestions,
     duration: 0,
-    thumbnailUrl: '',
-    activeSessions: <number><unknown>[],
-    inactiveSessions: <number><unknown>[],
+    activeSessions: emptySessions,
+    inactiveSessions: emptySessions,
   };
 
   data.quizzes.push(newQuiz);

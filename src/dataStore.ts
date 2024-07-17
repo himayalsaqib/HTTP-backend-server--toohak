@@ -31,7 +31,6 @@ export interface Quizzes {
   description: string,
   questions: Question[];
   duration: number;
-  thumbnailUrl: string;
   activeSessions: number[];
   inactiveSessions: number[];
 }
@@ -40,7 +39,6 @@ export interface Question {
   questionId: number;
   question: string;
   duration: number;
-  thumbnailUrl: string;
   points: number;
   answers: Answer[];
 }
@@ -88,6 +86,7 @@ export interface Tokens {
 export interface Data {
   users: Users[];
   quizzes: Quizzes[];
+  quizSessions: QuizSessions[];
   trash: Trash[];
   tokens: Tokens[];
 }
@@ -95,6 +94,7 @@ export interface Data {
 let data: Data = {
   users: [],
   quizzes: [],
+  quizSessions: [],
   trash: [],
   tokens: []
 };
