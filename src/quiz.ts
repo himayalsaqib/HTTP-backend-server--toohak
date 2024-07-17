@@ -22,7 +22,7 @@ import {
   currentTime
 } from './helper-files/helper';
 
-/// //////////////////////////// Global Variables //////////////////////////////
+// ============================= GLOBAL VARIABLES =========================== //
 const MIN_QUIZ_NAME_LEN = 3;
 const MAX_QUIZ_NAME_LEN = 30;
 const MAX_DESCRIPTION_LEN = 100;
@@ -45,7 +45,7 @@ const MAX_ANS_LEN = 30;
 
 const MIN_CORRECT_ANS = 1;
 
-/// /////////////////////////// Type Annotations ///////////////////////////////
+// ============================ TYPE ANNOTATIONS ============================ //
 interface QuizList {
   quizId: number;
   name: string;
@@ -69,7 +69,19 @@ export interface QuestionBody {
   answers: QuizQuestionAnswers[];
 }
 
-/// ////////////////////////////// Functions ///////////////////////////////////
+// ================================= ENUMS ================================== //
+
+export enum QuizAnswerColours {
+  RED = 'RED',
+  BLUE = 'BLUE',
+  GREEN = 'GREEN',
+  YELLOW = 'YELLOW',
+  PURPLE = 'PURPLE',
+  BROWN = 'BROWN',
+  ORANGE = 'ORANGE'
+}
+
+// =============================== FUNCTIONS ================================ //
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  *

@@ -1,6 +1,7 @@
 // Includes data structure for toohak and data functions
 
 import fs from 'fs';
+import { QuizAnswerColours } from './quiz';
 
 const path = __dirname + '/toohakData.json';
 
@@ -43,7 +44,7 @@ export interface Question {
 export interface Answer {
   answerId: number;
   answer: string;
-  colour: string;
+  colour: QuizAnswerColours;
   correct: boolean;
 }
 
