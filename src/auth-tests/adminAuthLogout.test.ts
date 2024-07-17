@@ -2,12 +2,13 @@
 
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 
+const ERROR = { error: expect.any(String) };
+
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
 describe('POST /v1/admin/auth/logout', () => {
-  const error = { error: expect.any(String) };
   let bodyRegister: { email: string, password: string, nameFirst: string, nameLast: string };
   let token: string;
 
@@ -31,7 +32,7 @@ describe('POST /v1/admin/auth/logout', () => {
         statusCode: 200
       });
       expect(requestGet({ token }, '/v1/admin/user/details')).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -42,7 +43,7 @@ describe('POST /v1/admin/auth/logout', () => {
         statusCode: 200
       });
       expect(requestPost({ token }, '/v1/admin/auth/logout')).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -52,7 +53,7 @@ describe('POST /v1/admin/auth/logout', () => {
     test('Returns error when token is empty', () => {
       requestDelete({}, '/v1/clear');
       expect(requestPost({ token }, '/v1/admin/auth/logout')).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -60,7 +61,7 @@ describe('POST /v1/admin/auth/logout', () => {
     test('Returns error when sessionId is not a valid logged in user session', () => {
       const sessionId = parseInt(token) + 1;
       expect(requestPost({ token: sessionId.toString() }, '/v1/admin/auth/logout')).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -68,7 +69,6 @@ describe('POST /v1/admin/auth/logout', () => {
 });
 
 describe('POST /v2/admin/auth/logout', () => {
-  const error = { error: expect.any(String) };
   let bodyRegister: { email: string, password: string, nameFirst: string, nameLast: string };
   let token: string;
 
@@ -92,7 +92,7 @@ describe('POST /v2/admin/auth/logout', () => {
         statusCode: 200
       });
       expect(requestGet({}, '/v2/admin/user/details', { token })).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -103,7 +103,7 @@ describe('POST /v2/admin/auth/logout', () => {
         statusCode: 200
       });
       expect(requestPost({}, '/v2/admin/auth/logout', { token })).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -113,7 +113,7 @@ describe('POST /v2/admin/auth/logout', () => {
     test('Returns error when token is empty', () => {
       requestDelete({}, '/v1/clear');
       expect(requestPost({}, '/v2/admin/auth/logout', { token })).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -121,7 +121,7 @@ describe('POST /v2/admin/auth/logout', () => {
     test('Returns error when sessionId is not a valid logged in user session', () => {
       const sessionId = parseInt(token) + 1;
       expect(requestPost({}, '/v2/admin/auth/logout', { token: sessionId.toString() })).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
