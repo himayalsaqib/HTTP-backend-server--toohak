@@ -138,14 +138,13 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
   }
 
   const userToken = findTokenFromSessionId(sessionId);
-  
+
   try {
     const response = adminUserDetailsUpdate(userToken.authUserId, email, nameFirst, nameLast);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-
 });
 
 app.put('/v1/admin/user/password', (req: Request, res: Response) => {
@@ -218,7 +217,6 @@ app.put('/v2/admin/user/details', (req: Request, res: Response) => {
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-
 });
 
 app.put('/v2/admin/user/password', (req: Request, res: Response) => {

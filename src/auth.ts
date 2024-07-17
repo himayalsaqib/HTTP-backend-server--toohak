@@ -204,12 +204,12 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
   const userWithEmail = findUserByEmail(email);
   if (userWithEmail) {
     if (userWithEmail.authUserId !== authUserId) {
-      throw new Error('Email currently in use by another user.')
+      throw new Error('Email currently in use by another user.');
     }
   }
 
   if (validator.isEmail(email) === false) {
-    throw new Error('Invalid email address.')
+    throw new Error('Invalid email address.');
   }
   if (adminUserNameIsValid(nameFirst) === false) {
     throw new Error('First name contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes.');
