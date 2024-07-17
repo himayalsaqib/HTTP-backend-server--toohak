@@ -117,6 +117,7 @@ describe('PUT /v1/admin/user/details', () => {
 
   describe('Testing token errors (status code 401)', () => {
     test('Token is empty (no users are registered)', () => {
+      requestDelete({}, '/v1/clear');
       user = { token: token, email: 'newvalidemail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
       const res = requestPut(user, '/v1/admin/user/details');
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
@@ -152,13 +153,13 @@ describe('PUT /v2/admin/user/details', () => {
     });
 
     test('Successful update has correct return type', () => {
-      const res = requestPut(user, '/v1/admin/user/details', token);
+      const res = requestPut(user, '/v1/admin/user/details', { token });
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
     });
 
     test('Side effect (successful update): adminUserDetails returns newly updated properties', () => {
       requestPut(user, '/v1/admin/user/details');
-      const res = requestGet({ token: token }, '/v1/admin/user/details');
+      const res = requestGet({}, '/v1/admin/user/details', { token });
       expect(res).toStrictEqual({
         retval: {
           user: {
@@ -179,7 +180,7 @@ describe('PUT /v2/admin/user/details', () => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const res = requestPost(userRegister, '/v1/admin/auth/register');
       token = res.retval.token;
-      user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
+      user = { email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
     });
 
     describe('Testing error returns for email', () => {
@@ -187,13 +188,13 @@ describe('PUT /v2/admin/user/details', () => {
         userRegister.email = 'newValid1@gmail.com';
         requestPost(userRegister, '/v1/admin/auth/register');
 
-        const res = requestPut(user, '/v1/admin/user/details');
+        const res = requestPut(user, '/v1/admin/user/details', { token });
         expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
 
       test('Email is not valid', () => {
         user.email = 'notValid';
-        const res = requestPut(user, '/v1/admin/user/details');
+        const res = requestPut(user, '/v1/admin/user/details', { token });
         expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
     });
@@ -201,45 +202,45 @@ describe('PUT /v2/admin/user/details', () => {
     describe('Testing error returns for names', () => {
       test('NameFirst contains invalid characters (not space, apostrophe or hyphen)', () => {
         user.nameFirst = 'Jane1';
-        const res1 = requestPut(user, '/v1/admin/user/details');
+        const res1 = requestPut(user, '/v1/admin/user/details', { token });
         expect(res1).toStrictEqual({ retval: ERROR, statusCode: 400 });
 
         user.nameFirst = 'Jane&';
-        const res2 = requestPut(user, '/v1/admin/user/details');
+        const res2 = requestPut(user, '/v1/admin/user/details', { token });
         expect(res2).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
 
       test('NameFirst is less than 2 characters', () => {
         user.nameFirst = 'J';
-        const res = requestPut(user, '/v1/admin/user/details');
+        const res = requestPut(user, '/v1/admin/user/details', { token });
         expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
 
       test('NameFirst is more than 20 characters', () => {
         user.nameFirst = 'JamieJamieJamieJamieJamie';
-        const res = requestPut(user, '/v1/admin/user/details');
+        const res = requestPut(user, '/v1/admin/user/details', { token });
         expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
 
       test('NameLast contains invalid characters (not space, apostrophe or hyphen)', () => {
         user.nameLast = 'Doe1';
-        const res1 = requestPut(user, '/v1/admin/user/details');
+        const res1 = requestPut(user, '/v1/admin/user/details', { token });
         expect(res1).toStrictEqual({ retval: ERROR, statusCode: 400 });
 
         user.nameLast = 'Doe&';
-        const res2 = requestPut(user, '/v1/admin/user/details');
+        const res2 = requestPut(user, '/v1/admin/user/details', { token });
         expect(res2).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
 
       test('NameLast is less than 2 characters', () => {
         user.nameLast = 'D';
-        const res = requestPut(user, '/v1/admin/user/details');
+        const res = requestPut(user, '/v1/admin/user/details', { token });
         expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
 
       test('NameLast is more than 20 characters', () => {
         user.nameLast = 'DavidDavidDavidDavidDavid';
-        const res = requestPut(user, '/v1/admin/user/details');
+        const res = requestPut(user, '/v1/admin/user/details', { token });
         expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
       });
     });
@@ -247,8 +248,9 @@ describe('PUT /v2/admin/user/details', () => {
 
   describe('Testing token errors (status code 401)', () => {
     test('Token is empty (no users are registered)', () => {
-      user = { token: token, email: 'newvalidemail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
-      const res = requestPut(user, '/v1/admin/user/details');
+      requestDelete({}, '/v1/clear');
+      user = { email: 'newvalidemail1@gmail', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
+      const res = requestPut(user, '/v1/admin/user/details', { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
 
@@ -256,11 +258,10 @@ describe('PUT /v2/admin/user/details', () => {
       userRegister = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const { retval } = requestPost(userRegister, '/v1/admin/auth/register');
       token = retval as string;
-      user = { token: token, email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
+      user = { email: 'newValid1@gmail.com', nameFirst: 'Not Jane', nameLast: 'Not Doe' };
 
-      const sessionId = parseInt(user.token) + 1;
-      user.token = sessionId.toString();
-      const res = requestPut(user, '/v1/admin/user/details');
+      const sessionId = parseInt(token) + 1;
+      const res = requestPut(user, '/v1/admin/user/details', { token: sessionId.toString() });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
   });
