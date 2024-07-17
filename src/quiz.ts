@@ -51,10 +51,17 @@ interface QuizList {
   name: string;
 }
 
-export interface QuizInfo extends Omit<Quizzes, 'authUserId'> {
+// excludes authUserId, active session and inactive sessions
+export interface QuizInfo {
+  quizId: number,
+  name: string,
+  timeCreated: number,
+  timeLastEdited: number,
+  description: string,
   numQuestions: number;
   questions: Question[];
   duration: number;
+  thumbnailUrl: string;
 }
 
 export interface QuizQuestionAnswers {
@@ -144,6 +151,9 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     description: description,
     questions: emptyQuestions,
     duration: 0,
+    thumbnailUrl: '',
+    activeSessions: <number><unknown>[],
+    inactiveSessions: <number><unknown>[],
   };
 
   data.quizzes.push(newQuiz);
