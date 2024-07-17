@@ -205,7 +205,7 @@ app.get('/v2/admin/user/details', (req: Request, res: Response) => {
 app.put('/v2/admin/user/details', (req: Request, res: Response) => {
   const { email, nameFirst, nameLast } = req.body;
   const sessionId = parseInt(req.header('token'));
-  
+
   try {
     tokenExists(sessionId);
   } catch (error) {
