@@ -519,38 +519,33 @@ export function adminQuizQuestionMove (questionId: number, newPosition: number, 
  * @param {QuestionBody} questionBody
  * @returns {{}}
  */
-export function adminQuizQuestionUpdate(
-  authUserId: number,
-  quizId: number,
-  questionId: number,
-  questionBody: QuestionBody
-): EmptyObject {
+export function adminQuizQuestionUpdate(quizId: number, questionId: number, questionBody: QuestionBody): EmptyObject {
   if (questionIdInUse(questionId) === false) {
-    return { error: 'Question Id does not refer to a valid question within this quiz.' };
+    throw new Error('Question Id does not refer to a valid question within this quiz.');
   }
   if (questionBody.question.length < MIN_QUESTION_LEN || questionBody.question.length > MAX_QUESTION_LEN) {
-    return { error: 'Question  is less than 5 characters or greater than 50 characters.' };
+    throw new Error('Question  is less than 5 characters or greater than 50 characters.');
   }
   if (questionBody.answers.length < MIN_NUM_ANSWERS || questionBody.answers.length > MAX_NUM_ANSWERS) {
-    return { error: 'Question has more than 6 answers or less than 2 answers.' };
+    throw new Error('Question has more than 6 answers or less than 2 answers.');
   }
   if (questionBody.duration <= MIN_QUIZ_QUESTIONS_DURATION) {
-    return { error: 'Question duration is not a positive number.' };
+    throw new Error('Question duration is not a positive number.');
   }
   if (calculateSumQuestionDuration(quizId, questionBody.duration) > MAX_QUIZ_QUESTIONS_DURATION) {
-    return { error: 'Sum of the question durations in the quiz exceeds 3 minutes.' };
+    throw new Error('Sum of the question durations in the quiz exceeds 3 minutes.');
   }
   if (questionBody.points < MIN_POINT_VALUE || questionBody.points > MAX_POINT_VALUE) {
-    return { error: 'Points awarded for the question are less than 1 or greater than 10.' };
+    throw new Error('Points awarded for the question are less than 1 or greater than 10.');
   }
   if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN) === true) {
-    return { error: 'length of any answer is shorter than 1 character, or longer than 30 characters.' };
+    throw new Error('Length of any answer is shorter than 1 character, or longer than 30 characters.')
   }
   if (checkForAnsDuplicates(questionBody) === true) {
-    return { error: 'Any answer strings are duplicates of one another.' };
+    throw new Error('Any answer strings are duplicates of one another.');
   }
   if (checkForNumCorrectAns(questionBody) < MIN_CORRECT_ANS) {
-    return { error: 'There are no correct answers.' };
+    throw new Error('There are no correct answers.');
   }
 
   const data = getData();
