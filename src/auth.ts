@@ -158,11 +158,6 @@ export function adminUserDetails(authUserId: number): { user: UserDetails } | Er
  * @returns {{} | { error: string }} empty
  */
 export function adminUserPasswordUpdate(authUserId: number, oldPassword: string, newPassword: string): EmptyObject | ErrorObject {
-  // check for valid user
-  if (!authUserIdExists(authUserId)) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-
   const user = findUserById(authUserId);
 
   // check oldPassword
