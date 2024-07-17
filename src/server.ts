@@ -254,12 +254,13 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
 
   const userToken = findTokenFromSessionId(sessionId);
 
-  const response = adminQuizCreate(userToken.authUserId, name, description);
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminQuizCreate(userToken.authUserId, name, description);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
 
-  res.json(response);
 });
 
 app.put('/v1/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: Response) => {
@@ -593,9 +594,11 @@ app.post('/v2/admin/quiz', (req: Request, res: Response) => {
 
   const userToken = findTokenFromSessionId(sessionId);
 
-  const response = adminQuizCreate(userToken.authUserId, name, description);
-  if ('error' in response) {
-    return res.status(400).json(response);
+  let response;
+  try {
+    response = adminQuizCreate(userToken.authUserId, name, description);
+  } catch (error) {
+    return res.status(400).json({ error: error.message});
   }
 
   res.json(response);
