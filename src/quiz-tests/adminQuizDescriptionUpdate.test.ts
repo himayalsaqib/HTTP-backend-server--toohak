@@ -157,7 +157,7 @@ describe('PUT /v2/admin/quiz/:quizid/description', () => {
 
     requestPut(quiz, `/v2/admin/quiz/${quizId}/description`, { token });
 
-    const res = requestGet({ token: token }, `/v2/admin/quiz/${quizId}`);
+    const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
     const timeLastEdited = res.retval.timeLastEdited;
 
     expect(timeLastEdited).toBeGreaterThanOrEqual(clientSendTime);
@@ -169,9 +169,9 @@ describe('PUT /v2/admin/quiz/:quizid/description', () => {
         name: 'Quiz Name',
         timeCreated: expect.any(Number),
         description: 'Original quiz description',
-        numQuestions: expect.any(Number),
+        numQuestions: 0,
         questions: [],
-        duration: expect.any(Number)
+        duration: 0
       },
       statusCode: 200
     });
@@ -182,9 +182,9 @@ describe('PUT /v2/admin/quiz/:quizid/description', () => {
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
         description: 'Updated quiz description',
-        numQuestions: expect.any(Number),
+        numQuestions: 0,
         questions: [],
-        duration: expect.any(Number)
+        duration: 0
       },
       statusCode: 200
     });
