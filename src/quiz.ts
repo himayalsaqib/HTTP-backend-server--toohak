@@ -345,7 +345,6 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
     throw new Error('There must be at least 1 correct answer.');
   }
 
-  console.log('made it to line 348 quiz.ts');
   if (questionBody.thumbnailUrl !== undefined) {
     if (questionBody.thumbnailUrl.length === 0) {
       console.log('made it into line thumbnail length in quiz.ts');
