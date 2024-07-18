@@ -387,11 +387,12 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
     return res.status(403).json(response);
   }
 
-  response = adminQuizTrashEmpty(userToken.authUserId, quizIds);
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminQuizTrashEmpty(userToken.authUserId, quizIds);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
-  res.json(response);
 });
 
 app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
@@ -632,6 +633,36 @@ app.put('/v2/admin/quiz/:quizid/name', (req: Request, res: Response) => {
 
   try {
     const response = adminQuizNameUpdate(userToken.authUserId, quizId, name);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.delete('/v2/admin/quiz/trash/empty', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token'));
+  const quizIds = JSON.parse(req.query.quizIds as string);
+
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  let response = quizzesDoNotExist(quizIds);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  response = trashedQuizzesBelongToUser(userToken.authUserId, quizIds);
+  if ('error' in response) {
+    return res.status(403).json(response);
+  }
+
+  try {
+    const response = adminQuizTrashEmpty(userToken.authUserId, quizIds);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
