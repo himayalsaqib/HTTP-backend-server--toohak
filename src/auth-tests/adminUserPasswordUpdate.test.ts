@@ -3,7 +3,6 @@
 
 import { requestDelete, requestPut, requestPost } from '../helper-files/requestHelper';
 
-
 const ERROR = { error: expect.any(String) };
 
 beforeEach(() => {
