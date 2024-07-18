@@ -418,13 +418,13 @@ export function currentTime(): number {
 /**
  * Function that checks whether the end of the given thumbnailUrl contains the
  * correct file type (jpg, jpeg, png)
- * 
+ *
  * @param {string} thumbnailUrl
- * @returns {boolean} - true if the end contains one of the correct file types, 
+ * @returns {boolean} - true if the end contains one of the correct file types,
  *                      false otherwise
  */
 export function checkThumbnailUrlFileType(thumbnailUrl: string): boolean {
-  if (thumbnailUrl.endsWith('jpg') || thumbnailUrl.endsWith('jpeg')|| thumbnailUrl.endsWith('png')) {
+  if (thumbnailUrl.endsWith('jpg') || thumbnailUrl.endsWith('jpeg') || thumbnailUrl.endsWith('png')) {
     return true;
   }
   return false;
