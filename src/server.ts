@@ -587,8 +587,6 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-
-  res.json(response);
 });
 
 // VERSION 2 //
@@ -605,12 +603,12 @@ app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
 
   const userToken = errorCheckResponse.userToken;
 
-  const response = adminQuizQuestionDuplicate(userToken.authUserId, quizId, questionId);
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminQuizQuestionDuplicate(userToken.authUserId, quizId, questionId);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
-
-  res.json(response);
 });
 
 // ====================================================================
