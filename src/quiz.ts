@@ -74,15 +74,11 @@ export interface QuestionBody {
  * Provide a list of all quizzes that are owned by the currently logged in user.
  *
  * @param {number} authUserId
- * @returns {{ quizzes: { quizList }[] } | { error: string }}
+ * @returns {{ quizzes: { quizList }[] }}
  */
 export function adminQuizList(authUserId: number): { quizzes: QuizList[] } | ErrorObject {
   const data = getData();
   const quizList = [];
-
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId does not refer to a valid user id.' };
-  }
 
   for (const quiz of data.quizzes) {
     if (quiz.authUserId === authUserId) {
