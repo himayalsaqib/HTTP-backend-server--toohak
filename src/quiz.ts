@@ -417,9 +417,9 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
  *
  * @param {number} authUserId
  * @param {number[]} quizIds
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
-export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
+export function adminQuizTrashEmpty(quizIds: number[]): EmptyObject {
   const data = getData();
 
   // Find the first quizId in quizIds that is not in data.trash for every quizId

@@ -390,7 +390,7 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   }
 
   try {
-    const response = adminQuizTrashEmpty(userToken.authUserId, quizIds);
+    const response = adminQuizTrashEmpty(quizIds);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -490,34 +490,6 @@ app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
   }
 
   res.json(response);
-});
-
-app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
-  const sessionId = parseInt(req.query.token as string);
-  const quizIds = JSON.parse(req.query.quizIds as string);
-
-  try {
-    tokenExists(sessionId);
-  } catch (error) {
-    return res.status(401).json({ error: error.message });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response = quizzesDoNotExist(quizIds);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = trashedQuizzesBelongToUser(userToken.authUserId, quizIds);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = adminQuizTrashEmpty(userToken.authUserId, quizIds);
-  if ('error' in response) {
-    return res.status(400).json(response);
-  }
 });
 
 app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
@@ -666,7 +638,7 @@ app.delete('/v2/admin/quiz/trash/empty', (req: Request, res: Response) => {
   }
 
   try {
-    const response = adminQuizTrashEmpty(userToken.authUserId, quizIds);
+    const response = adminQuizTrashEmpty(quizIds);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
