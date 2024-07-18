@@ -633,6 +633,45 @@ app.post('/v2/admin/quiz', (req: Request, res: Response) => {
   res.json(response);
 });
 
+app.post('/v2/admin/quiz/:quizid/question', (req: Request, res: Response) => {
+  const questionBody = req.body;
+  const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(req.header('token'));
+
+  // cannot get this to work, maybe later
+  // const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  // if ('error' in errorCheckResponse) {
+  //   return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  // }
+
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  try {
+    quizBelongsToUser(userToken.authUserId, quizId);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
+  }
+
+  try {
+    quizDoesNotExist(quizId);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
+  }
+
+  try {
+    const response = adminQuizCreateQuestion(quizId, questionBody);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
