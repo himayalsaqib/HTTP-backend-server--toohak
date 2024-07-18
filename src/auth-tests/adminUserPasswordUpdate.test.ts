@@ -3,13 +3,14 @@
 
 import { requestDelete, requestPut, requestPost } from '../helper-files/requestHelper';
 
+
+const ERROR = { error: expect.any(String) };
+
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
 describe('PUT /v1/admin/user/password', () => {
-  const error = { error: expect.any(String) };
-
   let token: string;
   let originalPassword: string;
   beforeEach(() => {
@@ -169,7 +170,6 @@ describe('PUT /v1/admin/user/password', () => {
 });
 
 describe('PUT /v2/admin/user/password', () => {
-  const error = { error: expect.any(String) };
   let token: string;
   let originalPassword: string;
   beforeEach(() => {
