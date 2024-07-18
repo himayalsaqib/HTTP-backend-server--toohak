@@ -638,7 +638,7 @@ app.put('/v2/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   }
 });
 
-app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
+app.put('/v2/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   const { description } = req.body;
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(req.header('token'));
