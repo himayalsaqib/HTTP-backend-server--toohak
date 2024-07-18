@@ -595,6 +595,7 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
 });
 
 // VERSION 2 //
+
 app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
   const sessionId = parseInt(req.header('token'));
   const quizId = parseInt(req.params.quizid as string);
@@ -614,8 +615,6 @@ app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
     return res.status(400).json({ error: error.message });
   }
 });
-
-// VERSION 2 //
 
 app.post('/v2/admin/quiz', (req: Request, res: Response) => {
   const { name, description } = req.body;
