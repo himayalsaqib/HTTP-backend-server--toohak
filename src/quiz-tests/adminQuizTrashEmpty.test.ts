@@ -182,7 +182,7 @@ describe('DELETE /v2/admin/quiz/trash/empty', () => {
 
     test('Side effect (successful update): adminQuizTrash does not show permanently deleted quizzes', () => {
       const quizIdsToDelete = JSON.stringify([quizIds[0], quizIds[1]]);
-      requestDelete({ quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty', { token });
+      requestDelete({ quizIds: quizIdsToDelete }, '/v2/admin/quiz/trash/empty', { token });
 
       const trashRes = requestGet({ token }, '/v1/admin/quiz/trash'); // change to v2
       expect(trashRes).toStrictEqual({
@@ -286,7 +286,7 @@ describe('DELETE /v2/admin/quiz/trash/empty', () => {
       // Delete a quiz that does not exist
       const quizIdsToDelete = JSON.stringify([quizIds[1] + 1]);
 
-      const res = requestDelete({ quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty', { token });
+      const res = requestDelete({ quizIds: quizIdsToDelete }, '/v2/admin/quiz/trash/empty', { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 403 });
     });
   });
