@@ -376,13 +376,13 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   }
 
   const userToken = findTokenFromSessionId(sessionId);
-  
+
   try {
     quizzesDoNotExist(quizIds);
   } catch (error) {
     return res.status(403).json({ error: error.message });
   }
-  
+
   try {
     trashedQuizzesBelongToUser(userToken.authUserId, quizIds);
   } catch (error) {
@@ -652,13 +652,13 @@ app.delete('/v2/admin/quiz/trash/empty', (req: Request, res: Response) => {
   }
 
   const userToken = findTokenFromSessionId(sessionId);
-  
+
   try {
     quizzesDoNotExist(quizIds);
   } catch (error) {
     return res.status(403).json({ error: error.message });
   }
-  
+
   try {
     trashedQuizzesBelongToUser(userToken.authUserId, quizIds);
   } catch (error) {
