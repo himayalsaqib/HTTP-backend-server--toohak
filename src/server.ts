@@ -424,19 +424,18 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
-  const userToken = errorCheckResponse.userToken;
-
-  let response = quizDoesNotExist(quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
+  try {
+    quizDoesNotExist(quizId);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
   }
 
-  response = adminQuizCreateQuestion(userToken.authUserId, quizId, questionBody);
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminQuizCreateQuestion(quizId, questionBody);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
-
-  res.json(response);
 });
 
 app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
@@ -456,9 +455,10 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
     return res.status(403).json(response);
   }
 
-  response = quizDoesNotExist(quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
+  try {
+    quizDoesNotExist(quizId);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
   }
 
   response = adminQuizRestore(userToken.authUserId, quizId);
@@ -671,6 +671,30 @@ app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
 
   const response = adminQuizInfo(userToken.authUserId, quizId);
   res.json(response);
+});
+
+app.post('/v2/admin/quiz/:quizid/question', (req: Request, res: Response) => {
+  const { questionBody } = req.body;
+  const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(req.header('token'));
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  try {
+    quizDoesNotExist(quizId);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
+  }
+
+  try {
+    const response = adminQuizCreateQuestion(quizId, questionBody);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
 });
 
 // ====================================================================

@@ -19,7 +19,8 @@ import {
   createAnswersArray,
   adminEmailInUse,
   findUserByEmail,
-  currentTime
+  currentTime,
+  checkThumbnailUrlFileType
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -65,9 +66,9 @@ export interface QuizQuestionAnswers {
 export interface QuestionBody {
   question: string;
   duration: number;
-  thumbnailUrl?: string;
   points: number;
   answers: QuizQuestionAnswers[];
+  thumbnailUrl?: string;
 }
 
 /// ////////////////////////////// Functions ///////////////////////////////////
@@ -271,53 +272,58 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  * as the same as the created time, and the colours of all the answers of that
  * question are randomly generated
  *
- * @param {number} authUserId
  * @param {number} quizId
  * @param {object} questionBody
- * @returns { {questionId: number} | { error: string}}
+ * @returns { {questionId: number} }
  */
-export function adminQuizCreateQuestion(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number } | ErrorObject {
+export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBody): { questionId: number } {
   const data = getData();
   const quiz = findQuizById(quizId);
 
   if (questionBody.question.length > MAX_QUESTION_LEN || questionBody.question.length < MIN_QUESTION_LEN) {
-    return { error: 'The question string cannot be less than 5 characters or greater than 50 characters in length.' };
+    throw new Error('The question string cannot be less than 5 characters or greater than 50 characters in length.');
   }
 
   if (questionBody.answers.length > MAX_NUM_ANSWERS || questionBody.answers.length < MIN_NUM_ANSWERS) {
-    return { error: 'The question cannot have more than 6 answers or less than 2 answers.' };
+    throw new Error('The question cannot have more than 6 answers or less than 2 answers.');
   }
 
   if (questionBody.duration <= MIN_QUIZ_QUESTIONS_DURATION) {
-    return { error: 'The question duration must be a positive number.' };
+    throw new Error('The question duration must be a positive number.');
   }
 
   if (calculateSumQuestionDuration(quizId, questionBody.duration) > MAX_QUIZ_QUESTIONS_DURATION) {
-    return { error: 'The sum of the question durations cannot exceed 3 minutes.' };
+    throw new Error('The sum of the question durations cannot exceed 3 minutes.');
   }
 
   if (questionBody.points > MAX_POINT_VALUE || questionBody.points < MIN_POINT_VALUE) {
-    return { error: 'The points awarded must not be less than 1 or not greater than 10.' };
+    throw new Error('The points awarded must not be less than 1 or not greater than 10.');
   }
 
-  if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN) === true) {
-    return { error: 'The answer cannot be longer than 30 characters or shorter than 1 character.' };
+  if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN)) {
+    throw new Error('The answer cannot be longer than 30 characters or shorter than 1 character.');
   }
 
-  if (checkForAnsDuplicates(questionBody) === true) {
-    return { error: 'Answers cannot be duplicates of each other in the same question.' };
+  if (checkForAnsDuplicates(questionBody)) {
+    throw new Error('Answers cannot be duplicates of each other in the same question.');
   }
 
   if (checkForNumCorrectAns(questionBody) < MIN_CORRECT_ANS) {
-    return { error: 'There must be at least 1 correct answer.' };
+    throw new Error('There must be at least 1 correct answer.');
   }
 
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUser ID is not a valid user.' };
-  }
+  if (questionBody.thumbnailUrl !== undefined) {
+    if (questionBody.thumbnailUrl.length === 0) {
+      throw new Error('The thumbnailUrl cannot be an empty string.');
+    }
 
-  if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz ID does not refer to a quiz that exists.' };
+    if (!checkThumbnailUrlFileType(questionBody.thumbnailUrl)) {
+      throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
+    }
+
+    if (!(questionBody.thumbnailUrl.startsWith('https://') || questionBody.thumbnailUrl.startsWith('http://'))) {
+      throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
+    }
   }
 
   let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -331,6 +337,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     duration: questionBody.duration,
     points: questionBody.points,
     answers: createAnswersArray(questionBody.answers),
+    thumbnailUrl: questionBody.thumbnailUrl
   };
 
   // set timeLastEditied as the same as timeCreated for question
