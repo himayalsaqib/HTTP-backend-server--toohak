@@ -143,7 +143,7 @@ describe('POST /v1/admin/quiz/:quizid/restore', () => {
   });
 });
 
-describe('POST /v1/admin/quiz/:quizid/restore', () => {
+describe('POST /v2/admin/quiz/:quizid/restore', () => {
   let token: string;
   let quizId: number;
   let user: { email: string, password: string, nameFirst: string, nameLast: string };
