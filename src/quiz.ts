@@ -1,5 +1,6 @@
 // includes quiz functions
 
+import { isEmpty } from 'validator';
 import { setData, getData, ErrorObject, EmptyObject, Quizzes, Question, Answer } from './dataStore';
 import {
   authUserIdExists,
@@ -65,6 +66,7 @@ export interface QuizQuestionAnswers {
 export interface QuestionBody {
   question: string;
   duration: number;
+  //thumbnailUrl: string;
   points: number;
   answers: QuizQuestionAnswers[];
 }
@@ -144,6 +146,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     description: description,
     questions: emptyQuestions,
     duration: 0,
+    //thumbnailUrl: "",
   };
 
   data.quizzes.push(newQuiz);
@@ -205,6 +208,7 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | E
     questionId: q.questionId,
     question: q.question,
     duration: q.duration,
+    thumbnailUrl: q.thumbnailUrl,
     points: q.points,
     answers: q.answers.map((a: Answer) => ({
       answerId: a.answerId,
@@ -223,6 +227,7 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | E
     numQuestions: questions.length,
     questions: questions,
     duration: quiz.duration || 0,
+    thumbnailUrl: quiz.thumbnailUrl,
   };
 }
 
@@ -370,7 +375,8 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     question: questionBody.question,
     duration: questionBody.duration,
     points: questionBody.points,
-    answers: createAnswersArray(questionBody.answers)
+    answers: createAnswersArray(questionBody.answers),
+    //thumbnailUrl: questionBody.thumbnailUrl
   };
 
   // set timeLastEditied as the same as timeCreated for question
