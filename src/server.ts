@@ -580,7 +580,8 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
 // VERSION 2 //
 
 app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
-  const sessionId = parseInt(req.query.token as string);
+  const tokenHeader = req.headers.token as string;
+  const sessionId = parseInt(tokenHeader);
   const quizId = parseInt(req.params.quizid as string);
 
   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
