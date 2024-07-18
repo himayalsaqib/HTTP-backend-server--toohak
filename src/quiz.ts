@@ -387,13 +387,9 @@ export function adminQuizRestore (authUserId: number, quizId: number): EmptyObje
  *
  * @param {number} authUserId
  * @param {number} quizId
- * @returns {{ quizzes: array } | { error: string }} - returns list of quizzes
+ * @returns {{ quizzes: array }} - returns list of quizzes
  */
-export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | ErrorObject {
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId does not refer to a valid user id.' };
-  }
-
+export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } {
   const data = getData();
   const trashList: QuizList[] = [];
 
