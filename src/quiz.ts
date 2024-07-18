@@ -209,9 +209,6 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo {
     thumbnailUrl: quiz.thumbnailUrl ? quiz.thumbnailUrl : undefined,
   };
 
-  console.log('quizInfo:');
-  console.log(quizInfo);
-
   return quizInfo;
 }
 
@@ -358,10 +355,6 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
   quiz.duration += questionBody.duration;
 
   quiz.questions.push(newQuestion);
-
-  console.log('test');
-  console.log(quiz);
-
   setData(data);
 
   return { questionId: newQuestionId };
