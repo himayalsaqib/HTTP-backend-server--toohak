@@ -139,12 +139,12 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
 
   const userToken = findTokenFromSessionId(sessionId);
 
-  const response = adminUserDetailsUpdate(userToken.authUserId, email, nameFirst, nameLast);
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminUserDetailsUpdate(userToken.authUserId, email, nameFirst, nameLast);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
-
-  res.json(response);
 });
 
 app.put('/v1/admin/user/password', (req: Request, res: Response) => {
@@ -211,12 +211,12 @@ app.put('/v2/admin/user/details', (req: Request, res: Response) => {
 
   const userToken = findTokenFromSessionId(sessionId);
 
-  const response = adminUserDetailsUpdate(userToken.authUserId, email, nameFirst, nameLast);
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminUserDetailsUpdate(userToken.authUserId, email, nameFirst, nameLast);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
-
-  res.json(response);
 });
 
 app.put('/v2/admin/user/password', (req: Request, res: Response) => {
