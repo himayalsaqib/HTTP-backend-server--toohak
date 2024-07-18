@@ -205,11 +205,8 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | E
     numQuestions: questions.length,
     questions: questions,
     duration: quiz.duration || 0,
+    thumbnailUrl: quiz.thumbnailUrl ? quiz.thumbnailUrl : undefined,
   };
-
-  if (quiz.thumbnailUrl) {
-    quizInfo.thumbnailUrl = quiz.thumbnailUrl;
-  }
 
   return quizInfo;
 }
