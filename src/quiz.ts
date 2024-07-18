@@ -303,13 +303,12 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  * When this route is called, and a question is created, the timeLastEdited is set
  * as the same as the created time, and the colours of all the answers of that
  * question are randomly generated
- *
- * @param {number} authUserId
+ * 
  * @param {number} quizId
  * @param {object} questionBody
- * @returns { {questionId: number} | { error: string}}
+ * @returns { {questionId: number} }
  */
-export function adminQuizCreateQuestion(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number } | ErrorObject {
+export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBody): { questionId: number } {
   const data = getData();
   const quiz = findQuizById(quizId);
 
