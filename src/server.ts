@@ -1,6 +1,6 @@
 // Contains all routes for toohak server
 
-import express, { json, Request, Response } from 'express';
+import express, { json, Request, response, Response } from 'express';
 import { echo } from './newecho';
 import morgan from 'morgan';
 import config from './config.json';
@@ -606,13 +606,15 @@ app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
   }
 
   const userToken = findTokenFromSessionId(sessionId);
+  let response;
 
   try {
-    const response = adminQuizTrash(userToken.authUserId);
-    res.json(response);
+    response = adminQuizTrash(userToken.authUserId);
   } catch (error) {
     return res.status(401).json({ error: error.message });
   }
+
+  res.json(response);
 });
 
 app.post('/v2/admin/quiz', (req: Request, res: Response) => {
