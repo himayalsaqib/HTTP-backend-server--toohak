@@ -66,9 +66,9 @@ export interface QuizQuestionAnswers {
 export interface QuestionBody {
   question: string;
   duration: number;
-  thumbnailUrl?: string;
   points: number;
   answers: QuizQuestionAnswers[];
+  thumbnailUrl?: string;
 }
 
 /// ////////////////////////////// Functions ///////////////////////////////////
@@ -209,6 +209,9 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo {
     thumbnailUrl: quiz.thumbnailUrl ? quiz.thumbnailUrl : undefined,
   };
 
+  console.log('quizInfo:');
+  console.log(quizInfo);
+
   return quizInfo;
 }
 
@@ -331,7 +334,7 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
       throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
     }
 
-    if (!questionBody.thumbnailUrl.startsWith('https://') || !questionBody.thumbnailUrl.startsWith('http://')) {
+    if (!(questionBody.thumbnailUrl.startsWith('https://') || questionBody.thumbnailUrl.startsWith('http://'))) {
       throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
     }
   }
@@ -353,9 +356,12 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
   // set timeLastEditied as the same as timeCreated for question
   quiz.timeLastEdited = currentTime();
   quiz.duration += questionBody.duration;
-  quiz.thumbnailUrl = questionBody.thumbnailUrl;
 
   quiz.questions.push(newQuestion);
+
+  console.log('test');
+  console.log(quiz);
+
   setData(data);
 
   return { questionId: newQuestionId };

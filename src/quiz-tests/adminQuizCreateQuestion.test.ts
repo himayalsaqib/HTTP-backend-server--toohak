@@ -480,7 +480,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       expect(colours).toContain(res.retval.questions[0].answers[1].colour);
     });
 
-    test.only('Side effect - Successful listing of information about a quiz with one question', () => {
+    test('Side effect - Successful listing of information about a quiz with one question', () => {
       // create question
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
@@ -520,13 +520,12 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
             }
           ],
           duration: expect.any(Number),
-          thumbnailUrl: thumbnailUrlExample,
         },
         statusCode: 200
       });
     });
 
-    test.only('Side effect - Successful listing of information about a quiz with multiple questions', () => {
+    test('Side effect - Successful listing of information about a quiz with multiple questions', () => {
       // create question
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody, thumbnailUrl: thumbnailUrlExample };
@@ -591,7 +590,6 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
             }
           ],
           duration: expect.any(Number),
-          thumbnailUrl: thumbnailUrlExample,
         },
         statusCode: 200
       });

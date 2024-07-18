@@ -668,7 +668,7 @@ app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
 });
 
 app.post('/v2/admin/quiz/:quizid/question', (req: Request, res: Response) => {
-  const questionBody = req.body;
+  const { questionBody } = req.body;
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(req.header('token'));
 
