@@ -40,7 +40,6 @@ export interface Question {
   thumbnailUrl?: string;
   points: number;
   answers: Answer[];
-  thumbnailUrl: string;
 }
 
 export interface Answer {
