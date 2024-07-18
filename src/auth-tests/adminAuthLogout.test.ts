@@ -59,8 +59,8 @@ describe('POST /v1/admin/auth/logout', () => {
     });
 
     test('Returns error when sessionId is not a valid logged in user session', () => {
-      const sessionId = parseInt(token) + 1;
-      expect(requestPost({ token: sessionId.toString() }, '/v1/admin/auth/logout')).toStrictEqual({
+      const sessionId = (parseInt(token) + 1).toString();
+      expect(requestPost({ token: sessionId }, '/v1/admin/auth/logout')).toStrictEqual({
         retval: ERROR,
         statusCode: 401
       });
@@ -119,8 +119,8 @@ describe('POST /v2/admin/auth/logout', () => {
     });
 
     test('Returns error when sessionId is not a valid logged in user session', () => {
-      const sessionId = parseInt(token) + 1;
-      expect(requestPost({}, '/v2/admin/auth/logout', { token: sessionId.toString() })).toStrictEqual({
+      const sessionId = (parseInt(token) + 1).toString();
+      expect(requestPost({}, '/v2/admin/auth/logout', { token: sessionId })).toStrictEqual({
         retval: ERROR,
         statusCode: 401
       });

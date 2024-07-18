@@ -96,8 +96,8 @@ describe('GET /v1/admin/user/details', () => {
     });
 
     test('Returns error when sessionId is not a valid logged in user session', () => {
-      const sessionId = parseInt(token) + 1;
-      expect(requestGet({ token: sessionId.toString() }, '/v1/admin/user/details')).toStrictEqual({
+      const sessionId = (parseInt(token) + 1).toString();
+      expect(requestGet({ token: sessionId }, '/v1/admin/user/details')).toStrictEqual({
         retval: ERROR,
         statusCode: 401
       });
@@ -193,8 +193,8 @@ describe('GET /v2/admin/user/details', () => {
     });
 
     test('Returns error when sessionId is not a valid logged in user session', () => {
-      const sessionId = parseInt(token) + 1;
-      expect(requestGet({}, '/v2/admin/user/details', { token: sessionId.toString() })).toStrictEqual({
+      const sessionId = (parseInt(token) + 1).toString();
+      expect(requestGet({}, '/v2/admin/user/details', { token: sessionId })).toStrictEqual({
         retval: ERROR,
         statusCode: 401
       });
