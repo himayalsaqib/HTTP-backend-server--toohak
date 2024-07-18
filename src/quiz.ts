@@ -427,7 +427,7 @@ export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): Empt
 
   // If not undefined, there is at least one quizId not in data.trash and return error
   if (quizNotInTrash !== undefined) {
-    return { error: 'One or more Quiz IDs is not currently in the trash.' };
+    throw new Error('One or more Quiz IDs is not currently in the trash.');
   }
 
   for (const quizId of quizIds) {
