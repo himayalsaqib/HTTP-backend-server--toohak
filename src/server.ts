@@ -404,24 +404,43 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(token);
 
-  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
-  if ('error' in errorCheckResponse) {
-    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  try {
+    quizRoutesErrorChecking(sessionId, quizId);
+  } catch (error) {
+    return res.status(error.code).json({ error: error.message });
   }
 
-  const userToken = errorCheckResponse.userToken;
-
-  let response = quizDoesNotExist(quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
+  try {
+    quizDoesNotExist(quizId);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
   }
 
-  response = adminQuizCreateQuestion(quizId, questionBody);
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminQuizCreateQuestion(quizId, questionBody);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
 
-  res.json(response);
+  // const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  // if ('error' in errorCheckResponse) {
+  //   return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  // }
+
+  // const userToken = errorCheckResponse.userToken;
+
+  // let response = quizDoesNotExist(quizId);
+  // if ('error' in response) {
+  //   return res.status(403).json(response);
+  // }
+
+  // response = adminQuizCreateQuestion(quizId, questionBody);
+  // if ('error' in response) {
+  //   return res.status(400).json(response);
+  // }
+
+  // res.json(response);
 });
 
 app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {

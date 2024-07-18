@@ -146,7 +146,8 @@ export function quizDoesNotExist(quizId: number): EmptyObject | ErrorObject {
   if (trashedQuiz === undefined) {
     const quiz = findQuizById(quizId);
     if (quiz === undefined) {
-      return { error: 'Quiz does not exist' };
+      //return { error: 'Quiz does not exist' };
+      throw new Error('Quiz does not exist.');
     }
   }
   return {};
