@@ -117,7 +117,7 @@ describe('GET /v2/admin/quiz:quizid', () => {
 
   describe('Testing successful cases (status code 200)', () => {
     test('Quiz info of a new quiz was successful and has correct return type', () => {
-      const res = requestGet({ token: token }, `/v2/admin/quiz/${quizId}`);
+      const res = requestGet(`/v2/admin/quiz/${quizId}`, { Token: token });
       expect(res).toStrictEqual({
         retval: {
           quizId: res.retval.quizId,
