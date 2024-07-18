@@ -552,7 +552,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       // Create user
       const user = { email: 'userone@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
       const registerUser = requestPost(user, '/v1/admin/auth/register');
-      //const tokenUser = registerUser.retval.token;
+      const tokenUser = registerUser.retval.token;
       const quiz = { name: 'Quiz One', description: 'Description for quiz one' };
       const resQuizCreate = requestPost(quiz, '/v2/admin/quiz', { token });
       let quizId = resQuizCreate.retval.quizId;
@@ -560,7 +560,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       // Create question with user
       const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }] };
       // need to change to v2 after quizQuestionCreate is merged
-      const resQuestionCreate = requestPost({ token: token, questionBody: question }, `/v1/admin/quiz/${quizId}/question`);
+      const resQuestionCreate = requestPost({ token: tokenUser, questionBody: question }, `/v1/admin/quiz/${quizId}/question`);
       const questionId = resQuestionCreate.retval.questionId;
 
       quizId += 1;
