@@ -127,7 +127,7 @@ describe('PUT /v1/admin/quiz/:quizid/description', () => {
 
 describe('PUT /v2/admin/quiz/:quizid/description', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
-  let quizBody: {  name: string, description: string };
+  let quizBody: { name: string, description: string };
   let token: string;
 
   let quiz: { description: string };
@@ -138,7 +138,7 @@ describe('PUT /v2/admin/quiz/:quizid/description', () => {
     const registerResponse = requestPost(userBody, '/v1/admin/auth/register');
     token = registerResponse.retval.token;
 
-    quizBody = { name: 'Quiz Name', description: 'Original quiz description'};
+    quizBody = { name: 'Quiz Name', description: 'Original quiz description' };
     const quizResponse = requestPost(quizBody, '/v2/admin/quiz', { token });
     quizId = quizResponse.retval.quizId;
   });

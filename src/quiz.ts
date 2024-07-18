@@ -251,9 +251,9 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
  */
 export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, description: string): EmptyObject | ErrorObject {
   if (description.length > MAX_DESCRIPTION_LEN) {
-   throw new Error('Description is more than 100 characters in length.');
+    throw new Error('Description is more than 100 characters in length.');
   }
-  
+
   const quiz = findQuizById(quizId);
 
   quiz.description = description;
