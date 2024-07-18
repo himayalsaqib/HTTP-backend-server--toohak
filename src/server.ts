@@ -376,15 +376,17 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   }
 
   const userToken = findTokenFromSessionId(sessionId);
-
-  let response = quizzesDoNotExist(quizIds);
-  if ('error' in response) {
-    return res.status(403).json(response);
+  
+  try {
+    quizzesDoNotExist(quizIds);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
   }
-
-  response = trashedQuizzesBelongToUser(userToken.authUserId, quizIds);
-  if ('error' in response) {
-    return res.status(403).json(response);
+  
+  try {
+    trashedQuizzesBelongToUser(userToken.authUserId, quizIds);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
   }
 
   try {
@@ -650,15 +652,17 @@ app.delete('/v2/admin/quiz/trash/empty', (req: Request, res: Response) => {
   }
 
   const userToken = findTokenFromSessionId(sessionId);
-
-  let response = quizzesDoNotExist(quizIds);
-  if ('error' in response) {
-    return res.status(403).json(response);
+  
+  try {
+    quizzesDoNotExist(quizIds);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
   }
-
-  response = trashedQuizzesBelongToUser(userToken.authUserId, quizIds);
-  if ('error' in response) {
-    return res.status(403).json(response);
+  
+  try {
+    trashedQuizzesBelongToUser(userToken.authUserId, quizIds);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
   }
 
   try {
