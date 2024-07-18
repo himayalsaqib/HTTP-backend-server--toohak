@@ -596,49 +596,6 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
 
 // VERSION 2 //
 
-app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
-  const sessionId = parseInt(req.header('token'));
-
-  try {
-    tokenExists(sessionId);
-  } catch (error) {
-    return res.status(401).json({ error: error.message });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-  let response;
-
-  try {
-    response = adminQuizTrash(userToken.authUserId);
-  } catch (error) {
-    return res.status(401).json({ error: error.message });
-  }
-
-  res.json(response);
-});
-
-app.post('/v2/admin/quiz', (req: Request, res: Response) => {
-  const { name, description } = req.body;
-  const sessionId = parseInt(req.header('token'));
-
-  try {
-    tokenExists(sessionId);
-  } catch (error) {
-    return res.status(401).json({ error: error.message });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  let response;
-  try {
-    response = adminQuizCreate(userToken.authUserId, name, description);
-  } catch (error) {
-    return res.status(400).json({ error: error.message });
-  }
-
-  res.json(response);
-});
-
 app.put('/v2/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   const { name } = req.body;
   const quizId = parseInt(req.params.quizid as string);
@@ -653,6 +610,45 @@ app.put('/v2/admin/quiz/:quizid/name', (req: Request, res: Response) => {
 
   try {
     const response = adminQuizNameUpdate(userToken.authUserId, quizId, name);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token'));
+
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  try {
+    const response = adminQuizTrash(userToken.authUserId);
+    res.json(response);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+});
+
+app.post('/v2/admin/quiz', (req: Request, res: Response) => {
+  const { name, description } = req.body;
+  const sessionId = parseInt(req.header('token'));
+
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  try {
+    const response = adminQuizCreate(userToken.authUserId, name, description);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
