@@ -112,7 +112,7 @@ export function trashedQuizBelongsToUser(authUserId: number, quizId: number): Em
   if (trashedQuiz === undefined) {
     return {};
   } else if (trashedQuiz.quiz.authUserId !== authUserId) {
-    throw new Error('User is not an owner of this quiz' );
+    return { error: 'User is not an owner of this quiz' };
   } return {};
 }
 
