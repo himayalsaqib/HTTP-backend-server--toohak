@@ -427,15 +427,13 @@ describe('/v2/admin/quiz/{quizid}/question/{questionid}/move', () => {
 
     test('Has correct return type', () => {
       // swap second and fourth question
-      const moveBody = { newPosition: 1 };
-      const res = requestPut(moveBody, `/v2/admin/quiz/${quizId}/question/${questionId[3]}/move`, { token });
+      const res = requestPut({ newPosition: 1 }, `/v2/admin/quiz/${quizId}/question/${questionId[3]}/move`, { token });
 
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
     });
 
     test('Side effect: adminQuizinfo displays successful swap of second with fourth question', () => {
-      const moveBody = { newPosition: 1 };
-      requestPut(moveBody, `/v2/admin/quiz/${quizId}/question/${questionId[3]}/move`, { token });
+      requestPut({ newPosition: 1 }, `/v2/admin/quiz/${quizId}/question/${questionId[3]}/move`, { token });
 
       expect(requestGet({}, `/v2/admin/quiz/${quizId}`, { token })).toStrictEqual({
         retval: {
@@ -534,8 +532,7 @@ describe('/v2/admin/quiz/{quizid}/question/{questionid}/move', () => {
     });
 
     test('Side effect: adminQuizinfo displays successful swap of fourth with second question', () => {
-      const moveBody = { newPosition: 3 };
-      requestPut(moveBody, `/v2/admin/quiz/${quizId}/question/${questionId[1]}/move`, { token });
+      requestPut({ newPosition: 3 }, `/v2/admin/quiz/${quizId}/question/${questionId[1]}/move`, { token });
 
       expect(requestGet({}, `/v2/admin/quiz/${quizId}`, { token })).toStrictEqual({
         retval: {
@@ -635,8 +632,7 @@ describe('/v2/admin/quiz/{quizid}/question/{questionid}/move', () => {
 
     test('Side effect: adminQuizInfo displays correct timeLastEdited', () => {
       const time = Math.floor(Date.now() / 1000);
-      const moveBody = { newPosition: 1 };
-      let res = requestPut(moveBody, `/v2/admin/quiz/${quizId}/question/${questionId[3]}/move`, { token });
+      let res = requestPut({ newPosition: 1 }, `/v2/admin/quiz/${quizId}/question/${questionId[3]}/move`, { token });
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 
       res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
@@ -647,8 +643,7 @@ describe('/v2/admin/quiz/{quizid}/question/{questionid}/move', () => {
 
   describe('Testing questionId and newPosition errors (status code 400)', () => {
     test('Question Id does not refer to a valid question within this quiz (invalid Id)', () => {
-      const moveBody = { newPosition: 1 };
-      const res = requestPut(moveBody, `/v2/admin/quiz/${quizId}/question/${questionId[0] + 1}/move`, { token });
+      const res = requestPut({ newPosition: 1 }, `/v2/admin/quiz/${quizId}/question/${questionId[0] + 1}/move`, { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
 
@@ -658,26 +653,22 @@ describe('/v2/admin/quiz/{quizid}/question/{questionid}/move', () => {
       const quizRes = requestPost(quizBody, '/v2/admin/quiz', { token });
       quizId = quizRes.retval.quizId;
 
-      const moveBody = { newPosition: 0 };
-      const res = requestPut(moveBody, `/v2/admin/quiz/${quizId}/question/${1234567890}/move`, { token });
+      const res = requestPut({ newPosition: 0 }, `/v2/admin/quiz/${quizId}/question/${1234567890}/move`, { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
 
     test('NewPosition is less than 0', () => {
-      const moveBody = { newPosition: -1 };
-      const res = requestPut(moveBody, `/v2/admin/quiz/${quizId}/question/${questionId[0]}/move`, { token });
+      const res = requestPut({ newPosition: -1 }, `/v2/admin/quiz/${quizId}/question/${questionId[0]}/move`, { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
 
     test('NewPosition is greater than n-1 where n is the number of questions', () => {
-      const moveBody = { newPosition: 1 };
-      const res = requestPut(moveBody, `/v2/admin/quiz/${quizId}/question/${questionId[0]}/move`, { token });
+      const res = requestPut({ newPosition: 1 }, `/v2/admin/quiz/${quizId}/question/${questionId[0]}/move`, { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
 
     test('NewPosition is the position of the current question', () => {
-      const moveBody = { newPosition: 0 };
-      const res = requestPut(moveBody, `/v2/admin/quiz/${quizId}/question/${questionId[0]}/move`, { token });
+      const res = requestPut({ newPosition: 0 }, `/v2/admin/quiz/${quizId}/question/${questionId[0]}/move`, { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
   });
@@ -686,8 +677,7 @@ describe('/v2/admin/quiz/{quizid}/question/{questionid}/move', () => {
     test('Token is empty (no users registered)', () => {
       requestDelete({}, '/v1/clear');
 
-      const moveBody = { token: token, newPosition: 0 };
-      const res = requestPut(moveBody, `/v2/admin/quiz/${quizId}/question/${questionId[0]}/move`, { token });
+      const res = requestPut({ newPosition: 0 }, `/v2/admin/quiz/${quizId}/question/${questionId[0]}/move`, { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
 
@@ -699,8 +689,7 @@ describe('/v2/admin/quiz/{quizid}/question/{questionid}/move', () => {
       questionId.push(newQuestionId.retval.questionId);
 
       const sessionId = (parseInt(token) + 1).toString();
-      const moveBody = { newPosition: 1 };
-      const res = requestPut(moveBody, `/v2/admin/quiz/${quizId}/question/${questionId[0]}/move`, { token: sessionId });
+      const res = requestPut({ newPosition: 1 }, `/v2/admin/quiz/${quizId}/question/${questionId[0]}/move`, { token: sessionId });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
   });
@@ -732,14 +721,12 @@ describe('/v2/admin/quiz/{quizid}/question/{questionid}/move', () => {
       const registerUser2 = requestPost(userBody, '/v1/admin/auth/register');
       const token2 = registerUser2.retval.token;
 
-      const moveBody = { newPosition: 1 };
-      const res = requestPut(moveBody, `/v2/admin/quiz/${quizId}/question/${questionId[3]}/move`, { token: token2 });
+      const res = requestPut({ newPosition: 1 }, `/v2/admin/quiz/${quizId}/question/${questionId[3]}/move`, { token: token2 });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 403 });
     });
 
     test('Quiz does not exist', () => {
-      const moveBody = { newPosition: 1 };
-      const res = requestPut(moveBody, `/v2/admin/quiz/${quizId + 1}/question/${questionId[3]}/move`, { token });
+      const res = requestPut({ newPosition: 1 }, `/v2/admin/quiz/${quizId + 1}/question/${questionId[3]}/move`, { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 403 });
     });
   });
