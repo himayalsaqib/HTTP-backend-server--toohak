@@ -1,6 +1,5 @@
 // includes quiz functions
 
-import { isEmpty } from 'validator';
 import { setData, getData, ErrorObject, EmptyObject, Quizzes, Question, Answer } from './dataStore';
 import {
   authUserIdExists,
@@ -66,7 +65,7 @@ export interface QuizQuestionAnswers {
 export interface QuestionBody {
   question: string;
   duration: number;
-  //thumbnailUrl: string;
+  thumbnailUrl?: string;
   points: number;
   answers: QuizQuestionAnswers[];
 }
@@ -137,7 +136,6 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     description: description,
     questions: emptyQuestions,
     duration: 0,
-    //thumbnailUrl: "",
   };
 
   data.quizzes.push(newQuiz);
@@ -179,27 +177,16 @@ export function adminQuizRemove (authUserId: number, quizId: number): EmptyObjec
  *
  * @param {number} authUserId
  * @param {number} quizId
- * @returns {{ quizInfo } | { error: string }} - returns quiz information
+ * @returns {{ quizInfo }} - returns quiz information
  */
 export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | ErrorObject {
-  if (authUserIdExists(authUserId) === false) {
-    throw new Error('AuthUserId is not a valid user.');
-  }
-  if (quizIdInUse(quizId) === false) {
-    throw new Error('Quiz ID does not refer to a valid quiz.');
-  }
-
   const quiz = findQuizById(quizId);
-
-  if (quiz.authUserId !== authUserId) {
-    throw new Error('Quiz ID does not refer to a quiz that this user owns.');
-  }
 
   const questions = quiz.questions?.map((q: Question) => ({
     questionId: q.questionId,
     question: q.question,
     duration: q.duration,
-    thumbnailUrl: q.thumbnailUrl,
+    thumbnailUrl: q.thumbnailUrl ? q.thumbnailUrl : undefined,
     points: q.points,
     answers: q.answers.map((a: Answer) => ({
       answerId: a.answerId,
@@ -209,7 +196,7 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | E
     })),
   })) || [];
 
-  return {
+  const quizInfo: QuizInfo = {
     quizId: quiz.quizId,
     name: quiz.name,
     timeCreated: quiz.timeCreated,
@@ -218,8 +205,13 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | E
     numQuestions: questions.length,
     questions: questions,
     duration: quiz.duration || 0,
-    thumbnailUrl: quiz.thumbnailUrl,
   };
+
+  if (quiz.thumbnailUrl) {
+    quizInfo.thumbnailUrl = quiz.thumbnailUrl;
+  }
+
+  return quizInfo;
 }
 
 /**
@@ -367,7 +359,6 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     duration: questionBody.duration,
     points: questionBody.points,
     answers: createAnswersArray(questionBody.answers),
-    //thumbnailUrl: questionBody.thumbnailUrl
   };
 
   // set timeLastEditied as the same as timeCreated for question
