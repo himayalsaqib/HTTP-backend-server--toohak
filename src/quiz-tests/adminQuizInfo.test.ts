@@ -131,7 +131,7 @@ describe('GET /v2/admin/quiz/:quizid', () => {
       });
     });
 
-    test.skip('Quiz info of an edited quiz was successful and has correct return type', () => {
+    test('Quiz info of an edited quiz was successful and has correct return type', () => {
       quiz = { name: 'Updated Quiz Name' };
       requestPut(quiz, `/v2/admin/quiz/${quizId}/name`, { token });
       const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
@@ -172,13 +172,11 @@ describe('GET /v2/admin/quiz/:quizid', () => {
       const otherUserToken = otherUserResponse.retval.token;
 
       const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token: otherUserToken });
-
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 403 });
     });
 
     test("Quiz doesn't exist", () => {
       const res = requestGet({}, `/v2/admin/quiz/${quizId + 1}`, { token: token });
-
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 403 });
     });
   });
