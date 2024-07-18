@@ -3,13 +3,13 @@
 
 import { requestDelete, requestPut, requestPost } from '../helper-files/requestHelper';
 
+const ERROR = { error: expect.any(String) };
+
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
 describe('PUT /v1/admin/user/password', () => {
-  const error = { error: expect.any(String) };
-
   let token: string;
   let originalPassword: string;
   beforeEach(() => {
@@ -45,7 +45,7 @@ describe('PUT /v1/admin/user/password', () => {
       const sessionId = parseInt(token) + 1;
       const body = { token: sessionId.toString(), oldPassword: originalPassword, newPassword: changedPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -53,7 +53,7 @@ describe('PUT /v1/admin/user/password', () => {
     test('When token is empty (no users are registered), from /v1/admin/user/password', () => {
       requestDelete({}, '/v1/clear');
       expect(requestPut({ token: token, oldPassword: 'validpa55w0rd', newPassword: 'avalidpa55word' }, '/v1/admin/user/password')).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -65,7 +65,7 @@ describe('PUT /v1/admin/user/password', () => {
       const alteredPassword = 'newvalidpa55word';
       const body = { token: token, oldPassword: incorrectOgPassword, newPassword: alteredPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -74,7 +74,7 @@ describe('PUT /v1/admin/user/password', () => {
       const matchingPassword = 'validpa55w0rd';
       const body = { token: token, oldPassword: originalPassword, newPassword: matchingPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -96,7 +96,7 @@ describe('PUT /v1/admin/user/password', () => {
       // update to a password that was used previously by the user
       const update3 = { token: token, oldPassword: alternatePassword, newPassword: originalPassword };
       expect(requestPut(update3, '/v1/admin/user/password')).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -105,7 +105,7 @@ describe('PUT /v1/admin/user/password', () => {
       const changedPassword = 'inva1d';
       const body = { token: token, oldPassword: originalPassword, newPassword: changedPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -114,7 +114,7 @@ describe('PUT /v1/admin/user/password', () => {
       const badNewPassword = 'invalidpassword';
       const body = { token: token, oldPassword: originalPassword, newPassword: badNewPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -123,7 +123,7 @@ describe('PUT /v1/admin/user/password', () => {
       const badNewPassword = '123456789';
       const body = { token: token, oldPassword: originalPassword, newPassword: badNewPassword };
       expect(requestPut(body, '/v1/admin/user/password')).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -169,7 +169,6 @@ describe('PUT /v1/admin/user/password', () => {
 });
 
 describe('PUT /v2/admin/user/password', () => {
-  const error = { error: expect.any(String) };
   let token: string;
   let originalPassword: string;
   beforeEach(() => {
@@ -205,7 +204,7 @@ describe('PUT /v2/admin/user/password', () => {
       const sessionId = parseInt(token) + 1;
       const body = { oldPassword: originalPassword, newPassword: changedPassword };
       expect(requestPut(body, '/v2/admin/user/password', { token: sessionId.toString() })).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -213,7 +212,7 @@ describe('PUT /v2/admin/user/password', () => {
     test('When token is empty (no users are registered), from /v2/admin/user/password', () => {
       requestDelete({}, '/v1/clear');
       expect(requestPut({ oldPassword: 'validpa55w0rd', newPassword: 'avalidpa55word' }, '/v2/admin/user/password', { token })).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -225,7 +224,7 @@ describe('PUT /v2/admin/user/password', () => {
       const alteredPassword = 'newvalidpa55word';
       const body = { oldPassword: incorrectOgPassword, newPassword: alteredPassword };
       expect(requestPut(body, '/v2/admin/user/password', { token })).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -234,7 +233,7 @@ describe('PUT /v2/admin/user/password', () => {
       const matchingPassword = 'validpa55w0rd';
       const body = { oldPassword: originalPassword, newPassword: matchingPassword };
       expect(requestPut(body, '/v2/admin/user/password', { token })).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -256,7 +255,7 @@ describe('PUT /v2/admin/user/password', () => {
       // update to a password that was used previously by the user
       const update3 = { oldPassword: alternatePassword, newPassword: originalPassword };
       expect(requestPut(update3, '/v2/admin/user/password', { token })).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -265,7 +264,7 @@ describe('PUT /v2/admin/user/password', () => {
       const changedPassword = 'inva1d';
       const body = { oldPassword: originalPassword, newPassword: changedPassword };
       expect(requestPut(body, '/v2/admin/user/password', { token })).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -274,7 +273,7 @@ describe('PUT /v2/admin/user/password', () => {
       const badNewPassword = 'invalidpassword';
       const body = { oldPassword: originalPassword, newPassword: badNewPassword };
       expect(requestPut(body, '/v2/admin/user/password', { token })).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -283,7 +282,7 @@ describe('PUT /v2/admin/user/password', () => {
       const badNewPassword = '123456789';
       const body = { oldPassword: originalPassword, newPassword: badNewPassword };
       expect(requestPut(body, '/v2/admin/user/password', { token })).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
