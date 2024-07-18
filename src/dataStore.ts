@@ -30,14 +30,14 @@ export interface Quizzes {
   description: string,
   questions: Question[];
   duration: number;
-  thumbnailUrl: string;
+  thumbnailUrl?: string;
 }
 
 export interface Question {
   questionId: number;
   question: string;
   duration: number;
-  thumbnailUrl: string;
+  thumbnailUrl?: string;
   points: number;
   answers: Answer[];
 }
