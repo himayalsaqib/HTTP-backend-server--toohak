@@ -461,7 +461,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       const answerBody2 = { answer: 'Prince William', correct: false };
       questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2], thumbnailUrl: thumbnailUrlExample };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: { questionId: expect.any(Number) },
         statusCode: 200
       });
@@ -472,7 +472,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
       questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2], thumbnailUrl: thumbnailUrlExample };
-      requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token });
+      requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
       const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
 
       const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
@@ -603,7 +603,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
 
       // get current time
       const time = Math.floor(Date.now() / 1000);
-      let res = requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token });
+      let res = requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
       expect(res).toStrictEqual({
         retval: { questionId: expect.any(Number) },
         statusCode: 200
@@ -643,7 +643,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: 'valid', correct: true }, { answer: 'also valid', correct: false }];
       questionBody = { question: 'this string is longer it totes will cause an error?', duration: 5, points: 3, answers: answerBody, thumbnailUrl: thumbnailUrlExample };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 400
       });
@@ -661,7 +661,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
 
       questionBody = { question: 'a valid question', duration: 15, points: 9, answers: answerArray, thumbnailUrl: thumbnailUrlExample };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 400
       });
@@ -672,7 +672,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
 
       questionBody = { question: 'a valid question', duration: 8, points: 6, answers: [answerBody1], thumbnailUrl: thumbnailUrlExample };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 400
       });
@@ -682,7 +682,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: 'valid', correct: true }, { answer: 'also valid', correct: false }];
       questionBody = { question: 'this is a valid quesetion', duration: -1, points: 3, answers: answerBody, thumbnailUrl: thumbnailUrlExample };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 400
       });
@@ -707,7 +707,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
 
       const answerBody5 = [{ answer: 'a valid answer', correct: true }, { answer: 'valid answer again', correct: true }];
       const questionBody5 = { question: 'which one is valid?', duration: 37, points: 10, answers: answerBody5, thumbnailUrl: thumbnailUrlExample };
-      expect(requestPost(questionBody5, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody5 }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 400
       });
@@ -717,7 +717,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: 'valid', correct: true }, { answer: 'also valid :)', correct: false }];
       questionBody = { question: 'a very good question?', duration: 5, points: 0, answers: answerBody, thumbnailUrl: thumbnailUrlExample };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 400
       });
@@ -727,7 +727,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: 'valid', correct: true }, { answer: 'also valid', correct: false }];
       questionBody = { question: 'bad', duration: 5, points: 11, answers: answerBody, thumbnailUrl: thumbnailUrlExample };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 400
       });
@@ -737,7 +737,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: '', correct: true }, { answer: 'a valid ans', correct: true }];
       questionBody = { question: 'a good question', duration: 5, points: 2, answers: answerBody, thumbnailUrl: thumbnailUrlExample };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 400
       });
@@ -748,7 +748,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       const answerBody2 = { answer: 'a very very not valid answer string', correct: false };
       questionBody = { question: 'valid question indeed', duration: 5, points: 7, answers: [answerBody1, answerBody2], thumbnailUrl: thumbnailUrlExample };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 400
       });
@@ -760,7 +760,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       const answerBody3 = { answer: 'correct ans', correct: false };
       questionBody = { question: 'which is the correct answer?', duration: 5, points: 4, answers: [answerBody1, answerBody2, answerBody3], thumbnailUrl: thumbnailUrlExample };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 400
       });
@@ -772,7 +772,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       const answerBody3 = { answer: 'also valid ans', correct: false };
       questionBody = { question: 'bad', duration: 2, points: 9, answers: [answerBody1, answerBody2, answerBody3], thumbnailUrl: thumbnailUrlExample };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 400
       });
@@ -783,7 +783,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       const answerBody2 = { answer: 'a very valid answer', correct: false };
       questionBody = { question: 'valid question indeed', duration: 5, points: 6, answers: [answerBody1, answerBody2], thumbnailUrl: '' };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 400
       });
@@ -794,7 +794,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       const answerBody2 = { answer: 'a very valid answer', correct: false };
       questionBody = { question: 'valid question indeed', duration: 10, points: 5, answers: [answerBody1, answerBody2], thumbnailUrl: 'http://google.com/some/image/path.pdf' };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 400
       });
@@ -805,7 +805,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       const answerBody2 = { answer: 'a very valid answer', correct: false };
       questionBody = { question: 'valid question indeed', duration: 10, points: 5, answers: [answerBody1, answerBody2], thumbnailUrl: 'ftp://google.com/some/image/path.jpg' };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 400
       });
@@ -817,7 +817,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       const answerBody = [{ answer: 'this is the answer', correct: true }, { answer: 'also valid', correct: false }];
       const questionBody = { question: 'A very valid question?', duration: 14, points: 6, answers: answerBody, thumbnailUrl: thumbnailUrlExample };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 401
       });
@@ -838,9 +838,9 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
 
       // create question
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Me', correct: false }];
-      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
+      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody, thumbnailUrl: thumbnailUrlExample };
 
-      expect(requestPost(questionCreateBody, `/v2/admin/quiz/${res.retval.quizId}/question`, { token: sessionId.toString() })).toStrictEqual({
+      expect(requestPost({ questionCreateBody }, `/v2/admin/quiz/${res.retval.quizId}/question`, { token: sessionId.toString() })).toStrictEqual({
         retval: ERROR,
         statusCode: 401
       });
@@ -867,7 +867,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       answerBody = [{ answer: 'Oak', correct: true }, { answer: 'Birch', correct: false }];
       questionBody = { question: 'What is the best kind of tree?', duration: 7, points: 5, answers: answerBody, thumbnailUrl: thumbnailUrlExample };
 
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token: token2 })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token: token2 })).toStrictEqual({
         retval: ERROR,
         statusCode: 403
       });
@@ -887,7 +887,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       // creating a question for a quiz that does not exist
       answerBody = [{ answer: 'cats are the best!', correct: true }, { answer: 'birds are cool too', correct: false }];
       questionBody = { question: 'which animal is the best?', duration: 16, points: 10, answers: answerBody, thumbnailUrl: thumbnailUrlExample };
-      expect(requestPost(questionBody, `/v2/admin/quiz/${quizId + 1}/question`, { token })).toStrictEqual({
+      expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId + 1}/question`, { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 403
       });
