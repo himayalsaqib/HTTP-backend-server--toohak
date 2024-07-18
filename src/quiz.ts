@@ -649,7 +649,7 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
  * @param {number} authUserId
  * @param {number} quizId
  * @param {number} questionId
- * @returns {{ newQuestionId: number} | { error: string }} - returns new question ID or an error message
+ * @returns {{ newQuestionId: number}} - returns new question ID
  */
 export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, questionId: number): {newQuestionId: number} | ErrorObject {
   const data = getData();
