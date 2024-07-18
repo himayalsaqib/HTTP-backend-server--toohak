@@ -1,4 +1,4 @@
-// includes http tests for the route /v1/admin/quiz/trash
+// includes http tests for the route /v1/admin/quiz/trash and /v2/admin/quiz/trash
 
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 
@@ -6,11 +6,12 @@ beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
+const ERROR = { error: expect.any(String) };
+
 describe('GET /v1/admin/quiz/trash', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { token: string, name: string, description: string };
   let token: string;
-  const error = { error: expect.any(String) };
 
   describe('Testing for correct return type (status code 200)', () => {
     beforeEach(() => {
@@ -98,13 +99,13 @@ describe('GET /v1/admin/quiz/trash', () => {
     test('Returns errors when token is empty', () => {
       requestDelete({}, '/v1/clear');
       const res = requestDelete({ token: token }, '/v1/admin/quiz/trash');
-      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
+      expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
 
     test('Returns errors when sessionId is invalid', () => {
       const sessionId = parseInt(token) + 1;
       const res = requestDelete({ token: sessionId.toString() }, '/v1/admin/quiz/trash');
-      expect(res).toStrictEqual({ retval: error, statusCode: 401 });
+      expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
   });
 });
