@@ -189,16 +189,16 @@ export function adminQuizRemove (authUserId: number, quizId: number): EmptyObjec
  */
 export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | ErrorObject {
   if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
+    throw new Error('AuthUserId is not a valid user.');
   }
   if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz ID does not refer to a valid quiz.' };
+    throw new Error('Quiz ID does not refer to a valid quiz.');
   }
 
   const quiz = findQuizById(quizId);
 
   if (quiz.authUserId !== authUserId) {
-    return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
+    throw new Error('Quiz ID does not refer to a quiz that this user owns.');
   }
 
   const questions = quiz.questions?.map((q: Question) => ({
