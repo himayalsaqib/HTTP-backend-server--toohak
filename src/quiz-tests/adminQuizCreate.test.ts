@@ -114,8 +114,6 @@ describe('POST /v1/admin/quiz', () => {
   });
 });
 
-/// ///////////////////////////////////////////////////////////////////////////
-
 describe('POST /v2/admin/quiz', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { name: string, description: string };
