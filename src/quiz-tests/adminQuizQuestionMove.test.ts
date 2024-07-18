@@ -376,8 +376,6 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
   });
 });
 
-////////////////////////////////////////////////////////////////////////////
-
 describe('/v2/admin/quiz/{quizid}/question/{questionid}/move', () => {
   let quizId: number;
   let token: string;
@@ -711,7 +709,7 @@ describe('/v2/admin/quiz/{quizid}/question/{questionid}/move', () => {
       // create fourth question
       const answerBody4 = [{ answer: 'Trisha/Ethan', correct: true }, { answer: 'Enya/Drew', correct: false }];
       const questionCreateBody4 = { question: 'Who should work it out on the remix next?', duration: 7, points: 8, answers: answerBody4 };
-      newQuestionId = requestPost({questionBody: questionCreateBody4 }, `/v2/admin/quiz/${quizId}/question`, { token });
+      newQuestionId = requestPost({ questionBody: questionCreateBody4 }, `/v2/admin/quiz/${quizId}/question`, { token });
       questionId.push(newQuestionId.retval.questionId);
     });
 
