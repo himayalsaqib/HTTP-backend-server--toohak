@@ -35,9 +35,9 @@ describe('GET /v1/admin/quiz/:quizid', () => {
           name: 'Original Quiz Name',
           timeCreated: expect.any(Number),
           description: 'Quiz description',
-          numQuestions: expect.any(Number),
+          numQuestions: 0,
           questions: [],
-          duration: expect.any(Number)
+          duration: 0
         },
         statusCode: 200
       });
@@ -54,9 +54,9 @@ describe('GET /v1/admin/quiz/:quizid', () => {
           timeCreated: expect.any(Number),
           timeLastEdited: expect.any(Number),
           description: 'Quiz description',
-          numQuestions: expect.any(Number),
+          numQuestions: 0,
           questions: [],
-          duration: expect.any(Number)
+          duration: 0
         },
         statusCode: 200
       });
@@ -101,7 +101,7 @@ describe('GET /v2/admin/quiz/:quizid', () => {
   let quizBody: { name: string, description: string };
   let token: string;
 
-  let quiz: { token: string, name: string };
+  let quiz: { name: string };
   let quizId: number;
 
   beforeEach(() => {
@@ -116,25 +116,25 @@ describe('GET /v2/admin/quiz/:quizid', () => {
 
   describe('Testing successful cases (status code 200)', () => {
     test('Quiz info of a new quiz was successful and has correct return type', () => {
-      const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { Token: token });
+      const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
       expect(res).toStrictEqual({
         retval: {
           quizId: res.retval.quizId,
           name: 'Original Quiz Name',
           timeCreated: expect.any(Number),
           description: 'Quiz description',
-          numQuestions: expect.any(Number),
+          numQuestions: 0,
           questions: [],
-          duration: expect.any(Number),
+          duration: 0,
         },
         statusCode: 200
       });
     });
 
     test.skip('Quiz info of an edited quiz was successful and has correct return type', () => {
-      quiz = { token: token, name: 'Updated Quiz Name' };
-      requestPut(quiz, `/v1/admin/quiz/${quizId}/name`); // change to v2 + wait on it3 update quiz thumbnail
-      const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { Token: token });
+      quiz = { name: 'Updated Quiz Name' };
+      requestPut(quiz, `/v2/admin/quiz/${quizId}/name`, { token });
+      const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
       expect(res).toStrictEqual({
         retval: {
           quizId: res.retval.quizId,
@@ -142,10 +142,9 @@ describe('GET /v2/admin/quiz/:quizid', () => {
           timeCreated: expect.any(Number),
           timeLastEdited: expect.any(Number),
           description: 'Quiz description',
-          numQuestions: expect.any(Number),
+          numQuestions: 0,
           questions: [],
-          duration: expect.any(Number),
-          // thumbnailUrl: expect.any(String)
+          duration: 0,
         },
         statusCode: 200
       });
