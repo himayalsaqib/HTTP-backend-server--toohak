@@ -13,14 +13,14 @@ import {
   getHashOf
 } from './helper-files/helper';
 
-/// //////////////////////////// Global Variables ///////////////////////////////
+// ============================ GLOBAL VARIABLES ============================ //
 const MIN_PASSWORD_LENGTH = 8;
 const MIN_NAME_LENGTH = 2;
 const MAX_NAME_LENGTH = 20;
 const INITIAL_NUM_FAILED_LOGINS = 0;
 const INITIAL_NUM_SUCCESSFUL_LOGINS = 1;
 
-/// /////////////////////////// Type Annotations ///////////////////////////////
+// ============================ TYPE ANNOTATIONS ============================ //
 interface UserDetails {
   userId: number;
   name: string;
@@ -29,7 +29,7 @@ interface UserDetails {
   numFailedPasswordsSinceLastLogin: number;
 }
 
-/// ////////////////////////////// Functions ///////////////////////////////////
+// =============================== FUNCTIONS ================================ //
 /**
  * Register a user with an email, password, and names, then returns their
  * authUserId value
@@ -204,28 +204,24 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
   const userWithEmail = findUserByEmail(email);
   if (userWithEmail) {
     if (userWithEmail.authUserId !== authUserId) {
-      return { error: 'Email currently in use by another user.' };
+      throw new Error('Email currently in use by another user.');
     }
   }
 
   if (validator.isEmail(email) === false) {
-    return { error: 'Invalid email address.' };
+    throw new Error('Invalid email address.');
   }
   if (adminUserNameIsValid(nameFirst) === false) {
-    return {
-      error: 'First name contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes.'
-    };
+    throw new Error('First name contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes.');
   }
   if (nameFirst.length < 2 || nameFirst.length > 20) {
-    return { error: 'First name is less than 2 characters or more than 20 characters.' };
+    throw new Error('First name is less than 2 characters or more than 20 characters.');
   }
   if (adminUserNameIsValid(nameLast) === false) {
-    return {
-      error: 'Last name contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes.'
-    };
+    throw new Error('Last name contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes.');
   }
   if (nameLast.length < 2 || nameLast.length > 20) {
-    return { error: 'Last name is less than 2 characters or more than 20 characters.' };
+    throw new Error('Last name is less than 2 characters or more than 20 characters.');
   }
 
   const userToUpdate = findUserById(authUserId);
@@ -246,13 +242,9 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
  * i.e. delete the given token from the tokens array
  *
  * @param {Tokens} token
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
-export function adminAuthLogout(token: Tokens): EmptyObject | ErrorObject {
-  if (authUserIdExists(token.authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-
+export function adminAuthLogout(token: Tokens): EmptyObject {
   const data = getData();
   const index = data.tokens.findIndex(currToken => currToken === token);
   data.tokens.splice(index, 1);
