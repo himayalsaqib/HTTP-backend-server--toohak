@@ -455,9 +455,10 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
     return res.status(403).json(response);
   }
 
-  response = quizDoesNotExist(quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
+  try {
+    quizDoesNotExist(quizId);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
   }
 
   response = adminQuizRestore(userToken.authUserId, quizId);
