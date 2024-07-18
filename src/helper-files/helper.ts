@@ -414,3 +414,18 @@ export function swapQuestions(questionIndex1: number, questionIndex2: number, qu
 export function currentTime(): number {
   return Math.floor(Date.now() / 1000);
 }
+
+/**
+ * Function that checks whether the end of the given thumbnailUrl contains the
+ * correct file type (jpg, jpeg, png)
+ * 
+ * @param {string} thumbnailUrl
+ * @returns {boolean} - true if the end contains one of the correct file types, 
+ *                      false otherwise
+ */
+export function checkThumbnailUrlFileType(thumbnailUrl: string): boolean {
+  if (thumbnailUrl.endsWith('jpg') || thumbnailUrl.endsWith('jpeg')|| thumbnailUrl.endsWith('png')) {
+    return true;
+  }
+  return false;
+}
