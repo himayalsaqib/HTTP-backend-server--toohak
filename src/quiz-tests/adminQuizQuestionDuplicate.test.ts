@@ -1,4 +1,5 @@
 // http tests for /v1/admin/quiz/{quizId}/question/{questionId}/duplicate
+// and /v2/admin/quiz/{quizId}/question/{questionId}/duplicate
 
 import { requestDelete, requestPost, requestGet } from '../helper-files/requestHelper';
 
@@ -285,3 +286,5 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
     });
   });
 });
+
+// VERSION 2 TESTS //
