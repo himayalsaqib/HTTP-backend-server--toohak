@@ -324,7 +324,6 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
 
   if (questionBody.thumbnailUrl !== undefined) {
     if (questionBody.thumbnailUrl.length === 0) {
-      console.log('made it into line thumbnail length in quiz.ts');
       throw new Error('The thumbnailUrl cannot be an empty string.');
     }
 
@@ -332,7 +331,7 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
       throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
     }
 
-    if (!(questionBody.thumbnailUrl.startsWith('https://') || questionBody.thumbnailUrl.startsWith('http://'))) {
+    if (!questionBody.thumbnailUrl.startsWith('https://') || !questionBody.thumbnailUrl.startsWith('http://')) {
       throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
     }
   }
@@ -354,6 +353,7 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
   // set timeLastEditied as the same as timeCreated for question
   quiz.timeLastEdited = currentTime();
   quiz.duration += questionBody.duration;
+  quiz.thumbnailUrl = questionBody.thumbnailUrl;
 
   quiz.questions.push(newQuestion);
   setData(data);
