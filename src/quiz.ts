@@ -68,7 +68,7 @@ export interface QuestionBody {
   duration: number;
   points: number;
   answers: QuizQuestionAnswers[];
-  thumbnailUrl?: string;
+  thumbnailUrl: string;
 }
 
 /// ////////////////////////////// Functions ///////////////////////////////////
@@ -198,6 +198,7 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | E
     questionId: q.questionId,
     question: q.question,
     duration: q.duration,
+    thumbnailUrl: q.thumbnailUrl,
     points: q.points,
     answers: q.answers.map((a: Answer) => ({
       answerId: a.answerId,
@@ -344,18 +345,22 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
     throw new Error('There must be at least 1 correct answer.');
   }
 
-  if (questionBody.thumbnailUrl.length === 0) {
-    throw new Error('The thumbnailUrl cannot be an empty string.');
+  console.log('made it to line 348 quiz.ts');
+  if (questionBody.thumbnailUrl !== undefined) {
+    if (questionBody.thumbnailUrl.length === 0) {
+      console.log('made it into line thumbnail length in quiz.ts');
+      throw new Error('The thumbnailUrl cannot be an empty string.');
+    }
+  
+    if (!checkThumbnailUrlFileType(questionBody.thumbnailUrl)) {
+      throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
+    }
+  
+    if (!(questionBody.thumbnailUrl.startsWith('https://') || questionBody.thumbnailUrl.startsWith('http://'))) {
+      throw new Error(`The thumbnailUrl must start with 'http:// or 'https://`);
+    }
   }
-
-  if (!checkThumbnailUrlFileType(questionBody.thumbnailUrl)) {
-    throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
-  }
-
-  if (!(questionBody.thumbnailUrl.startsWith('https://') || questionBody.thumbnailUrl.startsWith('http://'))) {
-    throw new Error(`The thumbnailUrl must start with 'http:// or 'https://`);
-  }
-
+  
   let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   while (questionIdInUse(newQuestionId) === true) {
     newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -366,7 +371,8 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
     question: questionBody.question,
     duration: questionBody.duration,
     points: questionBody.points,
-    answers: createAnswersArray(questionBody.answers)
+    answers: createAnswersArray(questionBody.answers),
+    thumbnailUrl: questionBody.thumbnailUrl
   };
 
   // set timeLastEditied as the same as timeCreated for question

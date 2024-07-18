@@ -9,7 +9,7 @@ beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
-describe('POST /v1/amdin/quiz/{quizid}/question', () => {
+describe.only('POST /v1/amdin/quiz/{quizid}/question', () => {
   let quizId: number;
   let token: string;
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
