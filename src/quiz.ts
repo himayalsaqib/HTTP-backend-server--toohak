@@ -361,15 +361,11 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
 * @returns {{} | { error: string }}
 */
 export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
-  if (quizIsInTrash(quizId) === false) {
-    return { error: 'Quiz ID refers to a quiz that is not currently in the trash' };
-  }
-
   const data = getData();
   const trashedQuiz = findTrashedQuizById(quizId);
 
   if (quizNameInUse(authUserId, trashedQuiz.quiz.name) === true) {
-    return { error: 'Quiz name of the restored quiz is already used by the current logged in user for another active quiz' };
+    throw new Error('Quiz name of the restored quiz is already used by the current logged in user for another active quiz.');
   }
 
   const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
