@@ -577,6 +577,28 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   res.json(response);
 });
 
+// VERSION 2 //
+
+app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.query.token as string);
+  const quizId = parseInt(req.params.quizid as string);
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  const userToken = errorCheckResponse.userToken;
+  
+  try {
+  const response = adminQuizInfo(userToken.authUserId, quizId);
+  res.json(response);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+});
+
+
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
