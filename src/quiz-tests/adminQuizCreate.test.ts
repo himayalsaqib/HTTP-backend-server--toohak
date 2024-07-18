@@ -114,8 +114,6 @@ describe('POST /v1/admin/quiz', () => {
   });
 });
 
-/// ///////////////////////////////////////////////////////////////////////////
-
 describe('POST /v2/admin/quiz', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { name: string, description: string };
@@ -144,7 +142,7 @@ describe('POST /v2/admin/quiz', () => {
       const res = requestPost(quizBody, '/v2/admin/quiz', { token });
       quizBody = { name: 'Other Quiz Name', description: 'Other Quiz Description' };
       const res2 = requestPost(quizBody, '/v2/admin/quiz', { token });
-      const listRes = requestGet({}, '/v1/admin/quiz/list', { token });
+      const listRes = requestGet({}, '/v2/admin/quiz/list', { token });
 
       expect(listRes.retval).toStrictEqual({ quizzes: [{ quizId: res.retval.quizId, name: 'Valid Quiz Name' }, { quizId: res2.retval.quizId, name: 'Other Quiz Name' }] });
       expect(listRes.statusCode).toStrictEqual(200);
