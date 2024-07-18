@@ -27,7 +27,6 @@ import {
   findTokenFromSessionId,
   quizRoutesErrorChecking,
   quizzesDoNotExist,
-  //quizBelongsToUser,
 } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
