@@ -257,14 +257,10 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
     return { error: 'Quiz ID does not refer to a valid quiz.' };
   }
   if (description.length > MAX_DESCRIPTION_LEN) {
-    return { error: 'Description is more than 100 characters in length.' };
+    throw new Error('Description is more than 100 characters in length.');
   }
 
   const quiz = findQuizById(quizId);
-
-  if (quiz.authUserId !== authUserId) {
-    return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
-  }
 
   quiz.description = description;
   quiz.timeLastEdited = currentTime();
