@@ -98,26 +98,25 @@ describe('GET /v1/admin/quiz:quizid', () => {
 
 describe('GET /v2/admin/quiz:quizid', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
-  let quizBody: { token: string, name: string, description: string };
+  let quizBody: { name: string, description: string };
   let token: string;
 
   let quiz: { token: string, name: string };
   let quizId: number;
-
 
   beforeEach(() => {
     userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
     const registerResponse = requestPost(userBody, '/v1/admin/auth/register');
     token = registerResponse.retval.token;
 
-    quizBody = { token: token, name: 'Original Quiz Name', description: 'Quiz description' };
-    const quizResponse = requestPost(quizBody, '/v1/admin/quiz'); //change to v2
+    quizBody = { name: 'Original Quiz Name', description: 'Quiz description' };
+    const quizResponse = requestPost(quizBody, '/v2/admin/quiz', { token });
     quizId = quizResponse.retval.quizId;
   });
 
   describe('Testing successful cases (status code 200)', () => {
     test('Quiz info of a new quiz was successful and has correct return type', () => {
-      const res = requestGet(`/v2/admin/quiz/${quizId}`, { Token: token });
+      const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { Token: token });
       expect(res).toStrictEqual({
         retval: {
           quizId: res.retval.quizId,
@@ -126,16 +125,16 @@ describe('GET /v2/admin/quiz:quizid', () => {
           description: 'Quiz description',
           numQuestions: expect.any(Number),
           questions: [],
-          duration: expect.any(Number)
+          duration: expect.any(Number),
         },
         statusCode: 200
       });
     });
 
-    test('Quiz info of an edited quiz was successful and has correct return type', () => {
+    test.skip('Quiz info of an edited quiz was successful and has correct return type', () => {
       quiz = { token: token, name: 'Updated Quiz Name' };
-      requestPut(quiz, `/v1/admin/quiz/${quizId}/name`); //change to v2
-      const res = requestGet({ token: token }, `/v2/admin/quiz/${quizId}`);
+      requestPut(quiz, `/v1/admin/quiz/${quizId}/name`); // change to v2 + wait on it3 update quiz thumbnail
+      const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { Token: token });
       expect(res).toStrictEqual({
         retval: {
           quizId: res.retval.quizId,
@@ -145,7 +144,8 @@ describe('GET /v2/admin/quiz:quizid', () => {
           description: 'Quiz description',
           numQuestions: expect.any(Number),
           questions: [],
-          duration: expect.any(Number)
+          duration: expect.any(Number),
+          // thumbnailUrl: expect.any(String)
         },
         statusCode: 200
       });
@@ -155,13 +155,13 @@ describe('GET /v2/admin/quiz:quizid', () => {
   describe('Testing token errors (status code 401)', () => {
     test('Given invalid session ID', () => {
       const sessionId = parseInt(token) + 1;
-      const res = requestGet({ token: sessionId.toString() }, `/v2/admin/quiz/${quizId}`);
+      const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token: sessionId.toString() });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
 
     test('Token is empty (no users are registered)', () => {
       requestDelete({}, '/v1/clear');
-      const res = requestGet({ token: token }, `/v2/admin/quiz/${quizId}`);
+      const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token: token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
   });
@@ -172,16 +172,15 @@ describe('GET /v2/admin/quiz:quizid', () => {
       const otherUserResponse = requestPost(otherUserBody, '/v1/admin/auth/register');
       const otherUserToken = otherUserResponse.retval.token;
 
-      const res = requestGet({ token: otherUserToken }, `/v2/admin/quiz/${quizId}`);
+      const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token: otherUserToken });
 
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 403 });
     });
 
     test("Quiz doesn't exist", () => {
-      const res = requestGet({ token: token }, `/v2/admin/quiz/${quizId + 1}`);
+      const res = requestGet({}, `/v2/admin/quiz/${quizId + 1}`, { token: token });
 
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 403 });
     });
   });
-
 });
