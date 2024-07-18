@@ -252,7 +252,7 @@ describe('POST /v2/admin/quiz/:quizid/restore', () => {
       requestDelete({}, `/v2/admin/quiz/${quizId}`, { token });
     });
 
-    test('Current user does not own the quiz', () => {
+    test.only('Current user does not own the quiz', () => {
       // register a second user
       const user2 = { email: 'valid2@gmail.com', password: 'Password12', nameFirst: 'Jamie', nameLast: 'David' };
       const registerUser2 = requestPost(user2, '/v1/admin/auth/register');

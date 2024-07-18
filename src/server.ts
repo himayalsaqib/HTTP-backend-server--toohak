@@ -452,13 +452,13 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   const userToken = findTokenFromSessionId(sessionId);
 
   try {
-    trashedQuizBelongsToUser(userToken.authUserId, quizId);
+    quizDoesNotExist(quizId);
   } catch (error) {
     return res.status(403).json({ error: error.message });
   }
-  
+
   try {
-    quizDoesNotExist(quizId);
+    trashedQuizBelongsToUser(userToken.authUserId, quizId);
   } catch (error) {
     return res.status(403).json({ error: error.message });
   }
@@ -469,7 +469,6 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
-  
 });
 
 app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
@@ -654,6 +653,38 @@ app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
 
   const response = adminQuizInfo(userToken.authUserId, quizId);
   res.json(response);
+});
+
+app.post('/v2/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token') as string);
+  const quizId = parseInt(req.params.quizid as string);
+
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  try {
+    quizDoesNotExist(quizId);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
+  }
+
+  try {
+    trashedQuizBelongsToUser(userToken.authUserId, quizId);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
+  }
+
+  try {
+    const response = adminQuizRestore(userToken.authUserId, quizId);
+    res.json(response);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 });
 
 // ====================================================================
