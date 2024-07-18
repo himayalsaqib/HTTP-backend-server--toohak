@@ -663,21 +663,18 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
 export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, questionId: number): {newQuestionId: number} | ErrorObject {
   const data = getData();
 
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId does not refer to a valid user id.' };
-  }
   if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz Id does not refer to a valid quiz.' };
+    throw new Error('Quiz Id does not refer to a valid quiz.');
   }
 
   const quiz = findQuizById(quizId);
   if (quiz.authUserId !== authUserId) {
-    return { error: 'Quiz does not belong to the user.' };
+    throw new Error('Quiz does not belong to the user.');
   }
 
   const questionIndex = quiz.questions?.findIndex(q => q.questionId === questionId);
   if (questionIndex === undefined || questionIndex === -1) {
-    return { error: 'Question Id does not refer to a valid question in the quiz.' };
+    throw new Error('Question Id does not refer to a valid question in the quiz.');
   }
 
   const question = quiz.questions[questionIndex];
@@ -695,7 +692,7 @@ export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, 
 
   if (quiz.duration > MAX_QUIZ_QUESTIONS_DURATION) {
     quiz.questions.splice(questionIndex + 1, 1);
-    return { error: 'Duplicating this question exceeds the maximum quiz duration of 3 minutes.' };
+    throw new Error('Duplicating this question exceeds the maximum quiz duration of 3 minutes.');
   }
 
   quiz.timeLastEdited = currentTime();
