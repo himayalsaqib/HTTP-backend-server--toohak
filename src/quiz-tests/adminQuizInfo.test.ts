@@ -1,4 +1,4 @@
-// includes http tests for the route /v1/admin/quiz:quizid and /v2/admin/quiz:quizid
+// includes http tests for the route /v1/admin/quiz/:quizid and /v2/admin/quiz/:quizid
 
 import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
 
@@ -8,7 +8,7 @@ beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
-describe('GET /v1/admin/quiz:quizid', () => {
+describe('GET /v1/admin/quiz/:quizid', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { token: string, name: string, description: string };
   let token: string;
@@ -96,7 +96,7 @@ describe('GET /v1/admin/quiz:quizid', () => {
   });
 });
 
-describe('GET /v2/admin/quiz:quizid', () => {
+describe('GET /v2/admin/quiz/:quizid', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { name: string, description: string };
   let token: string;
