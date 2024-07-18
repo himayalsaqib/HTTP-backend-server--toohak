@@ -454,7 +454,7 @@ export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): Empt
  * @param {number} quizId
  * @returns {{}}
  */
-export function adminQuizQuestionMove (questionId: number, newPosition: number, quizId: number): EmptyObject | ErrorObject {
+export function adminQuizQuestionMove (questionId: number, newPosition: number, quizId: number): EmptyObject {
   const quiz = findQuizById(quizId);
 
   const question = findQuestionById(questionId, quizId);
