@@ -451,22 +451,25 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
 
   const userToken = findTokenFromSessionId(sessionId);
 
-  let response = trashedQuizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
+  try {
+    trashedQuizBelongsToUser(userToken.authUserId, quizId);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
+  }
+  
+  try {
+    quizDoesNotExist(quizId);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
   }
 
-  response = quizDoesNotExist(quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
+  try {
+    const response = adminQuizRestore(userToken.authUserId, quizId);
+    res.json(response);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
-
-  response = adminQuizRestore(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(400).json(response);
-  }
-
-  res.json(response);
+  
 });
 
 app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
