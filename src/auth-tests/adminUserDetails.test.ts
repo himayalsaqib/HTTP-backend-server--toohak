@@ -1,13 +1,14 @@
-// includes http tests for the route /v1/admin/user/details (GET)
+// includes http tests for the route GET /v1/admin/user/details and /v2/admin/user/details
 
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
+
+const ERROR = { error: expect.any(String) };
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
 describe('GET /v1/admin/user/details', () => {
-  const error = { error: expect.any(String) };
   let body: { email: string, password: string, nameFirst: string, nameLast: string };
   let token: string;
 
@@ -89,15 +90,15 @@ describe('GET /v1/admin/user/details', () => {
     test('Returns error when token is empty (no users are registered)', () => {
       requestDelete({}, '/v1/clear');
       expect(requestGet({ token }, '/v1/admin/user/details')).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
 
     test('Returns error when sessionId is not a valid logged in user session', () => {
-      const sessionId = parseInt(token) + 1;
-      expect(requestGet({ token: sessionId.toString() }, '/v1/admin/user/details')).toStrictEqual({
-        retval: error,
+      const sessionId = (parseInt(token) + 1).toString();
+      expect(requestGet({ token: sessionId }, '/v1/admin/user/details')).toStrictEqual({
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -105,7 +106,6 @@ describe('GET /v1/admin/user/details', () => {
 });
 
 describe('GET /v2/admin/user/details', () => {
-  const error = { error: expect.any(String) };
   let body: { email: string, password: string, nameFirst: string, nameLast: string };
   let token: string;
 
@@ -187,15 +187,15 @@ describe('GET /v2/admin/user/details', () => {
     test('Returns error when token is empty (no users are registered)', () => {
       requestDelete({}, '/v1/clear');
       expect(requestGet({}, '/v2/admin/user/details', { token })).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
 
     test('Returns error when sessionId is not a valid logged in user session', () => {
-      const sessionId = parseInt(token) + 1;
-      expect(requestGet({}, '/v2/admin/user/details', { token: sessionId.toString() })).toStrictEqual({
-        retval: error,
+      const sessionId = (parseInt(token) + 1).toString();
+      expect(requestGet({}, '/v2/admin/user/details', { token: sessionId })).toStrictEqual({
+        retval: ERROR,
         statusCode: 401
       });
     });
