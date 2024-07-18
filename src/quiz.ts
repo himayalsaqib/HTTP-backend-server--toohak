@@ -452,26 +452,23 @@ export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): Empt
  * @param {number} questionId
  * @param {number} newPosition
  * @param {number} quizId
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
 export function adminQuizQuestionMove (questionId: number, newPosition: number, quizId: number): EmptyObject | ErrorObject {
   const quiz = findQuizById(quizId);
-  if (quiz === undefined) {
-    return { error: 'Quiz does not exist.' };
-  }
 
   const question = findQuestionById(questionId, quizId);
   if (question === undefined) {
-    return { error: 'Question Id does not refer to a valid question within this quiz.' };
+    throw new Error('Question Id does not refer to a valid question within this quiz.')
   }
 
   if (newPosition < MIN_QUESTION_INDEX || newPosition > quiz.questions.length - 1) {
-    return { error: 'New position is less than 0 or new position is greater than n-1 where n is the number of questions.' };
+    throw new Error('New position is less than 0 or new position is greater than n-1 where n is the number of questions.');
   }
 
   const questionIndex = quiz.questions.findIndex(q => q.questionId === questionId);
   if (questionIndex === newPosition) {
-    return { error: 'NewPosition is the position of the current question.' };
+    throw new Error('NewPosition is the position of the current question.');
   }
 
   quiz.timeLastEdited = currentTime();
