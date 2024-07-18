@@ -113,7 +113,7 @@ describe('GET /v1/admin/quiz/list', () => {
 
 describe('GET /v2/admin/quiz/list', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
-  let quizBody: { token: string, name: string, description: string };
+  let quizBody: { name: string, description: string };
   let token: string;
 
   describe('Testing for correct return type (status code 200)', () => {
@@ -121,11 +121,11 @@ describe('GET /v2/admin/quiz/list', () => {
       userBody = { email: 'user@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
       const registerUser = requestPost(userBody, '/v1/admin/auth/register');
       token = registerUser.retval.token;
-      quizBody = { token: token, name: 'My Quiz Name', description: 'Valid Quiz Description' };
+      quizBody = { name: 'My Quiz Name', description: 'Valid Quiz Description' };
     });
 
     test('Correctly returns quiz list that contains 1 quiz', () => {
-      const res = requestPost(quizBody, '/v1/admin/quiz');
+      const res = requestPost(quizBody, '/v2/admin/quiz', { token });
       const listRes = requestGet({}, '/v2/admin/quiz/list', { token });
       expect(listRes).toStrictEqual({
         retval: {
@@ -141,9 +141,9 @@ describe('GET /v2/admin/quiz/list', () => {
     });
 
     test('Correctly returns quiz list that contains multiple quizzes', () => {
-      const res = requestPost(quizBody, '/v1/admin/quiz');
-      quizBody = { token: token, name: 'My Quiz Two', description: 'Other Quiz Description' };
-      const res2 = requestPost(quizBody, '/v1/admin/quiz');
+      const res = requestPost(quizBody, '/v2/admin/quiz', { token });
+      quizBody = { name: 'My Quiz Two', description: 'Other Quiz Description' };
+      const res2 = requestPost(quizBody, '/v2/admin/quiz', { token });
       const listRes = requestGet({}, '/v2/admin/quiz/list', { token });
       expect(listRes).toStrictEqual({
         retval: {
@@ -163,8 +163,8 @@ describe('GET /v2/admin/quiz/list', () => {
     });
 
     test.skip('Correctly returns quiz list after a quiz has been removed', () => {
-      const res = requestPost(quizBody, '/v1/admin/quiz');
-      quizBody = { token: token, name: 'My Quiz Two', description: 'Other Quiz Description' };
+      const res = requestPost(quizBody, '/v2/admin/quiz', { token });
+      quizBody = { name: 'My Quiz Two', description: 'Other Quiz Description' };
       const res2 = requestPost(quizBody, '/v1/admin/quiz');
       const quizId2 = res2.retval.quizId;
 
