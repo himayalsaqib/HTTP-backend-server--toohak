@@ -1,6 +1,6 @@
 // Contains all routes for toohak server
 
-import express, { json, Request, Response } from 'express';
+import express, { json, Request, response, Response } from 'express';
 import { echo } from './newecho';
 import morgan from 'morgan';
 import config from './config.json';
@@ -27,6 +27,7 @@ import {
   findTokenFromSessionId,
   quizRoutesErrorChecking,
   quizzesDoNotExist,
+  quizBelongsToUser,
 } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
@@ -419,10 +420,20 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(token);
 
+  // quizRoutesErrorChecking(sessionId, quizId);
+
   try {
-    quizRoutesErrorChecking(sessionId, quizId);
+    tokenExists(sessionId);
   } catch (error) {
-    return res.status(error.code).json({ error: error.message });
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  try {
+    quizBelongsToUser(userToken.authUserId, quizId);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
   }
 
   try {
