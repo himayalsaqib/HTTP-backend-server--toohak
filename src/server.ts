@@ -357,12 +357,12 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
 
   const userToken = findTokenFromSessionId(sessionId);
 
-  const response = adminQuizTrash(userToken.authUserId);
-  if ('error' in response) {
-    return res.status(401).json(response);
+  try {
+    const response = adminQuizTrash(userToken.authUserId);
+    res.json(response);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
   }
-
-  res.json(response);
 });
 
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
@@ -595,6 +595,25 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
 });
 
 // VERSION 2 //
+
+app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token'));
+
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  try {
+    const response = adminQuizTrash(userToken.authUserId);
+    res.json(response);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+});
 
 app.post('/v2/admin/quiz', (req: Request, res: Response) => {
   const { name, description } = req.body;
