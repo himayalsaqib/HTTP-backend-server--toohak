@@ -442,7 +442,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
   let questionBody: { question: string, duration: number, points: number, answers: QuizQuestionAnswers[], thumbnailUrl: string };
   const thumbnailUrlExample = 'http://google.com/some/image/path.jpg';
 
-  describe.only('Testing successful cases (status code 200)', () => {
+  describe('Testing successful cases (status code 200)', () => {
     beforeEach(() => {
       // register a user to create a quiz
       userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
@@ -455,7 +455,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       quizId = res.retval.quizId;
     });
 
-    test.skip('Has correct return type', () => {
+    test('Has correct return type', () => {
       // create question
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
@@ -480,7 +480,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       expect(colours).toContain(res.retval.questions[0].answers[1].colour);
     });
 
-    test('Side effect - Successful listing of information about a quiz with one question', () => {
+    test.only('Side effect - Successful listing of information about a quiz with one question', () => {
       // create question
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
@@ -501,7 +501,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
               questionId: res.retval.questionId,
               question: questionCreateBody.question,
               duration: questionCreateBody.duration,
-              thumbnailUrl: expect.any(String),
+              thumbnailUrl: thumbnailUrlExample,
               points: questionCreateBody.points,
               answers: [
                 {
@@ -526,7 +526,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test('Side effect - Successful listing of information about a quiz with multiple questions', () => {
+    test.only('Side effect - Successful listing of information about a quiz with multiple questions', () => {
       // create question
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody, thumbnailUrl: thumbnailUrlExample };
@@ -551,6 +551,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
               questionId: res.retval.questionId,
               question: questionCreateBody.question,
               duration: questionCreateBody.duration,
+              thumbnailUrl: thumbnailUrlExample,
               points: questionCreateBody.points,
               answers: [
                 {
@@ -571,6 +572,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
               questionId: res2.retval.questionId,
               question: questionCreateBody2.question,
               duration: questionCreateBody2.duration,
+              thumbnailUrl: thumbnailUrlExample,
               points: questionCreateBody2.points,
               answers: [
                 {
@@ -599,11 +601,11 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       // create question
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
-      const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2], thumbnailUrl: thumbnailUrlExample };
+      questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2], thumbnailUrl: thumbnailUrlExample };
 
       // get current time
       const time = Math.floor(Date.now() / 1000);
-      let res = requestPost({ questionBody: questionCreateBody }, `/v2/admin/quiz/${quizId}/question`, { token });
+      let res = requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token });
       expect(res).toStrictEqual({
         retval: { questionId: expect.any(Number) },
         statusCode: 200
