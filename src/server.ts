@@ -238,6 +238,21 @@ app.put('/v2/admin/user/password', (req: Request, res: Response) => {
   }
 });
 
+app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token'));
+
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  const response = adminAuthLogout(userToken);
+  res.json(response);
+});
+
 // ============================== QUIZ ROUTES =============================== //
 
 // VERSION 1 //
