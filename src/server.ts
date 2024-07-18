@@ -416,7 +416,7 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
     return res.status(403).json(response);
   }
 
-  response = adminQuizCreateQuestion(userToken.authUserId, quizId, questionBody);
+  response = adminQuizCreateQuestion(quizId, questionBody);
   if ('error' in response) {
     return res.status(400).json(response);
   }
