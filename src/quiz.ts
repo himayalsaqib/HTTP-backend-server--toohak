@@ -217,9 +217,9 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo {
  * @param {number} authUserId
  * @param {number} quizId
  * @param {string} name
- * @returns {{} | { error: string }} - empty object
+ * @returns {{}} - empty object
  */
-export function adminQuizNameUpdate (authUserId: number, quizId: number, name: string): EmptyObject | ErrorObject {
+export function adminQuizNameUpdate (authUserId: number, quizId: number, name: string): EmptyObject {
   if (!quizNameHasValidChars(name)) {
     throw new Error('Name contains invalid characters. Valid characters are alphanumeric and spaces.');
   }
@@ -247,9 +247,9 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
  * @param {number} authUserId
  * @param {number} quizId
  * @param {string} description
- * @returns {{} | { error: string }} - an empty object
+ * @returns {{}} - an empty object
  */
-export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, description: string): EmptyObject | ErrorObject {
+export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, description: string): EmptyObject {
   if (authUserIdExists(authUserId) === false) {
     return { error: 'AuthUserId is not a valid user.' };
   }
