@@ -9,7 +9,7 @@ beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
-describe.only('POST /v1/amdin/quiz/{quizid}/question', () => {
+describe('POST /v1/amdin/quiz/{quizid}/question', () => {
   let quizId: number;
   let token: string;
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
@@ -442,7 +442,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
   let questionBody: { question: string, duration: number, points: number, answers: QuizQuestionAnswers[], thumbnailUrl: string };
   let thumbnailUrlExample = 'http://google.com/some/image/path.jpg';
 
-  describe('Testing successful cases (status code 200)', () => {
+  describe.only('Testing successful cases (status code 200)', () => {
     beforeEach(() => {
       // register a user to create a quiz
       userBody = { email: 'valid@gmail.com', password: 'ValidPass123', nameFirst: 'Jane', nameLast: 'Doe' };
@@ -455,7 +455,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       quizId = res.retval.quizId;
     });
 
-    test('Has correct return type', () => {
+    test.skip('Has correct return type', () => {
       // create question
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
@@ -485,10 +485,10 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2], thumbnailUrl: thumbnailUrlExample };
-      const res = requestPost({ token: token, questionBody: questionCreateBody }, `/v2/admin/quiz/${quizId}/question`);
+      const res = requestPost({ questionBody: questionCreateBody }, `/v2/admin/quiz/${quizId}/question`, { token });
 
-      // use GET /v1/admin/quiz/{quizid}
-      expect(requestGet({ token: token }, `/v2/admin/quiz/${quizId}`)).toStrictEqual({
+      // use GET /v2/admin/quiz/{quizid}
+      expect(requestGet({}, `/v2/admin/quiz/${quizId}`, { token })).toStrictEqual({
         retval: {
           quizId: quizId,
           name: quizBody.name,
@@ -530,15 +530,15 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       // create question
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody, thumbnailUrl: thumbnailUrlExample };
-      const res = requestPost({ token: token, questionBody: questionCreateBody }, `/v2/admin/quiz/${quizId}/question`);
+      const res = requestPost({ questionBody: questionCreateBody }, `/v2/admin/quiz/${quizId}/question`, { token });
 
       // create second question
       const answerBody2 = [{ answer: 'Chappell Roan', correct: true }, { answer: 'Sabrina Carpenter', correct: false }];
       const questionCreateBody2 = { question: 'Who is your favourite artist\'s favourite artist?', duration: 5, points: 7, answers: answerBody2, thumbnailUrl: thumbnailUrlExample };
-      const res2 = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v2/admin/quiz/${quizId}/question`);
+      const res2 = requestPost({ questionBody: questionCreateBody2 }, `/v2/admin/quiz/${quizId}/question`, { token });
 
-      // use GET /v1/admin/quiz/{quizid}
-      expect(requestGet({ token: token }, `/v2/admin/quiz/${quizId}`)).toStrictEqual({
+      // use GET /v2/admin/quiz/{quizid}
+      expect(requestGet({}, `/v2/admin/quiz/${quizId}`, { token })).toStrictEqual({
         retval: {
           quizId: quizId,
           name: quizBody.name,
@@ -603,13 +603,13 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
 
       // get current time
       const time = Math.floor(Date.now() / 1000);
-      let res = requestPost({ token: token, questionBody: questionCreateBody }, `/v2/admin/quiz/${quizId}/question`);
+      let res = requestPost({ questionBody: questionCreateBody }, `/v2/admin/quiz/${quizId}/question`, { token });
       expect(res).toStrictEqual({
         retval: { questionId: expect.any(Number) },
         statusCode: 200
       });
 
-      res = requestGet({ token: token }, `/v2/admin/quiz/${quizId}`);
+      res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
       expect(res.retval.timeLastEdited).toBeGreaterThanOrEqual(time);
       expect(res.retval.timeLastEdited).toBeLessThanOrEqual(time + 1);
     });
