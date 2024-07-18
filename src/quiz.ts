@@ -67,6 +67,7 @@ export interface QuestionBody {
   duration: number;
   points: number;
   answers: QuizQuestionAnswers[];
+  thumbnailUrl?: string;
 }
 
 /// ////////////////////////////// Functions ///////////////////////////////////
