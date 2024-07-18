@@ -13,14 +13,14 @@ import {
   getHashOf
 } from './helper-files/helper';
 
-/// //////////////////////////// Global Variables ///////////////////////////////
+// ============================ GLOBAL VARIABLES ============================ //
 const MIN_PASSWORD_LENGTH = 8;
 const MIN_NAME_LENGTH = 2;
 const MAX_NAME_LENGTH = 20;
 const INITIAL_NUM_FAILED_LOGINS = 0;
 const INITIAL_NUM_SUCCESSFUL_LOGINS = 1;
 
-/// /////////////////////////// Type Annotations ///////////////////////////////
+// ============================ TYPE ANNOTATIONS ============================ //
 interface UserDetails {
   userId: number;
   name: string;
@@ -29,7 +29,7 @@ interface UserDetails {
   numFailedPasswordsSinceLastLogin: number;
 }
 
-/// ////////////////////////////// Functions ///////////////////////////////////
+// =============================== FUNCTIONS ================================ //
 /**
  * Register a user with an email, password, and names, then returns their
  * authUserId value
@@ -242,13 +242,9 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
  * i.e. delete the given token from the tokens array
  *
  * @param {Tokens} token
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
-export function adminAuthLogout(token: Tokens): EmptyObject | ErrorObject {
-  if (authUserIdExists(token.authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-
+export function adminAuthLogout(token: Tokens): EmptyObject {
   const data = getData();
   const index = data.tokens.findIndex(currToken => currToken === token);
   data.tokens.splice(index, 1);
