@@ -1,13 +1,16 @@
-// includes http tests for the route /v1/admin/quiz/{quizid}/transfer
+// includes http tests for the route /v1/admin/quiz/{quizid}/transfer and
+// /v2/admin/quiz/{quizid}/transfer
 
 import { requestPost, requestDelete, requestGet } from '../helper-files/requestHelper';
+
+
+const ERROR = { error: expect.any(String) };
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
 describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
-  const error = { error: expect.any(String) };
   let token: string;
   let token2: string;
   let userBody1: { email: string, password: string, nameFirst: string, nameLast: string };
@@ -135,7 +138,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       transferBody = { token: token, userEmail: 'notUserEmail@gmail.com' };
       const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
       expect(transfer).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -144,7 +147,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       transferBody = { token: token, userEmail: userBody1.email };
       const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
       expect(transfer).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -157,7 +160,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       transferBody = { token: token, userEmail: userBody2.email };
       const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
       expect(transfer).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -169,7 +172,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       transferBody = { token: token, userEmail: 'validemail@gmail.com' };
       const res = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
       expect(res).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -181,7 +184,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
 
       const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
       expect(transfer).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -205,7 +208,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       // transfer user2's quiz to user3 with user1's quizId
       const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId}/transfer`);
       expect(transfer).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 403
       });
     });
@@ -214,7 +217,7 @@ describe('POST /v1/admin/quiz/{quizid}/transfer', () => {
       transferBody = { token: token, userEmail: userBody2.email };
       const transfer = requestPost(transferBody, `/v1/admin/quiz/${quizId + 1}/transfer`);
       expect(transfer).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 403
       });
     });
