@@ -581,27 +581,6 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
 
 // VERSION 2 //
 
-app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
-  const tokenHeader = req.headers.token as string;
-  const sessionId = parseInt(tokenHeader);
-  const quizId = parseInt(req.params.quizid as string);
-
-  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
-  if ('error' in errorCheckResponse) {
-    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
-  }
-
-  const userToken = errorCheckResponse.userToken;
-  
-  try {
-  const response = adminQuizInfo(userToken.authUserId, quizId);
-  res.json(response);
-  } catch (error) {
-    return res.status(401).json({ error: error.message });
-  }
-});
-
-
 app.post('/v2/admin/quiz', (req: Request, res: Response) => {
   const { name, description } = req.body;
   const sessionId = parseInt(req.header('token'));
@@ -621,6 +600,21 @@ app.post('/v2/admin/quiz', (req: Request, res: Response) => {
     return res.status(400).json({ error: error.message });
   }
 
+  res.json(response);
+});
+
+app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token') as string);
+  const quizId = parseInt(req.params.quizid as string);
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  const userToken = errorCheckResponse.userToken;
+
+  const response = adminQuizInfo(userToken.authUserId, quizId);
   res.json(response);
 });
 
