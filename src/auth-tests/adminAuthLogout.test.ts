@@ -36,17 +36,6 @@ describe('POST /v1/admin/auth/logout', () => {
         statusCode: 401
       });
     });
-
-    test('Side effect: adminAuthLogout returns error when user tries to logout same token twice', () => {
-      expect(requestPost({ token }, '/v1/admin/auth/logout')).toStrictEqual({
-        retval: {},
-        statusCode: 200
-      });
-      expect(requestPost({ token }, '/v1/admin/auth/logout')).toStrictEqual({
-        retval: ERROR,
-        statusCode: 401
-      });
-    });
   });
 
   describe('Testing token given to adminAuthLogout (status code 401)', () => {
@@ -61,6 +50,17 @@ describe('POST /v1/admin/auth/logout', () => {
     test('Returns error when sessionId is not a valid logged in user session', () => {
       const sessionId = (parseInt(token) + 1).toString();
       expect(requestPost({ token: sessionId }, '/v1/admin/auth/logout')).toStrictEqual({
+        retval: ERROR,
+        statusCode: 401
+      });
+    });
+
+    test('Side effect: adminAuthLogout returns error when user tries to logout same token twice', () => {
+      expect(requestPost({ token }, '/v1/admin/auth/logout')).toStrictEqual({
+        retval: {},
+        statusCode: 200
+      });
+      expect(requestPost({ token }, '/v1/admin/auth/logout')).toStrictEqual({
         retval: ERROR,
         statusCode: 401
       });
@@ -96,17 +96,6 @@ describe('POST /v2/admin/auth/logout', () => {
         statusCode: 401
       });
     });
-
-    test('Side effect: adminAuthLogout returns error when user tries to logout same token twice', () => {
-      expect(requestPost({}, '/v2/admin/auth/logout', { token })).toStrictEqual({
-        retval: {},
-        statusCode: 200
-      });
-      expect(requestPost({}, '/v2/admin/auth/logout', { token })).toStrictEqual({
-        retval: ERROR,
-        statusCode: 401
-      });
-    });
   });
 
   describe('Testing token given to adminAuthLogout (status code 401)', () => {
@@ -121,6 +110,17 @@ describe('POST /v2/admin/auth/logout', () => {
     test('Returns error when sessionId is not a valid logged in user session', () => {
       const sessionId = (parseInt(token) + 1).toString();
       expect(requestPost({}, '/v2/admin/auth/logout', { token: sessionId })).toStrictEqual({
+        retval: ERROR,
+        statusCode: 401
+      });
+    });
+
+    test('Side effect: adminAuthLogout returns error when user tries to logout same token twice', () => {
+      expect(requestPost({}, '/v2/admin/auth/logout', { token })).toStrictEqual({
+        retval: {},
+        statusCode: 200
+      });
+      expect(requestPost({}, '/v2/admin/auth/logout', { token })).toStrictEqual({
         retval: ERROR,
         statusCode: 401
       });
