@@ -250,7 +250,7 @@ describe('DELETE /v2/admin/quiz/trash/empty', () => {
 
       // otherUser creates 2 quizzes and puts them in trash
       quizBody = { name: 'Other user quiz 1', description: 'Other user description 1' };
-      const quizResponse1 = requestPost(quizBody, '/v2/admin/quiz', { token: otherUserToken } );
+      const quizResponse1 = requestPost(quizBody, '/v2/admin/quiz', { token: otherUserToken });
       const otherUserQuiz1 = quizResponse1.retval.quizId;
       requestDelete({ token: otherUserToken }, `/v1/admin/quiz/${otherUserQuiz1}`);
 
@@ -280,7 +280,7 @@ describe('DELETE /v2/admin/quiz/trash/empty', () => {
       const quizId = quizResponse.retval.quizId;
 
       // Put quiz in trash
-      requestDelete({ token }, `/v1/admin/quiz/${quizId}`); // v2 change 
+      requestDelete({ token }, `/v1/admin/quiz/${quizId}`); // v2 change
       quizIds.push(quizId);
 
       // Delete a quiz that does not exist
