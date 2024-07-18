@@ -132,7 +132,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     quizId: newQuizId,
     name: name,
     timeCreated: currentTime(),
-    timeLastEdited: <number> undefined,
+    timeLastEdited: currentTime(),
     description: description,
     questions: emptyQuestions,
     duration: 0,
