@@ -304,7 +304,7 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  * When this route is called, and a question is created, the timeLastEdited is set
  * as the same as the created time, and the colours of all the answers of that
  * question are randomly generated
- * 
+ *
  * @param {number} quizId
  * @param {object} questionBody
  * @returns { {questionId: number} }
@@ -351,16 +351,16 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
       console.log('made it into line thumbnail length in quiz.ts');
       throw new Error('The thumbnailUrl cannot be an empty string.');
     }
-  
+
     if (!checkThumbnailUrlFileType(questionBody.thumbnailUrl)) {
       throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
     }
-  
+
     if (!(questionBody.thumbnailUrl.startsWith('https://') || questionBody.thumbnailUrl.startsWith('http://'))) {
-      throw new Error(`The thumbnailUrl must start with 'http:// or 'https://`);
+      throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
     }
   }
-  
+
   let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   while (questionIdInUse(newQuestionId) === true) {
     newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);

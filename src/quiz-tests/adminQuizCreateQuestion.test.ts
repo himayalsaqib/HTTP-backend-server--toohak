@@ -440,7 +440,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
   let quizBody: { name: string, description: string };
   let answerBody: { answer: string, correct: boolean }[];
   let questionBody: { question: string, duration: number, points: number, answers: QuizQuestionAnswers[], thumbnailUrl: string };
-  let thumbnailUrlExample = 'http://google.com/some/image/path.jpg';
+  const thumbnailUrlExample = 'http://google.com/some/image/path.jpg';
 
   describe.only('Testing successful cases (status code 200)', () => {
     beforeEach(() => {
@@ -657,7 +657,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       const answerBody5 = { answer: '5th valid answer', correct: true };
       const answerBody6 = { answer: '6th valid answer string', correct: true };
       const answerBody7 = { answer: '7th valid string', correct: false };
-      const answerArray = [answerBody1, answerBody2, answerBody3, answerBody4, answerBody5, answerBody6, answerBody7]
+      const answerArray = [answerBody1, answerBody2, answerBody3, answerBody4, answerBody5, answerBody6, answerBody7];
 
       questionBody = { question: 'a valid question', duration: 15, points: 9, answers: answerArray, thumbnailUrl: thumbnailUrlExample };
 
@@ -690,7 +690,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
 
     test('The sum of the question durations in the quiz exceeds 3 minutes', () => {
       const answerBody1 = [{ answer: 'Garfield', correct: true }, { answer: 'Tom', correct: false }];
-      const questionBody1 = { question: 'Famous cat that loves lasagna', duration: 36, points: 9, answers: answerBody1 , thumbnailUrl: thumbnailUrlExample};
+      const questionBody1 = { question: 'Famous cat that loves lasagna', duration: 36, points: 9, answers: answerBody1, thumbnailUrl: thumbnailUrlExample };
       requestPost(questionBody1, `/v2/admin/quiz/${quizId}/question`, { token });
 
       const answerBody2 = [{ answer: 'King Charles', correct: true }, { answer: 'Prince William', correct: false }];
@@ -800,7 +800,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test(`The thumbnailUrl does not begin with 'http://' or 'https://'`, () => {
+    test('The thumbnailUrl does not begin with \'http://\' or \'https://\'', () => {
       const answerBody1 = { answer: 'valid', correct: true };
       const answerBody2 = { answer: 'a very valid answer', correct: false };
       questionBody = { question: 'valid question indeed', duration: 10, points: 5, answers: [answerBody1, answerBody2], thumbnailUrl: 'ftp://google.com/some/image/path.jpg' };
@@ -840,7 +840,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       const answerBody = [{ answer: 'Prince Charles', correct: true }, { answer: 'Me', correct: false }];
       const questionCreateBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody };
 
-      expect(requestPost(questionCreateBody, `/v2/admin/quiz/${res.retval.quizId}/question`, { token: sessionId.toString(), })).toStrictEqual({
+      expect(requestPost(questionCreateBody, `/v2/admin/quiz/${res.retval.quizId}/question`, { token: sessionId.toString() })).toStrictEqual({
         retval: ERROR,
         statusCode: 401
       });
