@@ -27,7 +27,7 @@ import {
   findTokenFromSessionId,
   quizRoutesErrorChecking,
   quizzesDoNotExist,
-  quizBelongsToUser,
+  //quizBelongsToUser,
 } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
@@ -421,24 +421,24 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   const sessionId = parseInt(token);
 
   // cannot get this to work, maybe later
-  // const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
-  // if ('error' in errorCheckResponse) {
-  //   return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  // try {
+  //   tokenExists(sessionId);
+  // } catch (error) {
+  //   return res.status(401).json({ error: error.message });
   // }
 
-  try {
-    tokenExists(sessionId);
-  } catch (error) {
-    return res.status(401).json({ error: error.message });
-  }
+  // const userToken = findTokenFromSessionId(sessionId);
 
-  const userToken = findTokenFromSessionId(sessionId);
-
-  try {
-    quizBelongsToUser(userToken.authUserId, quizId);
-  } catch (error) {
-    return res.status(403).json({ error: error.message });
-  }
+  // try {
+  //   quizBelongsToUser(userToken.authUserId, quizId);
+  // } catch (error) {
+  //   return res.status(403).json({ error: error.message });
+  // }
 
   try {
     quizDoesNotExist(quizId);
@@ -639,24 +639,24 @@ app.post('/v2/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   const sessionId = parseInt(req.header('token'));
 
   // cannot get this to work, maybe later
-  // const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
-  // if ('error' in errorCheckResponse) {
-  //   return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  // try {
+  //   tokenExists(sessionId);
+  // } catch (error) {
+  //   return res.status(401).json({ error: error.message });
   // }
 
-  try {
-    tokenExists(sessionId);
-  } catch (error) {
-    return res.status(401).json({ error: error.message });
-  }
+  // const userToken = findTokenFromSessionId(sessionId);
 
-  const userToken = findTokenFromSessionId(sessionId);
-
-  try {
-    quizBelongsToUser(userToken.authUserId, quizId);
-  } catch (error) {
-    return res.status(403).json({ error: error.message });
-  }
+  // try {
+  //   quizBelongsToUser(userToken.authUserId, quizId);
+  // } catch (error) {
+  //   return res.status(403).json({ error: error.message });
+  // }
 
   try {
     quizDoesNotExist(quizId);
