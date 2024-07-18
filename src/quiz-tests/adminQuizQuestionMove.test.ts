@@ -318,7 +318,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       requestDelete({}, '/v1/clear');
 
       const moveBody = { token: token, newPosition: 0 };
-      const res = requestPut(moveBody, `/v1/admin/quiz/${1234567890}/question/${questionId[1234567890]}/move`);
+      const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0]}/move`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
 
@@ -687,7 +687,7 @@ describe('/v2/admin/quiz/{quizid}/question/{questionid}/move', () => {
       requestDelete({}, '/v1/clear');
 
       const moveBody = { token: token, newPosition: 0 };
-      const res = requestPut(moveBody, `/v1/admin/quiz/${1234567890}/question/${questionId[1234567890]}/move`, { token });
+      const res = requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[0]}/move`, { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
 
