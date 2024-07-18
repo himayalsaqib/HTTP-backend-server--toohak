@@ -566,6 +566,42 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   if ('error' in errorCheckResponse) {
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
+  // try {
+  //   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  //   res.json(errorCheckResponse);
+  // } catch (error) {
+  //   return res.status(errorCheckResponse.code).json({ error: error.message});
+
+  // }
+
+  const userToken = errorCheckResponse.userToken;
+
+  const response = adminQuizQuestionDuplicate(userToken.authUserId, quizId, questionId);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  try {
+    const response = adminQuizQuestionDuplicate(userToken.authUserId, quizId, questionId);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+
+  res.json(response);
+});
+
+// VERSION 2 //
+app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
+  const { token } = req.body;
+  const sessionId = parseInt(token);
+  const quizId = parseInt(req.params.quizid as string);
+  const questionId = parseInt(req.params.questionid as string);
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
 
   const userToken = errorCheckResponse.userToken;
 
@@ -576,9 +612,6 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
 
   res.json(response);
 });
-
-// VERSION 2 //
-
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
