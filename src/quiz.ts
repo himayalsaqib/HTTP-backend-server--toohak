@@ -231,7 +231,7 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
   }
 
   const quiz = findQuizById(quizId);
-  
+
   quiz.name = name;
   quiz.timeLastEdited = currentTime();
 

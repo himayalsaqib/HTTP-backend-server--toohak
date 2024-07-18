@@ -210,7 +210,7 @@ describe('PUT /v2/admin/quiz/:quizid/name', () => {
     test('Given invalid session ID', () => {
       const sessionId = parseInt(token) + 1;
       quiz = { name: 'Updated Quiz Name' };
-      const res = requestPut(quiz, `/v2/admin/quiz/${quizId}/name`, { token: sessionId.toString()});
+      const res = requestPut(quiz, `/v2/admin/quiz/${quizId}/name`, { token: sessionId.toString() });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
 
