@@ -374,12 +374,7 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
 
   const userToken = errorCheckResponse.userToken;
 
-  let response = quizDoesNotExist(quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
-  }
-
-  response = adminQuizCreateQuestion(userToken.authUserId, quizId, questionBody);
+  const response = adminQuizCreateQuestion(userToken.authUserId, quizId, questionBody);
   if ('error' in response) {
     return res.status(400).json(response);
   }
@@ -399,12 +394,13 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
 
   const userToken = findTokenFromSessionId(sessionId);
 
-  let response = trashedQuizBelongsToUser(userToken.authUserId, quizId);
-  if ('error' in response) {
-    return res.status(403).json(response);
+  try {
+    quizDoesNotExist(quizId);
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
   }
 
-  response = quizDoesNotExist(quizId);
+  let response = trashedQuizBelongsToUser(userToken.authUserId, quizId);
   if ('error' in response) {
     return res.status(403).json(response);
   }

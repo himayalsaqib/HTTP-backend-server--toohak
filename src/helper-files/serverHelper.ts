@@ -64,13 +64,13 @@ export function findTokenFromSessionId(sessionId: number): Tokens {
  *
  * @param {number} authUserId
  * @param {number} quizId
- * @returns {}
+ * @returns {void}
  */
 export function quizBelongsToUser(authUserId: number, quizId: number): void {
   const quiz = findQuizById(quizId);
 
   if (quiz === undefined || quiz.authUserId !== authUserId) {
-    throw new Error('User is not an owner of this quiz or quiz does not exist');
+    throw new Error('User is not an owner of this quiz.');
   }
 }
 
@@ -130,17 +130,16 @@ export function trashedQuizzesBelongToUser(authUserId: number, quizIds: number[]
  * Function checks if a quiz exists in either trash or quizzes
  *
  * @param {number} quizId
- * @returns {{} | { error: string }}
+ * @returns {void}
  */
-export function quizDoesNotExist(quizId: number): EmptyObject | ErrorObject {
+export function quizDoesNotExist(quizId: number): void {
   const trashedQuiz = findTrashedQuizById(quizId);
   if (trashedQuiz === undefined) {
     const quiz = findQuizById(quizId);
     if (quiz === undefined) {
-      return { error: 'Quiz does not exist' };
+      throw new Error('Quiz does not exist');
     }
   }
-  return {};
 }
 
 /**
@@ -206,6 +205,7 @@ export function quizRoutesErrorChecking(sessionId: number, quizId: number): Resp
   const userToken = findTokenFromSessionId(sessionId);
 
   try {
+    quizDoesNotExist(quizId);
     quizBelongsToUser(userToken.authUserId, quizId);
   } catch (error) {
     return { error: error.message, code: 403 };
