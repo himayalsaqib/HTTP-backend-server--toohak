@@ -220,7 +220,7 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | E
  * @returns {{} | { error: string }} - empty object
  */
 export function adminQuizNameUpdate (authUserId: number, quizId: number, name: string): EmptyObject | ErrorObject {
-  if (quizNameHasValidChars(name) === false) {
+  if (!quizNameHasValidChars(name)) {
     throw new Error('Name contains invalid characters. Valid characters are alphanumeric and spaces.');
   }
   if (name.length < MIN_QUIZ_NAME_LEN || name.length > MAX_QUIZ_NAME_LEN) {
