@@ -172,13 +172,11 @@ describe('GET /v2/admin/quiz/:quizid', () => {
       const otherUserToken = otherUserResponse.retval.token;
 
       const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token: otherUserToken });
-
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 403 });
     });
 
     test("Quiz doesn't exist", () => {
       const res = requestGet({}, `/v2/admin/quiz/${quizId + 1}`, { token: token });
-
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 403 });
     });
   });
