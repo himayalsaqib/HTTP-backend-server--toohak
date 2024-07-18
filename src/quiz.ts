@@ -459,7 +459,7 @@ export function adminQuizQuestionMove (questionId: number, newPosition: number, 
 
   const question = findQuestionById(questionId, quizId);
   if (question === undefined) {
-    throw new Error('Question Id does not refer to a valid question within this quiz.')
+    throw new Error('Question Id does not refer to a valid question within this quiz.');
   }
 
   if (newPosition < MIN_QUESTION_INDEX || newPosition > quiz.questions.length - 1) {
