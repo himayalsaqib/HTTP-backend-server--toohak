@@ -65,6 +65,7 @@ export interface QuizQuestionAnswers {
 export interface QuestionBody {
   question: string;
   duration: number;
+  thumbnailUrl?: string;
   points: number;
   answers: QuizQuestionAnswers[];
 }
@@ -176,26 +177,16 @@ export function adminQuizRemove (authUserId: number, quizId: number): EmptyObjec
  *
  * @param {number} authUserId
  * @param {number} quizId
- * @returns {{ quizInfo } | { error: string }} - returns quiz information
+ * @returns {{ quizInfo }} - returns quiz information
  */
 export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | ErrorObject {
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-  if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz ID does not refer to a valid quiz.' };
-  }
-
   const quiz = findQuizById(quizId);
-
-  if (quiz.authUserId !== authUserId) {
-    return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
-  }
 
   const questions = quiz.questions?.map((q: Question) => ({
     questionId: q.questionId,
     question: q.question,
     duration: q.duration,
+    thumbnailUrl: q.thumbnailUrl ? q.thumbnailUrl : undefined,
     points: q.points,
     answers: q.answers.map((a: Answer) => ({
       answerId: a.answerId,
@@ -205,7 +196,7 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | E
     })),
   })) || [];
 
-  return {
+  const quizInfo: QuizInfo = {
     quizId: quiz.quizId,
     name: quiz.name,
     timeCreated: quiz.timeCreated,
@@ -214,7 +205,10 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | E
     numQuestions: questions.length,
     questions: questions,
     duration: quiz.duration || 0,
+    thumbnailUrl: quiz.thumbnailUrl ? quiz.thumbnailUrl : undefined,
   };
+
+  return quizInfo;
 }
 
 /**
@@ -226,33 +220,18 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | E
  * @returns {{} | { error: string }} - empty object
  */
 export function adminQuizNameUpdate (authUserId: number, quizId: number, name: string): EmptyObject | ErrorObject {
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-  if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz ID does not refer to a valid quiz.' };
-  }
-  if (quizNameHasValidChars(name) === false) {
-    return {
-      error: 'Name contains invalid characters. Valid characters are alphanumeric and spaces.'
-    };
+  if (!quizNameHasValidChars(name)) {
+    throw new Error('Name contains invalid characters. Valid characters are alphanumeric and spaces.');
   }
   if (name.length < MIN_QUIZ_NAME_LEN || name.length > MAX_QUIZ_NAME_LEN) {
-    return {
-      error: 'Name is either less than 3 characters long or more than 30 characters long.'
-    };
+    throw new Error('Name is either less than 3 characters long or more than 30 characters long.');
   }
   if (quizNameInUse(authUserId, name)) {
-    return {
-      error: 'Name is already used by the current logged in user for another quiz.'
-    };
+    throw new Error('Name is already used by the current logged in user for another quiz.');
   }
 
   const quiz = findQuizById(quizId);
 
-  if (quiz.authUserId !== authUserId) {
-    return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
-  }
   quiz.name = name;
   quiz.timeLastEdited = currentTime();
 
@@ -361,7 +340,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     question: questionBody.question,
     duration: questionBody.duration,
     points: questionBody.points,
-    answers: createAnswersArray(questionBody.answers)
+    answers: createAnswersArray(questionBody.answers),
   };
 
   // set timeLastEditied as the same as timeCreated for question
