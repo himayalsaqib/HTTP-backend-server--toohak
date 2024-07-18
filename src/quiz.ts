@@ -220,33 +220,18 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo {
  * @returns {{} | { error: string }} - empty object
  */
 export function adminQuizNameUpdate (authUserId: number, quizId: number, name: string): EmptyObject | ErrorObject {
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-  if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz ID does not refer to a valid quiz.' };
-  }
-  if (quizNameHasValidChars(name) === false) {
-    return {
-      error: 'Name contains invalid characters. Valid characters are alphanumeric and spaces.'
-    };
+  if (!quizNameHasValidChars(name)) {
+    throw new Error('Name contains invalid characters. Valid characters are alphanumeric and spaces.');
   }
   if (name.length < MIN_QUIZ_NAME_LEN || name.length > MAX_QUIZ_NAME_LEN) {
-    return {
-      error: 'Name is either less than 3 characters long or more than 30 characters long.'
-    };
+    throw new Error('Name is either less than 3 characters long or more than 30 characters long.');
   }
   if (quizNameInUse(authUserId, name)) {
-    return {
-      error: 'Name is already used by the current logged in user for another quiz.'
-    };
+    throw new Error('Name is already used by the current logged in user for another quiz.');
   }
 
   const quiz = findQuizById(quizId);
 
-  if (quiz.authUserId !== authUserId) {
-    return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
-  }
   quiz.name = name;
   quiz.timeLastEdited = currentTime();
 

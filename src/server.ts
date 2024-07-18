@@ -238,6 +238,21 @@ app.put('/v2/admin/user/password', (req: Request, res: Response) => {
   }
 });
 
+app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token'));
+
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  const response = adminAuthLogout(userToken);
+  res.json(response);
+});
+
 // ============================== QUIZ ROUTES =============================== //
 
 // VERSION 1 //
@@ -323,12 +338,12 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
 
   const userToken = errorCheckResponse.userToken;
 
-  const response = adminQuizNameUpdate(userToken.authUserId, quizId, name);
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminQuizNameUpdate(userToken.authUserId, quizId, name);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
-
-  res.json(response);
 });
 
 app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
@@ -601,6 +616,26 @@ app.post('/v2/admin/quiz', (req: Request, res: Response) => {
   }
 
   res.json(response);
+});
+
+app.put('/v2/admin/quiz/:quizid/name', (req: Request, res: Response) => {
+  const { name } = req.body;
+  const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(req.header('token'));
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  const userToken = errorCheckResponse.userToken;
+
+  try {
+    const response = adminQuizNameUpdate(userToken.authUserId, quizId, name);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
 });
 
 app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
