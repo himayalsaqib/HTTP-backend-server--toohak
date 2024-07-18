@@ -179,7 +179,7 @@ export function adminQuizRemove (authUserId: number, quizId: number): EmptyObjec
  * @param {number} quizId
  * @returns {{ quizInfo }} - returns quiz information
  */
-export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo | ErrorObject {
+export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo {
   const quiz = findQuizById(quizId);
 
   const questions = quiz.questions?.map((q: Question) => ({
