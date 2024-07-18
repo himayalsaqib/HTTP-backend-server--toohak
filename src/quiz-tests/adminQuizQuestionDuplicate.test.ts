@@ -288,7 +288,6 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
   });
 });
 
-// VERSION 2 TESTS //
 
 describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
@@ -307,7 +306,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
     let quizId: number;
     let questionId: number;
 
-    test('Testing for correct return type', () => {
+    test.only('Testing for correct return type', () => {
       // Create a quiz
       const resQuizCreate = requestPost(quizBody, '/v2/admin/quiz', { token })
       quizId = resQuizCreate.retval.quizId;
@@ -318,7 +317,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2] };
       const resQuestionCreate = requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`);
       questionId = resQuestionCreate.retval.questionId;
-      const dupeQuestion = requestPost({ token: token }, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
+      const dupeQuestion = requestPost({}, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token });
       expect(dupeQuestion.statusCode).toBe(200);
       expect(dupeQuestion.retval).toStrictEqual({ newQuestionId: expect.any(Number) });
     });
@@ -347,7 +346,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const questionId3 = res3.retval.questionId;
 
       // Duplicate the second question
-      const dupeRes = requestPost({ token }, `/v1/admin/quiz/${quizId}/question/${questionId2}/duplicate`);
+      const dupeRes = requestPost({}, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token });
       const dupeQuestionId = dupeRes.retval.newQuestionId;
 
       expect(requestGet({ token }, `/v1/admin/quiz/${quizId}`)).toStrictEqual({
@@ -461,7 +460,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const initialTimeLastEdited = initialQuiz.retval.timeLastEdited;
 
       // Duplicate the question
-      const dupeQuestion = requestPost({ token: token }, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
+      const dupeQuestion = requestPost({}, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token });
       expect(dupeQuestion.statusCode).toStrictEqual(200);
 
       // Check updated timeLastEdited
@@ -478,7 +477,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const createRes = requestPost(quizBody, '/v1/admin/quiz');
       const quizId = createRes.retval.quizId;
       const invalidQuestionId = quizId + 1;
-      const dupeRes = requestPost({ token }, `/v1/admin/quiz/${quizId}/question/${invalidQuestionId}/duplicate`);
+      const dupeRes = requestPost({}, `/v1/admin/quiz/${quizId}/question/${invalidQuestionId}/duplicate`, { token });
       expect(dupeRes.statusCode).toBe(400);
       expect(dupeRes.retval).toStrictEqual(ERROR);
     });
@@ -491,7 +490,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const questionId = questionRes.retval.questionId;
 
       requestDelete({ token }, `/v1/admin/quiz/${quizId}/question/${questionId}`);
-      const dupeQues = requestPost({ token }, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
+      const dupeQues = requestPost({}, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token });
 
       expect(dupeQues.statusCode).toBe(400);
       expect(dupeQues.retval).toStrictEqual(ERROR);
@@ -508,7 +507,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const questionRes = requestPost({ token, ...question }, `/v1/admin/quiz/${quizId}/question`);
 
       const questionId = questionRes.retval.questionId;
-      const dupeRes = requestPost({ token }, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
+      const dupeRes = requestPost({}, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token });
 
       expect(dupeRes.statusCode).toStrictEqual(401);
       expect(dupeRes.retval).toStrictEqual(ERROR);
@@ -516,7 +515,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
 
     test('Returns error when token is empty', () => {
       requestDelete({}, '/v1/clear');
-      const dupeRes = requestPost({ token }, '/v1/admin/quiz/:quizId/question/:questionId/duplicate');
+      const dupeRes = requestPost({}, `/v1/admin/quiz/:quizId/question/:questionId/duplicate`, { token });
       expect(dupeRes.statusCode).toStrictEqual(401);
       expect(dupeRes.retval).toStrictEqual(ERROR);
     });
@@ -541,7 +540,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const userTwo = { email: 'usertwo@gmail.com', password: 'Password02', nameFirst: 'User', nameLast: 'Two' };
       const registerUserTwo = requestPost(userTwo, '/v1/admin/auth/register');
       const tokenTwo = registerUserTwo.retval.token;
-      const dupeRes = requestPost({ token: tokenTwo }, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
+      const dupeRes = requestPost({}, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token: tokenTwo });
 
       expect(dupeRes.statusCode).toBe(403);
       expect(dupeRes.retval).toStrictEqual(ERROR);
@@ -562,7 +561,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const questionId = resQuestionCreate.retval.questionId;
 
       quizId += 1;
-      const dupeQues = requestPost({ token }, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
+      const dupeQues = requestPost({}, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token });
       expect(dupeQues.statusCode).toStrictEqual(403);
       expect(dupeQues.retval).toStrictEqual(ERROR);
     });

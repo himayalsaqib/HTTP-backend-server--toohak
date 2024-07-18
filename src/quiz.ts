@@ -651,7 +651,7 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
  * @param {number} questionId
  * @returns {{ newQuestionId: number}} - returns new question ID
  */
-export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, questionId: number): {newQuestionId: number} | ErrorObject {
+export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, questionId: number): {newQuestionId: number} {
   const data = getData();
 
   if (quizIdInUse(quizId) === false) {
@@ -670,6 +670,7 @@ export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, 
 
   const question = quiz.questions[questionIndex];
   let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  
   while (questionIdInUse(newQuestionId) === true) {
     newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
