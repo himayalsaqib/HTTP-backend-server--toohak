@@ -710,7 +710,7 @@ app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
 
 app.delete('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
   const sessionId = parseInt(req.header('token'));
-  const quizId = JSON.parse(req.query.quizIds as string);
+  const quizId = parseInt(req.params.quizid as string);
 
   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
   if ('error' in errorCheckResponse) {
