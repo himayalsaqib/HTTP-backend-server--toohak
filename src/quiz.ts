@@ -2,7 +2,6 @@
 
 import { setData, getData, ErrorObject, EmptyObject, Quizzes, Question, Answer } from './dataStore';
 import {
-  authUserIdExists,
   quizNameHasValidChars,
   quizNameInUse,
   quizIdInUse,
@@ -380,11 +379,7 @@ export function adminQuizRestore (authUserId: number, quizId: number): EmptyObje
  * @param {number} authUserId
  * @returns {{ quizzes: array } | { error: string }} - returns list of quizzes
  */
-export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | ErrorObject {
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId does not refer to a valid user id.' };
-  }
-
+export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } {
   const data = getData();
   const trashList: QuizList[] = [];
 
