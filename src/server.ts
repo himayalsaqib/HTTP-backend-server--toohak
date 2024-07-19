@@ -338,26 +338,6 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
 
   const userToken = errorCheckResponse.userToken;
 
-  const response = adminQuizNameUpdate(userToken.authUserId, quizId, name);
-  if ('error' in response) {
-    return res.status(400).json(response);
-  }
-
-  res.json(response);
-});
-
-app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
-  const { token, name } = req.body;
-  const quizId = parseInt(req.params.quizid as string);
-  const sessionId = parseInt(token);
-
-  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
-  if ('error' in errorCheckResponse) {
-    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
-  }
-
-  const userToken = errorCheckResponse.userToken;
-
   try {
     const response = adminQuizNameUpdate(userToken.authUserId, quizId, name);
     res.json(response);

@@ -64,7 +64,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
     });
 
-    test('Side effect: adminQuizinfo displays successful swap of second with fourth question', () => {
+    test('Side effect: adminQuizInfo displays successful swap of second with fourth question', () => {
       const moveBody = { token: token, newPosition: 1 };
       requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[3]}/move`);
 
@@ -164,7 +164,7 @@ describe('/v1/admin/quiz/{quizid}/question/{questionid}/move', () => {
       });
     });
 
-    test('Side effect: adminQuizinfo displays successful swap of fourth with second question', () => {
+    test('Side effect: adminQuizInfo displays successful swap of fourth with second question', () => {
       const moveBody = { token: token, newPosition: 3 };
       requestPut(moveBody, `/v1/admin/quiz/${quizId}/question/${questionId[1]}/move`);
 
@@ -430,7 +430,7 @@ describe('/v2/admin/quiz/{quizid}/question/{questionid}/move', () => {
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
     });
 
-    test('Side effect: adminQuizinfo displays successful swap of second with fourth question', () => {
+    test('Side effect: adminQuizInfo displays successful swap of second with fourth question', () => {
       requestPut({ newPosition: 1 }, `/v2/admin/quiz/${quizId}/question/${questionId[3]}/move`, { token });
 
       expect(requestGet({}, `/v2/admin/quiz/${quizId}`, { token })).toStrictEqual({
@@ -529,7 +529,7 @@ describe('/v2/admin/quiz/{quizid}/question/{questionid}/move', () => {
       });
     });
 
-    test('Side effect: adminQuizinfo displays successful swap of fourth with second question', () => {
+    test('Side effect: adminQuizInfo displays successful swap of fourth with second question', () => {
       requestPut({ newPosition: 3 }, `/v2/admin/quiz/${quizId}/question/${questionId[1]}/move`, { token });
 
       expect(requestGet({}, `/v2/admin/quiz/${quizId}`, { token })).toStrictEqual({
