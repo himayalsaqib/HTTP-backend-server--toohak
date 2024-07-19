@@ -7,7 +7,6 @@ import {
   quizNameInUse,
   quizIdInUse,
   findQuizById,
-  quizIsInTrash,
   findTrashedQuizById,
   calculateSumQuestionDuration,
   checkAnswerLength,
@@ -129,7 +128,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     quizId: newQuizId,
     name: name,
     timeCreated: currentTime(),
-    timeLastEdited: <number> undefined,
+    timeLastEdited: currentTime(),
     description: description,
     questions: emptyQuestions,
     duration: 0,
@@ -347,18 +346,11 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
 * @returns {{} | { error: string }}
 */
 export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-  if (quizIsInTrash(quizId) === false) {
-    return { error: 'Quiz ID refers to a quiz that is not currently in the trash' };
-  }
-
   const data = getData();
   const trashedQuiz = findTrashedQuizById(quizId);
 
   if (quizNameInUse(authUserId, trashedQuiz.quiz.name) === true) {
-    return { error: 'Quiz name of the restored quiz is already used by the current logged in user for another active quiz' };
+    throw new Error('Quiz name of the restored quiz is already used by the current logged in user for another active quiz.');
   }
 
   const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
