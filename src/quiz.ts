@@ -148,21 +148,13 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
  *
  * @param {number} authUserId
  * @param {number} quizId
- * @returns {{} | { error: string }} - an empty object
+ * @returns {{}} - an empty object
  */
-export function adminQuizRemove (authUserId: number, quizId: number): EmptyObject | ErrorObject {
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId does not refer to a valid user id.' };
-  } else if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz Id does not refer to a valid quiz.' };
-  }
+export function adminQuizRemove (authUserId: number, quizId: number): EmptyObject {
   const data = getData();
   const quizIndex = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
   const quiz = data.quizzes[quizIndex];
 
-  if (quiz.authUserId !== authUserId) {
-    return { error: 'Quiz does not belong to user.' };
-  }
   quiz.timeLastEdited = currentTime();
   data.trash.push({ quiz: quiz });
   data.quizzes.splice(quizIndex, 1);
