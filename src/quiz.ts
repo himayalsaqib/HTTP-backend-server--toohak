@@ -512,6 +512,19 @@ export function adminQuizQuestionUpdate(quizId: number, questionId: number, ques
   if (checkForNumCorrectAns(questionBody) < MIN_CORRECT_ANS) {
     throw new Error('There are no correct answers.');
   }
+  if (questionBody.thumbnailUrl !== undefined) {
+    if (questionBody.thumbnailUrl.length === 0) {
+      throw new Error('The thumbnailUrl cannot be an empty string.');
+    }
+
+    if (!checkThumbnailUrlFileType(questionBody.thumbnailUrl)) {
+      throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
+    }
+
+    if (!(questionBody.thumbnailUrl.startsWith('https://') || questionBody.thumbnailUrl.startsWith('http://'))) {
+      throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
+    }
+  }
 
   const data = getData();
   const quiz = findQuizById(quizId);
@@ -524,6 +537,7 @@ export function adminQuizQuestionUpdate(quizId: number, questionId: number, ques
   questionToUpdate.duration = questionBody.duration;
   questionToUpdate.points = questionBody.points;
   questionToUpdate.answers = createAnswersArray(questionBody.answers);
+  questionToUpdate.thumbnailUrl = questionBody.thumbnailUrl;
 
   setData(data);
 
