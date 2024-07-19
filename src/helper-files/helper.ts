@@ -2,6 +2,7 @@
 
 import { Answer, getData, Question, Quizzes, Users, Trash } from '../dataStore';
 import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers } from '../quiz';
+import crypto from 'crypto';
 
 /**
  * Function checks if an authUserId exists in the dataStore
@@ -62,11 +63,7 @@ export function adminUserNameIsValid(name: string): boolean {
  * @returns {boolean} true if password has neccessary chars otherwise false
  */
 export function adminPasswordHasValidChars(password: string): boolean {
-  if (/\d/.test(password) && /[a-zA-Z]/.test(password)) {
-    return true;
-  } else {
-    return false;
-  }
+  return /\d/.test(password) && /[a-zA-Z]/.test(password);
 }
 
 /**
@@ -108,6 +105,16 @@ export function findUserById(authUserId: number): Users | undefined {
 export function findUserByEmail(email: string): Users | undefined {
   const data = getData();
   return data.users.find(user => user.email === email);
+}
+
+/**
+ * generates a sha256 hash for given password
+ *
+ * @param {string} password
+ * @returns {string} hash of password
+ */
+export function getHashOf(password: string): string {
+  return crypto.createHash('sha256').update(password).digest('hex');
 }
 
 // ========================= QUIZ HELPER FUNCTIONS ========================== //
@@ -406,4 +413,19 @@ export function swapQuestions(questionIndex1: number, questionIndex2: number, qu
  */
 export function currentTime(): number {
   return Math.floor(Date.now() / 1000);
+}
+
+/**
+ * Function that checks whether the end of the given thumbnailUrl contains the
+ * correct file type (jpg, jpeg, png)
+ *
+ * @param {string} thumbnailUrl
+ * @returns {boolean} - true if the end contains one of the correct file types,
+ *                      false otherwise
+ */
+export function checkThumbnailUrlFileType(thumbnailUrl: string): boolean {
+  if (thumbnailUrl.endsWith('jpg') || thumbnailUrl.endsWith('jpeg') || thumbnailUrl.endsWith('png')) {
+    return true;
+  }
+  return false;
 }
