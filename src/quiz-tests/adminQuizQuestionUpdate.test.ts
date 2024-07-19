@@ -79,7 +79,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
       expect(colours).toContain(res.retval.questions[0].answers[1].colour);
     });
 
-    test.only('Side effect: adminQuizInfo returns updated info about quiz question', () => {
+    test('Side effect: adminQuizInfo returns updated info about quiz question', () => {
       let res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 
@@ -101,13 +101,13 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
               {
                 answerId: expect.any(Number),
                 answer: 'star',
-                colour: expect.any(QuizAnswerColours),
+                colour: expect.any(String),
                 correct: true
               },
               {
                 answerId: expect.any(Number),
                 answer: 'planet',
-                colour: expect.any(QuizAnswerColours),
+                colour: expect.any(String),
                 correct: false
               }
             ]
@@ -414,25 +414,25 @@ describe('PUT /v2/admin/quiz/{quizid}/question/{questionid}', () => {
             questionId: questionId,
             question: updateBody.questionBody.question,
             duration: updateBody.questionBody.duration,
+            thumbnailUrl: updateBody.questionBody.thumbnailUrl,
             points: updateBody.questionBody.points,
             answers: [
               {
                 answerId: expect.any(Number),
                 answer: 'star',
-                colour: expect.any(QuizAnswerColours),
+                colour: expect.any(String),
                 correct: true
               },
               {
                 answerId: expect.any(Number),
                 answer: 'planet',
-                colour: expect.any(QuizAnswerColours),
+                colour: expect.any(String),
                 correct: false
               }
             ]
           }
         ],
         duration: 5,
-        thumbnailUrl: updateBody.questionBody.thumbnailUrl
       });
       expect(res.statusCode).toStrictEqual(200);
     });
