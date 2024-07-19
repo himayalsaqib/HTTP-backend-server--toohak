@@ -673,6 +673,21 @@ app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
   res.json(response);
 });
 
+app.delete('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token'));
+  const quizId = JSON.parse(req.query.quizIds as string);
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  const userToken = errorCheckResponse.userToken;
+
+  const response = adminQuizRemove(userToken.authUserId, quizId);
+  res.json(response);
+});
+
 app.post('/v2/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   const { questionBody } = req.body;
   const quizId = parseInt(req.params.quizid as string);
