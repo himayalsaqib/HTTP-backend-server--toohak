@@ -632,6 +632,7 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
  */
 export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, questionId: number): {newQuestionId: number} {
   const data = getData();
+
   const quiz = findQuizById(quizId);
 
   const questionIndex = quiz.questions?.findIndex(q => q.questionId === questionId);
