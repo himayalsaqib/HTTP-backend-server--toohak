@@ -90,11 +90,11 @@ export function quizBelongsToUser(authUserId: number, quizId: number): void {
  * @param {number[]} quizIds
  * @returns {{} | { error: string }}
  */
-export function quizzesBelongToUser(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
+export function quizzesBelongToUser(authUserId: number, quizIds: number[]): void {
   for (const quizId of quizIds) {
     const quiz = findQuizById(quizId);
     if (quiz === undefined || quiz.authUserId !== authUserId) {
-      return { error: 'One or more Quiz IDs refer to a quiz that this current user does not own.' };
+      throw new Error('One or more Quiz IDs refer to a quiz that this current user does not own.');
     }
   }
 }
@@ -129,7 +129,7 @@ export function trashedQuizzesBelongToUser(authUserId: number, quizIds: number[]
     if (trashedQuiz === undefined) {
       return {};
     } else if (trashedQuiz.quiz.authUserId !== authUserId) {
-      return { error: 'One or more Quiz IDs refer to a quiz that this current user does not own.' };
+      throw new Error('One or more Quiz IDs refer to a quiz that this current user does not own.');
     }
   }
   return {};
@@ -146,7 +146,7 @@ export function quizDoesNotExist(quizId: number): EmptyObject | ErrorObject {
   if (trashedQuiz === undefined) {
     const quiz = findQuizById(quizId);
     if (quiz === undefined) {
-      return { error: 'Quiz does not exist' };
+      throw new Error('Quiz does not exist.');
     }
   }
   return {};
@@ -164,7 +164,7 @@ export function quizzesDoNotExist(quizIds: number[]): EmptyObject | ErrorObject 
     const quiz = findQuizById(quizId);
 
     if (trashedQuiz === undefined && quiz === undefined) {
-      return { error: 'One or more Quiz IDs do not exist' };
+      throw new Error('One or more Quiz IDs do not exist');
     }
   }
   return {};
