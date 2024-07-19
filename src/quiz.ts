@@ -76,15 +76,11 @@ export interface QuestionBody {
  * Provide a list of all quizzes that are owned by the currently logged in user.
  *
  * @param {number} authUserId
- * @returns {{ quizzes: { quizList }[] } | { error: string }}
+ * @returns {{ quizzes: { quizList }[] }}
  */
-export function adminQuizList(authUserId: number): { quizzes: QuizList[] } | ErrorObject {
+export function adminQuizList(authUserId: number): { quizzes: QuizList[] } {
   const data = getData();
   const quizList = [];
-
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId does not refer to a valid user id.' };
-  }
 
   for (const quiz of data.quizzes) {
     if (quiz.authUserId === authUserId) {
@@ -449,26 +445,23 @@ export function adminQuizTrashEmpty(quizIds: number[]): EmptyObject {
  * @param {number} questionId
  * @param {number} newPosition
  * @param {number} quizId
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
-export function adminQuizQuestionMove (questionId: number, newPosition: number, quizId: number): EmptyObject | ErrorObject {
+export function adminQuizQuestionMove (questionId: number, newPosition: number, quizId: number): EmptyObject {
   const quiz = findQuizById(quizId);
-  if (quiz === undefined) {
-    return { error: 'Quiz does not exist.' };
-  }
 
   const question = findQuestionById(questionId, quizId);
   if (question === undefined) {
-    return { error: 'Question Id does not refer to a valid question within this quiz.' };
+    throw new Error('Question Id does not refer to a valid question within this quiz.');
   }
 
   if (newPosition < MIN_QUESTION_INDEX || newPosition > quiz.questions.length - 1) {
-    return { error: 'New position is less than 0 or new position is greater than n-1 where n is the number of questions.' };
+    throw new Error('New position is less than 0 or new position is greater than n-1 where n is the number of questions.');
   }
 
   const questionIndex = quiz.questions.findIndex(q => q.questionId === questionId);
   if (questionIndex === newPosition) {
-    return { error: 'NewPosition is the position of the current question.' };
+    throw new Error('NewPosition is the position of the current question.');
   }
 
   quiz.timeLastEdited = currentTime();
@@ -581,29 +574,27 @@ export function adminQuizQuestionDelete(quizId: number, questionId: number): Emp
  * @param {number} quizId - of the quiz to be transfered owned by authUserId
  * @param {string} userEmail - of the user to which the quiz is being
  *                             transferred to (the target user)
- * @returns {{} | { error: string }}
+ * @returns {{}} - empty object
  */
-export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string) : EmptyObject | ErrorObject {
+export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string): EmptyObject {
   const data = getData();
 
-  if (adminEmailInUse(userEmail) === false) {
-    return { error: 'The given user email is not a real user.' };
+  if (!adminEmailInUse(userEmail)) {
+    throw new Error('The given user email is not a real user.');
   }
 
   const newUser = findUserByEmail(userEmail);
   if (newUser.authUserId === authUserId) {
-    return { error: 'The user email refers to the current logged in user.' };
-  }
-
-  if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz ID does not refer to a valid quiz.' };
+    throw new Error('The user email refers to the current logged in user.');
   }
 
   // quiz to transfer
   const quiz = findQuizById(quizId);
-  if (quizNameInUse(newUser.authUserId, quiz.name) === true) {
-    return { error: 'Quiz ID already refers to a quiz that has a name that is already used by the target user. ' };
+  if (quizNameInUse(newUser.authUserId, quiz.name)) {
+    throw new Error('Quiz ID already refers to a quiz that has a name that is already used by the target user.');
   }
+
+  // check all sessions for this quiz for being in the END state
 
   // transferring the quiz
   quiz.authUserId = newUser.authUserId;
