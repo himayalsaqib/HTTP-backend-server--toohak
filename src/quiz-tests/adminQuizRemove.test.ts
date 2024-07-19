@@ -60,7 +60,7 @@ describe('DELETE /v1/admin/quiz/:quizid', () => {
       });
     });
 
-    describe('Testing for valid token but wrong owner and non-existent quiz (status code 403', () => {
+    describe('Testing for valid token but wrong owner and non-existent quiz (status code 403)', () => {
       test('Returns error when trying to remove quiz that has already been removed', () => {
         const res = requestPost(quizBody, '/v1/admin/quiz');
         const quizId = res.retval.quizId;
@@ -132,7 +132,7 @@ describe('DELETE /v2/admin/quiz/:quizid', () => {
       expect(removeRes.retval).toStrictEqual({});
     });
 
-    describe('Testing for invalid and empty token (status code 401', () => {
+    describe('Testing for invalid and empty token (status code 401)', () => {
       test('Returns error when sessionId is invalid', () => {
         const sessionId = parseInt(token) + 1;
         expect(requestDelete({}, '/v2/admin/quiz/:quizId', { token: sessionId.toString() })).toStrictEqual({
