@@ -7,7 +7,6 @@ import {
   quizNameInUse,
   quizIdInUse,
   findQuizById,
-  quizIsInTrash,
   findTrashedQuizById,
   calculateSumQuestionDuration,
   checkAnswerLength,
@@ -152,7 +151,6 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
 
   return { quizId: newQuizId };
 }
-
 
 /**
  * Given a particular quiz, move quiz to trash
