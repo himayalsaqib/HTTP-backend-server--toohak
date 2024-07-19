@@ -103,8 +103,7 @@ describe('GET /v2/admin/quiz/trash', () => {
     test('Correctly displays a quiz in trash', () => {
       const res = requestPost(quizBody, '/v2/admin/quiz', { token });
       const quizId = res.retval.quizId;
-      // change to v2
-      requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
+      requestDelete({}, `/v2/admin/quiz/${quizId}`, { token });
 
       const trashRes = requestGet({}, '/v2/admin/quiz/trash', { token });
       expect(trashRes.statusCode).toStrictEqual(200);
@@ -121,14 +120,12 @@ describe('GET /v2/admin/quiz/trash', () => {
     test('Correctly displays multiple quizzes in trash', () => {
       const res = requestPost(quizBody, '/v2/admin/quiz', { token });
       const quizId = res.retval.quizId;
-      // change to v2
-      requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
+      requestDelete({}, `/v2/admin/quiz/${quizId}`, { token });
 
       quizBody = { name: 'My Quiz Two', description: 'Other Quiz Description' };
       const res2 = requestPost(quizBody, '/v2/admin/quiz', { token });
       const quizId2 = res2.retval.quizId;
-      // change to v2
-      requestDelete({ token: token }, `/v1/admin/quiz/${quizId2}`);
+      requestDelete({}, `/v2/admin/quiz/${quizId2}`, { token });
 
       const trashRes = requestGet({}, '/v2/admin/quiz/trash', { token });
       expect(trashRes.statusCode).toStrictEqual(200);
