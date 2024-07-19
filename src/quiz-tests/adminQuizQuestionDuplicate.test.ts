@@ -217,7 +217,7 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
     });
   });
 
-  describe('Testing for invalid and empty token (status code 401', () => {
+  describe('Testing for invalid and empty token (status code 401)', () => {
     test('Returns error when sessionId is invalid', () => {
       token += '1';
       const createRes = requestPost(quizBody, '/v1/admin/quiz');
@@ -503,7 +503,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
     });
   });
 
-  describe('Testing for invalid and empty token (status code 401', () => {
+  describe('Testing for invalid and empty token (status code 401)', () => {
     test('Returns error when sessionId is invalid', () => {
       const sessionId = (parseInt(token) + 1).toString();
       const createRes = requestPost(quizBody, '/v2/admin/quiz', { token: sessionId });
