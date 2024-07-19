@@ -157,7 +157,6 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
 /**
  * Given a particular quiz, move quiz to trash
  *
- * @param {number} authUserId
  * @param {number} quizId
  * @returns {{}} - an empty object
  */
@@ -247,7 +246,6 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
 /**
  * Update the description of the relevant quiz
  *
- * @param {number} authUserId
  * @param {number} quizId
  * @param {string} description
  * @returns {{}} - an empty object
@@ -382,7 +380,6 @@ export function adminQuizRestore (authUserId: number, quizId: number): EmptyObje
  * Given a user id, view all quizzes in trash
  *
  * @param {number} authUserId
- * @param {number} quizId
  * @returns {{ quizzes: array } | { error: string }} - returns list of quizzes
  */
 export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | ErrorObject {
@@ -408,7 +405,6 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
 /**
  * Permanently deletes specified quizzes from the trash
  *
- * @param {number} authUserId
  * @param {number[]} quizIds
  * @returns {{}}
  */
@@ -473,7 +469,6 @@ export function adminQuizQuestionMove (questionId: number, newPosition: number, 
 /**
  * Update the description of the relevant quiz
  *
- * @param {number} authUserId
  * @param {number} quizId
  * @param {number} questionId
  * @param {QuestionBody} questionBody
@@ -607,7 +602,6 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
 /**
  * Duplicates a quiz question
  *
- * @param {number} authUserId
  * @param {number} quizId
  * @param {number} questionId
  * @returns {{ newQuestionId: number}} - returns new question ID
