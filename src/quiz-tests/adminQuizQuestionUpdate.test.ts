@@ -357,7 +357,8 @@ describe('PUT /v2/admin/quiz/{quizid}/question/{questionid}', () => {
         answers: [
           { answer: 'Prince Charles', correct: true },
           { answer: 'Prince William', correct: false }
-        ]
+        ],
+        thumbnailUrl: 'http://google.com/some/image/path.jpg',
       }
     };
     const createResponse = requestPost(createBody, `/v2/admin/quiz/${quizId}/question`, { token });
@@ -372,7 +373,8 @@ describe('PUT /v2/admin/quiz/{quizid}/question/{questionid}', () => {
         answers: [
           { answer: 'star', correct: true },
           { answer: 'planet', correct: false }
-        ]
+        ],
+        thumbnailUrl: 'http://google.com/some/image/path.png',
       }
     };
   });
@@ -457,7 +459,7 @@ describe('PUT /v2/admin/quiz/{quizid}/question/{questionid}', () => {
     });
   });
 
-  describe('Testing parameters given to adminQuizQuestionUpdate (status code 400)', () => {
+  describe('Testing questionId and questionBody given to adminQuizQuestionUpdate (status code 400)', () => {
     describe('Testing questionId errors', () => {
       test('Question Id is not a valid question in the quiz', () => {
         questionId++;
@@ -517,6 +519,33 @@ describe('PUT /v2/admin/quiz/{quizid}/question/{questionid}', () => {
 
       test('Question points are more than 10', () => {
         updateBody.questionBody.points = 11;
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+
+      test('The thumbnailUrl is an empty string', () => {
+        updateBody.questionBody.thumbnailUrl = '';
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+  
+      test('The thumbnailUrl does not end with jpg, jpeg or png', () => {
+        updateBody.questionBody.thumbnailUrl = 'http://google.com/some/image/path.pdf';
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+  
+      test('The thumbnailUrl does not begin with \'http://\' or \'https://\'', () => {
+        updateBody.questionBody.thumbnailUrl = 'ftp://google.com/some/image/path.jpg' ;
         const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
         expect(res).toStrictEqual({
           retval: ERROR,
