@@ -2,7 +2,6 @@
 
 import { setData, getData, ErrorObject, EmptyObject, Quizzes, Question, Answer } from './dataStore';
 import {
-  authUserIdExists,
   quizNameHasValidChars,
   quizNameInUse,
   quizIdInUse,
@@ -22,7 +21,7 @@ import {
   checkThumbnailUrlFileType
 } from './helper-files/helper';
 
-/// //////////////////////////// Global Variables //////////////////////////////
+// ============================= GLOBAL VARIABLES =========================== //
 const MIN_QUIZ_NAME_LEN = 3;
 const MAX_QUIZ_NAME_LEN = 30;
 const MAX_DESCRIPTION_LEN = 100;
@@ -45,7 +44,7 @@ const MAX_ANS_LEN = 30;
 
 const MIN_CORRECT_ANS = 1;
 
-/// /////////////////////////// Type Annotations ///////////////////////////////
+// ============================ TYPE ANNOTATIONS ============================ //
 interface QuizList {
   quizId: number;
   name: string;
@@ -70,7 +69,19 @@ export interface QuestionBody {
   thumbnailUrl?: string;
 }
 
-/// ////////////////////////////// Functions ///////////////////////////////////
+// ================================= ENUMS ================================== //
+
+export enum QuizAnswerColours {
+  RED = 'red',
+  BLUE = 'blue',
+  GREEN = 'green',
+  YELLOW = 'yellow',
+  PURPLE = 'purple',
+  BROWN = 'brown',
+  ORANGE = 'orange',
+}
+
+// =============================== FUNCTIONS ================================ //
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  *
@@ -99,7 +110,7 @@ export function adminQuizList(authUserId: number): { quizzes: QuizList[] } {
  * @param {number} authUserId
  * @param {string} name
  * @param {string} description
- * @returns {{ quizId: number } | { error: string }} - assigns a quizId | error
+ * @returns {{ quizId: number }} - assigns a quizId | error
  */
 export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } | ErrorObject {
   if (quizNameHasValidChars(name) === false) {
@@ -340,7 +351,7 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
 *
 * @param {number} authUserId
 * @param {number} quizId
-* @returns {{} | { error: string }}
+* @returns {{}}
 */
 export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
   const data = getData();
@@ -360,11 +371,11 @@ export function adminQuizRestore (authUserId: number, quizId: number): EmptyObje
 
   return {};
 }
+
 /**
  * Given a user id, view all quizzes in trash
  *
  * @param {number} authUserId
- * @param {number} quizId
  * @returns {{ quizzes: array }} - returns list of quizzes
  */
 export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } {
@@ -450,65 +461,63 @@ export function adminQuizQuestionMove (questionId: number, newPosition: number, 
 /**
  * Update the description of the relevant quiz
  *
- * @param {number} authUserId
  * @param {number} quizId
  * @param {number} questionId
  * @param {QuestionBody} questionBody
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
-export function adminQuizQuestionUpdate(
-  authUserId: number,
-  quizId: number,
-  questionId: number,
-  questionBody: QuestionBody
-): EmptyObject | ErrorObject {
+export function adminQuizQuestionUpdate(quizId: number, questionId: number, questionBody: QuestionBody): EmptyObject {
+  if (questionIdInUse(questionId) === false) {
+    throw new Error('Question Id does not refer to a valid question within this quiz.');
+  }
   if (questionBody.question.length < MIN_QUESTION_LEN || questionBody.question.length > MAX_QUESTION_LEN) {
-    return { error: 'Question  is less than 5 characters or greater than 50 characters.' };
+    throw new Error('Question  is less than 5 characters or greater than 50 characters.');
   }
   if (questionBody.answers.length < MIN_NUM_ANSWERS || questionBody.answers.length > MAX_NUM_ANSWERS) {
-    return { error: 'Question has more than 6 answers or less than 2 answers.' };
+    throw new Error('Question has more than 6 answers or less than 2 answers.');
   }
   if (questionBody.duration <= MIN_QUIZ_QUESTIONS_DURATION) {
-    return { error: 'Question duration is not a positive number.' };
+    throw new Error('Question duration is not a positive number.');
   }
   if (calculateSumQuestionDuration(quizId, questionBody.duration) > MAX_QUIZ_QUESTIONS_DURATION) {
-    return { error: 'Sum of the question durations in the quiz exceeds 3 minutes.' };
+    throw new Error('Sum of the question durations in the quiz exceeds 3 minutes.');
   }
   if (questionBody.points < MIN_POINT_VALUE || questionBody.points > MAX_POINT_VALUE) {
-    return { error: 'Points awarded for the question are less than 1 or greater than 10.' };
+    throw new Error('Points awarded for the question are less than 1 or greater than 10.');
   }
   if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN) === true) {
-    return { error: 'length of any answer is shorter than 1 character, or longer than 30 characters.' };
+    throw new Error('Length of any answer is shorter than 1 character, or longer than 30 characters.');
   }
   if (checkForAnsDuplicates(questionBody) === true) {
-    return { error: 'Any answer strings are duplicates of one another.' };
+    throw new Error('Any answer strings are duplicates of one another.');
   }
   if (checkForNumCorrectAns(questionBody) < MIN_CORRECT_ANS) {
-    return { error: 'There are no correct answers.' };
+    throw new Error('There are no correct answers.');
   }
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-  if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz ID does not refer to a valid quiz.' };
+  if (questionBody.thumbnailUrl !== undefined) {
+    if (questionBody.thumbnailUrl.length === 0) {
+      throw new Error('The thumbnailUrl cannot be an empty string.');
+    }
+
+    if (!checkThumbnailUrlFileType(questionBody.thumbnailUrl)) {
+      throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
+    }
+
+    if (!(questionBody.thumbnailUrl.startsWith('https://') || questionBody.thumbnailUrl.startsWith('http://'))) {
+      throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
+    }
   }
 
   const data = getData();
-  const quiz = findQuizById(quizId);
-
-  if (quiz.authUserId !== authUserId) {
-    return { error: 'Quiz ID does not refer to a quiz that this user owns.' };
-  }
-  if (questionIdInUse(questionId) === false) {
-    return { error: 'Question Id does not refer to a valid question within this quiz.' };
-  }
 
   const questionToUpdate = findQuestionById(questionId, quizId);
   questionToUpdate.question = questionBody.question;
   questionToUpdate.duration = questionBody.duration;
   questionToUpdate.points = questionBody.points;
   questionToUpdate.answers = createAnswersArray(questionBody.answers);
+  questionToUpdate.thumbnailUrl = questionBody.thumbnailUrl;
 
+  const quiz = findQuizById(quizId);
   quiz.timeLastEdited = currentTime();
   // updating duration for the quiz
   quiz.duration = quiz.questions.reduce((newDuration, question) => newDuration + question.duration, 0);

@@ -1,7 +1,7 @@
 // Includes helper functions for auth.ts and quiz.ts
 
 import { Answer, getData, Question, Quizzes, Users, Trash } from '../dataStore';
-import { QuestionBody, QuizQuestionAnswers } from '../quiz';
+import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers } from '../quiz';
 import crypto from 'crypto';
 
 /**
@@ -374,10 +374,10 @@ export function createAnswersArray(givenAnswers: QuizQuestionAnswers[]): Answer[
 /**
  * Function picks a random colour (string) from an array
  *
- * @returns {string} - colour
+ * @returns {QuizAnswerColours} - colour
  */
-export function generateAnsColour(): string {
-  const answerColours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+export function generateAnsColour(): QuizAnswerColours {
+  const answerColours = Object.values(QuizAnswerColours);
   const colourIndex = Math.floor(Math.random() * answerColours.length);
   return answerColours[colourIndex];
 }

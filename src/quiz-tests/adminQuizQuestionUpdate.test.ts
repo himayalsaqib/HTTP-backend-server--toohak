@@ -1,15 +1,16 @@
 // includes http tests for the route PUT /v1/admin/quiz/{quizid}/question/{questionid}
+// and /v2/admin/quiz/{quizid}/question/{questionid}
 
 import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
-import { QuestionBody } from '../quiz';
+import { QuestionBody, QuizAnswerColours } from '../quiz';
+
+const ERROR = { error: expect.any(String) };
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
 describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
-  const error = { error: expect.any(String) };
-
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let token: string;
   let quizBody: { token: string, name: string, description: string };
@@ -73,7 +74,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
       requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
       const res = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
 
-      const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+      const colours = Object.values(QuizAnswerColours);
       expect(colours).toContain(res.retval.questions[0].answers[0].colour);
       expect(colours).toContain(res.retval.questions[0].answers[1].colour);
     });
@@ -146,7 +147,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
         questionId++;
         const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
         expect(res).toStrictEqual({
-          retval: error,
+          retval: ERROR,
           statusCode: 400
         });
       });
@@ -157,7 +158,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
         updateBody.questionBody.question = 'What';
         const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
         expect(res).toStrictEqual({
-          retval: error,
+          retval: ERROR,
           statusCode: 400
         });
       });
@@ -166,7 +167,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
         updateBody.questionBody.question = 'This is a reallyreally long question: What is earth?';
         const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
         expect(res).toStrictEqual({
-          retval: error,
+          retval: ERROR,
           statusCode: 400
         });
       });
@@ -175,7 +176,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
         updateBody.questionBody.duration = 0;
         const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
         expect(res).toStrictEqual({
-          retval: error,
+          retval: ERROR,
           statusCode: 400
         });
       });
@@ -184,7 +185,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
         updateBody.questionBody.duration = 181;
         const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
         expect(res).toStrictEqual({
-          retval: error,
+          retval: ERROR,
           statusCode: 400
         });
       });
@@ -193,7 +194,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
         updateBody.questionBody.points = 0;
         const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
         expect(res).toStrictEqual({
-          retval: error,
+          retval: ERROR,
           statusCode: 400
         });
       });
@@ -202,7 +203,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
         updateBody.questionBody.points = 11;
         const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
         expect(res).toStrictEqual({
-          retval: error,
+          retval: ERROR,
           statusCode: 400
         });
       });
@@ -214,7 +215,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
         updateBody.questionBody.answers = oneAnswer;
         const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
         expect(res).toStrictEqual({
-          retval: error,
+          retval: ERROR,
           statusCode: 400
         });
       });
@@ -232,7 +233,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
         updateBody.questionBody.answers = sevenAnswers;
         const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
         expect(res).toStrictEqual({
-          retval: error,
+          retval: ERROR,
           statusCode: 400
         });
       });
@@ -242,7 +243,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
         updateBody.questionBody.answers.push(badAnswer);
         const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
         expect(res).toStrictEqual({
-          retval: error,
+          retval: ERROR,
           statusCode: 400
         });
       });
@@ -252,7 +253,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
         updateBody.questionBody.answers.push(badAnswer);
         const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
         expect(res).toStrictEqual({
-          retval: error,
+          retval: ERROR,
           statusCode: 400
         });
       });
@@ -262,7 +263,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
         updateBody.questionBody.answers.push(badAnswer);
         const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
         expect(res).toStrictEqual({
-          retval: error,
+          retval: ERROR,
           statusCode: 400
         });
       });
@@ -275,7 +276,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
         updateBody.questionBody.answers = badAnswers;
         const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
         expect(res).toStrictEqual({
-          retval: error,
+          retval: ERROR,
           statusCode: 400
         });
       });
@@ -287,7 +288,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
       requestDelete({}, '/v1/clear');
       const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
       expect(res).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -297,7 +298,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
       updateBody.token = sessionId.toString();
       const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
       expect(res).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -311,7 +312,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
 
       res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
       expect(res).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 403
       });
     });
@@ -320,7 +321,352 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
       quizId++;
       const res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
       expect(res).toStrictEqual({
-        retval: error,
+        retval: ERROR,
+        statusCode: 403
+      });
+    });
+  });
+});
+
+describe('PUT /v2/admin/quiz/{quizid}/question/{questionid}', () => {
+  let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
+  let token: string;
+  let quizBody: { name: string, description: string };
+  let quizId: number;
+  let createBody: { questionBody: QuestionBody };
+  let questionId: number;
+  let updateBody: { questionBody: QuestionBody };
+
+  beforeEach(() => {
+    // registering a user
+    userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+    const registerResponse = requestPost(userBody, '/v1/admin/auth/register');
+    token = registerResponse.retval.token;
+
+    // creating a quiz
+    quizBody = { name: 'Quiz Name', description: 'Quiz description' };
+    const quizResponse = requestPost(quizBody, '/v2/admin/quiz', { token });
+    quizId = quizResponse.retval.quizId;
+
+    // creating a quiz question
+    createBody = {
+      questionBody: {
+        question: 'Who is the Monarch of England?',
+        duration: 5,
+        points: 5,
+        answers: [
+          { answer: 'Prince Charles', correct: true },
+          { answer: 'Prince William', correct: false }
+        ],
+        thumbnailUrl: 'http://google.com/some/image/path.jpg',
+      }
+    };
+    const createResponse = requestPost(createBody, `/v2/admin/quiz/${quizId}/question`, { token });
+    questionId = createResponse.retval.questionId;
+
+    // initialising body for update question route
+    updateBody = {
+      questionBody: {
+        question: 'The sun is a ...',
+        duration: 5,
+        points: 10,
+        answers: [
+          { answer: 'star', correct: true },
+          { answer: 'planet', correct: false }
+        ],
+        thumbnailUrl: 'http://google.com/some/image/path.png',
+      }
+    };
+  });
+
+  describe('Testing successful quiz question update (status code 200)', () => {
+    test('Has the correct return type', () => {
+      const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+      expect(res).toStrictEqual({
+        retval: {},
+        statusCode: 200
+      });
+    });
+
+    test('Side effect: answer is correctly given a colour from the given colours array', () => {
+      requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+      const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
+
+      const colours = Object.values(QuizAnswerColours);
+      expect(colours).toContain(res.retval.questions[0].answers[0].colour);
+      expect(colours).toContain(res.retval.questions[0].answers[1].colour);
+    });
+
+    test('Side effect: adminQuizInfo returns updated info about quiz question', () => {
+      let res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+      expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
+
+      res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
+      expect(res.retval).toStrictEqual({
+        quizId: quizId,
+        name: quizBody.name,
+        timeCreated: expect.any(Number),
+        timeLastEdited: expect.any(Number),
+        description: quizBody.description,
+        numQuestions: 1,
+        questions: [
+          {
+            questionId: questionId,
+            question: updateBody.questionBody.question,
+            duration: updateBody.questionBody.duration,
+            thumbnailUrl: updateBody.questionBody.thumbnailUrl,
+            points: updateBody.questionBody.points,
+            answers: [
+              {
+                answerId: expect.any(Number),
+                answer: 'star',
+                colour: expect.any(String),
+                correct: true
+              },
+              {
+                answerId: expect.any(Number),
+                answer: 'planet',
+                colour: expect.any(String),
+                correct: false
+              }
+            ]
+          }
+        ],
+        duration: 5,
+      });
+      expect(res.statusCode).toStrictEqual(200);
+    });
+
+    test('Side effect: adminQuizInfo displays updated timeLastEdited', () => {
+      const requestTime = Math.floor(Date.now() / 1000);
+      let res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+      expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
+
+      res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
+      expect(res.retval.timeLastEdited).toBeGreaterThanOrEqual(requestTime);
+      expect(res.retval.timeLastEdited).toBeLessThanOrEqual(requestTime + 1);
+    });
+
+    test.each([
+      { update: 'increase', newDuration: 2 },
+      { update: 'decrease', newDuration: -2 }
+    ])('Side effect: adminQuizInfo displays duration $update', ({ update, newDuration }) => {
+      updateBody.questionBody.duration += newDuration;
+      let res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+      expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
+
+      res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
+      expect(res.retval.duration).toStrictEqual(updateBody.questionBody.duration);
+    });
+  });
+
+  describe('Testing questionId and questionBody given to adminQuizQuestionUpdate (status code 400)', () => {
+    describe('Testing questionId errors', () => {
+      test('Question Id is not a valid question in the quiz', () => {
+        questionId++;
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+    });
+
+    describe('Testing question parameter\'s errors', () => {
+      test('Question string is less than 5 characters', () => {
+        updateBody.questionBody.question = 'What';
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+
+      test('Question string is more than 50 characters', () => {
+        updateBody.questionBody.question = 'This is a reallyreally long question: What is earth?';
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+
+      test('Question duration is not a positive number', () => {
+        updateBody.questionBody.duration = 0;
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+
+      test('Sum of question durations in the quiz exceeds 3 minutes if question is updated', () => {
+        updateBody.questionBody.duration = 181;
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+
+      test('Question points is less than 1', () => {
+        updateBody.questionBody.points = 0;
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+
+      test('Question points are more than 10', () => {
+        updateBody.questionBody.points = 11;
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+
+      test('The thumbnailUrl is an empty string', () => {
+        updateBody.questionBody.thumbnailUrl = '';
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+
+      test('The thumbnailUrl does not end with jpg, jpeg or png', () => {
+        updateBody.questionBody.thumbnailUrl = 'http://google.com/some/image/path.pdf';
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+
+      test('The thumbnailUrl does not begin with \'http://\' or \'https://\'', () => {
+        updateBody.questionBody.thumbnailUrl = 'ftp://google.com/some/image/path.jpg';
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+    });
+
+    describe('Testing answer parameter\'s errors', () => {
+      test('Question has less than 2 answers', () => {
+        const oneAnswer = [{ answer: 'Star', correct: true }];
+        updateBody.questionBody.answers = oneAnswer;
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+
+      test('Question has more than 6 answers', () => {
+        const sevenAnswers = [
+          { answer: 'star', correct: true },
+          { answer: 'planet', correct: false },
+          { answer: 'moon', correct: false },
+          { answer: 'blackhole', correct: false },
+          { answer: 'asteroid', correct: false },
+          { answer: 'spaceship', correct: false },
+          { answer: 'satellite', correct: false },
+        ];
+        updateBody.questionBody.answers = sevenAnswers;
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+
+      test('Answer string is less than 1 character', () => {
+        const badAnswer = { answer: '', correct: false };
+        updateBody.questionBody.answers.push(badAnswer);
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+
+      test('Answer string is more than 30 character', () => {
+        const badAnswer = { answer: 'a reallyreallyreally long answer', correct: false };
+        updateBody.questionBody.answers.push(badAnswer);
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+
+      test('Any answer strings of the question are duplicates of one another', () => {
+        const badAnswer = { answer: 'planet', correct: false };
+        updateBody.questionBody.answers.push(badAnswer);
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+
+      test('There are no correct answers', () => {
+        const badAnswers = [
+          { answer: 'star', correct: false },
+          { answer: 'planet', correct: false },
+        ];
+        updateBody.questionBody.answers = badAnswers;
+        const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+        expect(res).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
+        });
+      });
+    });
+  });
+
+  describe('Testing token errors (status code 401)', () => {
+    test('Returns error when token is empty', () => {
+      requestDelete({}, '/v1/clear');
+      const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+      expect(res).toStrictEqual({
+        retval: ERROR,
+        statusCode: 401
+      });
+    });
+
+    test('Returns error when sessionId is not a valid user session', () => {
+      const sessionId = parseInt(token) + 1;
+      const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token: sessionId.toString() });
+      expect(res).toStrictEqual({
+        retval: ERROR,
+        statusCode: 401
+      });
+    });
+  });
+
+  describe('Testing quizId errors (status code 403)', () => {
+    test('Returns error when user is not an owner of the quiz', () => {
+      const user2 = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'John', nameLast: 'Doe' };
+      let res = requestPost(user2, '/v1/admin/auth/register');
+      token = res.retval.token;
+
+      res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+      expect(res).toStrictEqual({
+        retval: ERROR,
+        statusCode: 403
+      });
+    });
+
+    test('Returns error when quiz doesn\'t exist', () => {
+      quizId++;
+      const res = requestPut(updateBody, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+      expect(res).toStrictEqual({
+        retval: ERROR,
         statusCode: 403
       });
     });

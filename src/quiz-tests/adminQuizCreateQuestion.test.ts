@@ -1,7 +1,7 @@
 // includes http tests for the route /v1/admin/quiz/{quizid}/question
 
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
-import { QuizQuestionAnswers } from '../quiz';
+import { QuizAnswerColours, QuizQuestionAnswers } from '../quiz';
 
 const ERROR = { error: expect.any(String) };
 
@@ -9,7 +9,7 @@ beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
-describe('POST /v1/amdin/quiz/{quizid}/question', () => {
+describe('POST /v1/admin/quiz/{quizid}/question', () => {
   let quizId: number;
   let token: string;
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
@@ -50,7 +50,7 @@ describe('POST /v1/amdin/quiz/{quizid}/question', () => {
       requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`);
       const res = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
 
-      const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+      const colours = Object.values(QuizAnswerColours);
       expect(colours).toContain(res.retval.questions[0].answers[0].colour);
       expect(colours).toContain(res.retval.questions[0].answers[1].colour);
     });
@@ -475,7 +475,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
       const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
 
-      const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+      const colours = Object.values(QuizAnswerColours);
       expect(colours).toContain(res.retval.questions[0].answers[0].colour);
       expect(colours).toContain(res.retval.questions[0].answers[1].colour);
     });
