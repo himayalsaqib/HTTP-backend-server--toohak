@@ -487,15 +487,14 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       expect(dupeRes.retval).toStrictEqual(ERROR);
     });
 
-    test.skip('Side effect: returns error when trying to duplicate deleted quiz question', () => {
+    test('Side effect: returns error when trying to duplicate deleted quiz question', () => {
       const res = requestPost(quizBody, '/v2/admin/quiz', { token });
       const quizId = res.retval.quizId;
       const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }, { answer: 'Sample Answer2', correct: false }] };
       const questionRes = requestPost({ question }, `/v2/admin/quiz/${quizId}/question`, { token });
       const questionId = questionRes.retval.questionId;
 
-      // need to change to v2 after quizQuestionRemove is merged
-      requestDelete({ token }, `/v1/admin/quiz/${quizId}/question/${questionId}`);
+      requestDelete({}, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
       const dupeQues = requestPost({}, `/v2/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token });
 
       expect(dupeQues.statusCode).toBe(400);
