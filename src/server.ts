@@ -338,6 +338,26 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
 
   const userToken = errorCheckResponse.userToken;
 
+  const response = adminQuizNameUpdate(userToken.authUserId, quizId, name);
+  if ('error' in response) {
+    return res.status(400).json(response);
+  }
+
+  res.json(response);
+});
+
+app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
+  const { token, name } = req.body;
+  const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(token);
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  const userToken = errorCheckResponse.userToken;
+
   try {
     const response = adminQuizNameUpdate(userToken.authUserId, quizId, name);
     res.json(response);
@@ -659,6 +679,20 @@ app.put('/v2/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
+});
+
+app.get('/v2/admin/quiz/list', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token'));
+
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+  const response = adminQuizList(userToken.authUserId);
+  res.json(response);
 });
 
 app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
