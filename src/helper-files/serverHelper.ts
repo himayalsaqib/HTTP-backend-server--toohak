@@ -58,7 +58,7 @@ export function tokenExists(sessionId: number): void {
  * an error
  *
  * @param {number} sessionId
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
 export function findTokenFromSessionId(sessionId: number): Tokens {
   const data = getData();
@@ -73,7 +73,7 @@ export function findTokenFromSessionId(sessionId: number): Tokens {
  *
  * @param {number} authUserId
  * @param {number} quizId
- * @returns {}
+ * @returns {void}
  */
 export function quizBelongsToUser(authUserId: number, quizId: number): void {
   const quiz = findQuizById(quizId);
@@ -88,13 +88,13 @@ export function quizBelongsToUser(authUserId: number, quizId: number): void {
  *
  * @param {number} authUserId
  * @param {number[]} quizIds
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
-export function quizzesBelongToUser(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
+export function quizzesBelongToUser(authUserId: number, quizIds: number[]): void {
   for (const quizId of quizIds) {
     const quiz = findQuizById(quizId);
     if (quiz === undefined || quiz.authUserId !== authUserId) {
-      return { error: 'One or more Quiz IDs refer to a quiz that this current user does not own.' };
+      throw new Error('One or more Quiz IDs refer to a quiz that this current user does not own.');
     }
   }
 }
@@ -121,15 +121,15 @@ export function trashedQuizBelongsToUser(authUserId: number, quizId: number): Em
  *
  * @param {number} authUserId
  * @param {number[]} quizIds
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
-export function trashedQuizzesBelongToUser(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
+export function trashedQuizzesBelongToUser(authUserId: number, quizIds: number[]): EmptyObject {
   for (const quizId of quizIds) {
     const trashedQuiz = findTrashedQuizById(quizId);
     if (trashedQuiz === undefined) {
       return {};
     } else if (trashedQuiz.quiz.authUserId !== authUserId) {
-      return { error: 'One or more Quiz IDs refer to a quiz that this current user does not own.' };
+      throw new Error('One or more Quiz IDs refer to a quiz that this current user does not own.');
     }
   }
   return {};
@@ -139,9 +139,9 @@ export function trashedQuizzesBelongToUser(authUserId: number, quizIds: number[]
  * Function checks if a quiz exists in either trash or quizzes
  *
  * @param {number} quizId
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
-export function quizDoesNotExist(quizId: number): EmptyObject | ErrorObject {
+export function quizDoesNotExist(quizId: number): EmptyObject {
   const trashedQuiz = findTrashedQuizById(quizId);
   if (trashedQuiz === undefined) {
     const quiz = findQuizById(quizId);
@@ -156,15 +156,15 @@ export function quizDoesNotExist(quizId: number): EmptyObject | ErrorObject {
  * Function checks if all quiz IDs in the given list exist in either trash or quizzes
  *
  * @param {number[]} quizIds
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
-export function quizzesDoNotExist(quizIds: number[]): EmptyObject | ErrorObject {
+export function quizzesDoNotExist(quizIds: number[]): EmptyObject {
   for (const quizId of quizIds) {
     const trashedQuiz = findTrashedQuizById(quizId);
     const quiz = findQuizById(quizId);
 
     if (trashedQuiz === undefined && quiz === undefined) {
-      return { error: 'One or more Quiz IDs do not exist' };
+      throw new Error('One or more Quiz IDs do not exist');
     }
   }
   return {};
