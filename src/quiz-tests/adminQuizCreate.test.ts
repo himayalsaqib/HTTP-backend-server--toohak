@@ -132,13 +132,13 @@ describe('POST /v2/admin/quiz', () => {
       expect(res).toStrictEqual({ retval: { quizId: expect.any(Number) }, statusCode: 200 });
     });
 
-    test.skip('Side effect (successful quiz creation): quizList returns correct details about 1 quiz', () => {
+    test('Side effect (successful quiz creation): quizList returns correct details about 1 quiz', () => {
       const res = requestPost(quizBody, '/v2/admin/quiz', { token });
       const listRes = requestGet({}, '/v2/admin/quiz/list', { token });
       expect(listRes).toStrictEqual({ retval: { quizzes: [{ quizId: res.retval.quizId, name: 'Valid Quiz Name' }] }, statusCode: 200 });
     });
 
-    test.skip('Side effect (successful quiz creation): quizList returns correct details about multiple quizzes', () => {
+    test('Side effect (successful quiz creation): quizList returns correct details about multiple quizzes', () => {
       const res = requestPost(quizBody, '/v2/admin/quiz', { token });
       quizBody = { name: 'Other Quiz Name', description: 'Other Quiz Description' };
       const res2 = requestPost(quizBody, '/v2/admin/quiz', { token });
@@ -148,7 +148,7 @@ describe('POST /v2/admin/quiz', () => {
       expect(listRes.statusCode).toStrictEqual(200);
     });
 
-    test.skip('Side effect (successful quiz creation): adminQuizInfo displays correct timeCreated', () => {
+    test('Side effect (successful quiz creation): adminQuizInfo displays correct timeCreated', () => {
       const time = Math.floor(Date.now() / 1000);
       const res = requestPost(quizBody, '/v2/admin/quiz', { token });
 
