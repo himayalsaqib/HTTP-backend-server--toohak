@@ -504,7 +504,7 @@ export function adminQuizQuestionUpdate(quizId: number, questionId: number, ques
     throw new Error('Points awarded for the question are less than 1 or greater than 10.');
   }
   if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN) === true) {
-    throw new Error('Length of any answer is shorter than 1 character, or longer than 30 characters.')
+    throw new Error('Length of any answer is shorter than 1 character, or longer than 30 characters.');
   }
   if (checkForAnsDuplicates(questionBody) === true) {
     throw new Error('Any answer strings are duplicates of one another.');
@@ -527,7 +527,7 @@ export function adminQuizQuestionUpdate(quizId: number, questionId: number, ques
   }
 
   const data = getData();
-  
+
   const questionToUpdate = findQuestionById(questionId, quizId);
   questionToUpdate.question = questionBody.question;
   questionToUpdate.duration = questionBody.duration;
