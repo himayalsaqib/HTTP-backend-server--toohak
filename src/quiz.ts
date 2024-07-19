@@ -591,7 +591,7 @@ export function adminQuizQuestionDelete(authUserId: number, quizId: number, ques
 export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string): EmptyObject {
   const data = getData();
 
-  if (adminEmailInUse(userEmail) === false) {
+  if (!adminEmailInUse(userEmail)) {
     throw new Error('The given user email is not a real user.');
   }
 
