@@ -547,17 +547,33 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
-  const userToken = errorCheckResponse.userToken;
-
-  const response = adminQuizQuestionDuplicate(userToken.authUserId, quizId, questionId);
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminQuizQuestionDuplicate(quizId, questionId);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
-
-  res.json(response);
 });
 
 // VERSION 2 //
+
+app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token'));
+  const quizId = parseInt(req.params.quizid as string);
+  const questionId = parseInt(req.params.questionid as string);
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  try {
+    const response = adminQuizQuestionDuplicate(quizId, questionId);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
 
 app.post('/v2/admin/quiz', (req: Request, res: Response) => {
   const { name, description } = req.body;

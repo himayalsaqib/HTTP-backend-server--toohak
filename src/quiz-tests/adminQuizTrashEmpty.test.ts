@@ -168,7 +168,7 @@ describe('DELETE /v2/admin/quiz/trash/empty', () => {
       const quizResponse = requestPost(quizBody, '/v2/admin/quiz', { token });
       const quizId = quizResponse.retval.quizId;
 
-      requestDelete({ token }, `/v1/admin/quiz/${quizId}`); // change to v2
+      requestDelete({}, `/v2/admin/quiz/${quizId}`, { token });
       quizIds.push(quizId);
     }
   });
@@ -184,7 +184,7 @@ describe('DELETE /v2/admin/quiz/trash/empty', () => {
       const quizIdsToDelete = JSON.stringify([quizIds[0], quizIds[1]]);
       requestDelete({ quizIds: quizIdsToDelete }, '/v2/admin/quiz/trash/empty', { token });
 
-      const trashRes = requestGet({ token }, '/v1/admin/quiz/trash'); // change to v2
+      const trashRes = requestGet({}, '/v2/admin/quiz/trash', { token });
       expect(trashRes).toStrictEqual({
         retval: {
           quizzes: [
@@ -252,12 +252,12 @@ describe('DELETE /v2/admin/quiz/trash/empty', () => {
       quizBody = { name: 'Other user quiz 1', description: 'Other user description 1' };
       const quizResponse1 = requestPost(quizBody, '/v2/admin/quiz', { token: otherUserToken });
       const otherUserQuiz1 = quizResponse1.retval.quizId;
-      requestDelete({ token: otherUserToken }, `/v1/admin/quiz/${otherUserQuiz1}`);
+      requestDelete({}, `/v2/admin/quiz/${otherUserQuiz1}`, { token: otherUserToken });
 
       quizBody = { name: 'Other user quiz 2', description: 'Other user description 2' };
       const quizResponse2 = requestPost(quizBody, '/v2/admin/quiz', { token });
       const otherUserQuiz2 = quizResponse2.retval.quizId;
-      requestDelete({ token: otherUserToken }, `/v1/admin/quiz/${otherUserQuiz2}`); // change to v2
+      requestDelete({}, `/v2/admin/quiz/${otherUserQuiz2}`, { token: otherUserToken });
 
       // Current user attempts to delete 2 own quizzes and 2 otherUser quizzes
       const userQuizIdsDelete = [quizIds[1], quizIds[2]];
@@ -280,7 +280,7 @@ describe('DELETE /v2/admin/quiz/trash/empty', () => {
       const quizId = quizResponse.retval.quizId;
 
       // Put quiz in trash
-      requestDelete({ token }, `/v1/admin/quiz/${quizId}`); // v2 change
+      requestDelete({}, `/v2/admin/quiz/${quizId}`, { token });
       quizIds.push(quizId);
 
       // Delete a quiz that does not exist
