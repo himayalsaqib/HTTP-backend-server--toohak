@@ -455,13 +455,13 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
 
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
-      const questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2] };
-      // needs to be changed to v2 after quizQuestionCreate is merged
-      const resQuestionCreate = requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`);
+      const thumbnailUrlExample = 'http://google.com/some/image/path.jpg';
+      const questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2], thumbnailUrl: thumbnailUrlExample };
+      const resQuestionCreate = requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
       questionId = resQuestionCreate.retval.questionId;
 
       // Check initial timeLastEdited
-      const initialQuiz = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
+      const initialQuiz = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
       const initialTimeLastEdited = initialQuiz.retval.timeLastEdited;
 
       // Duplicate the question
@@ -491,8 +491,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const res = requestPost(quizBody, '/v2/admin/quiz', { token });
       const quizId = res.retval.quizId;
       const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }, { answer: 'Sample Answer2', correct: false }] };
-      // need to change to v2 after quizQuestionCreate is merged
-      const questionRes = requestPost({ token: token, questionBody: question }, `/v1/admin/quiz/${quizId}/question`);
+      const questionRes = requestPost({ question }, `/v2/admin/quiz/${quizId}/question`, { token });
       const questionId = questionRes.retval.questionId;
 
       // need to change to v2 after quizQuestionRemove is merged
@@ -510,8 +509,9 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const createRes = requestPost(quizBody, '/v2/admin/quiz', { token: sessionId });
       const quizId = createRes.retval.quizId;
 
-      const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }] };
-      const questionRes = requestPost({ token, ...question }, `/v1/admin/quiz/${quizId}/question`);
+      const thumbnailUrlExample = 'http://google.com/some/image/path.jpg';
+      const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }], thumbnailUrl: thumbnailUrlExample };
+      const questionRes = requestPost({ ...question }, `/v2/admin/quiz/${quizId}/question`, { token });
 
       const questionId = questionRes.retval.questionId;
       const dupeRes = requestPost({}, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token });
@@ -539,9 +539,9 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const quizId = resQuizCreate.retval.quizId;
 
       // Create question with user
-      const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }] };
-      // need to change to v2 after quizQuestionCreate is merged
-      const resQuestionCreate = requestPost({ token: tokenOne, questionBody: question }, `/v1/admin/quiz/${quizId}/question`);
+      const thumbnailUrlExample = 'http://google.com/some/image/path.jpg';
+      const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }], thumbnailUrl: thumbnailUrlExample };
+      const resQuestionCreate = requestPost({ question }, `/v2/admin/quiz/${quizId}/question`, { token: tokenOne });
       const questionId = resQuestionCreate.retval.questionId;
 
       // Register userTwo and try to duplicate question in quiz created by user
@@ -564,9 +564,9 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       let quizId = resQuizCreate.retval.quizId;
 
       // Create question with user
-      const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }] };
-      // need to change to v2 after quizQuestionCreate is merged
-      const resQuestionCreate = requestPost({ token: tokenUser, questionBody: question }, `/v1/admin/quiz/${quizId}/question`);
+      const thumbnailUrlExample = 'http://google.com/some/image/path.jpg';
+      const question = { question: 'Sample Question', duration: 60, points: 10, answers: [{ answer: 'Sample Answer', correct: true }], thumbnailUrl: thumbnailUrlExample };
+      const resQuestionCreate = requestPost({ question }, `/v2/admin/quiz/${quizId}/question`, { token: tokenUser });
       const questionId = resQuestionCreate.retval.questionId;
 
       quizId += 1;
