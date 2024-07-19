@@ -586,29 +586,27 @@ export function adminQuizQuestionDelete(authUserId: number, quizId: number, ques
  * @param {number} quizId - of the quiz to be transfered owned by authUserId
  * @param {string} userEmail - of the user to which the quiz is being
  *                             transferred to (the target user)
- * @returns {{} | { error: string }}
+ * @returns {{}} - empty object
  */
-export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string) : EmptyObject | ErrorObject {
+export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string): EmptyObject {
   const data = getData();
 
   if (adminEmailInUse(userEmail) === false) {
-    return { error: 'The given user email is not a real user.' };
+    throw new Error('The given user email is not a real user.');
   }
 
   const newUser = findUserByEmail(userEmail);
   if (newUser.authUserId === authUserId) {
-    return { error: 'The user email refers to the current logged in user.' };
-  }
-
-  if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz ID does not refer to a valid quiz.' };
+    throw new Error('The user email refers to the current logged in user.');
   }
 
   // quiz to transfer
   const quiz = findQuizById(quizId);
-  if (quizNameInUse(newUser.authUserId, quiz.name) === true) {
-    return { error: 'Quiz ID already refers to a quiz that has a name that is already used by the target user. ' };
+  if (quizNameInUse(newUser.authUserId, quiz.name)) {
+    throw new Error('Quiz ID already refers to a quiz that has a name that is already used by the target user.');
   }
+
+  // check all sessions for this quiz for being in the END state
 
   // transferring the quiz
   quiz.authUserId = newUser.authUserId;
