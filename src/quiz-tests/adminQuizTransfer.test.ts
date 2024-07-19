@@ -3,7 +3,6 @@
 
 import { requestPost, requestDelete, requestGet } from '../helper-files/requestHelper';
 
-
 const ERROR = { error: expect.any(String) };
 
 beforeEach(() => {
@@ -380,7 +379,7 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
       // make a session not in END state
       const transfer = requestPost(transferBody, `/v2/admin/quiz/${quizId}/transfer`, { token });
       expect(transfer).toStrictEqual({
-        retval: ERROR, 
+        retval: ERROR,
         statusCode: 400
       });
     });
