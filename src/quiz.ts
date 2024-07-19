@@ -110,7 +110,7 @@ export function adminQuizList(authUserId: number): { quizzes: QuizList[] } {
  * @param {number} authUserId
  * @param {string} name
  * @param {string} description
- * @returns {{ quizId: number } | { error: string }} - assigns a quizId | error
+ * @returns {{ quizId: number }} - assigns a quizId | error
  */
 export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } | ErrorObject {
   if (quizNameHasValidChars(name) === false) {
@@ -352,7 +352,7 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
 *
 * @param {number} authUserId
 * @param {number} quizId
-* @returns {{} | { error: string }}
+* @returns {{}}
 */
 export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
   const data = getData();
@@ -377,7 +377,7 @@ export function adminQuizRestore (authUserId: number, quizId: number): EmptyObje
  * Given a user id, view all quizzes in trash
  *
  * @param {number} authUserId
- * @returns {{ quizzes: array } | { error: string }} - returns list of quizzes
+ * @returns {{ quizzes: array }} - returns list of quizzes
  */
 export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } {
   const data = getData();
