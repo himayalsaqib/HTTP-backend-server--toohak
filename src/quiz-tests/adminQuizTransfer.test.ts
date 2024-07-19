@@ -259,7 +259,7 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
 
   describe('Testing successful cases (status code 200)', () => {
     test('Has the correct return type', () => {
-      const res = requestPost({ userEmail: userEmail }, `/v2/admin/quiz/${quizId}/transfer`, { token });
+      const res = requestPost({ userEmail }, `/v2/admin/quiz/${quizId}/transfer`, { token });
       expect(res).toStrictEqual({
         retval: {},
         statusCode: 200
@@ -267,7 +267,7 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
     });
 
     test('Side effect: the quiz is no longer listed for that user and is listed to the other user', () => {
-      const res = requestPost(transferBody, `/v2/admin/quiz/${quizId}/transfer`, { token });
+      const res = requestPost({ userEmail }, `/v2/admin/quiz/${quizId}/transfer`, { token });
       expect(res).toStrictEqual({
         retval: {},
         statusCode: 200
@@ -301,7 +301,7 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
       const res = requestPost(quizBody, '/v2/admin/quiz', { token });
       quizId2 = res.retval.quizId;
 
-      expect(requestPost(transferBody, `/v2/admin/quiz/${quizId}/transfer`, { token })).toStrictEqual({
+      expect(requestPost({ userEmail }, `/v2/admin/quiz/${quizId}/transfer`, { token })).toStrictEqual({
         retval: {},
         statusCode: 200
       });
@@ -335,7 +335,7 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
 
     test('Side effect: the correct timeLastEdited is given when displaying quiz information', () => {
       const time = Math.floor(Date.now() / 1000);
-      const res = requestPost(transferBody, `/v2/admin/quiz/${quizId}/transfer`, { token });
+      const res = requestPost({ userEmail }, `/v2/admin/quiz/${quizId}/transfer`, { token });
       expect(res).toStrictEqual({
         retval: {},
         statusCode: 200
@@ -349,8 +349,7 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
 
   describe('Testing userEmail and quiz name errors (status code 400)', () => {
     test('userEmail is not a real user', () => {
-      transferBody = { userEmail: 'notUserEmail@gmail.com' };
-      const transfer = requestPost(transferBody, `/v2/admin/quiz/${quizId}/transfer`, { token });
+      const transfer = requestPost({ userEmail: 'notUserEmail@gmail.com' }, `/v2/admin/quiz/${quizId}/transfer`, { token });
       expect(transfer).toStrictEqual({
         retval: ERROR,
         statusCode: 400
@@ -358,8 +357,7 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
     });
 
     test('userEmail is the current logged in user', () => {
-      transferBody = { userEmail: userBody1.email };
-      const transfer = requestPost(transferBody, `/v2/admin/quiz/${quizId}/transfer`, { token });
+      const transfer = requestPost({ userEmail: userBody1.email }, `/v2/admin/quiz/${quizId}/transfer`, { token });
       expect(transfer).toStrictEqual({
         retval: ERROR,
         statusCode: 400
@@ -371,8 +369,7 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
       quizBody = { name: 'Valid Quiz Name', description: 'Another valid quiz description' };
       requestPost(quizBody, '/v2/admin/quiz', { token: token2 });
 
-      transferBody = { userEmail: userBody2.email };
-      const transfer = requestPost(transferBody, `/v2/admin/quiz/${quizId}/transfer`, { token });
+      const transfer = requestPost({ userEmail: userBody2.email }, `/v2/admin/quiz/${quizId}/transfer`, { token });
       expect(transfer).toStrictEqual({
         retval: ERROR,
         statusCode: 400
@@ -392,8 +389,7 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
   describe('Testing token errors (status code 401)', () => {
     test('Token is empty (no users registered)', () => {
       requestDelete({}, '/v1/clear');
-      transferBody = { userEmail: 'validemail@gmail.com' };
-      const res = requestPost(transferBody, `/v2/admin/quiz/${quizId}/transfer`, { token });
+      const res = requestPost({ userEmail: 'validemail@gmail.com' }, `/v2/admin/quiz/${quizId}/transfer`, { token });
       expect(res).toStrictEqual({
         retval: ERROR,
         statusCode: 401
@@ -403,9 +399,8 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
     test('Session ID is invalid', () => {
       // make sessionId invalid
       const sessionId = parseInt(token) + 1;
-      transferBody = { userEmail: userEmail };
 
-      const transfer = requestPost(transferBody, `/v2/admin/quiz/${quizId}/transfer`, { token: sessionId.toString() });
+      const transfer = requestPost({ userEmail }, `/v2/admin/quiz/${quizId}/transfer`, { token: sessionId.toString() });
       expect(transfer).toStrictEqual({
         retval: ERROR,
         statusCode: 401
@@ -426,10 +421,9 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
 
     test('User is not an owner of this quiz', () => {
       userEmail = 'email@gmail.com';
-      transferBody = { userEmail: userEmail };
 
       // transfer user2's quiz to user3 with user1's quizId
-      const transfer = requestPost(transferBody, `/v2/admin/quiz/${quizId}/transfer`, { token: token2 });
+      const transfer = requestPost({ userEmail }, `/v2/admin/quiz/${quizId}/transfer`, { token: token2 });
       expect(transfer).toStrictEqual({
         retval: ERROR,
         statusCode: 403
@@ -437,8 +431,7 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
     });
 
     test('The quiz does not exist', () => {
-      transferBody = { userEmail: userBody2.email };
-      const transfer = requestPost(transferBody, `/v2/admin/quiz/${quizId + 1}/transfer`, { token });
+      const transfer = requestPost({ userEmail: userBody2.email }, `/v2/admin/quiz/${quizId + 1}/transfer`, { token });
       expect(transfer).toStrictEqual({
         retval: ERROR,
         statusCode: 403
