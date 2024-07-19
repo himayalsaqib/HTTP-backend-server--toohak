@@ -313,8 +313,9 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       // Create question
       const answerBody1 = { answer: 'Prince Charles', correct: true };
       const answerBody2 = { answer: 'Prince William', correct: false };
-      const questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2] };
-      const resQuestionCreate = requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`);
+      const thumbnailUrlExample = 'http://google.com/some/image/path.jpg';
+      const questionBody = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: [answerBody1, answerBody2], thumbnailUrl: thumbnailUrlExample };
+      const resQuestionCreate = requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
       questionId = resQuestionCreate.retval.questionId;
       const dupeQuestion = requestPost({}, `/v2/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token });
       expect(dupeQuestion.statusCode).toBe(200);
@@ -324,24 +325,25 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
     test('Side effect: duplicated question is immediately after where source question is', () => {
       const quiz = requestPost(quizBody, '/v2/admin/quiz', { token });
       const quizId = quiz.retval.quizId;
+      const thumbnailUrlExample = 'http://google.com/some/image/path.jpg';
 
       const answerBody1 = [{ answer: 'Prince Charles', correct: true }, { answer: 'Prince William', correct: false }];
-      const questionCreateBody1 = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody1 };
+      const questionCreateBody1 = { question: 'Who is the Monarch of England?', duration: 4, points: 5, answers: answerBody1, thumbnailUrl: thumbnailUrlExample };
 
       const answerBody2 = [{ answer: 'Washington, D.C.', correct: true }, { answer: 'New York', correct: false }];
-      const questionCreateBody2 = { question: 'What is the capital of the USA?', duration: 3, points: 5, answers: answerBody2 };
+      const questionCreateBody2 = { question: 'What is the capital of the USA?', duration: 3, points: 5, answers: answerBody2, thumbnailUrl: thumbnailUrlExample };
 
       const answerBody3 = [{ answer: 'Elephant', correct: true }, { answer: 'Lion', correct: false }];
-      const questionCreateBody3 = { question: 'What is the largest land animal?', duration: 2, points: 5, answers: answerBody3 };
+      const questionCreateBody3 = { question: 'What is the largest land animal?', duration: 2, points: 5, answers: answerBody3, thumbnailUrl: thumbnailUrlExample };
 
       // Create three questions
-      const res1 = requestPost({ token: token, questionBody: questionCreateBody1 }, `/v1/admin/quiz/${quizId}/question`);
+      const res1 = requestPost({ questionBody: questionCreateBody1 }, `/v2/admin/quiz/${quizId}/question`, { token });
       const questionId1 = res1.retval.questionId;
 
-      const res2 = requestPost({ token: token, questionBody: questionCreateBody2 }, `/v1/admin/quiz/${quizId}/question`);
+      const res2 = requestPost({ questionBody: questionCreateBody2 }, `/v2/admin/quiz/${quizId}/question`, { token });
       const questionId2 = res2.retval.questionId;
 
-      const res3 = requestPost({ token: token, questionBody: questionCreateBody3 }, `/v1/admin/quiz/${quizId}/question`);
+      const res3 = requestPost({ questionBody: questionCreateBody3 }, `/v2/admin/quiz/${quizId}/question`, { token });
       const questionId3 = res3.retval.questionId;
 
       // Duplicate the second question
@@ -360,6 +362,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
               questionId: questionId1,
               question: questionCreateBody1.question,
               duration: questionCreateBody1.duration,
+              thumbnailUrl: thumbnailUrlExample,
               points: questionCreateBody1.points,
               answers: [
                 {
@@ -380,6 +383,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
               questionId: questionId2,
               question: questionCreateBody2.question,
               duration: questionCreateBody2.duration,
+              thumbnailUrl: thumbnailUrlExample,
               points: questionCreateBody2.points,
               answers: [
                 {
@@ -400,6 +404,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
               questionId: dupeQuestionId,
               question: questionCreateBody2.question,
               duration: questionCreateBody2.duration,
+              thumbnailUrl: thumbnailUrlExample,
               points: questionCreateBody2.points,
               answers: [
                 {
@@ -420,6 +425,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
               questionId: questionId3,
               question: questionCreateBody3.question,
               duration: questionCreateBody3.duration,
+              thumbnailUrl: thumbnailUrlExample,
               points: questionCreateBody3.points,
               answers: [
                 {
