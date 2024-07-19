@@ -592,30 +592,21 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
  * @param {number} authUserId
  * @param {number} quizId
  * @param {number} questionId
- * @returns {{ newQuestionId: number} | { error: string }} - returns new question ID or an error message
+ * @returns {{ newQuestionId: number}} - returns new question ID
  */
-export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, questionId: number): {newQuestionId: number} | ErrorObject {
+export function adminQuizQuestionDuplicate (quizId: number, questionId: number): {newQuestionId: number} {
   const data = getData();
 
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId does not refer to a valid user id.' };
-  }
-  if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz Id does not refer to a valid quiz.' };
-  }
-
   const quiz = findQuizById(quizId);
-  if (quiz.authUserId !== authUserId) {
-    return { error: 'Quiz does not belong to the user.' };
-  }
 
   const questionIndex = quiz.questions?.findIndex(q => q.questionId === questionId);
   if (questionIndex === undefined || questionIndex === -1) {
-    return { error: 'Question Id does not refer to a valid question in the quiz.' };
+    throw new Error('Question Id does not refer to a valid question in the quiz.');
   }
 
   const question = quiz.questions[questionIndex];
   let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+
   while (questionIdInUse(newQuestionId) === true) {
     newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
@@ -629,7 +620,7 @@ export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, 
 
   if (quiz.duration > MAX_QUIZ_QUESTIONS_DURATION) {
     quiz.questions.splice(questionIndex + 1, 1);
-    return { error: 'Duplicating this question exceeds the maximum quiz duration of 3 minutes.' };
+    throw new Error('Duplicating this question exceeds the maximum quiz duration of 3 minutes.');
   }
 
   quiz.timeLastEdited = currentTime();
