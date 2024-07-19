@@ -480,14 +480,12 @@ app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
-  const userToken = errorCheckResponse.userToken;
-
-  const response = adminQuizQuestionDelete(userToken.authUserId, quizId, questionId);
-  if ('error' in response) {
-    return res.status(400).json(response);
+  try {
+    const response = adminQuizQuestionDelete(quizId, questionId);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
-
-  res.json(response);
 });
 
 app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
@@ -694,6 +692,24 @@ app.post('/v2/admin/quiz/:quizid/question', (req: Request, res: Response) => {
 
   try {
     const response = adminQuizCreateQuestion(quizId, questionBody);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.delete('/v2/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token'));
+  const quizId = parseInt(req.params.quizid as string);
+  const questionId = parseInt(req.params.questionid as string);
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  try {
+    const response = adminQuizQuestionDelete(quizId, questionId);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });

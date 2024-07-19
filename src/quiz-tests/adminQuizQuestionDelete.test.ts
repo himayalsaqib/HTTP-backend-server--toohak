@@ -1,4 +1,4 @@
-// includes http tests for the route DELETE /v1/admin/quiz/{quizid}/question{questionid}
+// includes http tests for the route DELETE /v1/admin/quiz/{quizid}/question{questionid} and /v2/admin/quiz/{quizid}/question{questionid}
 
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 
@@ -119,12 +119,10 @@ describe('DELETE /v1/admin/quiz/:quizid/question/:questionid', () => {
     });
   });
 
-  describe('Testing parameters given to adminQuizQuestionDelete (status code 400)', () => {
-    describe('Testing questionId errors', () => {
-      test('Question Id does not refer to a valid question within this quiz', () => {
-        const res = requestDelete({ token: token }, `/v1/admin/quiz/${quizId}/question/${questionId + 1}`);
-        expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
-      });
+  describe('Testing questionId errors (status code 400)', () => {
+    test('Question Id does not refer to a valid question within this quiz', () => {
+      const res = requestDelete({ token: token }, `/v1/admin/quiz/${quizId}/question/${questionId + 1}`);
+      expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
   });
 
@@ -214,7 +212,7 @@ describe('DELETE /v2/admin/quiz/:quizid/question/:questionid', () => {
     test('Side effect: adminQuizInfo returns quiz without the deleted question', () => {
       requestDelete({}, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
 
-      const res = requestGet({}, `/v1/admin/quiz/${quizId}`, { token });
+      const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
       expect(res.retval).toStrictEqual({
         quizId: quizId,
         name: quizBody.name,
@@ -265,18 +263,22 @@ describe('DELETE /v2/admin/quiz/:quizid/question/:questionid', () => {
       const requestTime = Math.floor(Date.now() / 1000);
       requestDelete({}, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
 
-      const res = requestGet({}, `/v1/admin/quiz/${quizId}`, { token });
+      const res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
       expect(res.retval.timeLastEdited).toBeGreaterThanOrEqual(requestTime);
       expect(res.retval.timeLastEdited).toBeLessThanOrEqual(requestTime + 1);
     });
   });
 
-  describe('Testing parameters given to adminQuizQuestionDelete (status code 400)', () => {
-    describe('Testing questionId errors', () => {
-      test('Question Id does not refer to a valid question within this quiz', () => {
-        const res = requestDelete({}, `/v2/admin/quiz/${quizId}/question/${questionId + 1}`, { token });
-        expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
-      });
+  describe('Testing questionId errors (status code 400)', () => {
+    test('Question Id does not refer to a valid question within this quiz', () => {
+      const res = requestDelete({}, `/v2/admin/quiz/${quizId}/question/${questionId + 1}`, { token });
+      expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
+    });
+
+    test.skip('Any session for this quiz is not in END state', () => {
+      // Call quiz session to create session and make it end state
+      const res = requestDelete({}, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
+      expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
   });
 
