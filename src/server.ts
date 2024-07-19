@@ -305,9 +305,7 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
-  const userToken = errorCheckResponse.userToken;
-
-  const response = adminQuizRemove(userToken.authUserId, quizId);
+  const response = adminQuizRemove(quizId);
   res.json(response);
 });
 
@@ -685,6 +683,19 @@ app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
   const userToken = errorCheckResponse.userToken;
 
   const response = adminQuizInfo(userToken.authUserId, quizId);
+  res.json(response);
+});
+
+app.delete('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const sessionId = parseInt(req.header('token'));
+  const quizId = parseInt(req.params.quizid as string);
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  const response = adminQuizRemove(quizId);
   res.json(response);
 });
 
