@@ -632,15 +632,7 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
  */
 export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, questionId: number): {newQuestionId: number} {
   const data = getData();
-
-  if (quizIdInUse(quizId) === false) {
-    throw new Error('Quiz Id does not refer to a valid quiz.');
-  }
-
   const quiz = findQuizById(quizId);
-  if (quiz.authUserId !== authUserId) {
-    throw new Error('Quiz does not belong to the user.');
-  }
 
   const questionIndex = quiz.questions?.findIndex(q => q.questionId === questionId);
   if (questionIndex === undefined || questionIndex === -1) {
