@@ -9,6 +9,7 @@
 ## Change Log
 
 * 29/06 Added missing error condition to adminQuizDescriptionUpdate and peer assessment links.
+* 19/07 Dropped the world "limited" from this sentence: Ensuring that there is limited or no references to `req`, `res`, or status codes, in functions outside of `server.ts` to properly maintain abstraction between the HTTP layer and the application logic layer.
 
 ## 🫡 0. Aims:
 
@@ -1265,7 +1266,7 @@ In this iteration, you are expected to:
 
     1. Applying whatever designing for maintainability concepts were taught in lectures
     2. Using exceptions to "throw errors" instead of returning errors in the functions you call from `server.ts`.
-    3. Ensuring that there is limited or no references to `req`, `res`, or status codes, in functions outside of `server.ts` to properly maintain abstraction between the HTTP layer and the application logic layer.
+    3. Ensuring that there is no references to `req`, `res`, or status codes, in functions outside of `server.ts` to properly maintain abstraction between the HTTP layer and the application logic layer.
 
 2. Implement and test the HTTP Express server according to the [entire interface provided in the specification](swagger.yaml), including all new routes added in iteration 3.
 
