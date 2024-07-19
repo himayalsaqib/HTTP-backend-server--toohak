@@ -152,6 +152,7 @@ export function adminQuizRemove (quizId: number): EmptyObject {
   const data = getData();
   const quizIndex = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
   const quiz = data.quizzes[quizIndex];
+  // check all sessions for this quiz for being in the END state
 
   quiz.timeLastEdited = currentTime();
   data.trash.push({ quiz: quiz });
