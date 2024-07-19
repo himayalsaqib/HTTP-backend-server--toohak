@@ -7,6 +7,7 @@ import {
   quizNameInUse,
   quizIdInUse,
   findQuizById,
+  quizIsInTrash,
   findTrashedQuizById,
   calculateSumQuestionDuration,
   checkAnswerLength,
@@ -140,7 +141,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     quizId: newQuizId,
     name: name,
     timeCreated: currentTime(),
-    timeLastEdited: currentTime(),
+    timeLastEdited: <number> undefined,
     description: description,
     questions: emptyQuestions,
     duration: 0,
@@ -358,11 +359,18 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
 * @returns {{} | { error: string }}
 */
 export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
+  if (authUserIdExists(authUserId) === false) {
+    return { error: 'AuthUserId is not a valid user.' };
+  }
+  if (quizIsInTrash(quizId) === false) {
+    return { error: 'Quiz ID refers to a quiz that is not currently in the trash' };
+  }
+
   const data = getData();
   const trashedQuiz = findTrashedQuizById(quizId);
 
   if (quizNameInUse(authUserId, trashedQuiz.quiz.name) === true) {
-    throw new Error('Quiz name of the restored quiz is already used by the current logged in user for another active quiz.');
+    return { error: 'Quiz name of the restored quiz is already used by the current logged in user for another active quiz' };
   }
 
   const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
@@ -380,9 +388,13 @@ export function adminQuizRestore (authUserId: number, quizId: number): EmptyObje
  *
  * @param {number} authUserId
  * @param {number} quizId
- * @returns {{ quizzes: array }} - returns list of quizzes
+ * @returns {{ quizzes: array } | { error: string }} - returns list of quizzes
  */
-export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } {
+export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | ErrorObject {
+  if (authUserIdExists(authUserId) === false) {
+    return { error: 'AuthUserId does not refer to a valid user id.' };
+  }
+
   const data = getData();
   const trashList: QuizList[] = [];
 
