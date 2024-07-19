@@ -584,10 +584,8 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
-  const userToken = errorCheckResponse.userToken;
-
   try {
-    const response = adminQuizQuestionDuplicate(userToken.authUserId, quizId, questionId);
+    const response = adminQuizQuestionDuplicate(quizId, questionId);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -606,10 +604,8 @@ app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
-  const userToken = errorCheckResponse.userToken;
-
   try {
-    const response = adminQuizQuestionDuplicate(userToken.authUserId, quizId, questionId);
+    const response = adminQuizQuestionDuplicate(quizId, questionId);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });

@@ -627,7 +627,7 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
  * @param {number} questionId
  * @returns {{ newQuestionId: number}} - returns new question ID
  */
-export function adminQuizQuestionDuplicate (authUserId: number, quizId: number, questionId: number): {newQuestionId: number} {
+export function adminQuizQuestionDuplicate (quizId: number, questionId: number): {newQuestionId: number} {
   const data = getData();
 
   const quiz = findQuizById(quizId);
