@@ -1,6 +1,6 @@
 // Contains all routes for toohak server
 
-import express, { json, Request, response, Response } from 'express';
+import express, { json, Request, Response } from 'express';
 import { echo } from './newecho';
 import morgan from 'morgan';
 import config from './config.json';
