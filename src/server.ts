@@ -407,10 +407,8 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
-  const userToken = errorCheckResponse.userToken;
-
   try {
-    const response = adminQuizDescriptionUpdate(userToken.authUserId, quizId, description);
+    const response = adminQuizDescriptionUpdate(quizId, description);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
@@ -655,10 +653,8 @@ app.put('/v2/admin/quiz/:quizid/description', (req: Request, res: Response) => {
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
-  const userToken = errorCheckResponse.userToken;
-
   try {
-    const response = adminQuizDescriptionUpdate(userToken.authUserId, quizId, description);
+    const response = adminQuizDescriptionUpdate(quizId, description);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });

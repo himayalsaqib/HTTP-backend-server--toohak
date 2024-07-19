@@ -249,13 +249,7 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
  * @param {string} description
  * @returns {{}} - an empty object
  */
-export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, description: string): EmptyObject {
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-  if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz ID does not refer to a valid quiz.' };
-  }
+export function adminQuizDescriptionUpdate (quizId: number, description: string): EmptyObject {
   if (description.length > MAX_DESCRIPTION_LEN) {
     throw new Error('Description is more than 100 characters in length.');
   }
