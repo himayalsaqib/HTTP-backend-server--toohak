@@ -72,13 +72,13 @@ export interface QuestionBody {
 // ================================= ENUMS ================================== //
 
 export enum QuizAnswerColours {
-  RED = 'RED',
-  BLUE = 'BLUE',
-  GREEN = 'GREEN',
-  YELLOW = 'YELLOW',
-  PURPLE = 'PURPLE',
-  BROWN = 'BROWN',
-  ORANGE = 'ORANGE'
+  RED = 'red',
+  BLUE = 'blue',
+  GREEN = 'green',
+  YELLOW = 'yellow',
+  PURPLE = 'purple',
+  BROWN = 'brown',
+  ORANGE = 'orange',
 }
 
 // =============================== FUNCTIONS ================================ //

@@ -379,7 +379,7 @@ export function createAnswersArray(givenAnswers: QuizQuestionAnswers[]): Answer[
 export function generateAnsColour(): QuizAnswerColours {
   const answerColours = Object.values(QuizAnswerColours);
   const colourIndex = Math.floor(Math.random() * answerColours.length);
-  return answerColours[colourIndex] as QuizAnswerColours;
+  return answerColours[colourIndex];
 }
 
 /**
