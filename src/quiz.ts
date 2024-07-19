@@ -537,22 +537,17 @@ export function adminQuizQuestionUpdate(
  * Deletes a question from the relevent quiz
  * Additionally, updates the quiz's duration and last edited time.
  *
- * @param {number} authUserId
  * @param {number} quizId
  * @param {number} questionId
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
-export function adminQuizQuestionDelete(authUserId: number, quizId: number, questionId: number): EmptyObject | ErrorObject {
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId does not refer to a valid user id.' };
-  }
-
+export function adminQuizQuestionDelete(quizId: number, questionId: number): EmptyObject {
   const data = getData();
   const quiz = findQuizById(quizId);
 
   const questionIndex = quiz.questions.findIndex(q => q.questionId === questionId);
   if (questionIndex === -1) {
-    return { error: 'Question Id does not refer to a valid question within this quiz' };
+    throw new Error('Question Id does not refer to a valid question within this quiz');
   }
 
   // Remove question from question array at specified index
