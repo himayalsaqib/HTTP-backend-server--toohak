@@ -148,7 +148,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
  * @param {number} quizId
  * @returns {{}} - an empty object
  */
-export function adminQuizRemove (authUserId: number, quizId: number): EmptyObject {
+export function adminQuizRemove (quizId: number): EmptyObject {
   const data = getData();
   const quizIndex = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
   const quiz = data.quizzes[quizIndex];
