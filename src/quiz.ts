@@ -78,7 +78,7 @@ export interface QuestionBody {
  * @param {number} authUserId
  * @returns {{ quizzes: { quizList }[] }}
  */
-export function adminQuizList(authUserId: number): { quizzes: QuizList[] } | ErrorObject {
+export function adminQuizList(authUserId: number): { quizzes: QuizList[] } {
   const data = getData();
   const quizList = [];
 
