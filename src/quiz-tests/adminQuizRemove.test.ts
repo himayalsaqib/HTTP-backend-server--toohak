@@ -135,7 +135,7 @@ describe('DELETE /v2/admin/quiz/:quizid', () => {
     describe('Testing for invalid and empty token (status code 401', () => {
       test('Returns error when sessionId is invalid', () => {
         const sessionId = parseInt(token) + 1;
-        expect(requestDelete({}, `/v2/admin/quiz/:quizId`, { token: sessionId.toString() })).toStrictEqual({
+        expect(requestDelete({}, '/v2/admin/quiz/:quizId', { token: sessionId.toString() })).toStrictEqual({
           retval: ERROR,
           statusCode: 401
         });
@@ -143,9 +143,19 @@ describe('DELETE /v2/admin/quiz/:quizid', () => {
 
       test('Returns error when token is empty', () => {
         requestDelete({}, '/v1/clear');
-        expect(requestDelete({}, `/v2/admin/quiz/:quizId`, { token })).toStrictEqual({
+        expect(requestDelete({}, '/v2/admin/quiz/:quizId', { token })).toStrictEqual({
           retval: ERROR,
           statusCode: 401
+        });
+      });
+    });
+
+    describe('Testing other quiz errors', () => {
+      test.skip('Any session for this quiz is not in END state', () => {
+        // make a session not in end state
+        expect(requestDelete({}, '/v2/admin/quiz/:quizId', { token })).toStrictEqual({
+          retval: ERROR,
+          statusCode: 400
         });
       });
     });
