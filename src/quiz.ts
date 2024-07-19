@@ -7,7 +7,6 @@ import {
   quizNameInUse,
   quizIdInUse,
   findQuizById,
-  quizIsInTrash,
   findTrashedQuizById,
   calculateSumQuestionDuration,
   checkAnswerLength,

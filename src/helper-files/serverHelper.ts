@@ -109,11 +109,11 @@ export function quizzesBelongToUser(authUserId: number, quizIds: number[]): void
 export function trashedQuizBelongsToUser(authUserId: number, quizId: number): void {
   const trashedQuiz = findTrashedQuizById(quizId);
 
-  if (trashedQuiz === undefined) {
-    return;
-  } else if (trashedQuiz.quiz.authUserId !== authUserId) {
-    throw new Error('User is not an owner of this quiz.');
-  } return;
+  if (trashedQuiz !== undefined) {
+    if (trashedQuiz.quiz.authUserId !== authUserId) {
+      throw new Error('User is not an owner of this quiz.');
+    }
+  }
 }
 
 /**
