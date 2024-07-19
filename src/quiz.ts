@@ -19,7 +19,8 @@ import {
   createAnswersArray,
   adminEmailInUse,
   findUserByEmail,
-  currentTime
+  currentTime,
+  checkThumbnailUrlFileType
 } from './helper-files/helper';
 
 /// //////////////////////////// Global Variables //////////////////////////////
@@ -65,9 +66,9 @@ export interface QuizQuestionAnswers {
 export interface QuestionBody {
   question: string;
   duration: number;
-  thumbnailUrl?: string;
   points: number;
   answers: QuizQuestionAnswers[];
+  thumbnailUrl?: string;
 }
 
 /// ////////////////////////////// Functions ///////////////////////////////////
@@ -75,15 +76,11 @@ export interface QuestionBody {
  * Provide a list of all quizzes that are owned by the currently logged in user.
  *
  * @param {number} authUserId
- * @returns {{ quizzes: { quizList }[] } | { error: string }}
+ * @returns {{ quizzes: { quizList }[] }}
  */
-export function adminQuizList(authUserId: number): { quizzes: QuizList[] } | ErrorObject {
+export function adminQuizList(authUserId: number): { quizzes: QuizList[] } {
   const data = getData();
   const quizList = [];
-
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUserId does not refer to a valid user id.' };
-  }
 
   for (const quiz of data.quizzes) {
     if (quiz.authUserId === authUserId) {
@@ -217,9 +214,9 @@ export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo {
  * @param {number} authUserId
  * @param {number} quizId
  * @param {string} name
- * @returns {{} | { error: string }} - empty object
+ * @returns {{}} - empty object
  */
-export function adminQuizNameUpdate (authUserId: number, quizId: number, name: string): EmptyObject | ErrorObject {
+export function adminQuizNameUpdate (authUserId: number, quizId: number, name: string): EmptyObject {
   if (!quizNameHasValidChars(name)) {
     throw new Error('Name contains invalid characters. Valid characters are alphanumeric and spaces.');
   }
@@ -247,9 +244,9 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
  * @param {number} authUserId
  * @param {number} quizId
  * @param {string} description
- * @returns {{} | { error: string }} - an empty object
+ * @returns {{}} - an empty object
  */
-export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, description: string): EmptyObject | ErrorObject {
+export function adminQuizDescriptionUpdate (quizId: number, description: string): EmptyObject {
   if (description.length > MAX_DESCRIPTION_LEN) {
     throw new Error('Description is more than 100 characters in length.');
   }
@@ -271,53 +268,58 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  * as the same as the created time, and the colours of all the answers of that
  * question are randomly generated
  *
- * @param {number} authUserId
  * @param {number} quizId
  * @param {object} questionBody
- * @returns { {questionId: number} | { error: string}}
+ * @returns { {questionId: number} }
  */
-export function adminQuizCreateQuestion(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number } | ErrorObject {
+export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBody): { questionId: number } {
   const data = getData();
   const quiz = findQuizById(quizId);
 
   if (questionBody.question.length > MAX_QUESTION_LEN || questionBody.question.length < MIN_QUESTION_LEN) {
-    return { error: 'The question string cannot be less than 5 characters or greater than 50 characters in length.' };
+    throw new Error('The question string cannot be less than 5 characters or greater than 50 characters in length.');
   }
 
   if (questionBody.answers.length > MAX_NUM_ANSWERS || questionBody.answers.length < MIN_NUM_ANSWERS) {
-    return { error: 'The question cannot have more than 6 answers or less than 2 answers.' };
+    throw new Error('The question cannot have more than 6 answers or less than 2 answers.');
   }
 
   if (questionBody.duration <= MIN_QUIZ_QUESTIONS_DURATION) {
-    return { error: 'The question duration must be a positive number.' };
+    throw new Error('The question duration must be a positive number.');
   }
 
   if (calculateSumQuestionDuration(quizId, questionBody.duration) > MAX_QUIZ_QUESTIONS_DURATION) {
-    return { error: 'The sum of the question durations cannot exceed 3 minutes.' };
+    throw new Error('The sum of the question durations cannot exceed 3 minutes.');
   }
 
   if (questionBody.points > MAX_POINT_VALUE || questionBody.points < MIN_POINT_VALUE) {
-    return { error: 'The points awarded must not be less than 1 or not greater than 10.' };
+    throw new Error('The points awarded must not be less than 1 or not greater than 10.');
   }
 
-  if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN) === true) {
-    return { error: 'The answer cannot be longer than 30 characters or shorter than 1 character.' };
+  if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN)) {
+    throw new Error('The answer cannot be longer than 30 characters or shorter than 1 character.');
   }
 
-  if (checkForAnsDuplicates(questionBody) === true) {
-    return { error: 'Answers cannot be duplicates of each other in the same question.' };
+  if (checkForAnsDuplicates(questionBody)) {
+    throw new Error('Answers cannot be duplicates of each other in the same question.');
   }
 
   if (checkForNumCorrectAns(questionBody) < MIN_CORRECT_ANS) {
-    return { error: 'There must be at least 1 correct answer.' };
+    throw new Error('There must be at least 1 correct answer.');
   }
 
-  if (authUserIdExists(authUserId) === false) {
-    return { error: 'AuthUser ID is not a valid user.' };
-  }
+  if (questionBody.thumbnailUrl !== undefined) {
+    if (questionBody.thumbnailUrl.length === 0) {
+      throw new Error('The thumbnailUrl cannot be an empty string.');
+    }
 
-  if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz ID does not refer to a quiz that exists.' };
+    if (!checkThumbnailUrlFileType(questionBody.thumbnailUrl)) {
+      throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
+    }
+
+    if (!(questionBody.thumbnailUrl.startsWith('https://') || questionBody.thumbnailUrl.startsWith('http://'))) {
+      throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
+    }
   }
 
   let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -331,6 +333,7 @@ export function adminQuizCreateQuestion(authUserId: number, quizId: number, ques
     duration: questionBody.duration,
     points: questionBody.points,
     answers: createAnswersArray(questionBody.answers),
+    thumbnailUrl: questionBody.thumbnailUrl
   };
 
   // set timeLastEditied as the same as timeCreated for question
@@ -400,9 +403,9 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } | E
  *
  * @param {number} authUserId
  * @param {number[]} quizIds
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
-export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): EmptyObject | ErrorObject {
+export function adminQuizTrashEmpty(quizIds: number[]): EmptyObject {
   const data = getData();
 
   // Find the first quizId in quizIds that is not in data.trash for every quizId
@@ -410,7 +413,7 @@ export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): Empt
 
   // If not undefined, there is at least one quizId not in data.trash and return error
   if (quizNotInTrash !== undefined) {
-    return { error: 'One or more Quiz IDs is not currently in the trash.' };
+    throw new Error('One or more Quiz IDs is not currently in the trash.');
   }
 
   for (const quizId of quizIds) {
@@ -435,26 +438,23 @@ export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): Empt
  * @param {number} questionId
  * @param {number} newPosition
  * @param {number} quizId
- * @returns {{} | { error: string }}
+ * @returns {{}}
  */
-export function adminQuizQuestionMove (questionId: number, newPosition: number, quizId: number): EmptyObject | ErrorObject {
+export function adminQuizQuestionMove (questionId: number, newPosition: number, quizId: number): EmptyObject {
   const quiz = findQuizById(quizId);
-  if (quiz === undefined) {
-    return { error: 'Quiz does not exist.' };
-  }
 
   const question = findQuestionById(questionId, quizId);
   if (question === undefined) {
-    return { error: 'Question Id does not refer to a valid question within this quiz.' };
+    throw new Error('Question Id does not refer to a valid question within this quiz.');
   }
 
   if (newPosition < MIN_QUESTION_INDEX || newPosition > quiz.questions.length - 1) {
-    return { error: 'New position is less than 0 or new position is greater than n-1 where n is the number of questions.' };
+    throw new Error('New position is less than 0 or new position is greater than n-1 where n is the number of questions.');
   }
 
   const questionIndex = quiz.questions.findIndex(q => q.questionId === questionId);
   if (questionIndex === newPosition) {
-    return { error: 'NewPosition is the position of the current question.' };
+    throw new Error('NewPosition is the position of the current question.');
   }
 
   quiz.timeLastEdited = currentTime();
@@ -572,29 +572,27 @@ export function adminQuizQuestionDelete(authUserId: number, quizId: number, ques
  * @param {number} quizId - of the quiz to be transfered owned by authUserId
  * @param {string} userEmail - of the user to which the quiz is being
  *                             transferred to (the target user)
- * @returns {{} | { error: string }}
+ * @returns {{}} - empty object
  */
-export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string) : EmptyObject | ErrorObject {
+export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string): EmptyObject {
   const data = getData();
 
-  if (adminEmailInUse(userEmail) === false) {
-    return { error: 'The given user email is not a real user.' };
+  if (!adminEmailInUse(userEmail)) {
+    throw new Error('The given user email is not a real user.');
   }
 
   const newUser = findUserByEmail(userEmail);
   if (newUser.authUserId === authUserId) {
-    return { error: 'The user email refers to the current logged in user.' };
-  }
-
-  if (quizIdInUse(quizId) === false) {
-    return { error: 'Quiz ID does not refer to a valid quiz.' };
+    throw new Error('The user email refers to the current logged in user.');
   }
 
   // quiz to transfer
   const quiz = findQuizById(quizId);
-  if (quizNameInUse(newUser.authUserId, quiz.name) === true) {
-    return { error: 'Quiz ID already refers to a quiz that has a name that is already used by the target user. ' };
+  if (quizNameInUse(newUser.authUserId, quiz.name)) {
+    throw new Error('Quiz ID already refers to a quiz that has a name that is already used by the target user.');
   }
+
+  // check all sessions for this quiz for being in the END state
 
   // transferring the quiz
   quiz.authUserId = newUser.authUserId;
