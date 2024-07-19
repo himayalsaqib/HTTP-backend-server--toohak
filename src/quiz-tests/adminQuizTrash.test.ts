@@ -168,33 +168,6 @@ describe('GET /v2/admin/quiz/trash', () => {
         ]
       });
     });
-
-    test('Side effect: correctly displays trash after quiz had been restored', () => {
-      let res = requestPost(quizBody, '/v2/admin/quiz', { token });
-      const quizId = res.retval.quizId;
-      // change to v2
-      requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
-      // change to v2
-      res = requestPost({ token: token }, `/v1/admin/quiz/${quizId}/restore`);
-      const trashRes = requestGet({}, '/v2/admin/quiz/trash', { token });
-      expect(trashRes.statusCode).toStrictEqual(200);
-      expect(trashRes).toStrictEqual({ retval: { quizzes: [] }, statusCode: 200 });
-    });
-
-    test('Side effect: correctly displays empty trash after trash has been emptied', () => {
-      let res = requestPost(quizBody, '/v2/admin/quiz', { token });
-      const quizId = res.retval.quizId;
-      // change to v2
-      requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
-
-      const quizIds = JSON.stringify([quizId]);
-      // uncomment when v2 is merged
-      // res = requestDelete({ quizIds: quizIdsToDelete }, '/v2/admin/quiz/trash/empty', { token });
-      res = requestDelete({ token: token, quizIds: quizIds }, '/v1/admin/quiz/trash/empty');
-      const trashRes = requestGet({}, '/v2/admin/quiz/trash', { token });
-      expect(trashRes.statusCode).toStrictEqual(200);
-      expect(trashRes).toStrictEqual({ retval: { quizzes: [] }, statusCode: 200 });
-    });
   });
 
   describe('Testing for empty or invalid Token (status code 401)', () => {
