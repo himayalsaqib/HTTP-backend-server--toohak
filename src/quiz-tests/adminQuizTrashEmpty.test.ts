@@ -236,7 +236,7 @@ describe('DELETE /v2/admin/quiz/trash/empty', () => {
     test('Token is empty (no users are registered)', () => {
       requestDelete({}, '/v1/clear');
       const quizIdsToDelete = JSON.stringify([quizIds[0], quizIds[1]]);
-      const res = requestDelete({ quizIds: quizIdsToDelete }, '/v1/admin/quiz/trash/empty', { token });
+      const res = requestDelete({ quizIds: quizIdsToDelete }, '/v2/admin/quiz/trash/empty', { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
   });
