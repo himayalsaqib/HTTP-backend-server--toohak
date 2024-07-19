@@ -109,3 +109,112 @@ describe('GET /v1/admin/quiz/trash', () => {
     });
   });
 });
+
+describe('GET /v2/admin/quiz/trash', () => {
+  let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
+  let quizBody: { name: string, description: string };
+  let token: string;
+
+  describe('Testing for correct return type (status code 200)', () => {
+    beforeEach(() => {
+      userBody = { email: 'userone@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
+      const registerUser = requestPost(userBody, '/v1/admin/auth/register');
+      token = registerUser.retval.token;
+      quizBody = { name: 'My Quiz Name', description: 'Valid Quiz Description' };
+    });
+
+    test('Correctly displays a quiz in trash', () => {
+      const res = requestPost(quizBody, '/v2/admin/quiz', { token });
+      const quizId = res.retval.quizId;
+      // change to v2
+      requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
+
+      const trashRes = requestGet({}, '/v2/admin/quiz/trash', { token });
+      expect(trashRes.statusCode).toStrictEqual(200);
+      expect(trashRes.retval).toStrictEqual({
+        quizzes: [
+          {
+            quizId: res.retval.quizId,
+            name: 'My Quiz Name'
+          }
+        ]
+      });
+    });
+
+    test('Correctly displays multiple quizzes in trash', () => {
+      const res = requestPost(quizBody, '/v2/admin/quiz', { token });
+      const quizId = res.retval.quizId;
+      // change to v2
+      requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
+
+      quizBody = { name: 'My Quiz Two', description: 'Other Quiz Description' };
+      const res2 = requestPost(quizBody, '/v2/admin/quiz', { token });
+      const quizId2 = res2.retval.quizId;
+      // change to v2
+      requestDelete({ token: token }, `/v1/admin/quiz/${quizId2}`);
+
+      const trashRes = requestGet({}, '/v2/admin/quiz/trash', { token });
+      expect(trashRes.statusCode).toStrictEqual(200);
+      expect(trashRes.retval).toStrictEqual({
+        quizzes: [
+          {
+            quizId: res.retval.quizId,
+            name: 'My Quiz Name'
+          },
+          {
+            quizId: res2.retval.quizId,
+            name: 'My Quiz Two'
+          }
+        ]
+      });
+    });
+
+    test('Side effect: correctly displays trash after quiz had been restored', () => {
+      let res = requestPost(quizBody, '/v2/admin/quiz', { token });
+      const quizId = res.retval.quizId;
+      // change to v2
+      requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
+      // change to v2
+      res = requestPost({ token: token }, `/v1/admin/quiz/${quizId}/restore`);
+      const trashRes = requestGet({}, '/v2/admin/quiz/trash', { token });
+      expect(trashRes.statusCode).toStrictEqual(200);
+      expect(trashRes).toStrictEqual({ retval: { quizzes: [] }, statusCode: 200 });
+    });
+
+    test('Side effect: correctly displays empty trash after trash has been emptied', () => {
+      let res = requestPost(quizBody, '/v2/admin/quiz', { token });
+      const quizId = res.retval.quizId;
+      // change to v2
+      requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
+
+      const quizIds = JSON.stringify([quizId]);
+      // uncomment when v2 is merged
+      // res = requestDelete({ quizIds: quizIdsToDelete }, '/v2/admin/quiz/trash/empty', { token });
+      res = requestDelete({ token: token, quizIds: quizIds }, '/v1/admin/quiz/trash/empty');
+      const trashRes = requestGet({}, '/v2/admin/quiz/trash', { token });
+      expect(trashRes.statusCode).toStrictEqual(200);
+      expect(trashRes).toStrictEqual({ retval: { quizzes: [] }, statusCode: 200 });
+    });
+  });
+
+  describe('Testing for empty or invalid Token (status code 401)', () => {
+    beforeEach(() => {
+      userBody = { email: 'userone@gmail.com', password: 'Password01', nameFirst: 'User', nameLast: 'One' };
+      const registerUser = requestPost(userBody, '/v1/admin/auth/register');
+      token = registerUser.retval.token;
+      quizBody = { name: 'My Quiz Name', description: 'Valid Quiz Description' };
+    });
+
+    test('Returns errors when token is empty', () => {
+      requestDelete({}, '/v1/clear');
+      const res = requestGet({}, '/v2/admin/quiz/trash', { token });
+      expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
+    });
+
+    test('Returns errors when sessionId is invalid', () => {
+      token += '1';
+      const res = requestGet({}, '/v2/admin/quiz/trash', { token });
+      expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
+    });
+  });
+});
