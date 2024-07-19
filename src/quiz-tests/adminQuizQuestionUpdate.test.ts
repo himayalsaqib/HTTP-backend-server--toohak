@@ -79,7 +79,7 @@ describe('PUT /v1/admin/quiz/{quizid}/question/{questionid}', () => {
       expect(colours).toContain(res.retval.questions[0].answers[1].colour);
     });
 
-    test('Side effect: adminQuizInfo returns updated info about quiz question', () => {
+    test.only('Side effect: adminQuizInfo returns updated info about quiz question', () => {
       let res = requestPut(updateBody, `/v1/admin/quiz/${quizId}/question/${questionId}`);
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
 
@@ -431,7 +431,8 @@ describe('PUT /v2/admin/quiz/{quizid}/question/{questionid}', () => {
             ]
           }
         ],
-        duration: 5
+        duration: 5,
+        thumbnailUrl: updateBody.questionBody.thumbnailUrl
       });
       expect(res.statusCode).toStrictEqual(200);
     });

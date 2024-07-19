@@ -527,17 +527,18 @@ export function adminQuizQuestionUpdate(quizId: number, questionId: number, ques
   }
 
   const data = getData();
-  const quiz = findQuizById(quizId);
-  quiz.timeLastEdited = currentTime();
-  // updating duration for the quiz
-  quiz.duration = quiz.questions.reduce((newDuration, question) => newDuration + question.duration, 0);
-
+  
   const questionToUpdate = findQuestionById(questionId, quizId);
   questionToUpdate.question = questionBody.question;
   questionToUpdate.duration = questionBody.duration;
   questionToUpdate.points = questionBody.points;
   questionToUpdate.answers = createAnswersArray(questionBody.answers);
   questionToUpdate.thumbnailUrl = questionBody.thumbnailUrl;
+
+  const quiz = findQuizById(quizId);
+  quiz.timeLastEdited = currentTime();
+  // updating duration for the quiz
+  quiz.duration = quiz.questions.reduce((newDuration, question) => newDuration + question.duration, 0);
 
   setData(data);
 

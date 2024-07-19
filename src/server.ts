@@ -778,8 +778,6 @@ app.delete('/v2/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
   }
 });
 
-// VERSION 2 //
-
 app.put('/v2/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
   const { questionBody } = req.body;
   const sessionId = parseInt(req.header('token'));
