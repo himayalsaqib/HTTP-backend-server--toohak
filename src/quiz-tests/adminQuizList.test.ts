@@ -162,13 +162,13 @@ describe('GET /v2/admin/quiz/list', () => {
       });
     });
 
-    test.skip('Correctly returns quiz list after a quiz has been removed', () => {
+    test('Correctly returns quiz list after a quiz has been removed', () => {
       const res = requestPost(quizBody, '/v2/admin/quiz', { token });
       quizBody = { name: 'My Quiz Two', description: 'Other Quiz Description' };
       const res2 = requestPost(quizBody, '/v2/admin/quiz', { token });
       const quizId2 = res2.retval.quizId;
 
-      requestDelete({ token: token }, `/v1/admin/quiz/${quizId2}`);
+      requestDelete({}, `/v2/admin/quiz/${quizId2}`, { token });
       const listRes = requestGet({}, '/v2/admin/quiz/list', { token });
 
       expect(listRes).toStrictEqual({
