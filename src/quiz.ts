@@ -143,7 +143,6 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
 /**
  * Given a particular quiz, move quiz to trash
  *
- * @param {number} authUserId
  * @param {number} quizId
  * @returns {{}} - an empty object
  */
@@ -164,11 +163,10 @@ export function adminQuizRemove (quizId: number): EmptyObject {
 /**
  * Get all of the relevant information about the current quiz.
  *
- * @param {number} authUserId
  * @param {number} quizId
  * @returns {{ quizInfo }} - returns quiz information
  */
-export function adminQuizInfo (authUserId: number, quizId: number): QuizInfo {
+export function adminQuizInfo (quizId: number): QuizInfo {
   const quiz = findQuizById(quizId);
 
   const questions = quiz.questions?.map((q: Question) => ({
@@ -233,7 +231,6 @@ export function adminQuizNameUpdate (authUserId: number, quizId: number, name: s
 /**
  * Update the description of the relevant quiz
  *
- * @param {number} authUserId
  * @param {number} quizId
  * @param {string} description
  * @returns {{}} - an empty object
@@ -389,7 +386,6 @@ export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } {
 /**
  * Permanently deletes specified quizzes from the trash
  *
- * @param {number} authUserId
  * @param {number[]} quizIds
  * @returns {{}}
  */
@@ -589,7 +585,6 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
 /**
  * Duplicates a quiz question
  *
- * @param {number} authUserId
  * @param {number} quizId
  * @param {number} questionId
  * @returns {{ newQuestionId: number}} - returns new question ID

@@ -491,9 +491,7 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
-  const userToken = errorCheckResponse.userToken;
-
-  const response = adminQuizInfo(userToken.authUserId, quizId);
+  const response = adminQuizInfo(quizId);
   res.json(response);
 });
 
@@ -706,9 +704,7 @@ app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
-  const userToken = errorCheckResponse.userToken;
-
-  const response = adminQuizInfo(userToken.authUserId, quizId);
+  const response = adminQuizInfo(quizId);
   res.json(response);
 });
 
