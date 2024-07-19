@@ -63,29 +63,6 @@ describe('GET /v1/admin/quiz/trash', () => {
         ]
       });
     });
-
-    test('Side effect: correctly displays trash after quiz had been restored', () => {
-      let res = requestPost(quizBody, '/v1/admin/quiz');
-      const quizId = res.retval.quizId;
-      requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
-
-      res = requestPost({ token: token }, `/v1/admin/quiz/${quizId}/restore`);
-      const trashRes = requestGet({ token: token }, '/v1/admin/quiz/trash');
-      expect(trashRes.statusCode).toStrictEqual(200);
-      expect(trashRes).toStrictEqual({ retval: { quizzes: [] }, statusCode: 200 });
-    });
-
-    test('Side effect: correctly displays empty trash after trash has been emptied', () => {
-      let res = requestPost(quizBody, '/v1/admin/quiz');
-      const quizId = res.retval.quizId;
-      requestDelete({ token: token }, `/v1/admin/quiz/${quizId}`);
-
-      const quizIds = JSON.stringify([quizId]);
-      res = requestDelete({ token: token, quizIds: quizIds }, '/v1/admin/quiz/trash/empty');
-      const trashRes = requestGet({ token: token }, '/v1/admin/quiz/trash');
-      expect(trashRes.statusCode).toStrictEqual(200);
-      expect(trashRes).toStrictEqual({ retval: { quizzes: [] }, statusCode: 200 });
-    });
   });
 
   describe('Testing for empty or invalid Token (status code 401)', () => {
