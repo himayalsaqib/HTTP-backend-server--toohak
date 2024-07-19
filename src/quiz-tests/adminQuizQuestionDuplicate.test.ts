@@ -513,7 +513,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const questionRes = requestPost({ ...question }, `/v2/admin/quiz/${quizId}/question`, { token });
 
       const questionId = questionRes.retval.questionId;
-      const dupeRes = requestPost({}, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token });
+      const dupeRes = requestPost({}, `/v2/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token: sessionId });
 
       expect(dupeRes.statusCode).toStrictEqual(401);
       expect(dupeRes.retval).toStrictEqual(ERROR);
@@ -521,7 +521,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
 
     test('Returns error when token is empty', () => {
       requestDelete({}, '/v1/clear');
-      const dupeRes = requestPost({}, '/v2/admin/quiz/:quizId/question/:questionId/duplicate', { token });
+      const dupeRes = requestPost({}, '/v2/admin/quiz/${quizId}/question/:questionId/duplicate', { token });
       expect(dupeRes.statusCode).toStrictEqual(401);
       expect(dupeRes.retval).toStrictEqual(ERROR);
     });
