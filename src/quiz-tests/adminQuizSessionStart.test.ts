@@ -7,8 +7,9 @@ beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
 
+const ERROR = { error: expect.any(String) };
+
 describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
-  const error = { error: expect.any(String) };
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let token: string;
   let quizBody: { name: string, description: string };
@@ -116,7 +117,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       startSessionBody.autoStartNum = 51;
       const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -132,7 +133,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       // starting 11th session gives an error
       res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -143,7 +144,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
 
       const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -154,7 +155,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
 
       const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -165,7 +166,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       requestDelete({}, '/v1/clear');
       const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -174,7 +175,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       const sessionId = parseInt(token) + 1;
       const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token: sessionId.toString() });
       expect(res).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 401
       });
     });
@@ -187,7 +188,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
 
       const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 403
       });
     });
@@ -196,7 +197,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       quizId++;
       const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({
-        retval: error,
+        retval: ERROR,
         statusCode: 403
       });
     });
