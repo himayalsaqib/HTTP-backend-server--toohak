@@ -1,7 +1,7 @@
 // includes the helper function for server.ts routes
 
 import { ErrorObject, EmptyObject, Tokens, getData, setData } from '../dataStore';
-import { findQuizById, findTrashedQuizById } from './helper';
+import { findQuizById, findTrashedQuizById, quizIsInTrash } from './helper';
 
 // ============================ TYPE ANNOTATIONS ============================ //
 
@@ -69,8 +69,9 @@ export function findTokenFromSessionId(sessionId: number): Tokens {
  */
 export function quizBelongsToUser(authUserId: number, quizId: number): void {
   const quiz = findQuizById(quizId);
-
-  if (quiz === undefined || quiz.authUserId !== authUserId) {
+  console.log('QUIZZZZZZZZ');
+  console.log(quiz);
+  if (quiz.authUserId !== authUserId) {
     throw new Error('User is not an owner of this quiz.');
   }
 }
@@ -102,7 +103,7 @@ export function trashedQuizBelongsToUser(authUserId: number, quizId: number): vo
   const trashedQuiz = findTrashedQuizById(quizId);
 
   if (trashedQuiz !== undefined) {
-    if (trashedQuiz.quiz.authUserId !== authUserId) {
+    if (trashedQuiz.authUserId !== authUserId) {
       throw new Error('User is not an owner of this quiz.');
     }
   }
@@ -120,7 +121,7 @@ export function trashedQuizzesBelongToUser(authUserId: number, quizIds: number[]
     const trashedQuiz = findTrashedQuizById(quizId);
     if (trashedQuiz === undefined) {
       return {};
-    } else if (trashedQuiz.quiz.authUserId !== authUserId) {
+    } else if (trashedQuiz.authUserId !== authUserId) {
       throw new Error('One or more Quiz IDs refer to a quiz that this current user does not own.');
     }
   }
@@ -207,7 +208,11 @@ export function quizRoutesErrorChecking(sessionId: number, quizId: number): Resp
 
   try {
     quizDoesNotExist(quizId);
-    quizBelongsToUser(userToken.authUserId, quizId);
+    if (!quizIsInTrash) {
+      quizBelongsToUser(userToken.authUserId, quizId);
+    } else {
+      trashedQuizBelongsToUser(userToken.authUserId, quizId);
+    }
   } catch (error) {
     return { error: error.message, code: 403 };
   }
