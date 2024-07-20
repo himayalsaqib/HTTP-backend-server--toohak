@@ -580,11 +580,6 @@ app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) =
     return res.status(403).json({ error: error.message });
   }
 
-  const data = getData();
-  console.log(data.quizSessions);
-  console.log(data.trash);
-  //data.quizSessions.find(session => session.sessionId === sessionId);
-
   try {
     const response = adminQuizSessionStart(quizId, autoStartNum);
     res.json(response);
