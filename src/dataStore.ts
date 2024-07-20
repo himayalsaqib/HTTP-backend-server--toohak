@@ -77,10 +77,6 @@ export interface QuestionResults {
   percentCorrect: number;
 }
 
-export interface Trash {
-  quiz: Quizzes;
-}
-
 export interface Tokens {
   sessionId: number;
   authUserId: number;
@@ -90,7 +86,7 @@ export interface Data {
   users: Users[];
   quizzes: Quizzes[];
   quizSessions: QuizSessions[];
-  trash: Trash[];
+  trash: Quizzes[];
   tokens: Tokens[];
 }
 
