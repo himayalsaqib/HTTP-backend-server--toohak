@@ -1,6 +1,5 @@
 // includes http tests for the route POST /v1/admin/quiz/{quizid}/session/{sessionid}
 
-import { getData } from '../dataStore';
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 import { QuestionBody, QuizSessionState } from '../quiz';
 
@@ -47,7 +46,6 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
 
     // initialising body for start session route
     startSessionBody = { autoStartNum: 3 };
-
   });
 
   describe('Testing successful quiz session start (status code 200)', () => {

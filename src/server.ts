@@ -48,7 +48,7 @@ import {
   adminQuizTransfer,
   adminQuizSessionStart,
 } from './quiz';
-import { getData, load } from './dataStore';
+import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/helper';
 
 // Set up web app
@@ -574,7 +574,7 @@ app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) =
     if (!quizIsInTrash(quizId)) {
       quizBelongsToUser(userToken.authUserId, quizId);
     } else {
-      trashedQuizBelongsToUser(userToken.authUserId, quizId)
+      trashedQuizBelongsToUser(userToken.authUserId, quizId);
     }
   } catch (error) {
     return res.status(403).json({ error: error.message });
