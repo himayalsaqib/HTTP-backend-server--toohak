@@ -45,7 +45,8 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
     questionId = createResponse.retval.questionId;
 
     // initialising body for start session route
-    startSessionBody.autoStartNum = 3;
+    startSessionBody = { autoStartNum: 3 };
+
   });
 
   describe('Testing successful quiz session start (status code 200)', () => {
@@ -137,7 +138,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       });
     });
 
-    test.skip('The Quiz does not have any questions in it', () => {
+    test('The Quiz does not have any questions in it', () => {
       // deleting existing question
       requestDelete({}, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
 
@@ -148,7 +149,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       });
     });
 
-    test.skip('The quiz is in trash', () => {
+    test('The quiz is in trash', () => {
       // moving quiz to trash
       requestDelete({}, `/v2/admin/quiz/${quizId}`, { token });
 
