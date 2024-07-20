@@ -48,7 +48,7 @@ import {
   adminQuizTransfer,
   adminQuizSessionStart,
 } from './quiz';
-import { load } from './dataStore';
+import { getData, load } from './dataStore';
 import { quizIsInTrash } from './helper-files/helper';
 
 // Set up web app
@@ -556,7 +556,7 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   }
 });
 
-app.post('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Response) => {
+app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(req.header('token'));
   const autoStartNum = req.body.autoStartNum;
@@ -579,6 +579,11 @@ app.post('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Respon
   } catch (error) {
     return res.status(403).json({ error: error.message });
   }
+
+  const data = getData();
+  console.log(data.quizSessions);
+  console.log(data.trash);
+  //data.quizSessions.find(session => session.sessionId === sessionId);
 
   try {
     const response = adminQuizSessionStart(quizId, autoStartNum);

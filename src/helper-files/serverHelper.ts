@@ -69,8 +69,6 @@ export function findTokenFromSessionId(sessionId: number): Tokens {
  */
 export function quizBelongsToUser(authUserId: number, quizId: number): void {
   const quiz = findQuizById(quizId);
-  console.log('QUIZZZZZZZZ');
-  console.log(quiz);
   if (quiz.authUserId !== authUserId) {
     throw new Error('User is not an owner of this quiz.');
   }

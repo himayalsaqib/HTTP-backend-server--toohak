@@ -1,5 +1,6 @@
 // includes http tests for the route POST /v1/admin/quiz/{quizid}/session/{sessionid}
 
+import { getData } from '../dataStore';
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 import { QuestionBody, QuizSessionState } from '../quiz';
 
@@ -149,12 +150,11 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       });
     });
 
-    test.only('The quiz is in trash', () => {
+    test('The quiz is in trash', () => {
       // moving quiz to trash
       requestDelete({}, `/v2/admin/quiz/${quizId}`, { token });
 
       const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
-      console.log(res);
       expect(res).toStrictEqual({
         retval: error,
         statusCode: 400
