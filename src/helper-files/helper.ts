@@ -1,6 +1,6 @@
 // Includes helper functions for auth.ts and quiz.ts
 
-import { Answer, getData, Question, Quizzes, Users, QuizSessions } from '../dataStore';
+import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
 import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers } from '../quiz';
 import crypto from 'crypto';
 
@@ -164,7 +164,7 @@ export function quizIdInUse(quizId: number): boolean {
 
   if (quiz === undefined) {
     const data = getData();
-    const trashQuiz = data.trash.find(q => q.quizId === quizId);
+    const trashQuiz = data.trash.find(q => q.quiz.quizId === quizId);
     if (trashQuiz === undefined) {
       return false;
     }
@@ -187,11 +187,11 @@ export function findQuizById(quizId: number): Quizzes | undefined {
  * Finds a quiz in the trash by its quiz ID
  *
  * @param {number} quizId - The ID of the quiz to find
- * @returns {Quizzes | undefined} - The quiz with the specified ID | undefined
+ * @returns {Trash | undefined} - The quiz with the specified ID | undefined
  */
-export function findTrashedQuizById(quizId: number): Quizzes | undefined {
+export function findTrashedQuizById(quizId: number): Trash | undefined {
   const data = getData();
-  return data.trash.find(q => q.quizId === quizId);
+  return data.trash.find(q => q.quiz.quizId === quizId);
 }
 
 /**

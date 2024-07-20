@@ -50,7 +50,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
   });
 
   describe('Testing successful quiz session start (status code 200)', () => {
-    test.only('Has the correct return type', () => {
+    test('Has the correct return type', () => {
       const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({
         retval: { sessionId: expect.any(Number) },
@@ -149,11 +149,12 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       });
     });
 
-    test('The quiz is in trash', () => {
+    test.only('The quiz is in trash', () => {
       // moving quiz to trash
       requestDelete({}, `/v2/admin/quiz/${quizId}`, { token });
 
       const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
+      console.log(res);
       expect(res).toStrictEqual({
         retval: error,
         statusCode: 400

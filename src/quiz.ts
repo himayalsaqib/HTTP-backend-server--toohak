@@ -660,6 +660,9 @@ export function adminQuizQuestionDuplicate (quizId: number, questionId: number):
 }
 
 export function adminQuizSessionStart(quizId: number, autoStartNum: number): { sessionId: number } {
+  if (quizIsInTrash(quizId)) {
+    throw new Error('The quiz is in trash.');
+  }
   const quiz = findQuizById(quizId);
 
   if (autoStartNum > MAX_AUTO_START_NUM) {
@@ -670,9 +673,6 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
   }
   if (quiz.questions.length === 0) {
     throw new Error('The quiz does not have any questions in it.');
-  }
-  if (quizIsInTrash(quizId)) {
-    throw new Error('The quiz is in trash.');
   }
 
   const newSessionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);

@@ -27,6 +27,7 @@ import {
   findTokenFromSessionId,
   quizRoutesErrorChecking,
   quizzesDoNotExist,
+  quizBelongsToUser,
 } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
@@ -48,6 +49,7 @@ import {
   adminQuizSessionStart,
 } from './quiz';
 import { load } from './dataStore';
+import { quizIsInTrash } from './helper-files/helper';
 
 // Set up web app
 const app = express();
@@ -559,9 +561,23 @@ app.post('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Respon
   const sessionId = parseInt(req.header('token'));
   const autoStartNum = req.body.autoStartNum;
 
-  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
-  if ('error' in errorCheckResponse) {
-    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  try {
+    quizDoesNotExist(quizId);
+    if (!quizIsInTrash(quizId)) {
+      quizBelongsToUser(userToken.authUserId, quizId);
+    } else {
+      trashedQuizBelongsToUser(userToken.authUserId, quizId)
+    }
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
   }
 
   try {
