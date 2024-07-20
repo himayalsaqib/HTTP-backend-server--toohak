@@ -1,4 +1,4 @@
-// includes http tests for the route POST /v1/admin/quiz/{quizid}/session/{sessionid}
+// includes http tests for the route POST /v1/admin/quiz/{quizid}/session/start
 
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 import { QuestionBody, QuizSessionState } from '../quiz';
@@ -9,7 +9,7 @@ beforeEach(() => {
 
 const ERROR = { error: expect.any(String) };
 
-describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
+describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let token: string;
   let quizBody: { name: string, description: string };
