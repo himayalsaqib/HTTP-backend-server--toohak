@@ -38,7 +38,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
           { answer: 'Prince Charles', correct: true },
           { answer: 'Prince William', correct: false }
         ],
-        thumbnailUrl: 'idkwaitfortara'
+        thumbnailUrl: 'http://google.com/some/image/path.png'
       }
     };
     const createResponse = requestPost(createBody, `/v1/admin/quiz/${quizId}/question`, { token });
@@ -77,6 +77,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       expect(res).toStrictEqual({ retval: { sessionId: expect.any(Number) }, statusCode: 200 });
       const sessionId = res.retval.sessionId;
 
+      // not implemented yet
       res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(res.retval).toStrictEqual({
         state: QuizSessionState.LOBBY,
@@ -103,7 +104,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
             }
           ],
           duration: createBody.questionBody.duration,
-          thumbnailUrl: '' // idk about this.
+          thumbnailUrl: createBody.questionBody.thumbnailUrl
         }
       });
       expect(res.statusCode).toStrictEqual(200);

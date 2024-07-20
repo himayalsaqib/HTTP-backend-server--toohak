@@ -19,7 +19,8 @@ import {
   findUserByEmail,
   currentTime,
   checkThumbnailUrlFileType,
-  findQuizSessionById
+  findQuizSessionById,
+  quizIsInTrash
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -55,7 +56,7 @@ interface QuizList {
   name: string;
 }
 
-// excludes authUserId, active session and inactive sessions
+// excludes authUserId, active sessions and inactive sessions
 export interface QuizInfo {
   quizId: number;
   name: string;
@@ -65,6 +66,7 @@ export interface QuizInfo {
   numQuestions: number;
   questions: Question[];
   duration: number;
+  thumbnailUrl?: string;
 }
 
 export interface QuizQuestionAnswers {
