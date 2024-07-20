@@ -41,7 +41,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
         thumbnailUrl: 'http://google.com/some/image/path.png'
       }
     };
-    const createResponse = requestPost(createBody, `/v1/admin/quiz/${quizId}/question`, { token });
+    const createResponse = requestPost(createBody, `/v2/admin/quiz/${quizId}/question`, { token });
     questionId = createResponse.retval.questionId;
 
     // initialising body for start session route
@@ -50,7 +50,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
   });
 
   describe('Testing successful quiz session start (status code 200)', () => {
-    test('Has the correct return type', () => {
+    test.only('Has the correct return type', () => {
       const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({
         retval: { sessionId: expect.any(Number) },

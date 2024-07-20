@@ -82,18 +82,6 @@ export interface QuestionBody {
   thumbnailUrl?: string;
 }
 
-/// //////////////////////////////// Enums /////////////////////////////////////
-
-export enum QuizSessionState {
-  LOBBY = 'LOBBY',
-  QUESTION_COUNTDOWN = 'QUESTION_COUNTDOWN',
-  QUESTION_OPEN = 'QUESTION_OPEN',
-  QUESTION_CLOSE = 'QUESTION_CLOSE',
-  ANSWER_SHOW = 'ANSWER_SHOW',
-  FINAL_RESULTS = 'FINAL_RESULTS',
-  END = 'END'
-}
-
 // ================================= ENUMS ================================== //
 
 export enum QuizAnswerColours {
@@ -104,6 +92,16 @@ export enum QuizAnswerColours {
   PURPLE = 'purple',
   BROWN = 'brown',
   ORANGE = 'orange',
+}
+
+export enum QuizSessionState {
+  LOBBY = 'LOBBY',
+  QUESTION_COUNTDOWN = 'QUESTION_COUNTDOWN',
+  QUESTION_OPEN = 'QUESTION_OPEN',
+  QUESTION_CLOSE = 'QUESTION_CLOSE',
+  ANSWER_SHOW = 'ANSWER_SHOW',
+  FINAL_RESULTS = 'FINAL_RESULTS',
+  END = 'END'
 }
 
 // =============================== FUNCTIONS ================================ //
@@ -696,6 +694,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     numQuestions: quiz.questions.length,
     questions: quiz.questions,
     duration: quiz.duration,
+    thumbnailUrl: quiz.thumbnailUrl
   };
 
   const data = getData();
