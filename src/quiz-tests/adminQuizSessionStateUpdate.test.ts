@@ -1,9 +1,7 @@
 // inlcudes http tests for the route /v1/admin/quiz/{quizid}/session/{sessionid}
 
-import { before } from "node:test";
 import { requestPut, requestDelete, requestPost, requestGet } from "../helper-files/requestHelper";
-import { adminQuizDescriptionUpdate, QuestionBody, QuizSessionAction } from "../quiz";
-import { string } from "yaml/dist/schema/common/string";
+import { QuestionBody, QuizSessionAction, QuizSessionState } from "../quiz";
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
@@ -20,7 +18,7 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
   let questionId: number;
   let sessionStartBody: { autoStartNum: number };
   let sessionId: number;
-  let updateActionBody: { action: QuizSessionAction };
+  let updateActionBody: { action: string };
 
   beforeEach(() => {
     // register user
@@ -67,15 +65,49 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       });
     });
 
-    test.todo('Side-effect: status changes when get adminQuizSessionStatusView has been called');
+    test.skip('Side-effect: status changes when get adminQuizSessionStatusView has been called', () => {
+      const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.LOBBY });
+
+
+      const updateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(updateRes).toStrictEqual({
+        retval: {}, 
+        statusCode: 200
+      });
+
+      const afterUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_COUNTDOWN });
+    });
   });
 
   describe('Testing session ID and action enum errors (status code 400)', () => {
-    test.todo('The session ID does not refer to a valid session within the quiz');
+    test('The session ID does not refer to a valid session within the quiz', () => {
+      const updateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId + 1}`, { token });
+      expect(updateRes).toStrictEqual({
+        retval: ERROR,
+        statusCode: 400
+      });
+    });
 
-    test.todo('The action provided is not a valid Action enum');
+    test('The action provided is not a valid Action enum', () => {
+      updateActionBody = { action: 'NOT_AN_ACTION' };
+      
+      const updateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(updateRes).toStrictEqual({
+        retval: ERROR, 
+        statusCode: 400
+      });
+    });
 
-    test.todo('The Action enum cannot be applied in the current state');
+    test('The Action enum cannot be applied in the current state', () => {
+      updateActionBody = { action: QuizSessionAction.SKIP_COUNTDOWN };
+      const updateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(updateRes).toStrictEqual({
+        retval: ERROR,
+        statusCode: 400
+      });
+    });
   });
 
   describe('Testing token errors (status 401)', () => {
