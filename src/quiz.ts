@@ -718,5 +718,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     questionResults: [],
   });
 
+  setData(data);
+
   return { sessionId: newSessionId };
 }
