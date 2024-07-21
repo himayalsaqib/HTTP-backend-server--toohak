@@ -1,6 +1,6 @@
 // includes quiz functions
 
-import { setData, getData, ErrorObject, EmptyObject, Quizzes, Question, Answer } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, Question, Answer } from './dataStore';
 import {
   quizNameHasValidChars,
   quizNameInUse,
@@ -18,7 +18,9 @@ import {
   adminEmailInUse,
   findUserByEmail,
   currentTime,
-  checkThumbnailUrlFileType
+  checkThumbnailUrlFileType,
+  findQuizSessionById,
+  quizIsInTrash
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -44,16 +46,27 @@ const MAX_ANS_LEN = 30;
 
 const MIN_CORRECT_ANS = 1;
 
+const MAX_AUTO_START_NUM = 50;
+
+const MAX_ACTIVE_QUIZ_SESSIONS = 10;
+
 // ============================ TYPE ANNOTATIONS ============================ //
 interface QuizList {
   quizId: number;
   name: string;
 }
 
-export interface QuizInfo extends Omit<Quizzes, 'authUserId'> {
+// excludes authUserId, active sessions and inactive sessions
+export interface QuizInfo {
+  quizId: number;
+  name: string;
+  timeCreated: number;
+  timeLastEdited: number;
+  description: string;
   numQuestions: number;
   questions: Question[];
   duration: number;
+  thumbnailUrl?: string;
 }
 
 export interface QuizQuestionAnswers {
@@ -79,6 +92,16 @@ export enum QuizAnswerColours {
   PURPLE = 'purple',
   BROWN = 'brown',
   ORANGE = 'orange',
+}
+
+export enum QuizSessionState {
+  LOBBY = 'LOBBY',
+  QUESTION_COUNTDOWN = 'QUESTION_COUNTDOWN',
+  QUESTION_OPEN = 'QUESTION_OPEN',
+  QUESTION_CLOSE = 'QUESTION_CLOSE',
+  ANSWER_SHOW = 'ANSWER_SHOW',
+  FINAL_RESULTS = 'FINAL_RESULTS',
+  END = 'END'
 }
 
 // =============================== FUNCTIONS ================================ //
@@ -133,6 +156,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
   }
 
   const emptyQuestions: Question[] = [];
+  const emptySessions: number[] = [];
 
   const newQuiz = {
     authUserId: authUserId,
@@ -143,6 +167,8 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     description: description,
     questions: emptyQuestions,
     duration: 0,
+    activeSessions: emptySessions,
+    inactiveSessions: emptySessions,
   };
 
   data.quizzes.push(newQuiz);
@@ -162,6 +188,9 @@ export function adminQuizRemove (quizId: number): EmptyObject {
   const quizIndex = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
   const quiz = data.quizzes[quizIndex];
   // check all sessions for this quiz for being in the END state
+  if (quiz.activeSessions.length !== 0) {
+    throw new Error('Any session for this quiz is not in END state.');
+  }
 
   quiz.timeLastEdited = currentTime();
   data.trash.push({ quiz: quiz });
@@ -543,6 +572,9 @@ export function adminQuizQuestionDelete(quizId: number, questionId: number): Emp
   if (questionIndex === -1) {
     throw new Error('Question Id does not refer to a valid question within this quiz');
   }
+  if (quiz.activeSessions.length !== 0) {
+    throw new Error('Any session for this quiz is not in END state.');
+  }
 
   // Remove question from question array at specified index
   quiz.questions.splice(questionIndex, 1);
@@ -581,6 +613,9 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
   }
 
   // check all sessions for this quiz for being in the END state
+  if (quiz.activeSessions.length !== 0) {
+    throw new Error('Any session for this quiz is not in END state.');
+  }
 
   // transferring the quiz
   quiz.authUserId = newUser.authUserId;
@@ -631,4 +666,59 @@ export function adminQuizQuestionDuplicate (quizId: number, questionId: number):
   setData(data);
 
   return { newQuestionId: newQuestion.questionId };
+}
+
+export function adminQuizSessionStart(quizId: number, autoStartNum: number): { sessionId: number } {
+  if (quizIsInTrash(quizId)) {
+    throw new Error('The quiz is in trash.');
+  }
+  const quiz = findQuizById(quizId);
+
+  if (autoStartNum > MAX_AUTO_START_NUM) {
+    throw new Error('AutoStartNum is a number greater than 50.');
+  }
+  if (quiz.activeSessions.length === MAX_ACTIVE_QUIZ_SESSIONS) {
+    throw new Error('10 sessions that are not in END state currently exist for this quiz.');
+  }
+  if (quiz.questions.length === 0) {
+    throw new Error('The quiz does not have any questions in it.');
+  }
+
+  const newSessionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  while (findQuizSessionById(newSessionId) !== undefined) {
+    Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  }
+
+  // adding new sessionId to active sessions array for this quiz
+  quiz.activeSessions.push(newSessionId);
+
+  // copying quiz from quizzes array so any edits while session is running do
+  // not affect the active session. ignoring authUserId and active/inactive session
+  const quizInfoForSession = {
+    quizId: quizId,
+    name: quiz.name,
+    timeCreated: quiz.timeCreated,
+    timeLastEdited: quiz.timeLastEdited,
+    description: quiz.description,
+    numQuestions: quiz.questions.length,
+    questions: quiz.questions,
+    duration: quiz.duration,
+    thumbnailUrl: quiz.thumbnailUrl
+  };
+
+  const data = getData();
+  data.quizSessions.push({
+    sessionId: newSessionId,
+    state: QuizSessionState.LOBBY,
+    atQuestion: 1,
+    players: [],
+    autoStartNum: autoStartNum,
+    quiz: quizInfoForSession,
+    usersRankedByScore: [],
+    questionResults: [],
+  });
+
+  setData(data);
+
+  return { sessionId: newSessionId };
 }

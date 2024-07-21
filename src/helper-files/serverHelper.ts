@@ -20,15 +20,12 @@ export interface Response {
  * @returns {boolean} true if sessionId is valid otherwise false
  */
 export function sessionIdExists(sessionId: number): boolean {
-  const data = getData();
-
-  const token = data.tokens.find(token => token.sessionId === sessionId);
+  const token = findTokenFromSessionId(sessionId);
 
   if (token === undefined) {
     return false;
-  } else {
-    return true;
   }
+  return true;
 }
 
 /**
@@ -39,17 +36,10 @@ export function sessionIdExists(sessionId: number): boolean {
  * @returns {void}
  */
 export function tokenExists(sessionId: number): void {
-  const data = getData();
-
-  const foundToken = data.tokens.find(token => token.sessionId === sessionId);
+  const foundToken = findTokenFromSessionId(sessionId);
 
   if (foundToken === undefined) {
-    throw new Error('Invalid session ID.');
-  } else {
-    const foundAuthUserId = data.users.find(users => users.authUserId === foundToken.authUserId);
-    if (foundAuthUserId === undefined) {
-      throw new Error('Invalid session ID.');
-    }
+    throw new Error('SessionId is invalid (does not refer to valid logged in user session)');
   }
 }
 
@@ -74,28 +64,12 @@ export function findTokenFromSessionId(sessionId: number): Tokens {
  * @param {number} authUserId
  * @param {number} quizId
  * @returns {void}
+ * @returns {void}
  */
 export function quizBelongsToUser(authUserId: number, quizId: number): void {
   const quiz = findQuizById(quizId);
-
   if (quiz === undefined || quiz.authUserId !== authUserId) {
-    throw new Error('User is not an owner of this quiz or quiz does not exist');
-  }
-}
-
-/**
- * Function checks if all quizzes in the given list that are in the trash belong to a given current user
- *
- * @param {number} authUserId
- * @param {number[]} quizIds
- * @returns {{}}
- */
-export function quizzesBelongToUser(authUserId: number, quizIds: number[]): void {
-  for (const quizId of quizIds) {
-    const quiz = findQuizById(quizId);
-    if (quiz === undefined || quiz.authUserId !== authUserId) {
-      throw new Error('One or more Quiz IDs refer to a quiz that this current user does not own.');
-    }
+    throw new Error('User is not an owner of this quiz or quiz does not exist.');
   }
 }
 
