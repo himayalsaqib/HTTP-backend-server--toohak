@@ -346,7 +346,7 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
     });
   });
 
-  describe('Testing userEmail and quiz name errors (status code 400)', () => {
+  describe('Testing userEmail, quiz name, and quiz session state errors (status code 400)', () => {
     test('userEmail is not a real user', () => {
       const transfer = requestPost({ userEmail: 'notUserEmail@gmail.com' }, `/v2/admin/quiz/${quizId}/transfer`, { token });
       expect(transfer).toStrictEqual({
@@ -375,8 +375,27 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
       });
     });
 
-    test.skip('Any session for this quiz is not in END state', () => {
-      // make a session not in END state
+    test('Any session for this quiz is not in END state', () => {
+      // create a question
+      const quizQuestionBody = {
+        questionBody: {
+          question: 'Who is your favourite artist\'s favourite artist?',
+          duration: 7,
+          points: 9,
+          answers: [
+            { answer: 'Chappell Roan', correct: true },
+            { answer: 'Sabrina Carpenter', correct: false }
+          ],
+          thumbnailUrl: 'http://google.com/some/file/path.png'
+        }
+      };
+      requestPost(quizQuestionBody, `/v2/admin/quiz/${quizId}/question`, { token });
+
+      // start a quiz session
+      const sessionStartBody = { autoStartNum: 3 };
+      requestPost(sessionStartBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
+
+      // transfer a quiz that is not in END state
       const transfer = requestPost(transferBody, `/v2/admin/quiz/${quizId}/transfer`, { token });
       expect(transfer).toStrictEqual({
         retval: ERROR,
