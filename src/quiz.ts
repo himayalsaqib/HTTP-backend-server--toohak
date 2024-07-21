@@ -104,6 +104,14 @@ export enum QuizSessionState {
   END = 'END'
 }
 
+export enum QuizSessionAction {
+  NEXT_QUESTION = 'NEXT_QUESTION',
+  SKIP_COUNTDOWN = 'SKIP_COUNTDOWN',
+  GO_TO_ANSWER = 'GO_TO_ANSWER',
+  GO_TO_FINAL_RESULTS = 'GO_TO_FINAL_RESULTS',
+  END = 'END'
+}
+
 // =============================== FUNCTIONS ================================ //
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
