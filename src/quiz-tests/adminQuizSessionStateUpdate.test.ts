@@ -16,12 +16,20 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
   let sessionId: number;
   let updateActionBody: { action: QuizSessionAction };
 
+  beforeEach(() => {
+    // register user
+  });
+
   describe('Testing successful quiz session state update (status code 200)', () => {
 
   });
 
   describe('Testing session ID and action enum errors (status code 400)', () => {
+    test.todo('The session ID does not refer to a valid session within the quiz');
 
+    test.todo('The action provided is not a valid Action enum');
+
+    test.todo('The Action enum cannot be applied in the current state');
   });
 
   describe('Testing token errors (status 401)', () => {
