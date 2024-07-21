@@ -24,7 +24,7 @@ export function sessionIdExists(sessionId: number): boolean {
 
   if (token === undefined) {
     return false;
-  } 
+  }
   return true;
 }
 

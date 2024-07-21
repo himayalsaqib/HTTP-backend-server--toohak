@@ -15,7 +15,7 @@ export function authUserIdExists(authUserId: number): boolean {
 
   if (user === undefined) {
     return false;
-  } 
+  }
   return true;
 }
 
