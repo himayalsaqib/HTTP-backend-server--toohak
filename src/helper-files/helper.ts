@@ -15,9 +15,8 @@ export function authUserIdExists(authUserId: number): boolean {
 
   if (user === undefined) {
     return false;
-  } else {
-    return true;
-  }
+  } 
+  return true;
 }
 
 // ========================= AUTH HELPER FUNCTIONS ========================== //

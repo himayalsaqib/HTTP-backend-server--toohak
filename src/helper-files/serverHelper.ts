@@ -24,9 +24,8 @@ export function sessionIdExists(sessionId: number): boolean {
 
   if (token === undefined) {
     return false;
-  } else {
-    return true;
-  }
+  } 
+  return true;
 }
 
 /**
@@ -71,22 +70,6 @@ export function quizBelongsToUser(authUserId: number, quizId: number): void {
   const quiz = findQuizById(quizId);
   if (quiz === undefined || quiz.authUserId !== authUserId) {
     throw new Error('User is not an owner of this quiz or quiz does not exist.');
-  }
-}
-
-/**
- * Function checks if all quizzes in the given list that are in the trash belong to a given current user
- *
- * @param {number} authUserId
- * @param {number[]} quizIds
- * @returns {{}}
- */
-export function quizzesBelongToUser(authUserId: number, quizIds: number[]): void {
-  for (const quizId of quizIds) {
-    const quiz = findQuizById(quizId);
-    if (quiz === undefined || quiz.authUserId !== authUserId) {
-      throw new Error('One or more Quiz IDs refer to a quiz that this current user does not own.');
-    }
   }
 }
 
