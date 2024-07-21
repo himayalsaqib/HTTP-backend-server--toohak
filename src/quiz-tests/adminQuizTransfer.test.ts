@@ -346,7 +346,7 @@ describe('POST /v2/admin/quiz/{quizid}/transfer', () => {
     });
   });
 
-  describe('Testing userEmail and quiz name errors (status code 400)', () => {
+  describe('Testing userEmail, quiz name, and quiz session state errors (status code 400)', () => {
     test('userEmail is not a real user', () => {
       const transfer = requestPost({ userEmail: 'notUserEmail@gmail.com' }, `/v2/admin/quiz/${quizId}/transfer`, { token });
       expect(transfer).toStrictEqual({
