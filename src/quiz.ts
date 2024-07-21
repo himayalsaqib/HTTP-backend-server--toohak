@@ -188,6 +188,9 @@ export function adminQuizRemove (quizId: number): EmptyObject {
   const quizIndex = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
   const quiz = data.quizzes[quizIndex];
   // check all sessions for this quiz for being in the END state
+  if (quiz.activeSessions.length !== 0) {
+    throw new Error('Any session for this quiz is not in END state.');
+  }
 
   quiz.timeLastEdited = currentTime();
   data.trash.push({ quiz: quiz });
@@ -569,6 +572,9 @@ export function adminQuizQuestionDelete(quizId: number, questionId: number): Emp
   if (questionIndex === -1) {
     throw new Error('Question Id does not refer to a valid question within this quiz');
   }
+  if (quiz.activeSessions.length !== 0) {
+    throw new Error('Any session for this quiz is not in END state.');
+  }
 
   // Remove question from question array at specified index
   quiz.questions.splice(questionIndex, 1);
@@ -607,6 +613,9 @@ export function adminQuizTransfer(quizId: number, authUserId: number, userEmail:
   }
 
   // check all sessions for this quiz for being in the END state
+  if (quiz.activeSessions.length !== 0) {
+    throw new Error('Any session for this quiz is not in END state.');
+  }
 
   // transferring the quiz
   quiz.authUserId = newUser.authUserId;

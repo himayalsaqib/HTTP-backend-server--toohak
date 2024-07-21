@@ -69,8 +69,8 @@ export function findTokenFromSessionId(sessionId: number): Tokens {
  */
 export function quizBelongsToUser(authUserId: number, quizId: number): void {
   const quiz = findQuizById(quizId);
-  if (quiz.authUserId !== authUserId) {
-    throw new Error('User is not an owner of this quiz.');
+  if (quiz === undefined || quiz.authUserId !== authUserId) {
+    throw new Error('User is not an owner of this quiz or quiz does not exist.');
   }
 }
 
@@ -205,7 +205,6 @@ export function quizRoutesErrorChecking(sessionId: number, quizId: number): Resp
   const userToken = findTokenFromSessionId(sessionId);
 
   try {
-    quizDoesNotExist(quizId);
     quizBelongsToUser(userToken.authUserId, quizId);
   } catch (error) {
     return { error: error.message, code: 403 };

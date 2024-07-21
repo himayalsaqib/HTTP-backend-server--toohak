@@ -765,12 +765,6 @@ app.post('/v2/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   }
 
   try {
-    quizDoesNotExist(quizId);
-  } catch (error) {
-    return res.status(403).json({ error: error.message });
-  }
-
-  try {
     const response = adminQuizCreateQuestion(quizId, questionBody);
     res.json(response);
   } catch (error) {
