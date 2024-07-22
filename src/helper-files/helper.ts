@@ -1,7 +1,7 @@
 // Includes helper functions for auth.ts and quiz.ts
 
 import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
-import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers } from '../quiz';
+import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState } from '../quiz';
 import crypto from 'crypto';
 
 /**
@@ -438,4 +438,59 @@ export function checkThumbnailUrlFileType(thumbnailUrl: string): boolean {
 export function findQuizSessionById(sessionId: number): QuizSessions | undefined {
   const data = getData();
   return data.quizSessions.find(session => session.sessionId === sessionId);
+}
+
+/**
+ * Based on the state of a quizSession determine whether the action can be applied
+ * 
+ * @param {QuizSessions} quizSession 
+ * @param {string} action 
+ * @returns {boolean} - false if action is not applicable in current state,
+ *                      true otherwise
+ */
+
+export function correctSessionStateForAction(quizSession: QuizSessions, action: QuizSessionAction): boolean {
+  const currState = quizSession.state;
+
+  if (currState === QuizSessionState.ANSWER_SHOW) {
+    if (!(action === QuizSessionAction.END || action === QuizSessionAction.NEXT_QUESTION || action === QuizSessionAction.GO_TO_FINAL_RESULTS)) {
+      return false;
+    }
+  }
+
+  if (currState === QuizSessionState.END) {
+    return false;
+  }
+
+  if (currState === QuizSessionState.FINAL_RESULTS) {
+    if (!(action === QuizSessionAction.END)) {
+      return false;
+    }
+  }
+
+  if (currState === QuizSessionState.LOBBY) {
+    if (!(action === QuizSessionAction.END || action === QuizSessionAction.NEXT_QUESTION)) {
+      return false;
+    }
+  }
+
+  if (currState === QuizSessionState.QUESTION_CLOSE) {
+    if (!(action === QuizSessionAction.END || action === QuizSessionAction.GO_TO_ANSWER || action === QuizSessionAction.GO_TO_FINAL_RESULTS || action === QuizSessionAction.NEXT_QUESTION)) {
+      return false;
+    }
+  }
+
+  if (currState === QuizSessionState.QUESTION_COUNTDOWN) {
+    if (!(action === QuizSessionAction.SKIP_COUNTDOWN || action === QuizSessionAction.END)) {
+      return false;
+    }
+  }
+
+  if (currState === QuizSessionState.QUESTION_OPEN) {
+    if (!(action === QuizSessionAction.END || action === QuizSessionAction.GO_TO_ANSWER)) {
+      return false;
+    }
+  }
+
+  return true;
 }
