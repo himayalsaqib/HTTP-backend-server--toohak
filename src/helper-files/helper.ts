@@ -20,6 +20,15 @@ export function authUserIdExists(authUserId: number): boolean {
   }
 }
 
+/**
+ * Function generates and returns a random integer for ids
+ *
+ * @returns {number}
+ */
+export function getRandomInt(): number {
+  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+}
+
 // ========================= AUTH HELPER FUNCTIONS ========================== //
 /**
  * Function checks if an email is already being used by an existing user
@@ -355,9 +364,9 @@ export function checkForNumCorrectAns(questionBody: QuestionBody): number {
 export function createAnswersArray(givenAnswers: QuizQuestionAnswers[]): Answer[] {
   const questionAnswersArray = [];
   for (const answer of givenAnswers) {
-    let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    let newAnswerId = getRandomInt();
     while (answerIdInUse(newAnswerId) === true) {
-      newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+      newAnswerId = getRandomInt();
     }
 
     questionAnswersArray.push({
