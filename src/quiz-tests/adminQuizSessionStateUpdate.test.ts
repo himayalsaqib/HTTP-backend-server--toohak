@@ -1,11 +1,11 @@
 // inlcudes http tests for the route /v1/admin/quiz/{quizid}/session/{sessionid}
 
-import { requestPut, requestDelete, requestPost, requestGet } from "../helper-files/requestHelper";
-import { QuestionBody, QuizSessionAction, QuizSessionState } from "../quiz";
+import { requestPut, requestDelete, requestPost, requestGet } from '../helper-files/requestHelper';
+import { QuestionBody, QuizSessionAction, QuizSessionState } from '../quiz';
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
-})
+});
 
 const ERROR = { error: expect.any(String) };
 
@@ -15,7 +15,6 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
   let quizBody: { name: string, description: string };
   let quizId: number;
   let questionBody: { questionBody: QuestionBody };
-  let questionId: number;
   let sessionStartBody: { autoStartNum: number };
   let sessionId: number;
   let updateActionBody: { action: string };
@@ -44,14 +43,13 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
         thumbnailUrl: 'http://google.com/some/file/path.png'
       }
     };
-    const questionRes = requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token });
-    questionId = questionRes.retval.questionId;
+    requestPost(questionBody, `/v2/admin/quiz/${quizId}/question`, { token });
 
     // start a session
     sessionStartBody = { autoStartNum: 3 };
     const sessionStartRes = requestPost(sessionStartBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
     sessionId = sessionStartRes.retval.sessionId;
-    
+
     // initalising updateActionBody for route
     updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
   });
@@ -69,10 +67,9 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.LOBBY });
 
-
       const updateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(updateRes).toStrictEqual({
-        retval: {}, 
+        retval: {},
         statusCode: 200
       });
 
@@ -92,10 +89,10 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
 
     test('The action provided is not a valid Action enum', () => {
       updateActionBody = { action: 'NOT_AN_ACTION' };
-      
+
       const updateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(updateRes).toStrictEqual({
-        retval: ERROR, 
+        retval: ERROR,
         statusCode: 400
       });
     });
@@ -133,14 +130,14 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
   describe('Testing quiz ownership and quiz existence errors (status code 403)', () => {
     test('The user is not an owner of this quiz', () => {
       const userBody2 = { email: 'email@gmail.com', password: 'validpa55w0rd', nameFirst: 'Betty', nameLast: 'Smith' };
-      const user2Res = requestPost(userBody2, '/v1/admin/auth/register')
+      const user2Res = requestPost(userBody2, '/v1/admin/auth/register');
       token = user2Res.retval.token;
 
       const updateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(updateRes).toStrictEqual({
         retval: ERROR,
         statusCode: 403
-      })
+      });
     });
 
     test('This quiz does not exist', () => {
