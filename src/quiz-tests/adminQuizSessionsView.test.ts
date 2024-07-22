@@ -54,7 +54,7 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
     });
 
     test('Successfully retrieves active and inactive session ids when only 1 active session exists', () => {
-      // starting two new sessions 
+      // starting a new session
       startSessionBody = { autoStartNum: 3 };
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       const activeSessionId = res.retval.sessionId;
@@ -84,22 +84,26 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
     });
 
     test.skip('Successfully retrieves active and inactive session ids when multiple active/inactive sessions exist', () => {
-      // starting three new sessions. 2 active and 1 inactive.
+      // starting four new sessions. 2 active and 2 inactive.
       startSessionBody = { autoStartNum: 3 };
-      let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
-      const activeSessionId1 = res.retval.sessionId;
-      res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
-      const activeSessionId2 = res.retval.sessionId;
-      res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
-      const inactiveSessionId = res.retval.sessionId;
-      // making one session inactive by putting in END state
-      requestPut({ action: QuizSessionState.END }, `/v1/admin/quiz/${quizId}/session/${inactiveSessionId}`, { token });
-
+      let activeSessionIds: number[];
+      let inactiveSessionIds: number[];
+      let res;
+      for (let i = 0; i < 2; i++) {
+        res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
+        activeSessionIds[i] = res.retval.sessionId;
+        
+        res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
+        inactiveSessionIds[i] = res.retval.sessionId;
+        // making this session inactive by putting in END state
+        requestPut({ action: QuizSessionState.END }, `/v1/admin/quiz/${quizId}/session/${inactiveSessionIds[i]}`, { token });
+      }
+      
       res = requestGet({}, `/v1/admin/quiz/${quizId}/sessions`, { token });
       expect(res).toStrictEqual({
         retval: { 
-          activeSessions: [activeSessionId1, activeSessionId2], 
-          inactiveSessions: [inactiveSessionId] 
+          activeSessions: activeSessionIds.sort(), 
+          inactiveSessions: inactiveSessionIds.sort() 
         },
         statusCode: 200
       });
