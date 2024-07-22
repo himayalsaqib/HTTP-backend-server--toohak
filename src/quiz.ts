@@ -733,18 +733,32 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
 
 /**
  * Update the state of a particular quiz session by sending an action command
- * 
- * @param {number} quizId 
- * @param {number} sessionId 
- * @param {QuizSessionAction} action 
+ *
+ * @param {number} quizId
+ * @param {number} sessionId
+ * @param {QuizSessionAction} action
  * @returns {{}} - an empty object
  */
-export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, action: QuizSessionAction): EmptyObject {
+export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, action: string): EmptyObject {
   const data = getData();
 
   // sessionId is not valid for this quiz
+  const quizSession = findQuizSessionById(sessionId);
+  if (quizSession === undefined) {
+    throw new Error('The sesssion ID does not refer to a valid session within this quiz.');
+  }
+
   // action is not a valid Action enum
+  if (!(Object.keys(QuizSessionAction).includes(action))) {
+    throw new Error('The action provided is not a valid Action enum.');
+  }
+
   // action enum cannot be applied in the current state
+  const currState = quizSession.state;
+  // helper function return boolean
+
+  // session state
+  
 
   setData(data);
   return {};
