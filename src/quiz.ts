@@ -736,13 +736,15 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
  * 
  * @param {number} quizId 
  * @param {number} sessionId 
- * @param {QuizSessionAction} updateAction 
+ * @param {QuizSessionAction} action 
  * @returns {{}} - an empty object
  */
-export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, updateAction: QuizSessionAction): EmptyObject {
+export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, action: QuizSessionAction): EmptyObject {
   const data = getData();
 
-
+  // sessionId is not valid for this quiz
+  // action is not a valid Action enum
+  // action enum cannot be applied in the current state
 
   setData(data);
   return {};
