@@ -730,3 +730,20 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
 
   return { sessionId: newSessionId };
 }
+
+/**
+ * Update the state of a particular quiz session by sending an action command
+ * 
+ * @param {number} quizId 
+ * @param {number} sessionId 
+ * @param {QuizSessionAction} updateAction 
+ * @returns {{}} - an empty object
+ */
+export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, updateAction: QuizSessionAction): EmptyObject {
+  const data = getData();
+
+
+
+  setData(data);
+  return {};
+}
