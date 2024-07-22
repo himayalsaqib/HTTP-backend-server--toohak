@@ -20,7 +20,8 @@ import {
   currentTime,
   checkThumbnailUrlFileType,
   findQuizSessionById,
-  quizIsInTrash
+  quizIsInTrash,
+  correctSessionStateForAction
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -734,12 +735,11 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
 /**
  * Update the state of a particular quiz session by sending an action command
  *
- * @param {number} quizId
  * @param {number} sessionId
  * @param {QuizSessionAction} action
  * @returns {{}} - an empty object
  */
-export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, action: string): EmptyObject {
+export function adminQuizSessionStateUpdate(sessionId: number, action: string): EmptyObject {
   const data = getData();
 
   // sessionId is not valid for this quiz
@@ -754,12 +754,27 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
   }
 
   // action enum cannot be applied in the current state
-  const currState = quizSession.state;
-  // helper function return boolean
+  if (!correctSessionStateForAction(quizSession.state, action)) {
+    throw new Error('The action cannot be applied in the current state of the session.');
+  }
 
-  // session state
+  // session state update
+  if (action === QuizSessionAction.END) {
+    quizSession.state = QuizSessionState.END;
+
+  } else if (action === QuizSessionAction.GO_TO_ANSWER) {
+    quizSession.state = QuizSessionState.ANSWER_SHOW;
+
+  } else if (action === QuizSessionAction.GO_TO_FINAL_RESULTS) {
+    quizSession.state = QuizSessionState.FINAL_RESULTS;
+
+  } else if (action === QuizSessionAction.NEXT_QUESTION) {
+    quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
+
+  } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
+    quizSession.state = QuizSessionState.QUESTION_OPEN;
+  }
   
-
   setData(data);
   return {};
 }
