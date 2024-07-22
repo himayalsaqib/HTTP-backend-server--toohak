@@ -443,50 +443,48 @@ export function findQuizSessionById(sessionId: number): QuizSessions | undefined
 /**
  * Based on the state of a quizSession determine whether the action can be applied
  * 
- * @param {QuizSessions} quizSession 
- * @param {string} action 
+ * @param {QuizSessionState} state - of the current session
+ * @param {string} action - the action to change states
  * @returns {boolean} - false if action is not applicable in current state,
  *                      true otherwise
  */
 
-export function correctSessionStateForAction(quizSession: QuizSessions, action: QuizSessionAction): boolean {
-  const currState = quizSession.state;
-
-  if (currState === QuizSessionState.ANSWER_SHOW) {
+export function correctSessionStateForAction(state: QuizSessionState, action: string): boolean {
+  if (state === QuizSessionState.ANSWER_SHOW) {
     if (!(action === QuizSessionAction.END || action === QuizSessionAction.NEXT_QUESTION || action === QuizSessionAction.GO_TO_FINAL_RESULTS)) {
       return false;
     }
   }
 
-  if (currState === QuizSessionState.END) {
+  if (state === QuizSessionState.END) {
     return false;
   }
 
-  if (currState === QuizSessionState.FINAL_RESULTS) {
+  if (state === QuizSessionState.FINAL_RESULTS) {
     if (!(action === QuizSessionAction.END)) {
       return false;
     }
   }
 
-  if (currState === QuizSessionState.LOBBY) {
+  if (state === QuizSessionState.LOBBY) {
     if (!(action === QuizSessionAction.END || action === QuizSessionAction.NEXT_QUESTION)) {
       return false;
     }
   }
 
-  if (currState === QuizSessionState.QUESTION_CLOSE) {
+  if (state === QuizSessionState.QUESTION_CLOSE) {
     if (!(action === QuizSessionAction.END || action === QuizSessionAction.GO_TO_ANSWER || action === QuizSessionAction.GO_TO_FINAL_RESULTS || action === QuizSessionAction.NEXT_QUESTION)) {
       return false;
     }
   }
 
-  if (currState === QuizSessionState.QUESTION_COUNTDOWN) {
+  if (state === QuizSessionState.QUESTION_COUNTDOWN) {
     if (!(action === QuizSessionAction.SKIP_COUNTDOWN || action === QuizSessionAction.END)) {
       return false;
     }
   }
 
-  if (currState === QuizSessionState.QUESTION_OPEN) {
+  if (state === QuizSessionState.QUESTION_OPEN) {
     if (!(action === QuizSessionAction.END || action === QuizSessionAction.GO_TO_ANSWER)) {
       return false;
     }
