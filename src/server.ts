@@ -47,6 +47,7 @@ import {
   adminQuizQuestionDuplicate,
   adminQuizTransfer,
   adminQuizSessionStart,
+  adminQuizSessionStateUpdate,
 } from './quiz';
 import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/helper';
@@ -582,6 +583,39 @@ app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) =
 
   try {
     const response = adminQuizSessionStart(quizId, autoStartNum);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.put('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const quizSessionId = parseInt(req.params.sessionid as string);
+  const action = req.body.updateActionBody;
+  const sessionId = parseInt(req.header('token'));
+
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  try {
+    quizDoesNotExist(quizId);
+    if (!quizIsInTrash(quizId)) {
+      quizBelongsToUser(userToken.authUserId, quizId);
+    } else {
+      trashedQuizBelongsToUser(userToken.authUserId, quizId);
+    }
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
+  }
+
+  try {
+    const response = adminQuizSessionStateUpdate(quizSessionId, action);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
