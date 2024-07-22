@@ -473,7 +473,7 @@ export function correctSessionStateForAction(state: QuizSessionState, action: st
   }
 
   if (state === QuizSessionState.QUESTION_CLOSE) {
-    if (!(action === QuizSessionAction.END || action === QuizSessionAction.GO_TO_ANSWER || action === QuizSessionAction.GO_TO_FINAL_RESULTS || action === QuizSessionAction.NEXT_QUESTION)) {
+    if (action === QuizSessionAction.SKIP_COUNTDOWN) {
       return false;
     }
   }
