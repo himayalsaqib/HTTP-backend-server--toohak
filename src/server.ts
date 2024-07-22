@@ -592,7 +592,7 @@ app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) =
 app.put('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const quizSessionId = parseInt(req.params.sessionid as string);
-  const action = req.body.updateActionBody;
+  const action = req.body;
   const sessionId = parseInt(req.header('token'));
 
   try {
@@ -615,7 +615,7 @@ app.put('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Respons
   }
 
   try {
-    const response = adminQuizSessionStateUpdate(quizSessionId, action);
+    const response = adminQuizSessionStateUpdate(quizSessionId, action.action);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
