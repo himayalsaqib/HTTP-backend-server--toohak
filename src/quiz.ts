@@ -741,11 +741,11 @@ export function adminQuizSessionsView(quizId: number): { activeSessions: number[
   const quiz = findQuizById(quizId);
 
   // can i omit the function inside sort 
-  const activeSessionsSorted = quiz.activeSessions.sort((id1, id2) => id1 - id2);
-  const inactiveSessionsSorted = quiz.inactiveSessions.sort((id1, id2) => id1 - id2);
+  quiz.activeSessions.sort((id1, id2) => id1 - id2);
+  quiz.inactiveSessions.sort((id1, id2) => id1 - id2);
 
   return { 
-    activeSessions: activeSessionsSorted, 
-    inactiveSessions: inactiveSessionsSorted 
+    activeSessions: quiz.activeSessions, 
+    inactiveSessions: quiz.inactiveSessions 
   };
 }
