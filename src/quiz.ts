@@ -749,7 +749,7 @@ export function adminQuizSessionStateUpdate(sessionId: number, action: string): 
   }
 
   // action is not a valid Action enum
-  if (!(Object.keys(QuizSessionAction).includes(action))) {
+  if (!(action in QuizSessionAction)) {
     throw new Error('The action provided is not a valid Action enum.');
   }
 
