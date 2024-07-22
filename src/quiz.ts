@@ -669,6 +669,13 @@ export function adminQuizQuestionDuplicate (quizId: number, questionId: number):
   return { newQuestionId: newQuestion.questionId };
 }
 
+/**
+ * Starts a new session for the given quiz. 
+ *
+ * @param {number} quizId
+ * @param {number} autoStartNum
+ * @returns {{ sessionId: number}} 
+ */
 export function adminQuizSessionStart(quizId: number, autoStartNum: number): { sessionId: number } {
   if (quizIsInTrash(quizId)) {
     throw new Error('The quiz is in trash.');
