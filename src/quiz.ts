@@ -105,6 +105,7 @@ export enum QuizSessionState {
 }
 
 // =============================== FUNCTIONS ================================ //
+
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  *
@@ -721,4 +722,23 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
   setData(data);
 
   return { sessionId: newSessionId };
+}
+
+/**
+ * Retrieves active and inactive session ids (sorted in ascending order) for a quiz
+ *
+ * @param {number} quizId
+ * @returns {{ activeSessions: number[], inactiveSessions: number[] }}
+ */
+export function adminQuizSessionsView(quizId: number): { activeSessions: number[], inactiveSessions: number[] } {
+  const quiz = findQuizById(quizId);
+
+  // can i omit the function inside sort 
+  const activeSessionsSorted = quiz.activeSessions.sort((id1, id2) => id1 - id2);
+  const inactiveSessionsSorted = quiz.inactiveSessions.sort((id1, id2) => id1 - id2);
+
+  return { 
+    activeSessions: activeSessionsSorted, 
+    inactiveSessions: inactiveSessionsSorted 
+  };
 }
