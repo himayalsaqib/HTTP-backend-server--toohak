@@ -118,8 +118,8 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
     });
 
     test('Token is invalid (does not refer to a valid logged in user session)', () => {
-      sessionId = parseInt(token) + 1;
-      const updateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      const invalidToken = parseInt(token) + 1;
+      const updateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token: invalidToken.toString() });
       expect(updateRes).toStrictEqual({
         retval: ERROR,
         statusCode: 401
