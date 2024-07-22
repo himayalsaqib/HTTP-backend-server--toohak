@@ -2,6 +2,7 @@
 
 import fs from 'fs';
 import { QuizAnswerColours } from './quiz';
+import { QuizInfo, QuizSessionState } from './quiz';
 
 const path = __dirname + '/toohakData.json';
 
@@ -32,6 +33,8 @@ export interface Quizzes {
   questions: Question[];
   duration: number;
   thumbnailUrl?: string;
+  activeSessions: number[];
+  inactiveSessions: number[];
 }
 
 export interface Question {
@@ -50,6 +53,30 @@ export interface Answer {
   correct: boolean;
 }
 
+export interface QuizSessions {
+  sessionId: number;
+  state: QuizSessionState;
+  atQuestion: number;
+  players: string[];
+  autoStartNum: number;
+  quiz: QuizInfo;
+  usersRankedByScore: UsersRanking[];
+  questionResults: QuestionResults[];
+}
+
+export interface UsersRanking {
+  playerId: number;
+  name: string;
+  score: number;
+}
+
+export interface QuestionResults {
+  questionId: number;
+  playersCorrectList: string[];
+  averageAnswerTime: number;
+  percentCorrect: number;
+}
+
 export interface Trash {
   quiz: Quizzes;
 }
@@ -62,6 +89,7 @@ export interface Tokens {
 export interface Data {
   users: Users[];
   quizzes: Quizzes[];
+  quizSessions: QuizSessions[];
   trash: Trash[];
   tokens: Tokens[];
 }
@@ -69,6 +97,7 @@ export interface Data {
 let data: Data = {
   users: [],
   quizzes: [],
+  quizSessions: [],
   trash: [],
   tokens: []
 };

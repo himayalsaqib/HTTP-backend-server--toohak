@@ -27,6 +27,7 @@ import {
   findTokenFromSessionId,
   quizRoutesErrorChecking,
   quizzesDoNotExist,
+  quizBelongsToUser,
 } from './helper-files/serverHelper';
 import { clear } from './other';
 import {
@@ -45,8 +46,10 @@ import {
   adminQuizQuestionMove,
   adminQuizQuestionDuplicate,
   adminQuizTransfer,
+  adminQuizSessionStart,
 } from './quiz';
 import { load } from './dataStore';
+import { quizIsInTrash } from './helper-files/helper';
 
 // Set up web app
 const app = express();
@@ -553,6 +556,38 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   }
 });
 
+app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(req.header('token'));
+  const autoStartNum = req.body.autoStartNum;
+
+  try {
+    tokenExists(sessionId);
+  } catch (error) {
+    return res.status(401).json({ error: error.message });
+  }
+
+  const userToken = findTokenFromSessionId(sessionId);
+
+  try {
+    quizDoesNotExist(quizId);
+    if (!quizIsInTrash(quizId)) {
+      quizBelongsToUser(userToken.authUserId, quizId);
+    } else {
+      trashedQuizBelongsToUser(userToken.authUserId, quizId);
+    }
+  } catch (error) {
+    return res.status(403).json({ error: error.message });
+  }
+
+  try {
+    const response = adminQuizSessionStart(quizId, autoStartNum);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
 // VERSION 2 //
 
 app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
@@ -727,12 +762,6 @@ app.post('/v2/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
   if ('error' in errorCheckResponse) {
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
-  }
-
-  try {
-    quizDoesNotExist(quizId);
-  } catch (error) {
-    return res.status(403).json({ error: error.message });
   }
 
   try {

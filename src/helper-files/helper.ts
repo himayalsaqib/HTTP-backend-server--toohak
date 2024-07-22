@@ -1,6 +1,6 @@
 // Includes helper functions for auth.ts and quiz.ts
 
-import { Answer, getData, Question, Quizzes, Users, Trash } from '../dataStore';
+import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
 import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers } from '../quiz';
 import crypto from 'crypto';
 
@@ -15,9 +15,8 @@ export function authUserIdExists(authUserId: number): boolean {
 
   if (user === undefined) {
     return false;
-  } else {
-    return true;
   }
+  return true;
 }
 
 /**
@@ -196,7 +195,7 @@ export function findQuizById(quizId: number): Quizzes | undefined {
  * Finds a quiz in the trash by its quiz ID
  *
  * @param {number} quizId - The ID of the quiz to find
- * @returns {Quizzes | undefined} - The quiz with the specified ID | undefined
+ * @returns {Trash | undefined} - The quiz with the specified ID | undefined
  */
 export function findTrashedQuizById(quizId: number): Trash | undefined {
   const data = getData();
@@ -437,4 +436,15 @@ export function checkThumbnailUrlFileType(thumbnailUrl: string): boolean {
     return true;
   }
   return false;
+}
+
+/**
+ * Finds a quiz session in the data by its session ID
+ *
+ * @param {number} sessionId - The ID of the quiz session to find
+ * @returns {QuizSessions | undefined}
+ */
+export function findQuizSessionById(sessionId: number): QuizSessions | undefined {
+  const data = getData();
+  return data.quizSessions.find(session => session.sessionId === sessionId);
 }
