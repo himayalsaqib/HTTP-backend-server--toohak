@@ -22,7 +22,7 @@ import {
   findQuizSessionById,
   quizIsInTrash
 } from './helper-files/helper';
-import isImageURL from 'image-url-validator';
+import isImageUrl from 'is-image-url';
 
 // ============================= GLOBAL VARIABLES =========================== //
 const MIN_QUIZ_NAME_LEN = 3;
@@ -744,7 +744,7 @@ export function adminQuizThumbnail(quizId: number, thumbnailUrl: string ): Empty
     throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
   }
 
-  if (!isImageURL(thumbnailUrl)) {
+  if (!isImageUrl(thumbnailUrl)) {
     throw new Error('The thumbnailUrl is not a valid image');
   }
   
