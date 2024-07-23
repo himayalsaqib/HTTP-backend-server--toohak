@@ -685,9 +685,9 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     throw new Error('The quiz does not have any questions in it.');
   }
 
-  const newSessionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  const newSessionId = getRandomInt();
   while (findQuizSessionById(newSessionId) !== undefined) {
-    Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    getRandomInt();
   }
 
   // adding new sessionId to active sessions array for this quiz
