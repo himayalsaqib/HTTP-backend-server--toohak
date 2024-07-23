@@ -194,8 +194,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
     });
 
     test('Returns error when quiz doesn\'t exist', () => {
-      quizId++;
-      const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
+      const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId++}/session/start`, { token });
       expect(res).toStrictEqual({
         retval: ERROR,
         statusCode: 403
