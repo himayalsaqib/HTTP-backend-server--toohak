@@ -595,18 +595,9 @@ app.put('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Respons
   const action = req.body;
   const sessionId = parseInt(req.header('token'));
 
-  try {
-    tokenExists(sessionId);
-  } catch (error) {
-    return res.status(401).json({ error: error.message });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  try {
-    quizBelongsToUser(userToken.authUserId, quizId);
-  } catch (error) {
-    return res.status(403).json({ error: error.message });
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
   try {
