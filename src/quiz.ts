@@ -761,20 +761,16 @@ export function adminQuizSessionStateUpdate(sessionId: number, action: string): 
   // session state update
   if (action === QuizSessionAction.END) {
     quizSession.state = QuizSessionState.END;
-
   } else if (action === QuizSessionAction.GO_TO_ANSWER) {
     quizSession.state = QuizSessionState.ANSWER_SHOW;
-
   } else if (action === QuizSessionAction.GO_TO_FINAL_RESULTS) {
     quizSession.state = QuizSessionState.FINAL_RESULTS;
-
   } else if (action === QuizSessionAction.NEXT_QUESTION) {
     quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
-
   } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
     quizSession.state = QuizSessionState.QUESTION_OPEN;
   }
-  
+
   setData(data);
   return {};
 }

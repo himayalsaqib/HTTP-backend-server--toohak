@@ -442,7 +442,7 @@ export function findQuizSessionById(sessionId: number): QuizSessions | undefined
 
 /**
  * Based on the state of a quizSession determine whether the action can be applied
- * 
+ *
  * @param {QuizSessionState} state - of the current session
  * @param {string} action - the action to change states
  * @returns {boolean} - false if action is not applicable in current state,
