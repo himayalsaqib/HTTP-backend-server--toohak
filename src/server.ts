@@ -50,6 +50,7 @@ import {
 } from './quiz';
 import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/helper';
+import { playerJoin } from './player';
 
 // Set up web app
 const app = express();
@@ -882,38 +883,15 @@ app.put('/v2/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
 
 // ============================= PLAYER ROUTES ============================== //
 
-app.post('POST /v1/player/join', (req: Request, res: Response) => {
-  const quizId = parseInt(req.params.quizid as string);
-  const sessionId = parseInt(req.header('token'));
-  const autoStartNum = req.body.autoStartNum;
-
+app.post('/v1/player/join', (req: Request, res: Response) => {
+  const { sessionId, name } = req.body;
   try {
-    tokenExists(sessionId);
-  } catch (error) {
-    return res.status(401).json({ error: error.message });
-  }
-
-  const userToken = findTokenFromSessionId(sessionId);
-
-  try {
-    quizDoesNotExist(quizId);
-    if (!quizIsInTrash(quizId)) {
-      quizBelongsToUser(userToken.authUserId, quizId);
-    } else {
-      trashedQuizBelongsToUser(userToken.authUserId, quizId);
-    }
-  } catch (error) {
-    return res.status(403).json({ error: error.message });
-  }
-
-  try {
-    const response = adminQuizSessionStart(quizId, autoStartNum);
+    const response = playerJoin(sessionId, name);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
 });
-
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
