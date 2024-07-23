@@ -482,7 +482,7 @@ export function generateRandomName(): string {
 }
 
 /**
- * Function checks if a player ID has already been used by another quiz
+ * Function checks if a player ID has already been used by another player
  *
  * @param {Number} playerId
  * @returns {boolean} true if player ID has been used, false if it has not
