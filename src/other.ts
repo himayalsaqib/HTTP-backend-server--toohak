@@ -1,6 +1,7 @@
 // includes other functions (clear)
 
 import { setData, EmptyObject, Data } from './dataStore';
+import { timerArray } from './quiz';
 
 /**
  * Reset the state of the application back to the start.
@@ -14,6 +15,10 @@ export function clear(): EmptyObject {
     trash: [],
     tokens: []
   };
+
+  for (const id of timerArray) {
+    clearTimeout(id);
+  }
 
   setData(newData);
 

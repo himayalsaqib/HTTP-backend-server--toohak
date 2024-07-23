@@ -51,6 +51,10 @@ const MAX_AUTO_START_NUM = 50;
 
 const MAX_ACTIVE_QUIZ_SESSIONS = 10;
 
+const WAIT_THREE_SECONDS = 3;
+
+export const timerArray: any[] = [];
+
 // ============================ TYPE ANNOTATIONS ============================ //
 interface QuizList {
   quizId: number;
@@ -719,7 +723,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
   data.quizSessions.push({
     sessionId: newSessionId,
     state: QuizSessionState.LOBBY,
-    atQuestion: 1,
+    atQuestion: 0,
     players: [],
     autoStartNum: autoStartNum,
     quiz: quizInfoForSession,
@@ -741,6 +745,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
  */
 export function adminQuizSessionStateUpdate(sessionId: number, action: string): EmptyObject {
   const data = getData();
+  let timeoutId;
 
   // sessionId is not valid for this quiz
   const quizSession = findQuizSessionById(sessionId);
@@ -758,6 +763,14 @@ export function adminQuizSessionStateUpdate(sessionId: number, action: string): 
     throw new Error('The action cannot be applied in the current state of the session.');
   }
 
+  // update states with timer propterties
+  // question_countdown to question.open
+  if (action !== QuizSessionAction.SKIP_COUNTDOWN && quizSession.state === QuizSessionState.QUESTION_COUNTDOWN) {
+    timeoutId = setTimeout(() => WAIT_THREE_SECONDS * 1000);
+    quizSession.state = QuizSessionState.QUESTION_OPEN;
+    timerArray.push(timeoutId);
+  }
+
   // session state update
   if (action === QuizSessionAction.END) {
     quizSession.state = QuizSessionState.END;
@@ -767,8 +780,14 @@ export function adminQuizSessionStateUpdate(sessionId: number, action: string): 
     quizSession.state = QuizSessionState.FINAL_RESULTS;
   } else if (action === QuizSessionAction.NEXT_QUESTION) {
     quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
+    quizSession.atQuestion++;
   } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
     quizSession.state = QuizSessionState.QUESTION_OPEN;
+  } else if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
+    const currQIndex = quizSession.atQuestion;
+    const duration = quizSession.quiz.questions[currQIndex].duration;
+    timeoutId = setTimeout(() => duration * 1000);
+    timerArray.push(timeoutId);
   }
 
   setData(data);
