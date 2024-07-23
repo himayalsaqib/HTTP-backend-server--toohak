@@ -66,11 +66,27 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
       });
     });
 
+    test.skip('Successfully retrieves active and inactive session ids when only an inactive session exists', () => {
+      // starting a new session
+      startSessionBody = { autoStartNum: 3 };
+      let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
+      const inactiveSessionId = res.retval.sessionId;
+      // making one session inactive by putting in END state
+      requestPut({ action: QuizSessionState.END }, `/v1/admin/quiz/${quizId}/session/${inactiveSessionId}`, { token });
+
+      res = requestGet({}, `/v1/admin/quiz/${quizId}/sessions`, { token });
+      expect(res).toStrictEqual({
+        retval: { activeSessions: [], inactiveSessions: [inactiveSessionId] },
+        statusCode: 200
+      });
+    });
+
     test.skip('Successfully retrieves active and inactive session ids when 1 active and inactive session exists', () => {
       // starting two new sessions
       startSessionBody = { autoStartNum: 3 };
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       const activeSessionId = res.retval.sessionId;
+
       res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       const inactiveSessionId = res.retval.sessionId;
       // making one session inactive by putting in END state
@@ -86,9 +102,7 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
     test.skip('Successfully retrieves active and inactive session ids when multiple active/inactive sessions exist', () => {
       // starting four new sessions. 2 active and 2 inactive.
       startSessionBody = { autoStartNum: 3 };
-      let activeSessionIds: number[];
-      let inactiveSessionIds: number[];
-      let res;
+      let res, activeSessionIds: number[], inactiveSessionIds: number[];
       for (let i = 0; i < 2; i++) {
         res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
         activeSessionIds[i] = res.retval.sessionId;
