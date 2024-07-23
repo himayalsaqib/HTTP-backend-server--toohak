@@ -53,7 +53,7 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
       });
     });
 
-    test.only('Successfully retrieves active and inactive session ids when only an active session exists', () => {
+    test('Successfully retrieves active and inactive session ids when only an active session exists', () => {
       // starting a new session
       startSessionBody = { autoStartNum: 3 };
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
