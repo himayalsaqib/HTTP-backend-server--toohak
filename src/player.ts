@@ -1,7 +1,7 @@
 // includes player functions
 
 import { setData, getData } from './dataStore';
-import { generateRandomName, getRandomInt, playerIdInUse, playerNameExists } from './helper-files/helper';
+import { findQuizSessionById, generateRandomName, getRandomInt, playerIdInUse, playerNameExists } from './helper-files/helper';
 import { QuizSessionState } from './quiz';
 
 // =============================== FUNCTIONS ================================ //
@@ -27,7 +27,7 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
   if (playerNameExists(playerName)) {
     throw new Error('Name is not unique');
   }
-  const session = data.quizSessions.find((session) => session.sessionId === sessionId);
+  const session = findQuizSessionById(sessionId);
   if (!session) {
     throw new Error('Session Id does not refer to a valid session');
   }
