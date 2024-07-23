@@ -48,9 +48,9 @@ import {
   adminQuizTransfer,
   adminQuizSessionStart,
 } from './quiz';
+import { playerJoin } from './player';
 import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/helper';
-import { playerJoin } from './player';
 
 // Set up web app
 const app = express();
