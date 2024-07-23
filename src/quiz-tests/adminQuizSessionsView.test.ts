@@ -1,7 +1,7 @@
 // includes http tests for the route GET /v1/admin/quiz/{quizid}/sessions
 
-import { requestDelete, requestGet, requestPost, requestPut } from "../helper-files/requestHelper";
-import { QuestionBody, QuizSessionState } from "../quiz";
+import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
+import { QuestionBody, QuizSessionState } from '../quiz';
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
@@ -67,7 +67,7 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
     });
 
     test.skip('Successfully retrieves active and inactive session ids when 1 active and inactive session exists', () => {
-      // starting two new sessions 
+      // starting two new sessions
       startSessionBody = { autoStartNum: 3 };
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       const activeSessionId = res.retval.sessionId;
@@ -98,12 +98,12 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
         // making this session inactive by putting in END state
         requestPut({ action: QuizSessionState.END }, `/v1/admin/quiz/${quizId}/session/${inactiveSessionIds[i]}`, { token });
       }
-      
+
       res = requestGet({}, `/v1/admin/quiz/${quizId}/sessions`, { token });
       expect(res).toStrictEqual({
-        retval: { 
-          activeSessions: activeSessionIds.sort((id1, id2) => id1 - id2), 
-          inactiveSessions: inactiveSessionIds.sort((id1, id2) => id1 - id2) 
+        retval: {
+          activeSessions: activeSessionIds.sort((id1, id2) => id1 - id2),
+          inactiveSessions: inactiveSessionIds.sort((id1, id2) => id1 - id2)
         },
         statusCode: 200
       });

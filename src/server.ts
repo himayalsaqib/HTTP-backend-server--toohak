@@ -604,7 +604,7 @@ app.get('/v1/admin/quiz/:quizid/sessions', (req: Request, res: Response) => {
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-})
+});
 
 // VERSION 2 //
 

@@ -667,11 +667,11 @@ export function adminQuizQuestionDuplicate (quizId: number, questionId: number):
 }
 
 /**
- * Starts a new session for the given quiz. 
+ * Starts a new session for the given quiz.
  *
  * @param {number} quizId
  * @param {number} autoStartNum
- * @returns {{ sessionId: number}} 
+ * @returns {{ sessionId: number}}
  */
 export function adminQuizSessionStart(quizId: number, autoStartNum: number): { sessionId: number } {
   if (quizIsInTrash(quizId)) {
@@ -738,12 +738,12 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
 export function adminQuizSessionsView(quizId: number): { activeSessions: number[], inactiveSessions: number[] } {
   const quiz = findQuizById(quizId);
 
-  // can i omit the function inside sort 
+  // can i omit the function inside sort
   quiz.activeSessions.sort((id1, id2) => id1 - id2);
   quiz.inactiveSessions.sort((id1, id2) => id1 - id2);
 
-  return { 
-    activeSessions: quiz.activeSessions, 
-    inactiveSessions: quiz.inactiveSessions 
+  return {
+    activeSessions: quiz.activeSessions,
+    inactiveSessions: quiz.inactiveSessions
   };
 }
