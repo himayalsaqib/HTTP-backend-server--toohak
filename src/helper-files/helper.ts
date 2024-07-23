@@ -1,6 +1,6 @@
 // Includes helper functions for auth.ts and quiz.ts
 
-import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions, Player } from '../dataStore';
+import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
 import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers } from '../quiz';
 import crypto from 'crypto';
 
@@ -454,7 +454,7 @@ export function findQuizSessionById(sessionId: number): QuizSessions | undefined
 /**
  * Function generates a random name if player name is empty string
  *
- * @param {} 
+ * @param {}
  * @returns {string} random name
  */
 export function generateRandomName(): string {
@@ -479,7 +479,7 @@ export function generateRandomName(): string {
   }
 
   return name;
-};
+}
 
 /**
  * Function checks if a player ID has already been used by another quiz
@@ -492,7 +492,7 @@ export function playerIdInUse(playerId: number): boolean {
   const findPlayerById = data.players.find(q => q.playerId === playerId);
 
   if (findPlayerById === undefined) {
-      return false;
-    }
+    return false;
+  }
   return true;
 }

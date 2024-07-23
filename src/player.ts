@@ -1,7 +1,7 @@
 // includes player functions
 
-import { setData, getData, ErrorObject, EmptyObject, Question, Answer, QuizSessions, Player } from './dataStore';
-import { generateRandomName, playerIdInUse, findQuizSessionById } from './helper-files/helper';
+import { setData, getData } from './dataStore';
+import { generateRandomName, playerIdInUse } from './helper-files/helper';
 
 export enum QuizSessionState {
   LOBBY = 'LOBBY',
@@ -22,37 +22,36 @@ export enum QuizSessionState {
  * @returns {{ playerId: number}}
  */
 export function playerJoin (sessionId: number, name: string): {playerId: number} {
-  let playerName = name; 
+  let playerName = name;
 
   if (playerName === '') {
-      playerName = generateRandomName();
-    }
+    playerName = generateRandomName();
+  }
 
   const data = getData();
   const nameExists = data.players.find(q => q.name === playerName);
 
-
   if (nameExists) {
-   throw new Error('Name is not unique');
+    throw new Error('Name is not unique');
   }
   const session = data.quizSessions.find((session) => session.sessionId === sessionId);
   if (!session) {
-    throw new Error('Session Id does not refer to a valid session')
+    throw new Error('Session Id does not refer to a valid session');
   }
 
-  // throw error for if session is not in lobby state 
+  // throw error for if session is not in lobby state
   if (session.state !== QuizSessionState.LOBBY) {
     throw new Error('Session is not in LOBBY state');
   }
 
   let newPlayerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-  while (playerIdInUse(newPlayerId) === true) { 
+  while (playerIdInUse(newPlayerId) === true) {
     newPlayerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
   const newPlayer = {
     playerId: newPlayerId,
-    name: playerName, 
+    name: playerName,
   };
 
   data.players.push(newPlayer);
@@ -60,6 +59,4 @@ export function playerJoin (sessionId: number, name: string): {playerId: number}
   setData(data);
 
   return { playerId: newPlayerId };
-
 }
-

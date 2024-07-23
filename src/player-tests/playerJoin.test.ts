@@ -1,6 +1,6 @@
 // contains HTTP tests for route POST /v1/player/join
 
-import { requestDelete, requestPost, requestPut} from '../helper-files/requestHelper';
+import { requestDelete, requestPost, requestPut } from '../helper-files/requestHelper';
 import { QuestionBody } from '../quiz';
 
 const ERROR = { error: expect.any(String) };
@@ -15,12 +15,11 @@ describe('POST /v1/player/join', () => {
   let quizBody: { name: string, description: string };
   let quizId: number;
   let createBody: { questionBody: QuestionBody };
-  let questionId: number;
   let startSessionBody: { autoStartNum: number };
   let sessionId: number;
   let playerBody: { sessionId: number, name: string };
   let updateActionBody: { action: string };
-  let playerId: number;
+  // let playerId: number;
 
   beforeEach(() => {
     // registering a user
@@ -46,15 +45,14 @@ describe('POST /v1/player/join', () => {
         thumbnailUrl: 'http://google.com/some/image/path.png'
       }
     };
-    const createResponse = requestPost(createBody, `/v2/admin/quiz/${quizId}/question`, { token });
-    questionId = createResponse.retval.questionId;
+    requestPost(createBody, `/v2/admin/quiz/${quizId}/question`, { token });
 
     // initialising body for start session route
-    startSessionBody = { autoStartNum: 3 }; 
+    startSessionBody = { autoStartNum: 3 };
     const sessionResponse = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
     sessionId = sessionResponse.retval.sessionId;
   });
-  
+
   describe('Testing for correct return type (status code 200)', () => {
     test('Join with non-empty name', () => {
       playerBody = { sessionId: sessionId, name: 'JaneDoe' };
@@ -69,7 +67,7 @@ describe('POST /v1/player/join', () => {
 
     test('Join with empty name', () => {
       playerBody = { sessionId: sessionId, name: '' };
-      //name: expect.stringMatching(/^[a-zA-Z]{5}\d{3}$/) // Matches pattern [5 letters][3 numbers]
+      // name: expect.stringMatching(/^[a-zA-Z]{5}\d{3}$/) // Matches pattern [5 letters][3 numbers]
       const res = requestPost(playerBody, '/v1/player/join');
       expect(res).toStrictEqual({
         retval: {
@@ -84,14 +82,14 @@ describe('POST /v1/player/join', () => {
     test('Join with non-unique name', () => {
       playerBody = { sessionId: sessionId, name: 'JaneDoe' };
       requestPost(playerBody, '/v1/player/join');
-      // Attempt to join with the same name 
-      const res = requestPost(playerBody, '/v1/player/join'); 
+      // Attempt to join with the same name
+      const res = requestPost(playerBody, '/v1/player/join');
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
 
     test('Join with invalid session ID', () => {
       playerBody = { sessionId: sessionId + 1, name: 'JaneDoe' };
-      const res = requestPost( playerBody, '/v1/player/join');
+      const res = requestPost(playerBody, '/v1/player/join');
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
 
@@ -101,8 +99,8 @@ describe('POST /v1/player/join', () => {
 
       playerBody = { sessionId: sessionId, name: 'JaneDoe' };
       requestPost({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/start`, { token });
-      const joinResponse = requestPost({ ...playerBody, sessionId }, '/v1/player/join');
+      const res = requestPost({ playerBody }, '/v1/player/join');
+      expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
   });
-    
 });

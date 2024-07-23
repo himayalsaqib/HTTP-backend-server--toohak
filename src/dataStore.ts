@@ -80,7 +80,7 @@ export interface Player {
   playerId: number;
   name: string;
 }
-  
+
 export interface Trash {
   quiz: Quizzes;
 }
