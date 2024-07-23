@@ -138,7 +138,19 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.FINAL_RESULTS });
     });
 
-    test.todo('Side-effect: status changes when get adminQuizSessionStatusView has been called with action END');
+    test('Side-effect: status changes when get adminQuizSessionStatusView has been called with action END', () =>{
+      const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.LOBBY });
+
+      const updateRes = requestPut({ action: QuizSessionAction.END }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(updateRes).toStrictEqual({
+        retval: {},
+        statusCode: 200
+      });
+
+      const afterUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.END });
+    });
   });
 
   describe('Testing session ID and action enum errors (status code 400)', () => {
