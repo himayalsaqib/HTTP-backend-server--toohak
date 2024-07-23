@@ -63,7 +63,14 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       });
     });
 
-    test.todo('Correctly changes state from QUESTION_COUNTDOWN to QUESTION_OPEN with no action');
+    test.skip('Correctly changes state from QUESTION_COUNTDOWN to QUESTION_OPEN with no action', () => {
+      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_COUNTDOWN });
+      
+      const afterUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_OPEN });
+    });
 
     test.skip('Side-effect: status changes when get adminQuizSessionStatusView has been called with action NEXT_QUESTION', () => {
       const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
@@ -224,3 +231,7 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
     });
   });
 });
+function sleepSync() {
+  throw new Error('Function not implemented.');
+}
+
