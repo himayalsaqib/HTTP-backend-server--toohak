@@ -699,6 +699,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
 
   // adding new sessionId to active sessions array for this quiz
   quiz.activeSessions.push(newSessionId);
+  quiz.inactiveSessions.splice(quiz.inactiveSessions.length - 1, 1);
 
   // copying quiz from quizzes array so any edits while session is running do
   // not affect the active session. ignoring authUserId and active/inactive session

@@ -49,7 +49,7 @@ import {
   adminQuizSessionStart,
   adminQuizSessionsView,
 } from './quiz';
-import { load } from './dataStore';
+import { getData, load } from './dataStore';
 import { quizIsInTrash } from './helper-files/helper';
 
 // Set up web app
@@ -582,7 +582,10 @@ app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) =
   }
 
   try {
+    const data = getData();
+    console.log(data.quizzes);
     const response = adminQuizSessionStart(quizId, autoStartNum);
+    console.log(data.quizzes);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });

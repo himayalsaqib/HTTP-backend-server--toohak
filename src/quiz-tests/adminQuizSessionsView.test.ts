@@ -53,7 +53,7 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
       });
     });
 
-    test('Successfully retrieves active and inactive session ids when only 1 active session exists', () => {
+    test.only('Successfully retrieves active and inactive session ids when only an active session exists', () => {
       // starting a new session
       startSessionBody = { autoStartNum: 3 };
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
@@ -143,7 +143,7 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
     });
 
     test('Returns error when quiz doesn\'t exist', () => {
-      const res = requestGet({}, `/v1/admin/quiz/${quizId++}/sessions`, { token });
+      const res = requestGet({}, `/v1/admin/quiz/${quizId + 1}/sessions`, { token });
       expect(res).toStrictEqual({
         retval: ERROR,
         statusCode: 403
