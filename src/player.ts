@@ -1,7 +1,7 @@
 // includes player functions
 
 import { setData, getData } from './dataStore';
-import { generateRandomName, playerIdInUse, playerNameExists } from './helper-files/helper';
+import { generateRandomName, getRandomInt, playerIdInUse, playerNameExists } from './helper-files/helper';
 import { QuizSessionState } from './quiz';
 
 // =============================== FUNCTIONS ================================ //
@@ -37,9 +37,9 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
     throw new Error('Session is not in LOBBY state');
   }
 
-  let newPlayerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  let newPlayerId = getRandomInt();
   while (playerIdInUse(newPlayerId)) {
-    newPlayerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    newPlayerId = getRandomInt();
   }
 
   const newPlayer = {
