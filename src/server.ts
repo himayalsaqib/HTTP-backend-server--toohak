@@ -47,6 +47,7 @@ import {
   adminQuizQuestionDuplicate,
   adminQuizTransfer,
   adminQuizSessionStart,
+  adminQuizThumbnail,
 } from './quiz';
 import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/helper';
@@ -582,6 +583,24 @@ app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) =
 
   try {
     const response = adminQuizSessionStart(quizId, autoStartNum);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.put('/v1/admin/quiz/:quizid/thumbnail', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(req.header('token'));
+  const imgUrl = req.body.imgUrl;
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  try {
+    const response = adminQuizThumbnail(quizId, imgUrl);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
