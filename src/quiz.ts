@@ -1,6 +1,6 @@
 // includes quiz functions
 
-import { setData, getData, ErrorObject, EmptyObject, Question, Answer } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, Question, Answer, Quizzes } from './dataStore';
 import {
   quizNameHasValidChars,
   quizNameInUse,
@@ -156,20 +156,17 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     newQuizId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
-  const emptyQuestions: Question[] = [];
-  const emptySessions: number[] = [];
-
-  const newQuiz = {
+  const newQuiz: Quizzes = {
     authUserId: authUserId,
     quizId: newQuizId,
     name: name,
     timeCreated: currentTime(),
     timeLastEdited: currentTime(),
     description: description,
-    questions: emptyQuestions,
+    questions: [],
     duration: 0,
-    activeSessions: emptySessions,
-    inactiveSessions: emptySessions,
+    activeSessions: [],
+    inactiveSessions: [],
   };
 
   data.quizzes.push(newQuiz);
