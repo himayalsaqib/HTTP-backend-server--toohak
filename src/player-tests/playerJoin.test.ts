@@ -1,6 +1,6 @@
 // contains HTTP tests for route POST /v1/player/join
 
-import { requestDelete, requestPost, requestPut, requestGet} from '../helper-files/requestHelper';
+import { requestDelete, requestPost, requestPut, requestGet } from '../helper-files/requestHelper';
 import { QuestionBody, QuizSessionState } from '../quiz';
 
 const ERROR = { error: expect.any(String) };
