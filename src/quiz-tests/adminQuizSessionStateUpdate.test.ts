@@ -67,7 +67,7 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_COUNTDOWN });
-      
+
       const afterUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_OPEN });
     });
@@ -129,8 +129,7 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       // update from QUESTION_CLOSE TO FINAL RESULTS
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      
-      
+
       const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.ANSWER_SHOW });
 
@@ -145,7 +144,7 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.FINAL_RESULTS });
     });
 
-    test.skip('Side-effect: status changes when get adminQuizSessionStatusView has been called with action END', () =>{
+    test.skip('Side-effect: status changes when get adminQuizSessionStatusView has been called with action END', () => {
       const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.LOBBY });
 
@@ -231,7 +230,3 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
     });
   });
 });
-function sleepSync() {
-  throw new Error('Function not implemented.');
-}
-
