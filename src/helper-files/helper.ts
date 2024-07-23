@@ -451,7 +451,13 @@ export function findQuizSessionById(sessionId: number): QuizSessions | undefined
 
 // ======================== PLAYER HELPER FUNCTIONS ========================= //
 
-export const generateRandomName = (): string => {
+/**
+ * Function generates a random name if player name is empty string
+ *
+ * @param {} 
+ * @returns {string} random name
+ */
+export function generateRandomName(): string {
   const letters = 'abcdefghijklmnopqrstuvwxyz';
   const numbers = '0123456789';
   let name = '';
@@ -476,10 +482,10 @@ export const generateRandomName = (): string => {
 };
 
 /**
- * Function checks if a quiz ID has already been used by another quiz
+ * Function checks if a player ID has already been used by another quiz
  *
  * @param {Number} playerId
- * @returns {boolean} true if quiz ID has been used, false if it has not
+ * @returns {boolean} true if player ID has been used, false if it has not
  */
 export function playerIdInUse(playerId: number): boolean {
   const data = getData();
