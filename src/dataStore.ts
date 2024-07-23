@@ -77,6 +77,11 @@ export interface QuestionResults {
   percentCorrect: number;
 }
 
+export interface Player {
+  playerId: number;
+  name: string;
+}
+  
 export interface Trash {
   quiz: Quizzes;
 }
@@ -90,6 +95,7 @@ export interface Data {
   users: Users[];
   quizzes: Quizzes[];
   quizSessions: QuizSessions[];
+  players: Player[];
   trash: Trash[];
   tokens: Tokens[];
 }
@@ -98,6 +104,7 @@ let data: Data = {
   users: [],
   quizzes: [],
   quizSessions: [],
+  players: [],
   trash: [],
   tokens: []
 };
