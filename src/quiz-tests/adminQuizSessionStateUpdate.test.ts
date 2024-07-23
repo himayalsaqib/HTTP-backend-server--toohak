@@ -63,7 +63,7 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       });
     });
 
-    test.todo('Correct timer stuff');
+    test.todo('Correctly changes state from QUESTION_COUNTDOWN to QUESTION_OPEN with no action');
 
     test.skip('Side-effect: status changes when get adminQuizSessionStatusView has been called with action NEXT_QUESTION', () => {
       const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
@@ -79,11 +79,64 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_COUNTDOWN });
     });
 
-    test.todo('Side-effect: status changes when get adminQuizSessionStatusView has been called with action SKIP_COUNTDOWN');
+    test.skip('Side-effect: status changes when get adminQuizSessionStatusView has been called with action SKIP_COUNTDOWN', () => {
+      // update from LOBBY to QUESTION_COUNTDOWN
+      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_COUNTDOWN });
 
-    test.todo('Side-effect: status changes when get adminQuizSessionStatusView has been called with action GO_TO_ANSWER');
+      updateActionBody = { action: QuizSessionAction.SKIP_COUNTDOWN };
+      const updateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(updateRes).toStrictEqual({
+        retval: {},
+        statusCode: 200
+      });
 
-    test.todo('Side-effect: status changes when get adminQuizSessionStatusView has been called with action GO_TO_FINAL_RESULTS');
+      const afterUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_OPEN });
+    });
+
+    test.skip('Side-effect: status changes when get adminQuizSessionStatusView has been called with action GO_TO_ANSWER', () => {
+      // update from LOBBY to QUESTION_COUNTDOWN
+      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      // update from QUESTION_COUNTDOWN to QUESTION_CLOSE
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_CLOSE });
+
+      updateActionBody = { action: QuizSessionAction.GO_TO_ANSWER };
+      const updateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(updateRes).toStrictEqual({
+        retval: {},
+        statusCode: 200
+      });
+
+      const afterUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.ANSWER_SHOW });
+    });
+
+    test('Side-effect: status changes when get adminQuizSessionStatusView has been called with action GO_TO_FINAL_RESULTS', () => {
+      // update from LOBBY to QUESTION_COUNTDOWN
+      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      // update from QUESTION_COUNTDOWN to QUESTION_CLOSE
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      // update from QUESTION_CLOSE TO FINAL RESULTS
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      
+      
+      const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.ANSWER_SHOW });
+
+      updateActionBody = { action: QuizSessionAction.GO_TO_FINAL_RESULTS };
+      const updateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(updateRes).toStrictEqual({
+        retval: {},
+        statusCode: 200
+      });
+
+      const afterUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.FINAL_RESULTS });
+    });
 
     test.todo('Side-effect: status changes when get adminQuizSessionStatusView has been called with action END');
   });
