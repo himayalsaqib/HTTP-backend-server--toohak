@@ -1,17 +1,8 @@
 // includes player functions
 
 import { setData, getData } from './dataStore';
-import { generateRandomName, playerIdInUse } from './helper-files/helper';
-
-export enum QuizSessionState {
-  LOBBY = 'LOBBY',
-  QUESTION_COUNTDOWN = 'QUESTION_COUNTDOWN',
-  QUESTION_OPEN = 'QUESTION_OPEN',
-  QUESTION_CLOSE = 'QUESTION_CLOSE',
-  ANSWER_SHOW = 'ANSWER_SHOW',
-  FINAL_RESULTS = 'FINAL_RESULTS',
-  END = 'END'
-}
+import { generateRandomName, playerIdInUse, playerNameExists } from './helper-files/helper';
+import { QuizSessionState } from './quiz';
 
 // =============================== FUNCTIONS ================================ //
 /**
@@ -21,17 +12,19 @@ export enum QuizSessionState {
  * @param {string} name
  * @returns {{ playerId: number}}
  */
-export function playerJoin (sessionId: number, name: string): {playerId: number} {
+export function playerJoin(sessionId: number, name: string): { playerId: number } {
   let playerName = name;
 
   if (playerName === '') {
     playerName = generateRandomName();
+    while (playerNameExists(playerName)) {
+      playerName = generateRandomName();
+    }
   }
 
   const data = getData();
-  const nameExists = data.players.find(q => q.name === playerName);
 
-  if (nameExists) {
+  if (playerNameExists(playerName)) {
     throw new Error('Name is not unique');
   }
   const session = data.quizSessions.find((session) => session.sessionId === sessionId);
@@ -45,7 +38,7 @@ export function playerJoin (sessionId: number, name: string): {playerId: number}
   }
 
   let newPlayerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-  while (playerIdInUse(newPlayerId) === true) {
+  while (playerIdInUse(newPlayerId)) {
     newPlayerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
   }
 
