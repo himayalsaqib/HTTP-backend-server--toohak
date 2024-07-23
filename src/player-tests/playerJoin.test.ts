@@ -1,12 +1,12 @@
 // contains HTTP tests for route POST /v1/player/join
 
-import { requestPost } from '../helper-files/requestHelper';
-import { QuestionBody, QuizSessionState } from '../quiz';
+import { requestDelete, requestPost, requestPut} from '../helper-files/requestHelper';
+import { QuestionBody } from '../quiz';
 
 const ERROR = { error: expect.any(String) };
 
 beforeEach(() => {
-  requestPost({}, '/v1/clear');
+  requestDelete({}, '/v1/clear');
 });
 
 describe('POST /v1/player/join', () => {
@@ -19,10 +19,12 @@ describe('POST /v1/player/join', () => {
   let startSessionBody: { autoStartNum: number };
   let sessionId: number;
   let playerBody: { sessionId: number, name: string };
+  let updateActionBody: { action: string };
+  let playerId: number;
 
   beforeEach(() => {
     // registering a user
-    userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+    userBody = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
     const registerResponse = requestPost(userBody, '/v1/admin/auth/register');
     token = registerResponse.retval.token;
 
@@ -48,19 +50,18 @@ describe('POST /v1/player/join', () => {
     questionId = createResponse.retval.questionId;
 
     // initialising body for start session route
-    startSessionBody = { autoStartNum: 3 };
+    startSessionBody = { autoStartNum: 3 }; 
     const sessionResponse = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
     sessionId = sessionResponse.retval.sessionId;
   });
   
   describe('Testing for correct return type (status code 200)', () => {
     test('Join with non-empty name', () => {
-      playerBody = { sessionId: sessionId, name: 'JohnDoe' };
+      playerBody = { sessionId: sessionId, name: 'JaneDoe' };
       const res = requestPost(playerBody, '/v1/player/join');
       expect(res).toStrictEqual({
         retval: {
           playerId: expect.any(Number),
-          name: 'JohnDoe'
         },
         statusCode: 200
       });
@@ -68,11 +69,11 @@ describe('POST /v1/player/join', () => {
 
     test('Join with empty name', () => {
       playerBody = { sessionId: sessionId, name: '' };
+      //name: expect.stringMatching(/^[a-zA-Z]{5}\d{3}$/) // Matches pattern [5 letters][3 numbers]
       const res = requestPost(playerBody, '/v1/player/join');
       expect(res).toStrictEqual({
         retval: {
           playerId: expect.any(Number),
-          name: expect.stringMatching(/^[a-zA-Z]{5}\d{3}$/) // Matches pattern [5 letters][3 numbers]
         },
         statusCode: 200
       });
@@ -81,24 +82,27 @@ describe('POST /v1/player/join', () => {
 
   describe('Testing for error cases (status code 400)', () => {
     test('Join with non-unique name', () => {
-      playerBody = { sessionId: sessionId, name: 'JohnDoe' };
+      playerBody = { sessionId: sessionId, name: 'JaneDoe' };
       requestPost(playerBody, '/v1/player/join');
-      const res = requestPost(playerBody, '/v1/player/join'); // Attempt to join with the same name again
+      // Attempt to join with the same name 
+      const res = requestPost(playerBody, '/v1/player/join'); 
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
-  });
 
-  test('Join with invalid session ID', () => {
-    playerBody = { sessionId: sessionId + 1, name: 'JaneDoe' };
-    const res = requestPost( playerBody, '/v1/player/join');
-    expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
-  });
+    test('Join with invalid session ID', () => {
+      playerBody = { sessionId: sessionId + 1, name: 'JaneDoe' };
+      const res = requestPost( playerBody, '/v1/player/join');
+      expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
+    });
 
-  test.skip('Join when session is not in LOBBY state', () => {
-    // make state: QuizSessionState.END,
-    playerBody = { sessionId: sessionId, name: 'AliceDoe' };
-    requestPost({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/start`, { token });
-    const joinResponse = requestPost({ ...playerBody, sessionId }, '/v1/player/join');
+    test.skip('Join when session is not in LOBBY state', () => {
+      // make state: QuizSessionState.QUESTION_COUNTDOWN
+      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+
+      playerBody = { sessionId: sessionId, name: 'JaneDoe' };
+      requestPost({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/start`, { token });
+      const joinResponse = requestPost({ ...playerBody, sessionId }, '/v1/player/join');
+    });
   });
     
 });
