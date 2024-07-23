@@ -44,8 +44,8 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
     requestPost(createBody, `/v2/admin/quiz/${quizId}/question`, { token });
   });
 
-  describe('Testing for correct return type (status code 200)', () => {
-    test('Successfully returns empty lists for active and inactive sessions when no sessions exist', () => {
+  describe('Testing for correct return type, successfully retrieves active and inactive sessionIds (status code 200)', () => {
+    test('When quiz has no sessions (empty list)', () => {
       const res = requestGet({}, `/v1/admin/quiz/${quizId}/sessions`, { token });
       expect(res).toStrictEqual({
         retval: { activeSessions: [], inactiveSessions: [] },
@@ -53,7 +53,7 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
       });
     });
 
-    test('Successfully retrieves active and inactive session ids when only an active session exists', () => {
+    test('When quiz only has an active session', () => {
       // starting a new session
       startSessionBody = { autoStartNum: 3 };
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
@@ -66,7 +66,7 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
       });
     });
 
-    test.skip('Successfully retrieves active and inactive session ids when only an inactive session exists', () => {
+    test.skip('When quiz only has an inactive session', () => {
       // starting a new session
       startSessionBody = { autoStartNum: 3 };
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
@@ -81,7 +81,7 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
       });
     });
 
-    test.skip('Successfully retrieves active and inactive session ids when 1 active and inactive session exists', () => {
+    test.skip('When quiz has 1 active and 1 inactive session', () => {
       // starting two new sessions
       startSessionBody = { autoStartNum: 3 };
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
@@ -99,7 +99,7 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
       });
     });
 
-    test.skip('Successfully retrieves active and inactive session ids when multiple active/inactive sessions exist', () => {
+    test.skip('When quiz has multiple active and inactive sessions', () => {
       // starting four new sessions. 2 active and 2 inactive.
       startSessionBody = { autoStartNum: 3 };
       let res, activeSessionIds: number[], inactiveSessionIds: number[];
