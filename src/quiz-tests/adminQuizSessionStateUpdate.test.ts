@@ -1,5 +1,6 @@
 // inlcudes http tests for the route /v1/admin/quiz/{quizid}/session/{sessionid}
 
+import sleepSync from 'slync';
 import { requestPut, requestDelete, requestPost, requestGet } from '../helper-files/requestHelper';
 import { QuestionBody, QuizSessionAction, QuizSessionState } from '../quiz';
 
@@ -67,6 +68,8 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_COUNTDOWN });
+
+      sleepSync(3 * 1000);
 
       const afterUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_OPEN });
