@@ -15,7 +15,6 @@ describe('PUT /v1/admin/quiz/:quizid/thumbnail', () => {
   let quizBody: { name: string, description: string };
   let token: string;
   let quizId: number;
-  let imgUrl: string;
 
   beforeEach(() => {
     userBody = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
@@ -56,22 +55,32 @@ describe('PUT /v1/admin/quiz/:quizid/thumbnail', () => {
         },
         statusCode: 200
       });
+    });
+
+    test('Side effect: adminQuizInfo displays correct timeLastEdited', () => {
+      const time = Math.floor(Date.now() / 1000);
+      let res = requestPut({ imgUrl: EXAMPLE_IMAGE_URL }, `/v1/admin/quiz/${quizId}/thumbnail`, { token });
+      expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
+
+      res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
+      expect(res.retval.timeLastEdited).toBeGreaterThanOrEqual(time);
+      expect(res.retval.timeLastEdited).toBeLessThanOrEqual(time + 1);
     })
-  })
+  });
 
   describe('Testing token errors (status code 401)', () => {
     test('Invalid session ID', () => {
       const sessionId = (parseInt(token) + 1).toString();
       const res = requestPut({ imgUrl: EXAMPLE_IMAGE_URL }, `/v1/admin/quiz/${quizId}/thumbnail`, { token: sessionId });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
-    })
+    });
 
     test('Token is empty (no users are registered)', () => {
       requestDelete({}, '/v1/clear');
       const res = requestPut({ imgUrl: EXAMPLE_IMAGE_URL }, `/v1/admin/quiz/${quizId}/thumbnail`, { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
-  })
+  });
 
   describe('Testing quiz ID errors (status code 403)', () => {
     test('User is not an owner of this quiz', () => {
@@ -81,13 +90,13 @@ describe('PUT /v1/admin/quiz/:quizid/thumbnail', () => {
 
       const res = requestPut({ imgUrl: EXAMPLE_IMAGE_URL }, `/v1/admin/quiz/${quizId}/thumbnail`, { token: newToken });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 403 });
-    })
+    });
 
     test('Quiz does not exist', () => {
       const res = requestPut({ imgUrl: EXAMPLE_IMAGE_URL }, `/v1/admin/quiz/${quizId + 1}/thumbnail`, { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 403 });
-    })
-  })
+    });
+  });
 
   describe('Testing imgUrl errors (status code 400)', () => {
     test('The thumbnailUrl is an empty string', () => {
@@ -113,5 +122,5 @@ describe('PUT /v1/admin/quiz/:quizid/thumbnail', () => {
       const res = requestPut({ imgUrl: thumbnailUrl }, `/v1/admin/quiz/${quizId}/thumbnail`, { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
-  })
-})
+  });
+});
