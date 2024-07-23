@@ -10,7 +10,7 @@ import { QuizSessionState } from './quiz';
  *
  * @param {number} sessionId
  * @param {string} name
- * @returns {{ playerId: number}}
+ * @returns {{ playerId: number }}
  */
 export function playerJoin(sessionId: number, name: string): { playerId: number } {
   const session = findQuizSessionById(sessionId);
@@ -28,24 +28,21 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
   }
 
   const data = getData();
-
   if (playerNameExists(sessionId, playerName)) {
     throw new Error('Name is not unique');
   }
+
   // throw error for if session is not in lobby state
   if (session.state !== QuizSessionState.LOBBY) {
     throw new Error('Session is not in LOBBY state');
   }
+
   let newPlayerId = getRandomInt();
   while (playerIdInUse(newPlayerId)) {
     newPlayerId = getRandomInt();
   }
 
-  const newPlayer = {
-    playerId: newPlayerId,
-    name: playerName,
-  };
-
+  const newPlayer = { playerId: newPlayerId, name: playerName };
   session.players.push(newPlayer);
   data.players.push(newPlayer);
 
