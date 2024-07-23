@@ -739,12 +739,14 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
 /**
  * Update the state of a particular quiz session by sending an action command
  *
+ * @param {number} quizId
  * @param {number} sessionId
  * @param {QuizSessionAction} action
  * @returns {{}} - an empty object
  */
-export function adminQuizSessionStateUpdate(sessionId: number, action: string): EmptyObject {
+export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, action: string): EmptyObject {
   const data = getData();
+  const quiz = findQuizById(quizId);
   let timeoutId;
 
   // sessionId is not valid for this quiz
@@ -774,6 +776,9 @@ export function adminQuizSessionStateUpdate(sessionId: number, action: string): 
   // session state update
   if (action === QuizSessionAction.END) {
     quizSession.state = QuizSessionState.END;
+    // add sessionId to inactive sessions and remove from active sessions
+    quiz.inactiveSessions.push(sessionId);
+    quiz.activeSessions.splice(quiz.activeSessions.indexOf(sessionId), 1);
   } else if (action === QuizSessionAction.GO_TO_ANSWER) {
     quizSession.state = QuizSessionState.ANSWER_SHOW;
   } else if (action === QuizSessionAction.GO_TO_FINAL_RESULTS) {
