@@ -604,18 +604,13 @@ app.put('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Respons
   const userToken = findTokenFromSessionId(sessionId);
 
   try {
-    quizDoesNotExist(quizId);
-    if (!quizIsInTrash(quizId)) {
-      quizBelongsToUser(userToken.authUserId, quizId);
-    } else {
-      trashedQuizBelongsToUser(userToken.authUserId, quizId);
-    }
+    quizBelongsToUser(userToken.authUserId, quizId);
   } catch (error) {
     return res.status(403).json({ error: error.message });
   }
 
   try {
-    const response = adminQuizSessionStateUpdate(quizSessionId, action.action);
+    const response = adminQuizSessionStateUpdate(quizId, quizSessionId, action.action);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
