@@ -20,7 +20,8 @@ import {
   currentTime,
   checkThumbnailUrlFileType,
   findQuizSessionById,
-  quizIsInTrash
+  quizIsInTrash,
+  getRandomInt
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -150,9 +151,9 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
   }
 
   const data = getData();
-  let newQuizId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  let newQuizId = getRandomInt();
   while (quizIdInUse(newQuizId) === true) {
-    newQuizId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    newQuizId = getRandomInt();
   }
 
   const emptyQuestions: Question[] = [];
@@ -351,9 +352,9 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
     }
   }
 
-  let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  let newQuestionId = getRandomInt();
   while (questionIdInUse(newQuestionId) === true) {
-    newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    newQuestionId = getRandomInt();
   }
 
   const newQuestion = {
@@ -644,10 +645,10 @@ export function adminQuizQuestionDuplicate (quizId: number, questionId: number):
   }
 
   const question = quiz.questions[questionIndex];
-  let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  let newQuestionId = getRandomInt();
 
   while (questionIdInUse(newQuestionId) === true) {
-    newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    newQuestionId = getRandomInt();
   }
   const newQuestion: Question = {
     ...question,
