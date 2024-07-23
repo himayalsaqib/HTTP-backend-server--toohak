@@ -57,6 +57,7 @@ export interface QuizSessions {
   sessionId: number;
   state: QuizSessionState;
   atQuestion: number;
+  players: Player[];
   autoStartNum: number;
   quiz: QuizInfo;
   usersRankedByScore: UsersRanking[];

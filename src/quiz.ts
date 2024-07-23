@@ -712,6 +712,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     sessionId: newSessionId,
     state: QuizSessionState.LOBBY,
     atQuestion: 1,
+    players: [],
     autoStartNum: autoStartNum,
     quiz: quizInfoForSession,
     usersRankedByScore: [],
