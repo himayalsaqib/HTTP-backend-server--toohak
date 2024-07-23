@@ -1,7 +1,7 @@
 // contains HTTP tests for route POST /v1/player/join
 
-import { requestDelete, requestPost, requestPut } from '../helper-files/requestHelper';
-import { QuestionBody } from '../quiz';
+import { requestDelete, requestPost, requestPut, requestGet} from '../helper-files/requestHelper';
+import { QuestionBody, QuizSessionState } from '../quiz';
 
 const ERROR = { error: expect.any(String) };
 
@@ -15,6 +15,7 @@ describe('POST /v1/player/join', () => {
   let quizBody: { name: string, description: string };
   let quizId: number;
   let createBody: { questionBody: QuestionBody };
+  let questionId: number;
   let startSessionBody: { autoStartNum: number };
   let sessionId: number;
   let playerBody: { sessionId: number, name: string };
@@ -45,7 +46,8 @@ describe('POST /v1/player/join', () => {
         thumbnailUrl: 'http://google.com/some/image/path.png'
       }
     };
-    requestPost(createBody, `/v2/admin/quiz/${quizId}/question`, { token });
+    const createResponse = requestPost(createBody, `/v2/admin/quiz/${quizId}/question`, { token });
+    questionId = createResponse.retval.questionId;
 
     // initialising body for start session route
     startSessionBody = { autoStartNum: 3 };
@@ -74,6 +76,47 @@ describe('POST /v1/player/join', () => {
           playerId: expect.any(Number),
         },
         statusCode: 200
+      });
+    });
+
+    test.skip('Side effect: adminQuizSessionStatus shows players joined', () => {
+      playerBody = { sessionId: sessionId, name: 'JaneDoe' };
+      requestPost(playerBody, '/v1/player/join');
+
+      playerBody = { sessionId: sessionId, name: '' };
+      requestPost(playerBody, '/v1/player/join');
+
+      const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(res.retval).toStrictEqual({
+        state: QuizSessionState.LOBBY,
+        atQuestion: 1,
+        players: [
+          'JaneDoe',
+          expect.stringMatching(/^[a-zA-Z]{5}\d{3}$/),
+        ],
+        metadata: {
+          quizId: quizId,
+          name: quizBody.name,
+          timeCreated: expect.any(Number),
+          timeLastEdited: expect.any(Number),
+          description: quizBody.description,
+          numQuestions: 1,
+          questions: [
+            {
+              questionId: questionId,
+              question: createBody.questionBody.question,
+              duration: createBody.questionBody.duration,
+              thumbnailUrl: createBody.questionBody.thumbnailUrl,
+              points: createBody.questionBody.points,
+              answers: [
+                { answerId: expect.any(Number), answer: 'Prince Charles', colour: expect.any(String), correct: true },
+                { answerId: expect.any(Number), answer: 'Prince William', colour: expect.any(String), correct: false }
+              ]
+            }
+          ],
+          duration: createBody.questionBody.duration,
+          thumbnailUrl: createBody.questionBody.thumbnailUrl
+        }
       });
     });
   });
