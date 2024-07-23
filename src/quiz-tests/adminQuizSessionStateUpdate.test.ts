@@ -63,7 +63,9 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       });
     });
 
-    test.skip('Side-effect: status changes when get adminQuizSessionStatusView has been called', () => {
+    test.todo('Correct timer stuff');
+
+    test.skip('Side-effect: status changes when get adminQuizSessionStatusView has been called with action NEXT_QUESTION', () => {
       const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.LOBBY });
 
@@ -76,6 +78,14 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       const afterUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_COUNTDOWN });
     });
+
+    test.todo('Side-effect: status changes when get adminQuizSessionStatusView has been called with action SKIP_COUNTDOWN');
+
+    test.todo('Side-effect: status changes when get adminQuizSessionStatusView has been called with action GO_TO_ANSWER');
+
+    test.todo('Side-effect: status changes when get adminQuizSessionStatusView has been called with action GO_TO_FINAL_RESULTS');
+
+    test.todo('Side-effect: status changes when get adminQuizSessionStatusView has been called with action END');
   });
 
   describe('Testing session ID and action enum errors (status code 400)', () => {
