@@ -143,8 +143,7 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
     });
 
     test('Returns error when quiz doesn\'t exist', () => {
-      quizId++;
-      const res = requestGet({}, `/v1/admin/quiz/${quizId}/sessions`, { token });
+      const res = requestGet({}, `/v1/admin/quiz/${quizId++}/sessions`, { token });
       expect(res).toStrictEqual({
         retval: ERROR,
         statusCode: 403
