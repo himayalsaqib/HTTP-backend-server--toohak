@@ -57,7 +57,6 @@ export interface QuizSessions {
   sessionId: number;
   state: QuizSessionState;
   atQuestion: number;
-  players: string[];
   autoStartNum: number;
   quiz: QuizInfo;
   usersRankedByScore: UsersRanking[];
@@ -95,9 +94,9 @@ export interface Data {
   users: Users[];
   quizzes: Quizzes[];
   quizSessions: QuizSessions[];
-  players: Player[];
   trash: Trash[];
   tokens: Tokens[];
+  players: Player[]
 }
 
 let data: Data = {
