@@ -10,7 +10,8 @@ import {
   adminCheckPasswordHistory,
   findUserById,
   findUserByEmail,
-  getHashOf
+  getHashOf,
+  getRandomInt
 } from './helper-files/helper';
 
 // ============================ GLOBAL VARIABLES ============================ //
@@ -68,9 +69,9 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
 
   const data = getData();
 
-  let newAuthUserId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  let newAuthUserId = getRandomInt();
   while (authUserIdExists(newAuthUserId)) {
-    newAuthUserId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    newAuthUserId = getRandomInt();
   }
 
   data.users.push({
