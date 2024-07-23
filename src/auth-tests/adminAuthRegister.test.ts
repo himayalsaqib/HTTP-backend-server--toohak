@@ -11,9 +11,12 @@ describe('POST /v1/admin/auth/register', () => {
   let body: { email: string, password: string, nameFirst: string, nameLast: string };
   let token: string;
 
+  beforeEach(() => {
+    body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
+  });
+
   describe('Testing successful registration (status code 200)', () => {
     beforeEach(() => {
-      body = { email: 'valid@gmail.com', password: 'Password12', nameFirst: 'Jane', nameLast: 'Doe' };
       const response = requestPost(body, '/v1/admin/auth/register');
       token = response.retval.token;
     });
