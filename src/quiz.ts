@@ -22,6 +22,7 @@ import {
   findQuizSessionById,
   quizIsInTrash
 } from './helper-files/helper';
+import isImageURL from 'image-url-validator';
 
 // ============================= GLOBAL VARIABLES =========================== //
 const MIN_QUIZ_NAME_LEN = 3;
@@ -721,4 +722,35 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
   setData(data);
 
   return { sessionId: newSessionId };
+}
+
+/**
+ * Updates the thumbnailUrl of a quiz
+ *
+ * @param {number} quizId
+ * @param {string} thumbnailUrl
+ * @returns {{}}
+ */
+export function adminQuizThumbnail(quizId: number, thumbnailUrl: string ): EmptyObject {
+  if (thumbnailUrl.length === 0) {
+    throw new Error('The thumbnailUrl cannot be an empty string.');
+  }
+
+  if (!checkThumbnailUrlFileType(thumbnailUrl)) {
+    throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
+  }
+
+  if (!(thumbnailUrl.startsWith('https://') || thumbnailUrl.startsWith('http://'))) {
+    throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
+  }
+
+  if (!isImageURL(thumbnailUrl)) {
+    throw new Error('The thumbnailUrl is not a valid image');
+  }
+  
+  const quiz = findQuizById(quizId);
+  quiz.thumbnailUrl = thumbnailUrl;
+  quiz.timeLastEdited = currentTime();
+
+  return {};
 }
