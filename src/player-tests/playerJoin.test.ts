@@ -95,10 +95,7 @@ describe('POST /v1/player/join', () => {
     test('Join with non-unique name', () => {
       playerBody = { sessionId: sessionId, name: 'JaneDoe' };
       requestPost(playerBody, '/v1/player/join');
-      console.log(playerBody);
-      // Attempt to join with the same name
       const res = requestPost(playerBody, '/v1/player/join');
-      console.log(playerBody);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
 
