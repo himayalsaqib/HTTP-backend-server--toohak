@@ -484,12 +484,13 @@ export function generateRandomName(): string {
 /**
  * Function checks if a player name already exists in the session
  *
+ * @param {string} sessionId
  * @param {string} playerName
  * @returns {boolean} true if player name has been used, false if it has not
  */
-export function playerNameExists(playerName: string): boolean {
-  const data = getData();
-  return data.players.some(player => player.name === playerName);
+export function playerNameExists(sessionId: number, playerName: string): boolean {
+  const session = findQuizSessionById(sessionId);
+  return session.players.some(player => player.name === playerName);
 }
 
 /**
