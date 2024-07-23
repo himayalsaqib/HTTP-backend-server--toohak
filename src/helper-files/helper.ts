@@ -1,6 +1,6 @@
 // Includes helper functions for auth.ts and quiz.ts
 
-import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
+import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions, Player } from '../dataStore';
 import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers } from '../quiz';
 import crypto from 'crypto';
 
@@ -438,4 +438,46 @@ export function checkThumbnailUrlFileType(thumbnailUrl: string): boolean {
 export function findQuizSessionById(sessionId: number): QuizSessions | undefined {
   const data = getData();
   return data.quizSessions.find(session => session.sessionId === sessionId);
+}
+
+// ======================== PLAYER HELPER FUNCTIONS ========================= //
+
+export const generateRandomName = (): string => {
+  const letters = 'abcdefghijklmnopqrstuvwxyz';
+  const numbers = '0123456789';
+  let name = '';
+
+  // Generate 5 unique letters
+  while (name.length < 5) {
+    const randomLetter = letters.charAt(Math.floor(Math.random() * letters.length));
+    if (!name.includes(randomLetter)) {
+      name += randomLetter;
+    }
+  }
+
+  // Generate 3 unique numbers
+  while (name.length < 8) {
+    const randomNumber = numbers.charAt(Math.floor(Math.random() * numbers.length));
+    if (!name.includes(randomNumber)) {
+      name += randomNumber;
+    }
+  }
+
+  return name;
+};
+
+/**
+ * Function checks if a quiz ID has already been used by another quiz
+ *
+ * @param {Number} playerId
+ * @returns {boolean} true if quiz ID has been used, false if it has not
+ */
+export function playerIdInUse(playerId: number): boolean {
+  const data = getData();
+  const findPlayerById = data.players.find(q => q.playerId === playerId);
+
+  if (findPlayerById === undefined) {
+      return false;
+    }
+  return true;
 }
