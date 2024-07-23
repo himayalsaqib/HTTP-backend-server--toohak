@@ -47,6 +47,7 @@ import {
   adminQuizQuestionDuplicate,
   adminQuizTransfer,
   adminQuizSessionStart,
+  adminQuizSessionsView,
 } from './quiz';
 import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/helper';
@@ -587,6 +588,23 @@ app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) =
     return res.status(400).json({ error: error.message });
   }
 });
+
+app.get('/v1/admin/quiz/:quizid/sessions', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(req.header('token'));
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  try {
+    const response = adminQuizSessionsView(quizId);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+})
 
 // VERSION 2 //
 
