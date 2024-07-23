@@ -69,7 +69,6 @@ describe('POST /v1/player/join', () => {
 
     test('Join with empty name', () => {
       playerBody = { sessionId: sessionId, name: '' };
-      // name: expect.stringMatching(/^[a-zA-Z]{5}\d{3}$/) // Matches pattern [5 letters][3 numbers]
       const res = requestPost(playerBody, '/v1/player/join');
       expect(res).toStrictEqual({
         retval: {
