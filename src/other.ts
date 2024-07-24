@@ -13,7 +13,8 @@ export function clear(): EmptyObject {
     quizzes: [],
     quizSessions: [],
     trash: [],
-    tokens: []
+    tokens: [],
+    players: [],
   };
 
   for (const id of timerArray) {

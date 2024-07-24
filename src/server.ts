@@ -49,6 +49,7 @@ import {
   adminQuizSessionStart,
   adminQuizSessionStateUpdate,
 } from './quiz';
+import { playerJoin } from './player';
 import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/helper';
 
@@ -894,6 +895,18 @@ app.put('/v2/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
 
   try {
     const response = adminQuizQuestionUpdate(quizId, questionId, questionBody);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+// ============================= PLAYER ROUTES ============================== //
+
+app.post('/v1/player/join', (req: Request, res: Response) => {
+  const { sessionId, name } = req.body;
+  try {
+    const response = playerJoin(sessionId, name);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
