@@ -45,7 +45,7 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
     requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
 
     // start a session
-    sessionStartBody = { autoStartNum: 3 };
+    sessionStartBody = { autoStartNum: 5 };
     const sessionStartRes = requestPost(sessionStartBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
     sessionId = sessionStartRes.retval.sessionId;
 
@@ -152,6 +152,60 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
           }
         },
         statusCode: 200,
+      });
+    });
+
+    test.skip('Side-effect: The names of all players are listed in ascending order', () => {
+      // three more players join
+      requestPost({ sessionId: sessionId, name: 'Chappell' }, '/v1/player/join');
+      requestPost({ sessionId: sessionId, name: 'Charli' }, '/v1/player/join');
+      requestPost({ sessionId: sessionId, name: 'Wendy' }, '/v1/player/join');
+
+      const getStatusRes = requestGet({}, `/v1/admin/quiz/${quizId}/sessionid/${sessionId}`, { token });
+      expect(getStatusRes).toStrictEqual({
+        retval: {
+          state: 'LOBBY',
+          atQuestion: 0,
+          players: [
+            'Chappell', 
+            'Charli', 
+            'Jane', 
+            'Wendy'
+          ],
+          metadata: {
+            quizId: quizId,
+            name: quizBody.name,
+            timeCreated: expect.any(Number),
+            timeLastEdited: expect.any(Number),
+            description: quizBody.description,
+            numQuestions: 1,
+            questions: [
+              {
+                questionId: expect.any(Number),
+                question: questionBody.question,
+                duration: questionBody.duration,
+                thumbnailUrl: questionBody.thumbnailUrl,
+                points: expect.any(Number),
+                answers: [
+                  {
+                    answerId: expect.any(Number),
+                    answer: questionBody.answers[0].answer,
+                    colour: expect.any(String),
+                    correct: questionBody.answers[0].correct
+                  }, {
+                    answerId: expect.any(Number),
+                    answer: questionBody.answers[1].answer,
+                    colour: expect.any(String),
+                    correct: questionBody.answers[1].correct
+                  }
+                ]
+              }
+            ],
+            duration: questionBody.duration,
+            thumbnail: expect.any(String),
+          }
+        },
+        statusCode: 200
       });
     });
   });
