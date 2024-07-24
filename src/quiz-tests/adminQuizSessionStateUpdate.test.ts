@@ -51,7 +51,7 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
     const sessionStartRes = requestPost(sessionStartBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
     sessionId = sessionStartRes.retval.sessionId;
 
-    // initalising updateActionBody for route
+    // initialising updateActionBody for route
     updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
   });
 
