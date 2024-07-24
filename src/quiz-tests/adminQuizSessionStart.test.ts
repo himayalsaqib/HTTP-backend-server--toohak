@@ -14,7 +14,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
   let token: string;
   let quizBody: { name: string, description: string };
   let quizId: number;
-  let createBody: { questionBody: QuestionBody };
+  let questionBody: QuestionBody;
   let questionId: number;
   let startSessionBody: { autoStartNum: number };
 
@@ -30,20 +30,18 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
     quizId = quizResponse.retval.quizId;
 
     // creating a quiz question
-    createBody = {
-      questionBody: {
-        question: 'Who is the Monarch of England?',
-        duration: 5,
-        points: 5,
-        answers: [
-          { answer: 'Prince Charles', correct: true },
-          { answer: 'Prince William', correct: false }
-        ],
-        thumbnailUrl: 'http://google.com/some/image/path.png'
-      }
+    questionBody = {
+      question: 'Who is the Monarch of England?',
+      duration: 5,
+      points: 5,
+      answers: [
+        { answer: 'Prince Charles', correct: true },
+        { answer: 'Prince William', correct: false }
+      ],
+      thumbnailUrl: 'http://google.com/some/image/path.png'
     };
-    const createResponse = requestPost(createBody, `/v2/admin/quiz/${quizId}/question`, { token });
-    questionId = createResponse.retval.questionId;
+    const questionResponse = requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
+    questionId = questionResponse.retval.questionId;
 
     // initialising body for start session route
     startSessionBody = { autoStartNum: 3 };
@@ -94,18 +92,18 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
           questions: [
             {
               questionId: questionId,
-              question: createBody.questionBody.question,
-              duration: createBody.questionBody.duration,
-              thumbnailUrl: createBody.questionBody.thumbnailUrl,
-              points: createBody.questionBody.points,
+              question: questionBody.question,
+              duration: questionBody.duration,
+              thumbnailUrl: questionBody.thumbnailUrl,
+              points: questionBody.points,
               answers: [
                 { answerId: expect.any(Number), answer: 'Prince Charles', colour: expect.any(String), correct: true },
                 { answerId: expect.any(Number), answer: 'Prince William', colour: expect.any(String), correct: false }
               ]
             }
           ],
-          duration: createBody.questionBody.duration,
-          thumbnailUrl: createBody.questionBody.thumbnailUrl
+          duration: questionBody.duration,
+          thumbnailUrl: questionBody.thumbnailUrl
         }
       });
       expect(res.statusCode).toStrictEqual(200);
