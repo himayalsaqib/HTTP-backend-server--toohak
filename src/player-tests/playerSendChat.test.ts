@@ -74,7 +74,7 @@ describe('POST /v1/player/:playerid/chat', () => {
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
     });
 
-    test.skip('Side effect: playerViewChat displays all messages in current session', () => {
+    test('Side effect: playerViewChat displays all messages in current session', () => {
       const message1 = { message: { messageBody: 'Hello everyone! Nice to chat.' } };
       requestPost(message1, `/v1/player/${playerId1}/chat`);
 
@@ -109,7 +109,7 @@ describe('POST /v1/player/:playerid/chat', () => {
       });
     });
 
-    test.skip('Side effect: timeSent should be within 1 second', () => {
+    test('Side effect: timeSent should be within 1 second', () => {
       const time = Math.floor(Date.now() / 1000);
       const message1 = { message: { messageBody: 'Hello everyone! Nice to chat.' } };
       requestPost(message1, `/v1/player/${playerId1}/chat`);

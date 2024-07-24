@@ -60,27 +60,27 @@ describe('GET /v1/player/:playerid/chat', () => {
     // player 1 secnds a message
     const message = { message: { messageBody: 'Hello everyone! Nice to chat.' } };
     requestPost(message, `/v1/player/${playerId1}/chat`);
-
   });
 
   describe('Testing successful cases (status code 200)', () => {
     test('Has correct return type for 1 message, 1 player', () => {
       const res = requestGet({}, `/v1/player/${playerId1}/chat`);
-      expect(res).toStrictEqual({ retval:
+      expect(res).toStrictEqual({
+        retval:
         {
-          "messages": [
+          messages: [
             {
-              "messageBody": "Hello everyone! Nice to chat.",
-              "playerId": playerId1,
-              "playerName": expect.any(String),
-              "timeSent": expect.any(Number)
+              messageBody: 'Hello everyone! Nice to chat.',
+              playerId: playerId1,
+              playerName: expect.any(String),
+              timeSent: expect.any(Number)
             }
           ]
         },
         statusCode: 200,
-      })
-    })
-    
+      });
+    });
+
     test('Has correct return type for multiple messages, multiple players', () => {
       // 2 players join
       playerBody = { sessionId: sessionId, name: 'Charli XCX' };
@@ -95,40 +95,41 @@ describe('GET /v1/player/:playerid/chat', () => {
 
       const message3 = { message: { messageBody: "'Cause I ride for you, Charli" } };
       requestPost(message3, `/v1/player/${playerId3}/chat`);
-      
+
       const res = requestGet({}, `/v1/player/${playerId1}/chat`);
-      expect(res).toStrictEqual({ retval:
+      expect(res).toStrictEqual({
+        retval:
         {
-          "messages": [
+          messages: [
             {
-              "messageBody": "Hello everyone! Nice to chat.",
-              "playerId": playerId1,
-              "playerName": expect.any(String),
-              "timeSent": expect.any(Number)
+              messageBody: 'Hello everyone! Nice to chat.',
+              playerId: playerId1,
+              playerName: expect.any(String),
+              timeSent: expect.any(Number)
             },
             {
-              "messageBody": "Girl, it's so confusing sometimes to be a girl",
-              "playerId": playerId2,
-              "playerName": 'Charli XCX',
-              "timeSent": expect.any(Number)
+              messageBody: "Girl, it's so confusing sometimes to be a girl",
+              playerId: playerId2,
+              playerName: 'Charli XCX',
+              timeSent: expect.any(Number)
             },
             {
-              "messageBody": "'Cause I ride for you, Charli",
-              "playerId": playerId3,
-              "playerName": 'Lorde',
-              "timeSent": expect.any(Number)
+              messageBody: "'Cause I ride for you, Charli",
+              playerId: playerId3,
+              playerName: 'Lorde',
+              timeSent: expect.any(Number)
             }
           ]
-        }, 
+        },
         statusCode: 200,
-      })
-    })
+      });
+    });
   });
 
   describe('Testing player ID errors (status code 400)', () => {
     test('The player ID does not exist', () => {
       const res = requestGet({}, `/v1/player/${playerId1 + 1}/chat`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
-    })
-  })
+    });
+  });
 });

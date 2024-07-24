@@ -49,7 +49,7 @@ import {
   adminQuizSessionStart,
   adminQuizThumbnail,
 } from './quiz';
-import { playerJoin, playerSendChat, playerViewChat} from './player';
+import { playerJoin, playerSendChat, playerViewChat } from './player';
 import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/helper';
 
