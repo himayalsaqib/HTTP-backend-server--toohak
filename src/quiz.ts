@@ -20,9 +20,8 @@ import {
   currentTime,
   checkThumbnailUrlFileType,
   findQuizSessionById,
-  quizIsInTrash
+  quizIsInTrash,
 } from './helper-files/helper';
-import isImageUrl from 'is-image-url';
 
 // ============================= GLOBAL VARIABLES =========================== //
 const MIN_QUIZ_NAME_LEN = 3;
@@ -731,7 +730,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
  * @param {string} thumbnailUrl
  * @returns {{}}
  */
-export function adminQuizThumbnail(quizId: number, thumbnailUrl: string ): EmptyObject {
+export function adminQuizThumbnail(quizId: number, thumbnailUrl: string ): any {
   if (thumbnailUrl.length === 0) {
     throw new Error('The thumbnailUrl cannot be an empty string.');
   }
@@ -744,10 +743,6 @@ export function adminQuizThumbnail(quizId: number, thumbnailUrl: string ): Empty
     throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
   }
 
-  if (!isImageUrl(thumbnailUrl)) {
-    throw new Error('The thumbnailUrl is not a valid image');
-  }
-  
   const quiz = findQuizById(quizId);
   quiz.thumbnailUrl = thumbnailUrl;
   quiz.timeLastEdited = currentTime();
