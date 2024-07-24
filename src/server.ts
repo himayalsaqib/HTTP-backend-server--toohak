@@ -49,7 +49,7 @@ import {
   adminQuizSessionStart,
   adminQuizThumbnail,
 } from './quiz';
-import { playerJoin, playerSendChat } from './player';
+import { playerJoin, playerSendChat, playerViewChat} from './player';
 import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/helper';
 
@@ -917,6 +917,16 @@ app.post('/v1/player/:playerid/chat', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerid as string);
   try {
     const response = playerSendChat(playerId, message);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/v1/player/:playerid/chat', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerid as string);
+  try {
+    const response = playerViewChat(playerId);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
