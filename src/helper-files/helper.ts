@@ -1,7 +1,7 @@
 // Includes helper functions for auth.ts and quiz.ts
 
 import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
-import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState } from '../quiz';
+import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState, sessionIdToTimerArray } from '../quiz';
 import crypto from 'crypto';
 
 /**
@@ -500,6 +500,16 @@ export function correctSessionStateForAction(state: QuizSessionState, action: st
   }
 
   return true;
+}
+
+/**
+ * Checks whether a timer exists for a given sessionId
+ * 
+ * @param {number} sessionId 
+ * @returns {boolean} - true if a timeoutId exists, false otherwise
+ */
+export function checkIfTimerExists(sessionId: number): boolean {
+  return sessionIdToTimerArray.some(item => item.sessionId === sessionId);
 }
 
 // ======================== PLAYER HELPER FUNCTIONS ========================= //
