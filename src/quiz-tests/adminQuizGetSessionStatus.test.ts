@@ -103,7 +103,7 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
       });
     });
 
-    test.skip('Side-effect test: the correct status is shown when an action command is sent', () => {
+    test('Side-effect test: the correct status is shown when an action command is sent', () => {
       const stateUpdateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(stateUpdateRes).toStrictEqual({
         retval: {},
@@ -114,7 +114,7 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
       expect(getSessionRes).toStrictEqual({
         retval: {
           state: 'QUESTION_COUNTDOWN',
-          atQuestion: 0,
+          atQuestion: 1,
           players: [
             'Jane'
           ],
@@ -155,13 +155,13 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
       });
     });
 
-    test.skip('Side-effect: The names of all players are listed in ascending order', () => {
+    test('Side-effect: The names of all players are listed in ascending order', () => {
       // three more players join
       requestPost({ sessionId: sessionId, name: 'Chappell' }, '/v1/player/join');
       requestPost({ sessionId: sessionId, name: 'Charli' }, '/v1/player/join');
       requestPost({ sessionId: sessionId, name: 'Wendy' }, '/v1/player/join');
 
-      const getStatusRes = requestGet({}, `/v1/admin/quiz/${quizId}/sessionid/${sessionId}`, { token });
+      const getStatusRes = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(getStatusRes).toStrictEqual({
         retval: {
           state: 'LOBBY',
@@ -245,7 +245,7 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
       // register another user
       const user2 = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'John', nameLast: 'Smith' };
       const resRegister = requestPost(user2, '/v1/admin/auth/register');
-      const token2 = resRegister.return.token;
+      const token2 = resRegister.retval.token;
 
       const statusRes = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token: token2 });
       expect(statusRes).toStrictEqual({
