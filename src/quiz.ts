@@ -24,6 +24,7 @@ import {
   getRandomInt,
   correctSessionStateForAction,
   updateSessionStateIfAutoStart,
+  checkIfTimerExists,
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -749,11 +750,10 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
 export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, action: string): EmptyObject {
   const data = getData();
   const quiz = findQuizById(quizId);
-  let timeoutId;
 
   // sessionId is not valid for this quiz
   const quizSession = findQuizSessionById(sessionId);
-  if (quizSession === undefined) {
+  if (quizSession === undefined || quizSession.quiz.quizId !== quizId) {
     throw new Error('The sesssion ID does not refer to a valid session within this quiz.');
   }
 
@@ -782,29 +782,32 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
   } else if (action === QuizSessionAction.NEXT_QUESTION) {
     quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
     // start countdown timer
-    timeoutId = setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       quizSession.state = QuizSessionState.QUESTION_OPEN;
     }, WAIT_THREE_SECONDS * 1000);
     sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+    
+    // remove timerId from array after the 3 seconds and clear timer
+    const index = sessionIdToTimerArray.findIndex(i => i.timeoutId === timeoutId);
+    if (index !== -1) {
+      sessionIdToTimerArray.splice(index, 1);
+      clearTimeout(timeoutId);
+    }
 
     quizSession.atQuestion++;
   } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
-    // clear timer
-    for (const timer of sessionIdToTimerArray) {
-      if (timer.sessionId === sessionId) {
-        clearTimeout(timer.timeoutId);
-      }
+    // clear timer if it exists
+    if (checkIfTimerExists(sessionId)) {
+      const timerId = sessionIdToTimerArray.find(i => i.sessionId === sessionId);
+      clearTimeout(timerId.timeoutId);
     }
+    
     quizSession.state = QuizSessionState.QUESTION_OPEN;
   } else if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
-    const currQIndex = quizSession.atQuestion;
-    const duration = quizSession.quiz.questions[currQIndex].duration;
-    timeoutId = setTimeout(() => {
+    const duration = quizSession.quiz.questions[quizSession.atQuestion].duration;
+    setTimeout(() => {
       quizSession.state = QuizSessionState.QUESTION_CLOSE;
     }, duration * 1000);
-    sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
-  } else {
-    updateSessionStateIfAutoStart(quizSession);
   }
 
   setData(data);
