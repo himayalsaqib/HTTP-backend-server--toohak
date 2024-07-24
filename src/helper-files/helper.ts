@@ -1,7 +1,7 @@
 // Includes helper functions for auth.ts and quiz.ts
 
 import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
-import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers } from '../quiz';
+import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionState } from '../quiz';
 import crypto from 'crypto';
 import { getImageSize } from 'react-image-size';
 
@@ -18,6 +18,15 @@ export function authUserIdExists(authUserId: number): boolean {
     return false;
   }
   return true;
+}
+
+/**
+ * Function generates and returns a random integer for ids
+ *
+ * @returns {number}
+ */
+export function getRandomInt(): number {
+  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
 }
 
 // ========================= AUTH HELPER FUNCTIONS ========================== //
@@ -355,9 +364,9 @@ export function checkForNumCorrectAns(questionBody: QuestionBody): number {
 export function createAnswersArray(givenAnswers: QuizQuestionAnswers[]): Answer[] {
   const questionAnswersArray = [];
   for (const answer of givenAnswers) {
-    let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    let newAnswerId = getRandomInt();
     while (answerIdInUse(newAnswerId) === true) {
-      newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+      newAnswerId = getRandomInt();
     }
 
     questionAnswersArray.push({
@@ -439,4 +448,70 @@ export function checkThumbnailUrlFileType(thumbnailUrl: string): boolean {
 export function findQuizSessionById(sessionId: number): QuizSessions | undefined {
   const data = getData();
   return data.quizSessions.find(session => session.sessionId === sessionId);
+}
+
+// ======================== PLAYER HELPER FUNCTIONS ========================= //
+
+/**
+ * Function moves onto next state if number of players joined matches autoStartNum
+ *
+ * @param {QuizSessions} session
+ */
+export function updateSessionStateIfAutoStart(session: QuizSessions): void {
+  if (session.players.length === session.autoStartNum) {
+    session.state = QuizSessionState.QUESTION_COUNTDOWN;
+  }
+}
+
+/**
+ * Function generates a random name if player name is empty string
+ *
+ * @param {}
+ * @returns {string} random name
+ */
+export function generateRandomName(): string {
+  const letters = 'abcdefghijklmnopqrstuvwxyz';
+  const numbers = '0123456789';
+  let name = '';
+
+  // Generate 5 unique letters
+  while (name.length < 5) {
+    const randomLetter = letters.charAt(Math.floor(Math.random() * letters.length));
+    if (!name.includes(randomLetter)) {
+      name += randomLetter;
+    }
+  }
+
+  // Generate 3 unique numbers
+  while (name.length < 8) {
+    const randomNumber = numbers.charAt(Math.floor(Math.random() * numbers.length));
+    if (!name.includes(randomNumber)) {
+      name += randomNumber;
+    }
+  }
+
+  return name;
+}
+
+/**
+ * Function checks if a player name already exists in the session
+ *
+ * @param {number} sessionId
+ * @param {string} playerName
+ * @returns {boolean} true if player name has been used, false if it has not
+ */
+export function playerNameExists(sessionId: number, playerName: string): boolean {
+  const session = findQuizSessionById(sessionId);
+  return session.players.some(player => player.name === playerName);
+}
+
+/**
+ * Function checks if a player ID has already been used by another player
+ *
+ * @param {Number} playerId
+ * @returns {boolean} true if player ID has been used, false if it has not
+ */
+export function playerIdInUse(playerId: number): boolean {
+  const data = getData();
+  return data.players.some(player => player.playerId === playerId);
 }

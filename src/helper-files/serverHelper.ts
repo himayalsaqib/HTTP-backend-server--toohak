@@ -1,7 +1,7 @@
 // includes the helper function for server.ts routes
 
 import { ErrorObject, EmptyObject, Tokens, getData, setData } from '../dataStore';
-import { findQuizById, findTrashedQuizById } from './helper';
+import { findQuizById, findTrashedQuizById, getRandomInt } from './helper';
 
 // ============================ TYPE ANNOTATIONS ============================ //
 
@@ -152,9 +152,9 @@ export function quizzesDoNotExist(quizIds: number[]): EmptyObject {
  * @returns {Tokens}
  */
 export function tokenCreate(authUserId: number): Tokens {
-  let newSessionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  let newSessionId = getRandomInt();
   while (sessionIdExists(newSessionId)) {
-    newSessionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    newSessionId = getRandomInt();
   }
 
   const newToken = {

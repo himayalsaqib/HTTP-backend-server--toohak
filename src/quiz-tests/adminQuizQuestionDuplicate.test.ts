@@ -286,6 +286,19 @@ describe('POST /v1/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       expect(dupeQues.retval).toStrictEqual(ERROR);
     });
   });
+
+  describe('Testing for other errors', () => {
+    test('Returns error when duplicating quiz question exceeds quiz durations of 3 mins', () => {
+      const res = requestPost(quizBody, '/v1/admin/quiz');
+      const quizId = res.retval.quizId;
+      const question = { question: 'Sample Question', duration: 95, points: 10, answers: [{ answer: 'Sample Answer', correct: true }, { answer: 'Sample Answer2', correct: false }] };
+      const questionRes = requestPost({ token: token, questionBody: question }, `/v1/admin/quiz/${quizId}/question`);
+      const questionId = questionRes.retval.questionId;
+      const dupeQues = requestPost({ token }, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`);
+
+      expect(dupeQues.retval).toStrictEqual(ERROR);
+    });
+  });
 });
 
 describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
@@ -513,7 +526,7 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       const questionRes = requestPost({ ...question }, `/v2/admin/quiz/${quizId}/question`, { token });
 
       const questionId = questionRes.retval.questionId;
-      const dupeRes = requestPost({}, `/v1/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token });
+      const dupeRes = requestPost({}, `/v2/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token: sessionId });
 
       expect(dupeRes.statusCode).toStrictEqual(401);
       expect(dupeRes.retval).toStrictEqual(ERROR);
@@ -571,6 +584,19 @@ describe('POST /v2/admin/quiz/:quizid/question/:questionid/duplicate', () => {
       quizId += 1;
       const dupeQues = requestPost({}, `/v2/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token });
       expect(dupeQues.statusCode).toStrictEqual(403);
+      expect(dupeQues.retval).toStrictEqual(ERROR);
+    });
+  });
+
+  describe('Testing for other errors', () => {
+    test('Returns error when duplicating quiz question exceeds quiz durations of 3 mins', () => {
+      const res = requestPost(quizBody, '/v2/admin/quiz', { token });
+      const quizId = res.retval.quizId;
+      const question = { question: 'Sample Question', duration: 95, points: 10, answers: [{ answer: 'Sample Answer', correct: true }, { answer: 'Sample Answer2', correct: false }] };
+      const questionRes = requestPost({ question }, `/v2/admin/quiz/${quizId}/question`, { token });
+      const questionId = questionRes.retval.questionId;
+
+      const dupeQues = requestPost({}, `/v2/admin/quiz/${quizId}/question/${questionId}/duplicate`, { token });
       expect(dupeQues.retval).toStrictEqual(ERROR);
     });
   });
