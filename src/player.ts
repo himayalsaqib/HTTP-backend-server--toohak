@@ -75,19 +75,19 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
  * @param {Message} message
  * @returns {{}}
  */
-export function playerSendChat(playerId: number, sendMessage: SendMessage): EmptyObject {
+export function playerSendChat(playerId: number, message: SendMessage): EmptyObject {
   if (!playerIdInUse(playerId)) {
     throw new Error('The player ID does not exist');
   }
 
   const session = findSessionByPlayerId(playerId);
 
-  if (sendMessage.messageBody.length < 1 || sendMessage.messageBody.length > 100) {
+  if (message.messageBody.length < 1 || message.messageBody.length > 100) {
     throw new Error('The message body is less than 1 character or more than 100 characters');
   }
 
   const newMessage = {
-    messageBody: sendMessage.messageBody,
+    messageBody: message.messageBody,
     playerId: playerId,
     playerName: findNameByPlayerId(playerId),
     timeSent: currentTime(),
