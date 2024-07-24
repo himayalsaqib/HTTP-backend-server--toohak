@@ -22,7 +22,8 @@ import {
   findQuizSessionById,
   quizIsInTrash,
   getRandomInt,
-  correctSessionStateForAction
+  correctSessionStateForAction,
+  updateSessionStateIfAutoStart
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -783,7 +784,6 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
     // start countdown timer
     timeoutId = setTimeout((quizSession.state = QuizSessionState.QUESTION_OPEN), WAIT_THREE_SECONDS * 1000);
-    //sessionIdToTimerObject[sessionId] = timeoutId;
     timerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
     
     quizSession.atQuestion++;
@@ -795,6 +795,8 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     const duration = quizSession.quiz.questions[currQIndex].duration;
     timeoutId = setTimeout((quizSession.state = QuizSessionState.QUESTION_CLOSE), duration * 1000);
     timerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+  } else {
+    updateSessionStateIfAutoStart(quizSession);
   }
 
   setData(data);
