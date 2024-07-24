@@ -54,7 +54,7 @@ const MAX_ACTIVE_QUIZ_SESSIONS = 10;
 
 const WAIT_THREE_SECONDS = 3;
 
-export const timerArray: any[] = [];
+const sessionIdToTimerObject: Record<number, ReturnType<typeof setTimeout>> = {};
 
 // ============================ TYPE ANNOTATIONS ============================ //
 interface QuizList {
