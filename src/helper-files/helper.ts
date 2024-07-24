@@ -457,7 +457,6 @@ export function findQuizSessionById(sessionId: number): QuizSessions | undefined
  * @returns {boolean} - false if action is not applicable in current state,
  *                      true otherwise
  */
-
 export function correctSessionStateForAction(state: QuizSessionState, action: string): boolean {
   if (state === QuizSessionState.ANSWER_SHOW) {
     if (!(action === QuizSessionAction.END || action === QuizSessionAction.NEXT_QUESTION || action === QuizSessionAction.GO_TO_FINAL_RESULTS)) {
