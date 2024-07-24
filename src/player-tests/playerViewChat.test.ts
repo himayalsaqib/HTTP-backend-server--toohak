@@ -57,7 +57,7 @@ describe('GET /v1/player/:playerid/chat', () => {
     playerBody = { sessionId: sessionId, name: '' };
     playerId1 = requestPost(playerBody, '/v1/player/join').retval.playerId;
 
-    // player 1 secnds a message
+    // player 1 sends a message
     const message = { message: { messageBody: 'Hello everyone! Nice to chat.' } };
     requestPost(message, `/v1/player/${playerId1}/chat`);
   });
