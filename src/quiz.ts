@@ -23,7 +23,6 @@ import {
   quizIsInTrash,
   getRandomInt,
   correctSessionStateForAction,
-  updateSessionStateIfAutoStart,
   checkIfTimerExists,
 } from './helper-files/helper';
 
@@ -786,7 +785,7 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
       quizSession.state = QuizSessionState.QUESTION_OPEN;
     }, WAIT_THREE_SECONDS * 1000);
     sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
-    
+
     // remove timerId from array after the 3 seconds and clear timer
     const index = sessionIdToTimerArray.findIndex(i => i.timeoutId === timeoutId);
     if (index !== -1) {
@@ -801,7 +800,7 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
       const timerId = sessionIdToTimerArray.find(i => i.sessionId === sessionId);
       clearTimeout(timerId.timeoutId);
     }
-    
+
     quizSession.state = QuizSessionState.QUESTION_OPEN;
   } else if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
     const duration = quizSession.quiz.questions[quizSession.atQuestion].duration;

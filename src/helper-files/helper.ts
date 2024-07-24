@@ -504,8 +504,8 @@ export function correctSessionStateForAction(state: QuizSessionState, action: st
 
 /**
  * Checks whether a timer exists for a given sessionId
- * 
- * @param {number} sessionId 
+ *
+ * @param {number} sessionId
  * @returns {boolean} - true if a timeoutId exists, false otherwise
  */
 export function checkIfTimerExists(sessionId: number): boolean {
