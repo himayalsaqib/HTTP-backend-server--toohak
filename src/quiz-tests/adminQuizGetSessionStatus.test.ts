@@ -1,11 +1,10 @@
 // includes http tests for the route /v1/admin/quiz/{quizid}/session/{sessionid}
 
-import { questionIdInUse } from "../helper-files/helper";
-import { requestGet, requestDelete, requestPost, requestPut } from "../helper-files/requestHelper";
-import { QuestionBody } from "../quiz";
+import { requestGet, requestDelete, requestPost, requestPut } from '../helper-files/requestHelper';
+import { QuestionBody } from '../quiz';
 
 beforeEach(() => {
-  requestDelete({}, `/v1/clear`);
+  requestDelete({}, '/v1/clear');
 });
 
 const ERROR = { error: expect.any(String) };
@@ -19,7 +18,6 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
   let sessionStartBody: { autoStartNum: number };
   let sessionId: number;
   let updateActionBody: { action: string };
-  let playerId: number;
 
   beforeEach(() => {
     // register user
@@ -51,14 +49,13 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
     const sessionStartRes = requestPost(sessionStartBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
     sessionId = sessionStartRes.retval.sessionId;
 
-    // initalising updateActionBody for route
+    // initalising updateActionBody
     updateActionBody = { action: 'NEXT_QUESTION' };
 
     // have a player join the session
-    const res = requestPost({ sessionId: sessionId, name: 'Jane' }, '/v1/player/join');
-    playerId = res.retval.playerId;
+    requestPost({ sessionId: sessionId, name: 'Jane' }, '/v1/player/join');
   });
-  
+
   describe('Testing successful cases (status code 200)', () => {
     test('Has the correct return type', () => {
       const getStatusRes = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
@@ -101,7 +98,7 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
             duration: questionBody.duration,
             thumbnail: expect.any(String),
           }
-        }, 
+        },
         statusCode: 200
       });
     });
@@ -109,7 +106,7 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
     test.skip('Side-effect test: the correct status is shown when an action command is sent', () => {
       const stateUpdateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(stateUpdateRes).toStrictEqual({
-        retval: {}, 
+        retval: {},
         statusCode: 200
       });
 
@@ -153,7 +150,7 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
             duration: questionBody.duration,
             thumbnail: expect.any(String),
           }
-        }, 
+        },
         statusCode: 200,
       });
     });
@@ -171,7 +168,7 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
 
   describe('Testing token errors (status code 401)', () => {
     test('The token is empty (no users are registered)', () => {
-      requestDelete({}, '/v1/clear');      
+      requestDelete({}, '/v1/clear');
       const getSessionRes = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(getSessionRes).toStrictEqual({
         retval: ERROR,
