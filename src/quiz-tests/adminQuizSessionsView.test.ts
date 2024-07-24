@@ -14,7 +14,7 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
   let token: string;
   let quizBody: { name: string, description: string };
   let quizId: number;
-  let createBody: { questionBody: QuestionBody };
+  let questionBody: QuestionBody;
   let startSessionBody: { autoStartNum: number };
 
   beforeEach(() => {
@@ -29,19 +29,17 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
     quizId = quizResponse.retval.quizId;
 
     // creating a quiz question
-    createBody = {
-      questionBody: {
-        question: 'Who is the Monarch of England?',
-        duration: 5,
-        points: 5,
-        answers: [
-          { answer: 'Prince Charles', correct: true },
-          { answer: 'Prince William', correct: false }
-        ],
-        thumbnailUrl: 'http://google.com/some/image/path.png'
-      }
+    questionBody = {
+      question: 'Who is the Monarch of England?',
+      duration: 5,
+      points: 5,
+      answers: [
+        { answer: 'Prince Charles', correct: true },
+        { answer: 'Prince William', correct: false }
+      ],
+      thumbnailUrl: 'http://google.com/some/image/path.png'
     };
-    requestPost(createBody, `/v2/admin/quiz/${quizId}/question`, { token });
+    requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
   });
 
   describe('Testing for correct return type, successfully retrieves active and inactive sessionIds (status code 200)', () => {
