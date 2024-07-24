@@ -1,6 +1,6 @@
 // includes player functions
 
-import { setData, getData, EmptyObject } from './dataStore';
+import { setData, getData, EmptyObject, Message } from './dataStore';
 import {
   findQuizSessionById,
   generateRandomName,
@@ -95,4 +95,20 @@ export function playerSendChat(playerId: number, message: SendMessage): EmptyObj
 
   session.messages.push(newMessage);
   return {};
+}
+
+/**
+ * Displays all messages sent in a session
+ *
+ * @param {number} playerId
+ * @returns {Message[]}
+ */
+export function playerViewChat(playerId: number): Message[] {
+  if (!playerIdInUse(playerId)) {
+    throw new Error('The player ID does not exist');
+  }
+
+  const session = findSessionByPlayerId(playerId);
+
+  return session.messages;
 }
