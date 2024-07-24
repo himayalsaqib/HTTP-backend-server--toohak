@@ -1,7 +1,7 @@
 // includes player functions
 
 import { setData, getData } from './dataStore';
-import { findQuizSessionById, generateRandomName, getRandomInt, playerIdInUse, playerNameExists } from './helper-files/helper';
+import { findQuizSessionById, generateRandomName, getRandomInt, playerIdInUse, playerNameExists, updateSessionStateIfAutoStart } from './helper-files/helper';
 import { QuizSessionState } from './quiz';
 
 // =============================== FUNCTIONS ================================ //
@@ -45,6 +45,9 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
   const newPlayer = { playerId: newPlayerId, name: playerName };
   session.players.push(newPlayer);
   data.players.push(newPlayer);
+
+  // Update the session state if the number of players matches the autoStartNum
+  updateSessionStateIfAutoStart(session);
 
   setData(data);
 
