@@ -600,6 +600,7 @@ export function adminQuizQuestionDelete(quizId: number, questionId: number): Emp
 
   return {};
 }
+
 /**
  * Transfer ownership of a quiz to a different user based on their email
  *
@@ -683,6 +684,13 @@ export function adminQuizQuestionDuplicate (quizId: number, questionId: number):
   return { newQuestionId: newQuestion.questionId };
 }
 
+/**
+ * Starts a new session for a given quiz
+ *
+ * @param {number} quizId
+ * @param {number} autoStartNum
+ * @returns {{ sessionId: number}} - returns new session ID
+ */
 export function adminQuizSessionStart(quizId: number, autoStartNum: number): { sessionId: number } {
   if (quizIsInTrash(quizId)) {
     throw new Error('The quiz is in trash.');
@@ -731,6 +739,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     quiz: quizInfoForSession,
     usersRankedByScore: [],
     questionResults: [],
+    messages: [],
   });
 
   setData(data);

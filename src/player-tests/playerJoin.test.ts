@@ -19,7 +19,6 @@ describe('POST /v1/player/join', () => {
   let sessionId: number;
   let playerBody: { sessionId: number, name: string };
   let updateActionBody: { action: string };
-  // let playerId: number;
 
   beforeEach(() => {
     // registering a user
