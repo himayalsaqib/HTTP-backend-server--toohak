@@ -788,26 +788,30 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     quizSession.state = QuizSessionState.FINAL_RESULTS;
     quizSession.atQuestion = 0;
   } else if (action === QuizSessionAction.NEXT_QUESTION) {
+    // increment atQuestion
+    quizSession.atQuestion++;
     quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
     // start countdown timer
     const timeoutId = setTimeout(() => {
+      // update state
       quizSession.state = QuizSessionState.QUESTION_OPEN;
+      // add timerID to array
+      sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+
+      // remove timerId from array (if it exists) after the 3 seconds and clear timer
+      const index = sessionIdToTimerArray.findIndex(i => i.timeoutId === timeoutId);
+      if (index !== -1) {
+        sessionIdToTimerArray.splice(index, 1);
+        clearTimeout(timeoutId);
+      }
     }, WAIT_THREE_SECONDS * 1000);
-    sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
-
-    // remove timerId from array after the 3 seconds and clear timer
-    const index = sessionIdToTimerArray.findIndex(i => i.timeoutId === timeoutId);
-    if (index !== -1) {
-      sessionIdToTimerArray.splice(index, 1);
-      clearTimeout(timeoutId);
-    }
-
-    quizSession.atQuestion++;
   } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
-    // clear timer if it exists
+    // clear timer if it exists and remove from array
     if (checkIfTimerExists(sessionId)) {
       const timerId = sessionIdToTimerArray.find(i => i.sessionId === sessionId);
+      const index = sessionIdToTimerArray.findIndex(i => i.sessionId === sessionId);
       clearTimeout(timerId.timeoutId);
+      sessionIdToTimerArray.splice(index, 1);
     }
 
     quizSession.state = QuizSessionState.QUESTION_OPEN;
