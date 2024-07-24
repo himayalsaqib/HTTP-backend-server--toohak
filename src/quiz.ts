@@ -834,7 +834,7 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
  * @param {number} sessionId
  * @returns {QuizSessionStatus}
  */
-export function adminGetSessionStatus(quizId: number, sessionId: number): QuizSessionStatus {
+export function adminQuizGetSessionStatus(quizId: number, sessionId: number): QuizSessionStatus {
   const quizSession = findQuizSessionById(sessionId);
   if (!quizSession || quizSession.quiz.quizId !== quizId) {
     throw new Error('The session ID does not refer to a valid session within this quiz.');
