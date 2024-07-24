@@ -76,7 +76,8 @@ describe('GET /v1/player/:playerid/chat', () => {
               "timeSent": expect.any(Number)
             }
           ]
-        }
+        },
+        statusCode: 200,
       })
     })
     
@@ -86,14 +87,14 @@ describe('GET /v1/player/:playerid/chat', () => {
       playerId2 = requestPost(playerBody, '/v1/player/join').retval.playerId;
 
       playerBody = { sessionId: sessionId, name: 'Lorde' };
-      playerId2 = requestPost(playerBody, '/v1/player/join').retval.playerId;
+      playerId3 = requestPost(playerBody, '/v1/player/join').retval.playerId;
 
       // players send one message each
       const message2 = { message: { messageBody: "Girl, it's so confusing sometimes to be a girl" } };
       requestPost(message2, `/v1/player/${playerId2}/chat`);
 
       const message3 = { message: { messageBody: "'Cause I ride for you, Charli" } };
-      requestPost(message3, `/v1/player/${playerId2}/chat`);
+      requestPost(message3, `/v1/player/${playerId3}/chat`);
       
       const res = requestGet({}, `/v1/player/${playerId1}/chat`);
       expect(res).toStrictEqual({ retval:
@@ -118,7 +119,8 @@ describe('GET /v1/player/:playerid/chat', () => {
               "timeSent": expect.any(Number)
             }
           ]
-        }
+        }, 
+        statusCode: 200,
       })
     })
   });

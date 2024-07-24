@@ -101,14 +101,14 @@ export function playerSendChat(playerId: number, message: SendMessage): EmptyObj
  * Displays all messages sent in a session
  *
  * @param {number} playerId
- * @returns {Message[]}
+ * @returns {{ messages: Message[] }}
  */
-export function playerViewChat(playerId: number): Message[] {
+export function playerViewChat(playerId: number): { messages: Message[] } {
   if (!playerIdInUse(playerId)) {
     throw new Error('The player ID does not exist');
   }
 
   const session = findSessionByPlayerId(playerId);
 
-  return session.messages;
+  return { messages: session.messages };
 }
