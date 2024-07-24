@@ -57,7 +57,7 @@ export interface QuizSessions {
   sessionId: number;
   state: QuizSessionState;
   atQuestion: number;
-  players: string[];
+  players: Player[];
   autoStartNum: number;
   quiz: QuizInfo;
   usersRankedByScore: UsersRanking[];
@@ -77,6 +77,11 @@ export interface QuestionResults {
   percentCorrect: number;
 }
 
+export interface Player {
+  playerId: number;
+  name: string;
+}
+
 export interface Trash {
   quiz: Quizzes;
 }
@@ -92,12 +97,14 @@ export interface Data {
   quizSessions: QuizSessions[];
   trash: Trash[];
   tokens: Tokens[];
+  players: Player[]
 }
 
 let data: Data = {
   users: [],
   quizzes: [],
   quizSessions: [],
+  players: [],
   trash: [],
   tokens: []
 };

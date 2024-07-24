@@ -12,7 +12,8 @@ export function clear(): EmptyObject {
     quizzes: [],
     quizSessions: [],
     trash: [],
-    tokens: []
+    tokens: [],
+    players: [],
   };
 
   setData(newData);
