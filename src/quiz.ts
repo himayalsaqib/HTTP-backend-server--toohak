@@ -54,7 +54,8 @@ const MAX_ACTIVE_QUIZ_SESSIONS = 10;
 
 const WAIT_THREE_SECONDS = 3;
 
-const sessionIdToTimerObject: Record<number, ReturnType<typeof setTimeout>> = {};
+//const sessionIdToTimerObject: Record<number, ReturnType<typeof setTimeout>> = {};
+const timerArray: { sessionId: number, timeoutId: number }[] = [];
 
 // ============================ TYPE ANNOTATIONS ============================ //
 interface QuizList {
@@ -769,9 +770,9 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
   // update states with timer propterties
   // question_countdown to question.open
   if (action !== QuizSessionAction.SKIP_COUNTDOWN && quizSession.state === QuizSessionState.QUESTION_COUNTDOWN) {
-    timeoutId = setTimeout(() => WAIT_THREE_SECONDS * 1000);
-    quizSession.state = QuizSessionState.QUESTION_OPEN;
-    timerArray.push(timeoutId);
+    timeoutId = setTimeout((quizSession.state = QuizSessionState.QUESTION_OPEN), WAIT_THREE_SECONDS * 1000);
+    //sessionIdToTimerObject[sessionId] = timeoutId;
+    timerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
   }
 
   // session state update
@@ -792,8 +793,8 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
   } else if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
     const currQIndex = quizSession.atQuestion;
     const duration = quizSession.quiz.questions[currQIndex].duration;
-    timeoutId = setTimeout(() => duration * 1000);
-    timerArray.push(timeoutId);
+    timeoutId = setTimeout((quizSession.state = QuizSessionState.QUESTION_CLOSE), duration * 1000);
+    timerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
   }
 
   setData(data);
