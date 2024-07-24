@@ -1,6 +1,6 @@
 // includes quiz functions
 
-import { setData, getData, ErrorObject, EmptyObject, Question, Answer } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, Question, Answer, QuizSessionStatus } from './dataStore';
 import {
   quizNameHasValidChars,
   quizNameInUse,
@@ -825,6 +825,34 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
 
   setData(data);
   return {};
+}
+
+/**
+ * Get the status of a particular quiz session
+ * 
+ * @param {number} quizId
+ * @param {number} sessionId
+ * @returns {QuizSessionStatus}
+ */
+export function getSessionStatus(quizId: number, sessionId: number): QuizSessionStatus {
+  const quizSession = findQuizSessionById(sessionId);
+  if (!quizSession || quizSession.quiz.quizId !== quizId) {
+    throw new Error('The session ID does not refer to a valid session within this quiz.');
+  }
+
+  const metadata = adminQuizInfo(quizId);
+  
+  // sort names into ascending order
+  const sortedPlayers = quizSession.players.sort();
+
+  const sessionStatus: QuizSessionStatus = {
+    state: quizSession.state,
+    atQuestion: quizSession.atQuestion,
+    players: sortedPlayers,
+    metadata: metadata,
+  }
+
+  return sessionStatus;
 }
 
 /**
