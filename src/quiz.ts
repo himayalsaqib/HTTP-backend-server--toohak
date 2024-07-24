@@ -795,8 +795,6 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     const timeoutId = setTimeout(() => {
       // update state
       quizSession.state = QuizSessionState.QUESTION_OPEN;
-      // add timerID to array
-      sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
 
       // remove timerId from array (if it exists) after the 3 seconds and clear timer
       const index = sessionIdToTimerArray.findIndex(i => i.timeoutId === timeoutId);
@@ -805,6 +803,9 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
         clearTimeout(timeoutId);
       }
     }, WAIT_THREE_SECONDS * 1000);
+
+    // add timerID to array
+    sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
   } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
     // clear timer if it exists and remove from array
     if (checkIfTimerExists(sessionId)) {
