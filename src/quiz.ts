@@ -55,7 +55,6 @@ const MAX_ACTIVE_QUIZ_SESSIONS = 10;
 
 const WAIT_THREE_SECONDS = 3;
 
-//const sessionIdToTimerObject: Record<number, ReturnType<typeof setTimeout>> = {};
 export const timerArray: { sessionId: number, timeoutId: number }[] = [];
 
 // ============================ TYPE ANNOTATIONS ============================ //
@@ -785,7 +784,7 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     // start countdown timer
     timeoutId = setTimeout((quizSession.state = QuizSessionState.QUESTION_OPEN), WAIT_THREE_SECONDS * 1000);
     timerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
-    
+
     quizSession.atQuestion++;
   } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
     // clear timer
