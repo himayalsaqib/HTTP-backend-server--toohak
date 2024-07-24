@@ -65,6 +65,13 @@ export interface QuizSessions {
   messages: Message[];
 }
 
+export interface QuizSessionStatus {
+  state: QuizSessionState;
+  atQuestion: number;
+  players: Player[];
+  metadata: QuizInfo;
+}
+
 export interface UsersRanking {
   playerId: number;
   name: string;
