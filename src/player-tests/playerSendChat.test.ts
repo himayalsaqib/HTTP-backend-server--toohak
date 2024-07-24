@@ -55,17 +55,17 @@ describe('POST /v1/player/:playerid/chat', () => {
 
     // 1 player joins session
     playerBody = { sessionId: sessionId, name: '' };
-    playerId1 = requestPost(playerBody, '/v1/player/join');
+    playerId1 = requestPost(playerBody, '/v1/player/join').retval.playerId;
   });
 
   describe('Testing successful cases (status code 200)', () => {
     beforeEach(() => {
       // 2 players join session
       playerBody = { sessionId: sessionId, name: '' };
-      playerId2 = requestPost(playerBody, '/v1/player/join');
+      playerId2 = requestPost(playerBody, '/v1/player/join').retval.playerId;
 
       playerBody = { sessionId: sessionId, name: '' };
-      playerId3 = requestPost(playerBody, '/v1/player/join');
+      playerId3 = requestPost(playerBody, '/v1/player/join').retval.playerId;
     });
 
     test('Has correct return type', () => {

@@ -1,13 +1,13 @@
 // includes player functions
 
-import { setData, getData, Message, EmptyObject } from './dataStore';
-import { 
-  findQuizSessionById, 
-  generateRandomName, 
-  getRandomInt, 
-  playerIdInUse, 
-  playerNameExists, 
-  updateSessionStateIfAutoStart, 
+import { setData, getData, EmptyObject } from './dataStore';
+import {
+  findQuizSessionById,
+  generateRandomName,
+  getRandomInt,
+  playerIdInUse,
+  playerNameExists,
+  updateSessionStateIfAutoStart,
   findSessionByPlayerId,
   findNameByPlayerId,
   currentTime,
@@ -15,9 +15,7 @@ import {
 import { QuizSessionState } from './quiz';
 
 interface SendMessage {
-  message: {
-    messageBody: string;
-  }
+  messageBody: string
 }
 
 // =============================== FUNCTIONS ================================ //
@@ -83,17 +81,17 @@ export function playerSendChat(playerId: number, sendMessage: SendMessage): Empt
   }
 
   const session = findSessionByPlayerId(playerId);
-  
-  if (sendMessage.message.messageBody.length < 1 || sendMessage.message.messageBody.length > 100) {
+
+  if (sendMessage.messageBody.length < 1 || sendMessage.messageBody.length > 100) {
     throw new Error('The message body is less than 1 character or more than 100 characters');
   }
 
   const newMessage = {
-    messageBody: sendMessage.message.messageBody,
+    messageBody: sendMessage.messageBody,
     playerId: playerId,
     playerName: findNameByPlayerId(playerId),
     timeSent: currentTime(),
-  }
+  };
 
   session.messages.push(newMessage);
   return {};

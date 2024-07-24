@@ -914,7 +914,7 @@ app.post('/v1/player/join', (req: Request, res: Response) => {
 
 app.post('/v1/player/:playerid/chat', (req: Request, res: Response) => {
   const { message } = req.body;
-  const playerId = parseInt(req.params.playerId as string);
+  const playerId = parseInt(req.params.playerid as string);
   try {
     const response = playerSendChat(playerId, message);
     res.json(response);

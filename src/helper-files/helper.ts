@@ -523,7 +523,7 @@ export function playerIdInUse(playerId: number): boolean {
  */
 export function findSessionByPlayerId(playerId: number): QuizSessions | undefined {
   const data = getData();
-  const session = data.quizSessions.find(q => 
+  const session = data.quizSessions.find(q =>
     q.players.some(player => player.playerId === playerId) === true);
 
   return session;
