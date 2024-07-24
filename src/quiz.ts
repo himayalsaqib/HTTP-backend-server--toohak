@@ -843,7 +843,11 @@ export function adminQuizGetSessionStatus(quizId: number, sessionId: number): Qu
   const metadata = adminQuizInfo(quizId);
   
   // sort names into ascending order
-  const sortedPlayers = quizSession.players.sort();
+  const playerNames: string[] = [];
+  for(const player of quizSession.players) {
+    playerNames.push(player.name);
+  }
+  const sortedPlayers = playerNames.sort();
 
   const sessionStatus: QuizSessionStatus = {
     state: quizSession.state,

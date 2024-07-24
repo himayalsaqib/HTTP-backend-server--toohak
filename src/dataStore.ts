@@ -68,7 +68,7 @@ export interface QuizSessions {
 export interface QuizSessionStatus {
   state: QuizSessionState;
   atQuestion: number;
-  players: Player[];
+  players: string[];
   metadata: QuizInfo;
 }
 
