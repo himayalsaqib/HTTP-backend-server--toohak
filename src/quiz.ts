@@ -717,6 +717,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     quiz: quizInfoForSession,
     usersRankedByScore: [],
     questionResults: [],
+    messages: [],
   });
 
   setData(data);

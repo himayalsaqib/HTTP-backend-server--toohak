@@ -514,3 +514,29 @@ export function playerIdInUse(playerId: number): boolean {
   const data = getData();
   return data.players.some(player => player.playerId === playerId);
 }
+
+/**
+ * Function returns the session the given player is in
+ *
+ * @param {number} playerId
+ * @returns {QuizSessions | undefined} sessionId | undefined if session does not exist
+ */
+export function findSessionByPlayerId(playerId: number): QuizSessions | undefined {
+  const data = getData();
+  const session = data.quizSessions.find(q => 
+    q.players.some(player => player.playerId === playerId) === true);
+
+  return session;
+}
+
+/**
+ * Function returns the name corresponding to a given player ID
+ *
+ * @param {number} playerId
+ * @returns {string | undefined} name | undefined if player does not exist
+ */
+export function findPlayerNameByPlayerId(playerId: number): string | undefined {
+  const data = getData();
+  const player = data.players.find(player => player.playerId === playerId);
+  return player?.name;
+}
