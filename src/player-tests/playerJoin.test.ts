@@ -86,7 +86,23 @@ describe('POST /v1/player/join', () => {
       const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(res.retval.players).toStrictEqual([
         'JaneDoe',
-        expect.stringMatching(/^[a-zA-Z]{5}\d{3}$/),
+        expect.stringMatching(/^[a-zA-Z]{5}\d{3}$/)
+      ]);
+    });
+
+    test.skip('Side effect: adminQuizSessionStatus shows correct state after autoStartNum players joined', () => {
+      playerBody = { sessionId: sessionId, name: 'JaneDoe' };
+      requestPost(playerBody, '/v1/player/join');
+
+      playerBody = { sessionId: sessionId, name: '' };
+      requestPost(playerBody, '/v1/player/join');
+
+      playerBody = { sessionId: sessionId, name: 'JohnDoe' };
+      requestPost(playerBody, '/v1/player/join');
+
+      const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(res.retval.state).toStrictEqual([
+        'QUESTION_COUNTDOWN'
       ]);
     });
   });
