@@ -788,7 +788,12 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     
     quizSession.atQuestion++;
   } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
-    // *** clearTimeout();
+    // clear timer
+    for (const timer of timerArray) {
+      if (timer.sessionId === sessionId) {
+        clearTimeout(timer.timeoutId);
+      }
+    }
     quizSession.state = QuizSessionState.QUESTION_OPEN;
   } else if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
     const currQIndex = quizSession.atQuestion;
