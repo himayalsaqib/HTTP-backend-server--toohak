@@ -65,7 +65,7 @@ describe('PUT /v1/admin/quiz/:quizid/thumbnail', () => {
       res = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
       expect(res.retval.timeLastEdited).toBeGreaterThanOrEqual(time);
       expect(res.retval.timeLastEdited).toBeLessThanOrEqual(time + 1);
-    })
+    });
   });
 
   describe('Testing token errors (status code 401)', () => {

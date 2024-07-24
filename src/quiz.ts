@@ -731,7 +731,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
  * @param {string} thumbnailUrl
  * @returns {{}}
  */
-export function adminQuizThumbnail(quizId: number, thumbnailUrl: string ): any {
+export function adminQuizThumbnail(quizId: number, thumbnailUrl: string): EmptyObject {
   if (thumbnailUrl.length === 0) {
     throw new Error('The thumbnailUrl cannot be an empty string.');
   }

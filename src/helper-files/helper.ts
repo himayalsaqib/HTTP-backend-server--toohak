@@ -3,7 +3,6 @@
 import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
 import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionState } from '../quiz';
 import crypto from 'crypto';
-import { getImageSize } from 'react-image-size';
 
 /**
  * Function checks if an authUserId exists in the dataStore
