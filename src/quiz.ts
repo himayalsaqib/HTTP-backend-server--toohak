@@ -23,6 +23,7 @@ import {
   quizIsInTrash,
   getRandomInt,
   correctSessionStateForAction,
+  updateSessionStateIfAutoStart
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -54,7 +55,7 @@ const MAX_ACTIVE_QUIZ_SESSIONS = 10;
 
 const WAIT_THREE_SECONDS = 3;
 
-export const timerArray: { sessionId: number, timeoutId: number }[] = [];
+export const sessionIdToTimerArray: { sessionId: number, timeoutId: ReturnType<typeof setTimeout> }[] = [];
 
 // ============================ TYPE ANNOTATIONS ============================ //
 interface QuizList {
@@ -781,13 +782,15 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
   } else if (action === QuizSessionAction.NEXT_QUESTION) {
     quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
     // start countdown timer
-    timeoutId = setTimeout((quizSession.state = QuizSessionState.QUESTION_OPEN), WAIT_THREE_SECONDS * 1000);
-    timerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+    timeoutId = setTimeout(() => {
+      quizSession.state = QuizSessionState.QUESTION_OPEN;
+    }, WAIT_THREE_SECONDS * 1000);
+    sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
 
     quizSession.atQuestion++;
   } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
     // clear timer
-    for (const timer of timerArray) {
+    for (const timer of sessionIdToTimerArray) {
       if (timer.sessionId === sessionId) {
         clearTimeout(timer.timeoutId);
       }
@@ -796,10 +799,12 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
   } else if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
     const currQIndex = quizSession.atQuestion;
     const duration = quizSession.quiz.questions[currQIndex].duration;
-    timeoutId = setTimeout((quizSession.state = QuizSessionState.QUESTION_CLOSE), duration * 1000);
-    timerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
-  } else if (quizSession.players.length === quizSession.autoStartNum) {
-    quizSession.state = QuizSessionState.QUESTION_OPEN;
+    timeoutId = setTimeout(() => {
+      quizSession.state = QuizSessionState.QUESTION_CLOSE;
+    }, duration * 1000);
+    sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+  } else {
+    updateSessionStateIfAutoStart(quizSession);
   }
 
   setData(data);
