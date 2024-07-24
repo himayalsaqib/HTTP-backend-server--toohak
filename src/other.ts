@@ -18,7 +18,7 @@ export function clear(): EmptyObject {
   };
 
   for (const id of timerArray) {
-    clearTimeout(id);
+    clearTimeout(id.timeoutId);
   }
 
   setData(newData);
