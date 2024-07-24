@@ -1,5 +1,6 @@
 // includes http tests for the route GET /v1/admin/quiz/{quizid}/sessions
 
+import { getData } from '../dataStore';
 import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
 import { QuestionBody, QuizSessionState } from '../quiz';
 
@@ -16,6 +17,7 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
   let quizId: number;
   let questionBody: QuestionBody;
   let startSessionBody: { autoStartNum: number };
+  let updateToEndState: { action: QuizSessionState}
 
   beforeEach(() => {
     // registering a user
@@ -40,6 +42,9 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
       thumbnailUrl: 'http://google.com/some/image/path.png'
     };
     requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
+
+    startSessionBody = { autoStartNum: 3 };
+    updateToEndState = { action: QuizSessionState.END };
   });
 
   describe('Testing for correct return type, successfully retrieves active and inactive sessionIds (status code 200)', () => {
@@ -53,7 +58,6 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
 
     test('When quiz only has an active session', () => {
       // starting a new session
-      startSessionBody = { autoStartNum: 3 };
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       const activeSessionId = res.retval.sessionId;
 
@@ -64,13 +68,12 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
       });
     });
 
-    test.skip('When quiz only has an inactive session', () => {
+    test('When quiz only has an inactive session', () => {
       // starting a new session
-      startSessionBody = { autoStartNum: 3 };
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       const inactiveSessionId = res.retval.sessionId;
       // making one session inactive by putting in END state
-      requestPut({ action: QuizSessionState.END }, `/v1/admin/quiz/${quizId}/session/${inactiveSessionId}`, { token });
+      requestPut(updateToEndState, `/v1/admin/quiz/${quizId}/session/${inactiveSessionId}`, { token });
 
       res = requestGet({}, `/v1/admin/quiz/${quizId}/sessions`, { token });
       expect(res).toStrictEqual({
@@ -79,16 +82,15 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
       });
     });
 
-    test.skip('When quiz has 1 active and 1 inactive session', () => {
+    test('When quiz has 1 active and 1 inactive session', () => {
       // starting two new sessions
-      startSessionBody = { autoStartNum: 3 };
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       const activeSessionId = res.retval.sessionId;
 
       res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       const inactiveSessionId = res.retval.sessionId;
       // making one session inactive by putting in END state
-      requestPut({ action: QuizSessionState.END }, `/v1/admin/quiz/${quizId}/session/${inactiveSessionId}`, { token });
+      requestPut(updateToEndState, `/v1/admin/quiz/${quizId}/session/${inactiveSessionId}`, { token });
 
       res = requestGet({}, `/v1/admin/quiz/${quizId}/sessions`, { token });
       expect(res).toStrictEqual({
@@ -97,18 +99,18 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
       });
     });
 
-    test.skip('When quiz has multiple active and inactive sessions', () => {
+    test('When quiz has multiple active and inactive sessions', () => {
       // starting four new sessions. 2 active and 2 inactive.
-      startSessionBody = { autoStartNum: 3 };
-      let res, activeSessionIds: number[], inactiveSessionIds: number[];
+      let res, activeSessionIds = [], inactiveSessionIds = [];
       for (let i = 0; i < 2; i++) {
         res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
-        activeSessionIds[i] = res.retval.sessionId;
+        activeSessionIds.push(res.retval.sessionId);
 
         res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
-        inactiveSessionIds[i] = res.retval.sessionId;
+        inactiveSessionIds.push(res.retval.sessionId);
+        
         // making this session inactive by putting in END state
-        requestPut({ action: QuizSessionState.END }, `/v1/admin/quiz/${quizId}/session/${inactiveSessionIds[i]}`, { token });
+        requestPut(updateToEndState, `/v1/admin/quiz/${quizId}/session/${inactiveSessionIds[i]}`, { token });
       }
 
       res = requestGet({}, `/v1/admin/quiz/${quizId}/sessions`, { token });
