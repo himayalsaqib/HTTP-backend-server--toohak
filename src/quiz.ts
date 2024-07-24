@@ -21,7 +21,9 @@ import {
   checkThumbnailUrlFileType,
   findQuizSessionById,
   quizIsInTrash,
-  getRandomInt
+  getRandomInt,
+  correctSessionStateForAction,
+  checkIfTimerExists,
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -50,6 +52,10 @@ const MIN_CORRECT_ANS = 1;
 const MAX_AUTO_START_NUM = 50;
 
 const MAX_ACTIVE_QUIZ_SESSIONS = 10;
+
+const WAIT_THREE_SECONDS = 3;
+
+export const sessionIdToTimerArray: { sessionId: number, timeoutId: ReturnType<typeof setTimeout> }[] = [];
 
 // ============================ TYPE ANNOTATIONS ============================ //
 interface QuizList {
@@ -102,6 +108,14 @@ export enum QuizSessionState {
   QUESTION_CLOSE = 'QUESTION_CLOSE',
   ANSWER_SHOW = 'ANSWER_SHOW',
   FINAL_RESULTS = 'FINAL_RESULTS',
+  END = 'END'
+}
+
+export enum QuizSessionAction {
+  NEXT_QUESTION = 'NEXT_QUESTION',
+  SKIP_COUNTDOWN = 'SKIP_COUNTDOWN',
+  GO_TO_ANSWER = 'GO_TO_ANSWER',
+  GO_TO_FINAL_RESULTS = 'GO_TO_FINAL_RESULTS',
   END = 'END'
 }
 
@@ -584,6 +598,7 @@ export function adminQuizQuestionDelete(quizId: number, questionId: number): Emp
 
   return {};
 }
+
 /**
  * Transfer ownership of a quiz to a different user based on their email
  *
@@ -668,11 +683,11 @@ export function adminQuizQuestionDuplicate (quizId: number, questionId: number):
 }
 
 /**
- * Starts a new session for the given quiz.
+ * Starts a new session for a given quiz
  *
  * @param {number} quizId
  * @param {number} autoStartNum
- * @returns {{ sessionId: number}}
+ * @returns {{ sessionId: number}} - returns new session ID
  */
 export function adminQuizSessionStart(quizId: number, autoStartNum: number): { sessionId: number } {
   if (quizIsInTrash(quizId)) {
@@ -717,17 +732,125 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
   data.quizSessions.push({
     sessionId: newSessionId,
     state: QuizSessionState.LOBBY,
-    atQuestion: 1,
+    atQuestion: 0,
     players: [],
     autoStartNum: autoStartNum,
     quiz: quizInfoForSession,
     usersRankedByScore: [],
     questionResults: [],
+    messages: [],
   });
 
   setData(data);
 
   return { sessionId: newSessionId };
+}
+
+/**
+ * Update the state of a particular quiz session by sending an action command
+ *
+ * @param {number} quizId
+ * @param {number} sessionId
+ * @param {QuizSessionAction} action
+ * @returns {{}} - an empty object
+ */
+export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, action: string): EmptyObject {
+  const data = getData();
+  const quiz = findQuizById(quizId);
+
+  // sessionId is not valid for this quiz
+  const quizSession = findQuizSessionById(sessionId);
+  if (quizSession === undefined || quizSession.quiz.quizId !== quizId) {
+    throw new Error('The sesssion ID does not refer to a valid session within this quiz.');
+  }
+
+  // action is not a valid Action enum
+  if (!(action in QuizSessionAction)) {
+    throw new Error('The action provided is not a valid Action enum.');
+  }
+
+  // action enum cannot be applied in the current state
+  if (!correctSessionStateForAction(quizSession.state, action)) {
+    throw new Error('The action cannot be applied in the current state of the session.');
+  }
+
+  // session state update
+  if (action === QuizSessionAction.END) {
+    quizSession.state = QuizSessionState.END;
+    quizSession.atQuestion = 0;
+    // add sessionId to inactive sessions and remove from active sessions
+    quiz.inactiveSessions.push(sessionId);
+    quiz.activeSessions.splice(quiz.activeSessions.indexOf(sessionId), 1);
+  } else if (action === QuizSessionAction.GO_TO_ANSWER) {
+    quizSession.state = QuizSessionState.ANSWER_SHOW;
+  } else if (action === QuizSessionAction.GO_TO_FINAL_RESULTS) {
+    quizSession.state = QuizSessionState.FINAL_RESULTS;
+    quizSession.atQuestion = 0;
+  } else if (action === QuizSessionAction.NEXT_QUESTION) {
+    // increment atQuestion
+    quizSession.atQuestion++;
+    quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
+    // start countdown timer
+    const timeoutId = setTimeout(() => {
+      // update state
+      quizSession.state = QuizSessionState.QUESTION_OPEN;
+
+      // remove timerId from array (if it exists) after the 3 seconds and clear timer
+      const index = sessionIdToTimerArray.findIndex(i => i.timeoutId === timeoutId);
+      if (index !== -1) {
+        sessionIdToTimerArray.splice(index, 1);
+        clearTimeout(timeoutId);
+      }
+    }, WAIT_THREE_SECONDS * 1000);
+
+    // add timerID to array
+    sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+  } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
+    // clear timer if it exists and remove from array
+    if (checkIfTimerExists(sessionId)) {
+      const timerId = sessionIdToTimerArray.find(i => i.sessionId === sessionId);
+      const index = sessionIdToTimerArray.findIndex(i => i.sessionId === sessionId);
+      clearTimeout(timerId.timeoutId);
+      sessionIdToTimerArray.splice(index, 1);
+    }
+
+    quizSession.state = QuizSessionState.QUESTION_OPEN;
+  } else if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
+    const duration = quizSession.quiz.questions[quizSession.atQuestion].duration;
+    setTimeout(() => {
+      quizSession.state = QuizSessionState.QUESTION_CLOSE;
+    }, duration * 1000);
+  }
+
+  setData(data);
+  return {};
+}
+
+/**
+ * Updates the thumbnailUrl of a quiz
+ *
+ * @param {number} quizId
+ * @param {string} thumbnailUrl
+ * @returns {{}}
+ */
+export function adminQuizThumbnail(quizId: number, thumbnailUrl: string): EmptyObject {
+  if (thumbnailUrl.length === 0) {
+    throw new Error('The thumbnailUrl cannot be an empty string.');
+  }
+
+  if (!checkThumbnailUrlFileType(thumbnailUrl)) {
+    throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
+  }
+
+  if (!(thumbnailUrl.startsWith('https://') || thumbnailUrl.startsWith('http://'))) {
+    throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
+  }
+
+  const quiz = findQuizById(quizId);
+  quiz.thumbnailUrl = thumbnailUrl;
+  quiz.timeLastEdited = currentTime();
+
+  return {};
 }
 
 /**

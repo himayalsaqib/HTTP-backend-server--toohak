@@ -57,11 +57,12 @@ export interface QuizSessions {
   sessionId: number;
   state: QuizSessionState;
   atQuestion: number;
-  players: string[];
+  players: Player[];
   autoStartNum: number;
   quiz: QuizInfo;
   usersRankedByScore: UsersRanking[];
   questionResults: QuestionResults[];
+  messages: Message[];
 }
 
 export interface UsersRanking {
@@ -75,6 +76,18 @@ export interface QuestionResults {
   playersCorrectList: string[];
   averageAnswerTime: number;
   percentCorrect: number;
+}
+
+export interface Player {
+  playerId: number;
+  name: string;
+}
+
+export interface Message {
+  messageBody: string;
+  playerId: number;
+  playerName: string;
+  timeSent: number;
 }
 
 export interface Trash {
@@ -92,12 +105,14 @@ export interface Data {
   quizSessions: QuizSessions[];
   trash: Trash[];
   tokens: Tokens[];
+  players: Player[]
 }
 
 let data: Data = {
   users: [],
   quizzes: [],
   quizSessions: [],
+  players: [],
   trash: [],
   tokens: []
 };
