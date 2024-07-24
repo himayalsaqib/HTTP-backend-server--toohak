@@ -1,6 +1,6 @@
 // contains HTTP tests for route POST /v1/player/{playerid}/chat
 
-import { requestDelete, requestPost, requestPut, requestGet } from '../helper-files/requestHelper';
+import { requestDelete, requestPost, requestGet } from '../helper-files/requestHelper';
 import { QuestionBody } from '../quiz';
 
 const ERROR = { error: expect.any(String) };
@@ -21,7 +21,6 @@ describe('POST /v1/player/:playerid/chat', () => {
   let playerId1: number;
   let playerId2: number;
   let playerId3: number;
-
 
   beforeEach(() => {
     // registering a user
@@ -67,79 +66,79 @@ describe('POST /v1/player/:playerid/chat', () => {
 
       playerBody = { sessionId: sessionId, name: '' };
       playerId3 = requestPost(playerBody, '/v1/player/join');
-    })
+    });
 
     test('Has correct return type', () => {
-      const message = { message: { messageBody: "Hello everyone! Nice to chat." } };
+      const message = { message: { messageBody: 'Hello everyone! Nice to chat.' } };
       const res = requestPost(message, `/v1/player/${playerId1}/chat`);
       expect(res).toStrictEqual({ retval: {}, statusCode: 200 });
-    })
+    });
 
     test.skip('Side effect: playerViewChat displays all messages in current session', () => {
-      const message1 = { message: { messageBody: "Hello everyone! Nice to chat." } };
+      const message1 = { message: { messageBody: 'Hello everyone! Nice to chat.' } };
       requestPost(message1, `/v1/player/${playerId1}/chat`);
 
-      const message2 = { message: { messageBody: "Hiiii" } };
+      const message2 = { message: { messageBody: 'Hiiii' } };
       requestPost(message2, `/v1/player/${playerId2}/chat`);
 
-      const message3 = { message: { messageBody: "Hellooooo" } };
+      const message3 = { message: { messageBody: 'Hellooooo' } };
       requestPost(message3, `/v1/player/${playerId3}/chat`);
 
       const res = requestGet({}, `/v1/player/${playerId1}/chat`);
       expect(res.retval).toStrictEqual({
-        "messages": [
+        messages: [
           {
-            "messageBody": "Hello everyone! Nice to chat.",
-            "playerId": playerId1,
-            "playerName": expect.any(String),
-            "timeSent": expect.any(Number)
+            messageBody: 'Hello everyone! Nice to chat.',
+            playerId: playerId1,
+            playerName: expect.any(String),
+            timeSent: expect.any(Number)
           },
           {
-            "messageBody": "Hiiii",
-            "playerId": playerId2,
-            "playerName": expect.any(String),
-            "timeSent": expect.any(Number)
+            messageBody: 'Hiiii',
+            playerId: playerId2,
+            playerName: expect.any(String),
+            timeSent: expect.any(Number)
           },
           {
-            "messageBody": "Hellooooo",
-            "playerId": playerId3,
-            "playerName": expect.any(String),
-            "timeSent": expect.any(Number)
+            messageBody: 'Hellooooo',
+            playerId: playerId3,
+            playerName: expect.any(String),
+            timeSent: expect.any(Number)
           }
         ]
-      })
-    })
+      });
+    });
 
     test.skip('Side effect: timeSent should be within 1 second', () => {
       const time = Math.floor(Date.now() / 1000);
-      const message1 = { message: { messageBody: "Hello everyone! Nice to chat." } };
+      const message1 = { message: { messageBody: 'Hello everyone! Nice to chat.' } };
       requestPost(message1, `/v1/player/${playerId1}/chat`);
-    
+
       const res = requestGet({}, `/v1/player/${playerId1}/chat`);
       expect(res.retval.messages[0].timeSent).toBeGreaterThanOrEqual(time);
       expect(res.retval.messages[0].timeSent).toBeLessThanOrEqual(time + 1);
-    })
-  })
+    });
+  });
 
   describe('Testing playerId error (status code 400)', () => {
     test('PlayerId does not exist', () => {
-      const message1 = { message: { messageBody: "Hello everyone! Nice to chat." } };
+      const message1 = { message: { messageBody: 'Hello everyone! Nice to chat.' } };
       const res = requestPost(message1, `/v1/player/${playerId1 + 1}/chat`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
-    })
-  })
+    });
+  });
 
   describe('Testing messageBody errors (status code 400)', () => {
     test('Message body is less than 1 character', () => {
-      const message1 = { message: { messageBody: "" } };
+      const message1 = { message: { messageBody: '' } };
       const res = requestPost(message1, `/v1/player/${playerId1}/chat`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
-    })
+    });
 
     test('Message body is more than 100 characters', () => {
-      const message1 = { message: { messageBody: "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 " } };
+      const message1 = { message: { messageBody: '1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 ' } };
       const res = requestPost(message1, `/v1/player/${playerId1}/chat`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
-    })
-  })
+    });
+  });
 });
