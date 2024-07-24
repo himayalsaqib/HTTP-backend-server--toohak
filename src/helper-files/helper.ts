@@ -1,7 +1,7 @@
 // Includes helper functions for auth.ts and quiz.ts
 
 import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
-import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers } from '../quiz';
+import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionState } from '../quiz';
 import crypto from 'crypto';
 
 /**
@@ -452,6 +452,17 @@ export function findQuizSessionById(sessionId: number): QuizSessions | undefined
 // ======================== PLAYER HELPER FUNCTIONS ========================= //
 
 /**
+ * Function moves onto next state if number of players joined matches autoStartNum
+ *
+ * @param {QuizSessions} session
+ */
+export function updateSessionStateIfAutoStart(session: QuizSessions): void {
+  if (session.players.length === session.autoStartNum) {
+    session.state = QuizSessionState.QUESTION_COUNTDOWN;
+  }
+}
+
+/**
  * Function generates a random name if player name is empty string
  *
  * @param {}
@@ -484,7 +495,7 @@ export function generateRandomName(): string {
 /**
  * Function checks if a player name already exists in the session
  *
- * @param {string} sessionId
+ * @param {number} sessionId
  * @param {string} playerName
  * @returns {boolean} true if player name has been used, false if it has not
  */
