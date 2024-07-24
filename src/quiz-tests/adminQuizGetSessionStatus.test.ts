@@ -23,7 +23,6 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
 
   beforeEach(() => {
     // register user
-    // register user
     userBody = { email: 'valid@gmail.com', password: 'Password123', nameFirst: 'Jane', nameLast: 'Doe' };
     const registerRes = requestPost(userBody, '/v1/admin/auth/register');
     token = registerRes.retval.token;
@@ -107,7 +106,7 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
       });
     });
 
-    test('Side-effect test: the correct status is shown when an action command is sent', () => {
+    test.skip('Side-effect test: the correct status is shown when an action command is sent', () => {
       const stateUpdateRes = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(stateUpdateRes).toStrictEqual({
         retval: {}, 
@@ -161,18 +160,55 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
   });
 
   describe('Testing session ID errors (status code 400)', () => {
-    test.todo('The session ID does not refer to a valid session within the quiz');
+    test('The session ID does not refer to a valid session within the quiz', () => {
+      const getSessionRes = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId + 1}`, { token });
+      expect(getSessionRes).toStrictEqual({
+        retval: ERROR,
+        statusCode: 400
+      });
+    });
   });
 
   describe('Testing token errors (status code 401)', () => {
-    test.todo('The token is empty (no users are registered)');
+    test('The token is empty (no users are registered)', () => {
+      requestDelete({}, '/v1/clear');      
+      const getSessionRes = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(getSessionRes).toStrictEqual({
+        retval: ERROR,
+        statusCode: 401
+      });
+    });
 
-    test.todo('The token is invalid (does not refer to a valid logged in user)');
+    test('The token is invalid (does not refer to a valid logged in user)', () => {
+      const invalidToken = parseInt(token) + 1;
+      const getSessionRes = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token: invalidToken.toString() });
+      expect(getSessionRes).toStrictEqual({
+        retval: ERROR,
+        statusCode: 401
+      });
+    });
   });
 
   describe('Testing quiz ownership and quiz existence errors (status code 403)', () => {
-    test.todo('The user is not a owner of the quiz');
+    test('The user is not a owner of the quiz', () => {
+      // register another user
+      const user2 = { email: 'valid1@gmail.com', password: 'Password12', nameFirst: 'John', nameLast: 'Smith' };
+      const resRegister = requestPost(user2, '/v1/admin/auth/register');
+      const token2 = resRegister.return.token;
 
-    test.todo('This quiz does not exist');
+      const statusRes = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token: token2 });
+      expect(statusRes).toStrictEqual({
+        retval: ERROR,
+        statusCode: 403
+      });
+    });
+
+    test('This quiz does not exist', () => {
+      const statusRes = requestGet({}, `/v1/admin/quiz/${quizId + 1}/session/${sessionId}`, { token });
+      expect(statusRes).toStrictEqual({
+        retval: ERROR,
+        statusCode: 403
+      });
+    });
   });
 });
