@@ -64,17 +64,6 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       });
     });
 
-    test.skip('Correctly changes state from QUESTION_COUNTDOWN to QUESTION_OPEN with no action', () => {
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_COUNTDOWN });
-
-      sleepSync(3 * 1000);
-
-      const afterUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_OPEN });
-    });
-
     test.skip('Side-effect: status changes when get adminQuizSessionStatusView has been called with action NEXT_QUESTION', () => {
       const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.LOBBY });
@@ -87,6 +76,17 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
 
       const afterUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_COUNTDOWN });
+    });
+
+    test.skip('Side-effect: correctly changes state from QUESTION_COUNTDOWN to QUESTION_OPEN after 3 seconds without giving the SKIP_COUNTDOWN action', () => {
+      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      const beforeUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(beforeUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_COUNTDOWN });
+
+      sleepSync(3 * 1000);
+
+      const afterUpdate = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(afterUpdate.retval.state).toStrictEqual({ state: QuizSessionState.QUESTION_OPEN });
     });
 
     test.skip('Side-effect: status changes when get adminQuizSessionStatusView has been called with action SKIP_COUNTDOWN', () => {
