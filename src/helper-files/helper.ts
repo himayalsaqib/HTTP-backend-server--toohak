@@ -535,7 +535,7 @@ export function findSessionByPlayerId(playerId: number): QuizSessions | undefine
  * @param {number} playerId
  * @returns {string | undefined} name | undefined if player does not exist
  */
-export function findPlayerNameByPlayerId(playerId: number): string | undefined {
+export function findNameByPlayerId(playerId: number): string | undefined {
   const data = getData();
   const player = data.players.find(player => player.playerId === playerId);
   return player?.name;

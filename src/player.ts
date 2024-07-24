@@ -9,7 +9,7 @@ import {
   playerNameExists, 
   updateSessionStateIfAutoStart, 
   findSessionByPlayerId,
-  findPlayerNameByPlayerId,
+  findNameByPlayerId,
   currentTime,
 } from './helper-files/helper';
 import { QuizSessionState } from './quiz';
@@ -91,7 +91,7 @@ export function playerSendChat(playerId: number, sendMessage: SendMessage): Empt
   const newMessage = {
     messageBody: sendMessage.message.messageBody,
     playerId: playerId,
-    playerName: findPlayerNameByPlayerId(playerId),
+    playerName: findNameByPlayerId(playerId),
     timeSent: currentTime(),
   }
 
