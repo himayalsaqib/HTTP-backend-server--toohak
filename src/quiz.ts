@@ -767,14 +767,6 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     throw new Error('The action cannot be applied in the current state of the session.');
   }
 
-  // update states with timer propterties
-  // question_countdown to question.open
-  if (action !== QuizSessionAction.SKIP_COUNTDOWN && quizSession.state === QuizSessionState.QUESTION_COUNTDOWN) {
-    timeoutId = setTimeout((quizSession.state = QuizSessionState.QUESTION_OPEN), WAIT_THREE_SECONDS * 1000);
-    //sessionIdToTimerObject[sessionId] = timeoutId;
-    timerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
-  }
-
   // session state update
   if (action === QuizSessionAction.END) {
     quizSession.state = QuizSessionState.END;
@@ -787,8 +779,14 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     quizSession.state = QuizSessionState.FINAL_RESULTS;
   } else if (action === QuizSessionAction.NEXT_QUESTION) {
     quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
+    // start countdown timer
+    timeoutId = setTimeout((quizSession.state = QuizSessionState.QUESTION_OPEN), WAIT_THREE_SECONDS * 1000);
+    //sessionIdToTimerObject[sessionId] = timeoutId;
+    timerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+    
     quizSession.atQuestion++;
   } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
+    // *** clearTimeout();
     quizSession.state = QuizSessionState.QUESTION_OPEN;
   } else if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
     const currQIndex = quizSession.atQuestion;
