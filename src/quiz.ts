@@ -23,7 +23,6 @@ import {
   quizIsInTrash,
   getRandomInt,
   correctSessionStateForAction,
-  updateSessionStateIfAutoStart
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -799,8 +798,8 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     const duration = quizSession.quiz.questions[currQIndex].duration;
     timeoutId = setTimeout((quizSession.state = QuizSessionState.QUESTION_CLOSE), duration * 1000);
     timerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
-  } else {
-    updateSessionStateIfAutoStart(quizSession);
+  } else if (quizSession.players.length === quizSession.autoStartNum) {
+    quizSession.state = QuizSessionState.QUESTION_OPEN;
   }
 
   setData(data);
