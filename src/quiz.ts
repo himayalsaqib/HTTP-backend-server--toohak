@@ -23,7 +23,7 @@ import {
   quizIsInTrash,
   getRandomInt,
   correctSessionStateForAction,
-  updateSessionStateIfAutoStart
+  updateSessionStateIfAutoStart,
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -808,5 +808,32 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
   }
 
   setData(data);
+  return {};
+}
+
+/**
+ * Updates the thumbnailUrl of a quiz
+ *
+ * @param {number} quizId
+ * @param {string} thumbnailUrl
+ * @returns {{}}
+ */
+export function adminQuizThumbnail(quizId: number, thumbnailUrl: string): EmptyObject {
+  if (thumbnailUrl.length === 0) {
+    throw new Error('The thumbnailUrl cannot be an empty string.');
+  }
+
+  if (!checkThumbnailUrlFileType(thumbnailUrl)) {
+    throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
+  }
+
+  if (!(thumbnailUrl.startsWith('https://') || thumbnailUrl.startsWith('http://'))) {
+    throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
+  }
+
+  const quiz = findQuizById(quizId);
+  quiz.thumbnailUrl = thumbnailUrl;
+  quiz.timeLastEdited = currentTime();
+
   return {};
 }
