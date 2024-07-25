@@ -63,7 +63,7 @@ interface QuizList {
   name: string;
 }
 
-// excludes authUserId, active sessions and inactive sessions
+// excludes authUserId, active sessions and inactive sessions from Quizzes interface
 export interface QuizInfo {
   quizId: number;
   name: string;
@@ -94,6 +94,11 @@ export interface QuizSessionStatus {
   atQuestion: number;
   players: string[];
   metadata: QuizInfo;
+}
+
+export interface QuizSessionsView {
+  activeSessions: number[];
+  inactiveSessions: number[];
 }
 
 // ================================= ENUMS ================================== //
@@ -724,11 +729,11 @@ export function adminQuizThumbnail(quizId: number, thumbnailUrl: string): EmptyO
  * @returns {{ sessionId: number}} - returns new session ID
  */
 export function adminQuizSessionStart(quizId: number, autoStartNum: number): { sessionId: number } {
+  const quiz = findQuizById(quizId);
+
   if (quizIsInTrash(quizId)) {
     throw new Error('The quiz is in trash.');
   }
-  const quiz = findQuizById(quizId);
-
   if (autoStartNum > MAX_AUTO_START_NUM) {
     throw new Error('AutoStartNum is a number greater than 50.');
   }
@@ -747,19 +752,14 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
   // adding new sessionId to active sessions array for this quiz
   quiz.activeSessions.push(newSessionId);
 
-  // copying quiz from quizzes array so any edits while session is running do
-  // not affect the active session. ignoring authUserId and active/inactive session
-  const quizInfoForSession = {
-    quizId: quizId,
-    name: quiz.name,
-    timeCreated: quiz.timeCreated,
-    timeLastEdited: quiz.timeLastEdited,
-    description: quiz.description,
-    numQuestions: quiz.questions.length,
-    questions: quiz.questions,
-    duration: quiz.duration,
-    thumbnailUrl: quiz.thumbnailUrl
-  };
+  // copying quiz from quizzes array so any edits to quiz do not affect metadata
+  // active session. ignoring authUserId, active and inactive sessionIds and
+  // adding numQuestions
+  const quizCopy = JSON.parse(JSON.stringify(quiz));
+  delete quizCopy.authUserId;
+  delete quizCopy.activeSessions;
+  delete quizCopy.inactiveSessions;
+  quizCopy.numQuestions = quizCopy.questions.length;
 
   const data = getData();
   data.quizSessions.push({
@@ -768,7 +768,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     atQuestion: 0,
     players: [],
     autoStartNum: autoStartNum,
-    quiz: quizInfoForSession,
+    quiz: quizCopy,
     usersRankedByScore: [],
     questionResults: [],
     messages: [],
@@ -872,8 +872,6 @@ export function adminQuizGetSessionStatus(quizId: number, sessionId: number): Qu
     throw new Error('The session ID does not refer to a valid session within this quiz.');
   }
 
-  const metadata = adminQuizInfo(quizId);
-
   // sort names into ascending order
   const playerNames: string[] = [];
   for (const player of quizSession.players) {
@@ -885,7 +883,7 @@ export function adminQuizGetSessionStatus(quizId: number, sessionId: number): Qu
     state: quizSession.state,
     atQuestion: quizSession.atQuestion,
     players: sortedPlayers,
-    metadata: metadata,
+    metadata: quizSession.quiz,
   };
 
   return sessionStatus;
@@ -895,9 +893,9 @@ export function adminQuizGetSessionStatus(quizId: number, sessionId: number): Qu
  * Retrieves active and inactive session ids (sorted in ascending order) for a quiz
  *
  * @param {number} quizId
- * @returns {{ activeSessions: number[], inactiveSessions: number[] }}
+ * @returns {QuizSessionsView}
  */
-export function adminQuizSessionsView(quizId: number): { activeSessions: number[], inactiveSessions: number[] } {
+export function adminQuizSessionsView(quizId: number): QuizSessionsView {
   const quiz = findQuizById(quizId);
 
   quiz.activeSessions.sort((id1, id2) => id1 - id2);
