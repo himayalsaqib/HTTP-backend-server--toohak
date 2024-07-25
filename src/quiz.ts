@@ -1,6 +1,6 @@
 // includes quiz functions
 
-import { setData, getData, ErrorObject, EmptyObject, Question, Answer, Quizzes } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, Question, Answer } from './dataStore';
 import {
   quizNameHasValidChars,
   quizNameInUse,
