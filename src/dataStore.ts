@@ -65,6 +65,11 @@ export interface QuizSessions {
   messages: Message[];
 }
 
+export interface Player {
+  playerId: number;
+  name: string;
+}
+
 export interface UsersRanking {
   playerId: number;
   name: string;
@@ -72,16 +77,17 @@ export interface UsersRanking {
 }
 
 export interface QuestionResults {
+  questionNumber: number;
   questionId: number;
   playersCorrectList: string[];
-  playersAnsweredList: { playerId: number, answerTime: number };
+  playersAnsweredList: PlayerAnswered[];
   averageAnswerTime: number;
   percentCorrect: number;
 }
 
-export interface Player {
+export interface PlayerAnswered {
   playerId: number;
-  name: string;
+  answerTime: number;
 }
 
 export interface Message {
