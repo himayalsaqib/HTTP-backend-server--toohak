@@ -1,7 +1,7 @@
 // Includes helper functions for auth.ts and quiz.ts
 
 import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
-import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionState } from '../quiz';
+import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState, sessionIdToTimerArray } from '../quiz';
 import crypto from 'crypto';
 
 /**
@@ -449,6 +449,68 @@ export function findQuizSessionById(sessionId: number): QuizSessions | undefined
   return data.quizSessions.find(session => session.sessionId === sessionId);
 }
 
+/**
+ * Based on the state of a quizSession determine whether the action can be applied
+ *
+ * @param {QuizSessionState} state - of the current session
+ * @param {string} action - the action to change states
+ * @returns {boolean} - false if action is not applicable in current state,
+ *                      true otherwise
+ */
+export function correctSessionStateForAction(state: QuizSessionState, action: string): boolean {
+  if (state === QuizSessionState.ANSWER_SHOW) {
+    if (!(action === QuizSessionAction.END || action === QuizSessionAction.NEXT_QUESTION || action === QuizSessionAction.GO_TO_FINAL_RESULTS)) {
+      return false;
+    }
+  }
+
+  if (state === QuizSessionState.END) {
+    return false;
+  }
+
+  if (state === QuizSessionState.FINAL_RESULTS) {
+    if (!(action === QuizSessionAction.END)) {
+      return false;
+    }
+  }
+
+  if (state === QuizSessionState.LOBBY) {
+    if (!(action === QuizSessionAction.END || action === QuizSessionAction.NEXT_QUESTION)) {
+      return false;
+    }
+  }
+
+  if (state === QuizSessionState.QUESTION_CLOSE) {
+    if (action === QuizSessionAction.SKIP_COUNTDOWN) {
+      return false;
+    }
+  }
+
+  if (state === QuizSessionState.QUESTION_COUNTDOWN) {
+    if (!(action === QuizSessionAction.SKIP_COUNTDOWN || action === QuizSessionAction.END)) {
+      return false;
+    }
+  }
+
+  if (state === QuizSessionState.QUESTION_OPEN) {
+    if (!(action === QuizSessionAction.END || action === QuizSessionAction.GO_TO_ANSWER)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Checks whether a timer exists for a given sessionId
+ *
+ * @param {number} sessionId
+ * @returns {boolean} - true if a timeoutId exists, false otherwise
+ */
+export function checkIfTimerExists(sessionId: number): boolean {
+  return sessionIdToTimerArray.some(item => item.sessionId === sessionId);
+}
+
 // ======================== PLAYER HELPER FUNCTIONS ========================= //
 
 /**
@@ -513,4 +575,30 @@ export function playerNameExists(sessionId: number, playerName: string): boolean
 export function playerIdInUse(playerId: number): boolean {
   const data = getData();
   return data.players.some(player => player.playerId === playerId);
+}
+
+/**
+ * Function returns the session the given player is in
+ *
+ * @param {number} playerId
+ * @returns {QuizSessions | undefined} sessionId | undefined if session does not exist
+ */
+export function findSessionByPlayerId(playerId: number): QuizSessions | undefined {
+  const data = getData();
+  const session = data.quizSessions.find(q =>
+    q.players.some(player => player.playerId === playerId) === true);
+
+  return session;
+}
+
+/**
+ * Function returns the name corresponding to a given player ID
+ *
+ * @param {number} playerId
+ * @returns {string | undefined} name | undefined if player does not exist
+ */
+export function findNameByPlayerId(playerId: number): string | undefined {
+  const data = getData();
+  const player = data.players.find(player => player.playerId === playerId);
+  return player?.name;
 }

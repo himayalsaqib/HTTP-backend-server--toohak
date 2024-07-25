@@ -47,8 +47,12 @@ import {
   adminQuizQuestionDuplicate,
   adminQuizTransfer,
   adminQuizSessionStart,
+  adminQuizSessionStateUpdate,
+  adminQuizThumbnail,
+  adminQuizGetSessionStatus,
+  adminQuizSessionsView,
 } from './quiz';
-import { playerJoin } from './player';
+import { playerJoin, playerSendChat, playerViewChat } from './player';
 import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/helper';
 
@@ -589,6 +593,78 @@ app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) =
   }
 });
 
+app.put('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const quizSessionId = parseInt(req.params.sessionid as string);
+  const action = req.body;
+  const sessionId = parseInt(req.header('token'));
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  try {
+    const response = adminQuizSessionStateUpdate(quizId, quizSessionId, action.action);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const quizSessionId = parseInt(req.params.sessionid as string);
+  const sessionId = parseInt(req.header('token'));
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  try {
+    const response = adminQuizGetSessionStatus(quizId, quizSessionId);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.put('/v1/admin/quiz/:quizid/thumbnail', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(req.header('token'));
+  const imgUrl = req.body.imgUrl;
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  try {
+    const response = adminQuizThumbnail(quizId, imgUrl);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/v1/admin/quiz/:quizid/sessions', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(req.header('token'));
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  try {
+    const response = adminQuizSessionsView(quizId);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
 // VERSION 2 //
 
 app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
@@ -887,6 +963,27 @@ app.post('/v1/player/join', (req: Request, res: Response) => {
   const { sessionId, name } = req.body;
   try {
     const response = playerJoin(sessionId, name);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.post('/v1/player/:playerid/chat', (req: Request, res: Response) => {
+  const { message } = req.body;
+  const playerId = parseInt(req.params.playerid as string);
+  try {
+    const response = playerSendChat(playerId, message);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/v1/player/:playerid/chat', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerid as string);
+  try {
+    const response = playerViewChat(playerId);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
