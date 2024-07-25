@@ -115,11 +115,12 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
       res = requestGet({}, `/v1/admin/quiz/${quizId}/sessions`, { token });
       expect(res).toStrictEqual({
         retval: {
-          activeSessions: activeSessionIds.sort((id1, id2) => id1 - id2),
-          inactiveSessions: inactiveSessionIds.sort((id1, id2) => id1 - id2)
+          activeSessions: activeSessionIds.sort(),
+          inactiveSessions: inactiveSessionIds.sort()
         },
         statusCode: 200
       });
+      console.log(res);
     });
   });
 
