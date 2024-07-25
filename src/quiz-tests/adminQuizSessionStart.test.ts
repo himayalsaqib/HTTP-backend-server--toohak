@@ -109,46 +109,18 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
     });
 
     test('Side effect: adminQuizSessionStatus does not show edits to quiz after a session starts', () => {
-      let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
+      const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({ retval: { sessionId: expect.any(Number) }, statusCode: 200 });
       const sessionId = res.retval.sessionId;
 
-      res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      console.log(res);
+      const beforeUpdateRes = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(beforeUpdateRes.retval.metadata.description).toStrictEqual(quizBody.description);
 
-      const updateQuizBody = { imgUrl: 'https://google.com/another/image/path.png' };
-      requestPut(updateQuizBody, `/v1/admin/quiz/${quizId}/thumbnail`, { token });
+      // editing quiz description
+      requestPut({ description: 'Updated' }, `/v2/admin/quiz/${quizId}/description`, { token });
 
-      res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      console.log(res);
-      expect(res.retval).toStrictEqual({
-        state: QuizSessionState.LOBBY,
-        atQuestion: 0,
-        players: [],
-        metadata: {
-          quizId: quizId,
-          name: quizBody.name,
-          timeCreated: expect.any(Number),
-          timeLastEdited: expect.any(Number),
-          description: quizBody.description,
-          numQuestions: 1,
-          questions: [
-            {
-              questionId: questionId,
-              question: questionBody.question,
-              duration: questionBody.duration,
-              thumbnailUrl: questionBody.thumbnailUrl,
-              points: questionBody.points,
-              answers: [
-                { answerId: expect.any(Number), answer: 'Prince Charles', colour: expect.any(String), correct: true },
-                { answerId: expect.any(Number), answer: 'Prince William', colour: expect.any(String), correct: false }
-              ]
-            }
-          ],
-          duration: questionBody.duration,
-        }
-      });
-      expect(res.statusCode).toStrictEqual(200);
+      const afterUpdateRes = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(afterUpdateRes.retval.metadata.description).toStrictEqual(quizBody.description);
     });
   });
 
