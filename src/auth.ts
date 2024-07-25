@@ -22,7 +22,7 @@ const INITIAL_NUM_FAILED_LOGINS = 0;
 const INITIAL_NUM_SUCCESSFUL_LOGINS = 1;
 
 // ============================ TYPE ANNOTATIONS ============================ //
-interface UserDetails {
+export interface UserDetails {
   userId: number;
   name: string;
   email: string;
@@ -199,9 +199,9 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
  * @param {string} email
  * @param {string} nameFirst
  * @param {string} nameLast
- * @returns {{} | { error: string }} empty | error
+ * @returns {{}} empty | error
  */
-export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string): EmptyObject | ErrorObject {
+export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string): EmptyObject {
   const userWithEmail = findUserByEmail(email);
   if (userWithEmail) {
     if (userWithEmail.authUserId !== authUserId) {
