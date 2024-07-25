@@ -1,6 +1,6 @@
 // includes quiz functions
 
-import { setData, getData, ErrorObject, EmptyObject, Question, Answer, Quizzes, QuizSessionStatus } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, Question, Answer, Quizzes } from './dataStore';
 import {
   quizNameHasValidChars,
   quizNameInUse,
@@ -87,6 +87,13 @@ export interface QuestionBody {
   points: number;
   answers: QuizQuestionAnswers[];
   thumbnailUrl?: string;
+}
+
+export interface QuizSessionStatus {
+  state: QuizSessionState;
+  atQuestion: number;
+  players: string[];
+  metadata: QuizInfo;
 }
 
 // ================================= ENUMS ================================== //
