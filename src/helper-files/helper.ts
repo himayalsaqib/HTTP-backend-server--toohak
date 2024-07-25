@@ -1,7 +1,7 @@
 // Includes helper functions for auth.ts and quiz.ts
 
 import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
-import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState, sessionIdToTimerArray } from '../quiz';
+import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState, sessionIdToTimerArray, WAIT_THREE_SECONDS } from '../quiz';
 import crypto from 'crypto';
 
 /**
@@ -509,6 +509,59 @@ export function correctSessionStateForAction(state: QuizSessionState, action: st
  */
 export function checkIfTimerExists(sessionId: number): boolean {
   return sessionIdToTimerArray.some(item => item.sessionId === sessionId);
+}
+
+/**
+ * This function starts the 3 second timer that changes the state from QUESTION_COUNTDOWN
+ * to QUESTION_OPEN in a quizSession
+ *
+ * @param {QuizSessions} quizSession
+ * @param {number} sessionId
+ * @returns {void}
+ */
+export function beginQuestionCountdown(quizSession: QuizSessions, sessionId: number): void {
+  quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
+  // increment atQuestion
+  quizSession.atQuestion++;
+  // start countdown timer
+  const timeoutId = setTimeout(() => {
+    // update state
+    quizSession.state = QuizSessionState.QUESTION_OPEN;
+    // remove timerId from array (if it exists) after the 3 seconds and clear timer
+    const index = sessionIdToTimerArray.findIndex(i => i.timeoutId === timeoutId);
+    if (index !== -1) {
+      sessionIdToTimerArray.splice(index, 1);
+      clearTimeout(timeoutId);
+    }
+
+    changeQuestionOpenToQuestionClose(quizSession, sessionId);
+  }, WAIT_THREE_SECONDS * 1000);
+  // add timerID to array
+  sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+}
+
+/**
+ * Calculate duration of a question using the atQuestion from quizSession and
+ * create a timer which changes the state of session from QUESTION_OPEN to
+ * QUESTION_CLOSE
+ *
+ * @param {QuizSessions} quizSession
+ * @param {number} sessionId
+ * @returns {void}
+ */
+export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, sessionId: number): void {
+  // calculate the index of the questions array
+  const index = quizSession.atQuestion - 1;
+  const duration = quizSession.quiz.questions[index].duration;
+
+  const timeoutId = setTimeout(() => {
+    quizSession.state = QuizSessionState.QUESTION_CLOSE;
+    const index = sessionIdToTimerArray.findIndex(t => t.timeoutId === timeoutId);
+    clearTimeout(timeoutId);
+    sessionIdToTimerArray.splice(index, 1);
+  }, duration * 1000);
+
+  sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
 }
 
 // ======================== PLAYER HELPER FUNCTIONS ========================= //
