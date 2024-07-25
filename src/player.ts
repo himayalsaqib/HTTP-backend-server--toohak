@@ -18,7 +18,7 @@ interface SendMessage {
   messageBody: string
 }
 
-export interface PlayerStatus {
+export interface playerStatus {
   state: string;
   numQuestions: number;
   atQuestion: number;
@@ -80,7 +80,7 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
  * @param {number} sessionId
  * @returns {{ status }} - returns status of player
  */
-export function getPlayerStatus (playerId: number, sessionId: number): PlayerStatus {
+export function playerStatus (playerId: number, sessionId: number): playerStatus {
   // Check if the player ID exists
   if (!playerIdInUse(playerId)) {
     throw new Error('The player ID does not exist');
@@ -98,7 +98,7 @@ export function getPlayerStatus (playerId: number, sessionId: number): PlayerSta
     throw new Error('The player ID does not belong to this session');
   }
 
-  const status: PlayerStatus = {
+  const status: playerStatus = {
     state: session.state,
     numQuestions: session.quiz.numQuestions,
     atQuestion: session.atQuestion
