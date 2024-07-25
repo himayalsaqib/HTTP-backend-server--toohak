@@ -96,7 +96,6 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
               }
             ],
             duration: questionBody.duration,
-            thumbnail: expect.any(String),
           }
         },
         statusCode: 200
@@ -148,7 +147,6 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
               }
             ],
             duration: questionBody.duration,
-            thumbnail: expect.any(String),
           }
         },
         statusCode: 200,
@@ -202,7 +200,99 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
               }
             ],
             duration: questionBody.duration,
-            thumbnail: expect.any(String),
+          }
+        },
+        statusCode: 200
+      });
+    });
+
+    test('Side-effect: thumbnailUrl is correctly updated', () => {
+      // before updating
+      const getStatusRes1 = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(getStatusRes1).toStrictEqual({
+        retval: {
+          state: 'LOBBY',
+          atQuestion: 0,
+          players: [
+            'Jane'
+          ],
+          metadata: {
+            quizId: quizId,
+            name: quizBody.name,
+            timeCreated: expect.any(Number),
+            timeLastEdited: expect.any(Number),
+            description: quizBody.description,
+            numQuestions: 1,
+            questions: [
+              {
+                questionId: expect.any(Number),
+                question: questionBody.question,
+                duration: questionBody.duration,
+                thumbnailUrl: questionBody.thumbnailUrl,
+                points: expect.any(Number),
+                answers: [
+                  {
+                    answerId: expect.any(Number),
+                    answer: questionBody.answers[0].answer,
+                    colour: expect.any(String),
+                    correct: questionBody.answers[0].correct
+                  }, {
+                    answerId: expect.any(Number),
+                    answer: questionBody.answers[1].answer,
+                    colour: expect.any(String),
+                    correct: questionBody.answers[1].correct
+                  }
+                ]
+              }
+            ],
+            duration: questionBody.duration,
+          }
+        },
+        statusCode: 200
+      });
+
+      // after updating
+      const body = { imgUrl: 'https://google.com/another/image/path.png' };
+      requestPut(body, `/v1/admin/quiz/${quizId}/thumbnail`, { token });
+      const getStatusRes2 = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(getStatusRes2).toStrictEqual({
+        retval: {
+          state: 'LOBBY',
+          atQuestion: 0,
+          players: [
+            'Jane'
+          ],
+          metadata: {
+            quizId: quizId,
+            name: quizBody.name,
+            timeCreated: expect.any(Number),
+            timeLastEdited: expect.any(Number),
+            description: quizBody.description,
+            numQuestions: 1,
+            questions: [
+              {
+                questionId: expect.any(Number),
+                question: questionBody.question,
+                duration: questionBody.duration,
+                thumbnailUrl: questionBody.thumbnailUrl,
+                points: expect.any(Number),
+                answers: [
+                  {
+                    answerId: expect.any(Number),
+                    answer: questionBody.answers[0].answer,
+                    colour: expect.any(String),
+                    correct: questionBody.answers[0].correct
+                  }, {
+                    answerId: expect.any(Number),
+                    answer: questionBody.answers[1].answer,
+                    colour: expect.any(String),
+                    correct: questionBody.answers[1].correct
+                  }
+                ]
+              }
+            ],
+            duration: questionBody.duration,
+            thumbnailUrl: body.imgUrl,
           }
         },
         statusCode: 200
