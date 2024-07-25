@@ -69,8 +69,9 @@ export interface UsersRanking {
 
 export interface QuestionResults {
   questionId: number;
-  playersCorrectList: string[];
-  averageAnswerTime: number;
+  playersCorrectList: string[]; 
+  // playersAnsweredList: { playerId, answerTime }
+  averageAnswerTime: number; // 0
   percentCorrect: number;
 }
 
