@@ -25,6 +25,7 @@ import {
   correctSessionStateForAction,
   checkIfTimerExists,
   beginQuestionCountdown,
+  changeQuestionOpenToQuestionClose,
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -835,18 +836,19 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
   }
 
   if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
-    // calculate the index of the questions array
-    const index = quizSession.atQuestion - 1;
-    const duration = quizSession.quiz.questions[index].duration;
+    changeQuestionOpenToQuestionClose(quizSession, sessionId);
+    // // calculate the index of the questions array
+    // const index = quizSession.atQuestion - 1;
+    // const duration = quizSession.quiz.questions[index].duration;
 
-    const timeoutId = setTimeout(() => {
-      quizSession.state = QuizSessionState.QUESTION_CLOSE;
-      const index = sessionIdToTimerArray.findIndex(t => t.timeoutId === timeoutId);
-      clearTimeout(timeoutId);
-      sessionIdToTimerArray.splice(index, 1);
-    }, duration * 1000);
+    // const timeoutId = setTimeout(() => {
+    //   quizSession.state = QuizSessionState.QUESTION_CLOSE;
+    //   const index = sessionIdToTimerArray.findIndex(t => t.timeoutId === timeoutId);
+    //   clearTimeout(timeoutId);
+    //   sessionIdToTimerArray.splice(index, 1);
+    // }, duration * 1000);
 
-    sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+    // sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
   }
 
   setData(data);
