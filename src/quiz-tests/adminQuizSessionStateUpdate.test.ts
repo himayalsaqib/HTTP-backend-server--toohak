@@ -107,7 +107,7 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
       expect(afterUpdate.retval.state).toStrictEqual(QuizSessionState.QUESTION_OPEN);
     });
 
-    test.only('Side-effect: status changes when get adminQuizSessionStatusView has been called with action GO_TO_ANSWER', () => {
+    test('Side-effect: status changes when get adminQuizSessionStatusView has been called with action GO_TO_ANSWER', () => {
       // update from LOBBY to QUESTION_COUNTDOWN
       requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       // update from QUESTION_COUNTDOWN to QUESTION_CLOSE
@@ -117,7 +117,7 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
 
       // wait for the duration of a question
       const duration = questionBody.questionBody.duration;
-      sleepSync(duration * 1500);
+      sleepSync(duration * 1000);
       const stateAfterDur = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(stateAfterDur.retval.state).toStrictEqual(QuizSessionState.QUESTION_CLOSE);
 
