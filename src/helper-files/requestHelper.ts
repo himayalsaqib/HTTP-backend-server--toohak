@@ -3,19 +3,14 @@
 import request from 'sync-request-curl';
 import { port, url } from '../config.json';
 import IncomingHttpHeaders from 'http';
-import { EmptyObject } from '../dataStore';
-import { UserDetails } from '../auth';
-import { QuizInfo, QuizList, QuizSessionsView } from '../quiz';
 
 const SERVER_URL = `${url}:${port}`;
 const TIMEOUT_MS = 5 * 1000;
 
 interface RequestReturn {
-  retval: EmptyObject | { token: string } | { user: UserDetails } | { quizzes: QuizList[] } |
-  { quizId: number } | QuizInfo | { questionId: number } |   {newQuestionId: number} | 
-  { sessionId: number } | QuizSessionsView,
+  retval: ReturnType<typeof JSON.parse>,
   statusCode: number
-} 
+}
 
 /**
  * Function sends a GET request to the server
