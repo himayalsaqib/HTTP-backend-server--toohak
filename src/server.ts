@@ -50,7 +50,7 @@ import {
   adminQuizSessionStateUpdate,
   adminQuizThumbnail,
 } from './quiz';
-import { playerJoin, playerSendChat, playerViewChat } from './player';
+import { playerJoin, playerSendChat, playerViewChat, playerStatus } from './player';
 import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/helper';
 
@@ -940,6 +940,19 @@ app.post('/v1/player/:playerid/chat', (req: Request, res: Response) => {
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/v1/player/:playerid/', (req: Request, res: Response) => {
+  const { playerId, sessionId } = req.body;
+  // const playerId = parseInt(req.params.playerid as string);
+  // const sessionId = parseInt(req.params.sessionid as string);
+
+  try {
+    const status = playerStatus(playerId, sessionId);
+    res.json(status);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 });
 

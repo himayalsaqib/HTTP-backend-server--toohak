@@ -64,6 +64,7 @@ describe('GET /v1/player/{playerid}', () => {
       const res = requestGet({}, `/v1/player/${playerId}`);
       const status = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       const questionInfo = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
+      console.log(res);
       expect(res).toStrictEqual({
         retval: {
           state: status.retval.state,

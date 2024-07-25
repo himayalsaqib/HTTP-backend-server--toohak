@@ -82,6 +82,7 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
  */
 export function playerStatus (playerId: number, sessionId: number): playerStatus {
   // Check if the player ID exists
+  console.log(playerId);
   if (!playerIdInUse(playerId)) {
     throw new Error('The player ID does not exist');
   }
