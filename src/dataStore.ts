@@ -6,10 +6,6 @@ import { QuizInfo, QuizSessionState } from './quiz';
 
 const path = __dirname + '/toohakData.json';
 
-export interface ErrorObject {
-  error: string
-}
-
 export type EmptyObject = Record<never, never>;
 
 export interface Users {
