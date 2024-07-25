@@ -49,6 +49,7 @@ import {
   adminQuizSessionStart,
   adminQuizSessionStateUpdate,
   adminQuizThumbnail,
+  adminQuizGetSessionStatus,
   adminQuizSessionsView,
 } from './quiz';
 import { playerJoin, playerSendChat, playerViewChat } from './player';
@@ -605,6 +606,24 @@ app.put('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Respons
 
   try {
     const response = adminQuizSessionStateUpdate(quizId, quizSessionId, action.action);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const quizSessionId = parseInt(req.params.sessionid as string);
+  const sessionId = parseInt(req.header('token'));
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  try {
+    const response = adminQuizGetSessionStatus(quizId, quizSessionId);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });

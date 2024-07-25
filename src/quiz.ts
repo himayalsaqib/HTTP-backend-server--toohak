@@ -89,6 +89,13 @@ export interface QuestionBody {
   thumbnailUrl?: string;
 }
 
+export interface QuizSessionStatus {
+  state: QuizSessionState;
+  atQuestion: number;
+  players: string[];
+  metadata: QuizInfo;
+}
+
 // ================================= ENUMS ================================== //
 
 export enum QuizAnswerColours {
@@ -850,6 +857,38 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
 
   setData(data);
   return {};
+}
+
+/**
+ * Get the status of a particular quiz session
+ *
+ * @param {number} quizId
+ * @param {number} sessionId
+ * @returns {QuizSessionStatus}
+ */
+export function adminQuizGetSessionStatus(quizId: number, sessionId: number): QuizSessionStatus {
+  const quizSession = findQuizSessionById(sessionId);
+  if (!quizSession || quizSession.quiz.quizId !== quizId) {
+    throw new Error('The session ID does not refer to a valid session within this quiz.');
+  }
+
+  const metadata = adminQuizInfo(quizId);
+
+  // sort names into ascending order
+  const playerNames: string[] = [];
+  for (const player of quizSession.players) {
+    playerNames.push(player.name);
+  }
+  const sortedPlayers = playerNames.sort();
+
+  const sessionStatus: QuizSessionStatus = {
+    state: quizSession.state,
+    atQuestion: quizSession.atQuestion,
+    players: sortedPlayers,
+    metadata: metadata,
+  };
+
+  return sessionStatus;
 }
 
 /**
