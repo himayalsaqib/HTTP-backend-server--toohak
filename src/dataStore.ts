@@ -74,6 +74,7 @@ export interface UsersRanking {
 export interface QuestionResults {
   questionId: number;
   playersCorrectList: string[];
+  playersAnsweredList: { playerId: number, answerTime: number };
   averageAnswerTime: number;
   percentCorrect: number;
 }
