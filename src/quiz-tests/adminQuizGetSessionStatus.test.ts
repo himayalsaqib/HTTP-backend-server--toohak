@@ -165,9 +165,9 @@ describe('GET /v1/admin/quiz/{quiz}/session/{sessionid}', () => {
           state: 'LOBBY',
           atQuestion: 0,
           players: [
-            'Chappell', 
-            'Charli', 
-            'Jane', 
+            'Chappell',
+            'Charli',
+            'Jane',
             'Wendy'
           ],
           metadata: {

@@ -829,7 +829,7 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
 
 /**
  * Get the status of a particular quiz session
- * 
+ *
  * @param {number} quizId
  * @param {number} sessionId
  * @returns {QuizSessionStatus}
@@ -841,10 +841,10 @@ export function adminQuizGetSessionStatus(quizId: number, sessionId: number): Qu
   }
 
   const metadata = adminQuizInfo(quizId);
-  
+
   // sort names into ascending order
   const playerNames: string[] = [];
-  for(const player of quizSession.players) {
+  for (const player of quizSession.players) {
     playerNames.push(player.name);
   }
   const sortedPlayers = playerNames.sort();
@@ -854,7 +854,7 @@ export function adminQuizGetSessionStatus(quizId: number, sessionId: number): Qu
     atQuestion: quizSession.atQuestion,
     players: sortedPlayers,
     metadata: metadata,
-  }
+  };
 
   return sessionStatus;
 }
