@@ -519,7 +519,7 @@ export function checkIfTimerExists(sessionId: number): boolean {
  * @param {number} sessionId
  * @returns {void}
  */
-export function beginQuestionCountdown(quizSession: QuizSessions, sessionId: number) {
+export function beginQuestionCountdown(quizSession: QuizSessions, sessionId: number): void {
   quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
   // increment atQuestion
   quizSession.atQuestion++;
@@ -533,8 +533,34 @@ export function beginQuestionCountdown(quizSession: QuizSessions, sessionId: num
       sessionIdToTimerArray.splice(index, 1);
       clearTimeout(timeoutId);
     }
+
+    // call helper funct.
   }, WAIT_THREE_SECONDS * 1000);
   // add timerID to array
+  sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+}
+
+/**
+ * Calculate duration of a question using the atQuestion from quizSession and 
+ * create a timer which changes the state of session from QUESTION_OPEN to 
+ * QUESTION_CLOSE
+ * 
+ * @param {QuizSessions} quizSession
+ * @param {number} sessionId
+ * @returns {void}
+ */
+export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, sessionId: number): void {
+  // calculate the index of the questions array
+  const index = quizSession.atQuestion - 1;
+  const duration = quizSession.quiz.questions[index].duration;
+
+  const timeoutId = setTimeout(() => {
+    quizSession.state = QuizSessionState.QUESTION_CLOSE;
+    const index = sessionIdToTimerArray.findIndex(t => t.timeoutId === timeoutId);
+    clearTimeout(timeoutId);
+    sessionIdToTimerArray.splice(index, 1);
+  }, duration * 1000);
+
   sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
 }
 
