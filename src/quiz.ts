@@ -848,21 +848,21 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     }
 
     quizSession.state = QuizSessionState.QUESTION_OPEN;
-  } 
-  
+  }
+
   if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
-    console.log('made it into question_open state else-if statement');
-    const duration = quizSession.quiz.questions[quizSession.atQuestion].duration;
-    console.log(`the calc. duration is ${duration}`);
+    // calculate the index of the questions array
+    const index = quizSession.atQuestion - 1;
+    const duration = quizSession.quiz.questions[index].duration;
 
     const timeoutId = setTimeout(() => {
       quizSession.state = QuizSessionState.QUESTION_CLOSE;
-      // const index = sessionIdToTimerArray.findIndex(t => t.timeoutId === timeoutId);
-      // clearTimeout(timeoutId);
-      // sessionIdToTimerArray.splice(index, 1);
+      const index = sessionIdToTimerArray.findIndex(t => t.timeoutId === timeoutId);
+      clearTimeout(timeoutId);
+      sessionIdToTimerArray.splice(index, 1);
     }, duration * 1000);
-    
-    //sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+
+    sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
   }
 
   setData(data);
