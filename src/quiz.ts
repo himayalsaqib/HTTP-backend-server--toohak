@@ -729,11 +729,11 @@ export function adminQuizThumbnail(quizId: number, thumbnailUrl: string): EmptyO
  * @returns {{ sessionId: number}} - returns new session ID
  */
 export function adminQuizSessionStart(quizId: number, autoStartNum: number): { sessionId: number } {
+  const quiz = findQuizById(quizId);
+
   if (quizIsInTrash(quizId)) {
     throw new Error('The quiz is in trash.');
   }
-  const quiz = findQuizById(quizId);
-
   if (autoStartNum > MAX_AUTO_START_NUM) {
     throw new Error('AutoStartNum is a number greater than 50.');
   }
@@ -752,15 +752,14 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
   // adding new sessionId to active sessions array for this quiz
   quiz.activeSessions.push(newSessionId);
 
-  // copying quiz from quizzes array so any edits to quiz do not affect metadata 
-  // active session. ignoring authUserId, active and inactive sessionIds and 
+  // copying quiz from quizzes array so any edits to quiz do not affect metadata
+  // active session. ignoring authUserId, active and inactive sessionIds and
   // adding numQuestions
   const quizCopy = JSON.parse(JSON.stringify(quiz));
   delete quizCopy.authUserId;
   delete quizCopy.activeSessions;
   delete quizCopy.inactiveSessions;
   quizCopy.numQuestions = quizCopy.questions.length;
-  
 
   const data = getData();
   data.quizSessions.push({
@@ -873,8 +872,6 @@ export function adminQuizGetSessionStatus(quizId: number, sessionId: number): Qu
     throw new Error('The session ID does not refer to a valid session within this quiz.');
   }
 
-  const metadata = quizSession.quiz;
-
   // sort names into ascending order
   const playerNames: string[] = [];
   for (const player of quizSession.players) {
@@ -886,7 +883,7 @@ export function adminQuizGetSessionStatus(quizId: number, sessionId: number): Qu
     state: quizSession.state,
     atQuestion: quizSession.atQuestion,
     players: sortedPlayers,
-    metadata: metadata,
+    metadata: quizSession.quiz,
   };
 
   return sessionStatus;
