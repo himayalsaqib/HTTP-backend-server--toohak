@@ -1,6 +1,5 @@
 // includes http tests for the route GET /v1/admin/quiz/{quizid}/sessions
 
-import { getData } from '../dataStore';
 import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
 import { QuestionBody, QuizSessionState } from '../quiz';
 
@@ -17,7 +16,7 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
   let quizId: number;
   let questionBody: QuestionBody;
   let startSessionBody: { autoStartNum: number };
-  let updateToEndState: { action: QuizSessionState}
+  let updateToEndState: { action: QuizSessionState};
 
   beforeEach(() => {
     // registering a user
@@ -101,14 +100,14 @@ describe('GET /v1/admin/quiz/{quizid}/sessions', () => {
 
     test('When quiz has multiple active and inactive sessions', () => {
       // starting four new sessions. 2 active and 2 inactive.
-      let res, activeSessionIds = [], inactiveSessionIds = [];
+      let res; const activeSessionIds = []; const inactiveSessionIds = [];
       for (let i = 0; i < 2; i++) {
         res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
         activeSessionIds.push(res.retval.sessionId);
 
         res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
         inactiveSessionIds.push(res.retval.sessionId);
-        
+
         // making this session inactive by putting in END state
         requestPut(updateToEndState, `/v1/admin/quiz/${quizId}/session/${inactiveSessionIds[i]}`, { token });
       }
