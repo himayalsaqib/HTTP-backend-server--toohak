@@ -1,6 +1,6 @@
 // includes quiz functions
 
-import { setData, getData, ErrorObject, EmptyObject, Question, Answer } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, Question, Answer, Quizzes } from './dataStore';
 import {
   quizNameHasValidChars,
   quizNameInUse,
@@ -24,6 +24,8 @@ import {
   getRandomInt,
   correctSessionStateForAction,
   checkIfTimerExists,
+  beginQuestionCountdown,
+  changeQuestionOpenToQuestionClose,
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -53,7 +55,7 @@ const MAX_AUTO_START_NUM = 50;
 
 const MAX_ACTIVE_QUIZ_SESSIONS = 10;
 
-const WAIT_THREE_SECONDS = 3;
+export const WAIT_THREE_SECONDS = 3;
 
 export const sessionIdToTimerArray: { sessionId: number, timeoutId: ReturnType<typeof setTimeout> }[] = [];
 
@@ -63,7 +65,7 @@ interface QuizList {
   name: string;
 }
 
-// excludes authUserId, active sessions and inactive sessions
+// excludes authUserId, active sessions and inactive sessions from Quizzes interface
 export interface QuizInfo {
   quizId: number;
   name: string;
@@ -87,6 +89,18 @@ export interface QuestionBody {
   points: number;
   answers: QuizQuestionAnswers[];
   thumbnailUrl?: string;
+}
+
+export interface QuizSessionStatus {
+  state: QuizSessionState;
+  atQuestion: number;
+  players: string[];
+  metadata: QuizInfo;
+}
+
+export interface QuizSessionsView {
+  activeSessions: number[];
+  inactiveSessions: number[];
 }
 
 // ================================= ENUMS ================================== //
@@ -120,6 +134,7 @@ export enum QuizSessionAction {
 }
 
 // =============================== FUNCTIONS ================================ //
+
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  *
@@ -170,20 +185,17 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     newQuizId = getRandomInt();
   }
 
-  const emptyQuestions: Question[] = [];
-  const emptySessions: number[] = [];
-
-  const newQuiz = {
+  const newQuiz: Quizzes = {
     authUserId: authUserId,
     quizId: newQuizId,
     name: name,
     timeCreated: currentTime(),
     timeLastEdited: currentTime(),
     description: description,
-    questions: emptyQuestions,
+    questions: [],
     duration: 0,
-    activeSessions: emptySessions,
-    inactiveSessions: emptySessions,
+    activeSessions: [],
+    inactiveSessions: [],
   };
 
   data.quizzes.push(newQuiz);
@@ -307,6 +319,127 @@ export function adminQuizDescriptionUpdate (quizId: number, description: string)
 }
 
 /**
+* Restores a quiz from trash
+*
+* @param {number} authUserId
+* @param {number} quizId
+* @returns {{}}
+*/
+export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
+  const data = getData();
+  const trashedQuiz = findTrashedQuizById(quizId);
+
+  if (quizNameInUse(authUserId, trashedQuiz.quiz.name) === true) {
+    throw new Error('Quiz name of the restored quiz is already used by the current logged in user for another active quiz.');
+  }
+
+  const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
+  data.trash.splice(index, 1);
+
+  trashedQuiz.quiz.timeLastEdited = currentTime();
+
+  data.quizzes.push(trashedQuiz.quiz);
+  setData(data);
+
+  return {};
+}
+
+/**
+ * Given a user id, view all quizzes in trash
+ *
+ * @param {number} authUserId
+ * @returns {{ quizzes: array }} - returns list of quizzes
+ */
+export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } {
+  const data = getData();
+  const trashList: QuizList[] = [];
+
+  for (const trashItem of data.trash) {
+    if (trashItem.quiz.authUserId === authUserId) {
+      trashList.push({
+        quizId: trashItem.quiz.quizId,
+        name: trashItem.quiz.name,
+      });
+    }
+  }
+
+  return { quizzes: trashList };
+}
+
+/**
+ * Permanently deletes specified quizzes from the trash
+ *
+ * @param {number[]} quizIds
+ * @returns {{}}
+ */
+export function adminQuizTrashEmpty(quizIds: number[]): EmptyObject {
+  const data = getData();
+
+  // Find the first quizId in quizIds that is not in data.trash for every quizId
+  const quizNotInTrash = quizIds.find(quizId => data.trash.every(q => q.quiz.quizId !== quizId));
+
+  // If not undefined, there is at least one quizId not in data.trash and return error
+  if (quizNotInTrash !== undefined) {
+    throw new Error('One or more Quiz IDs is not currently in the trash.');
+  }
+
+  for (const quizId of quizIds) {
+    // Find index of quiz with matching quizId in data.trash
+    const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
+
+    // If quizId match found remove from data.trash at that index
+    if (index !== -1) {
+      data.trash.splice(index, 1);
+    }
+  }
+
+  setData(data);
+
+  return {};
+}
+
+/**
+ * Transfer ownership of a quiz to a different user based on their email
+ *
+ * @param {number} authUserId - of user currently owning the quiz
+ * @param {number} quizId - of the quiz to be transfered owned by authUserId
+ * @param {string} userEmail - of the user to which the quiz is being
+ *                             transferred to (the target user)
+ * @returns {{}} - empty object
+ */
+export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string): EmptyObject {
+  const data = getData();
+
+  if (!adminEmailInUse(userEmail)) {
+    throw new Error('The given user email is not a real user.');
+  }
+
+  const newUser = findUserByEmail(userEmail);
+  if (newUser.authUserId === authUserId) {
+    throw new Error('The user email refers to the current logged in user.');
+  }
+
+  // quiz to transfer
+  const quiz = findQuizById(quizId);
+  if (quizNameInUse(newUser.authUserId, quiz.name)) {
+    throw new Error('Quiz ID already refers to a quiz that has a name that is already used by the target user.');
+  }
+
+  // check all sessions for this quiz for being in the END state
+  if (quiz.activeSessions.length !== 0) {
+    throw new Error('Any session for this quiz is not in END state.');
+  }
+
+  // transferring the quiz
+  quiz.authUserId = newUser.authUserId;
+  quiz.timeLastEdited = currentTime();
+
+  setData(data);
+
+  return {};
+}
+
+/**
  * Create a new stub for question for a particular quiz.
  * When this route is called, and a question is created, the timeLastEdited is set
  * as the same as the created time, and the colours of all the answers of that
@@ -388,86 +521,6 @@ export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBo
   setData(data);
 
   return { questionId: newQuestionId };
-}
-
-/**
-* Restores a quiz from trash
-*
-* @param {number} authUserId
-* @param {number} quizId
-* @returns {{}}
-*/
-export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
-  const data = getData();
-  const trashedQuiz = findTrashedQuizById(quizId);
-
-  if (quizNameInUse(authUserId, trashedQuiz.quiz.name) === true) {
-    throw new Error('Quiz name of the restored quiz is already used by the current logged in user for another active quiz.');
-  }
-
-  const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
-  data.trash.splice(index, 1);
-
-  trashedQuiz.quiz.timeLastEdited = currentTime();
-
-  data.quizzes.push(trashedQuiz.quiz);
-  setData(data);
-
-  return {};
-}
-
-/**
- * Given a user id, view all quizzes in trash
- *
- * @param {number} authUserId
- * @returns {{ quizzes: array }} - returns list of quizzes
- */
-export function adminQuizTrash (authUserId: number): { quizzes: QuizList[] } {
-  const data = getData();
-  const trashList: QuizList[] = [];
-
-  for (const trashItem of data.trash) {
-    if (trashItem.quiz.authUserId === authUserId) {
-      trashList.push({
-        quizId: trashItem.quiz.quizId,
-        name: trashItem.quiz.name,
-      });
-    }
-  }
-
-  return { quizzes: trashList };
-}
-
-/**
- * Permanently deletes specified quizzes from the trash
- *
- * @param {number[]} quizIds
- * @returns {{}}
- */
-export function adminQuizTrashEmpty(quizIds: number[]): EmptyObject {
-  const data = getData();
-
-  // Find the first quizId in quizIds that is not in data.trash for every quizId
-  const quizNotInTrash = quizIds.find(quizId => data.trash.every(q => q.quiz.quizId !== quizId));
-
-  // If not undefined, there is at least one quizId not in data.trash and return error
-  if (quizNotInTrash !== undefined) {
-    throw new Error('One or more Quiz IDs is not currently in the trash.');
-  }
-
-  for (const quizId of quizIds) {
-    // Find index of quiz with matching quizId in data.trash
-    const index = data.trash.findIndex(q => q.quiz.quizId === quizId);
-
-    // If quizId match found remove from data.trash at that index
-    if (index !== -1) {
-      data.trash.splice(index, 1);
-    }
-  }
-
-  setData(data);
-
-  return {};
 }
 
 /**
@@ -602,47 +655,6 @@ export function adminQuizQuestionDelete(quizId: number, questionId: number): Emp
 }
 
 /**
- * Transfer ownership of a quiz to a different user based on their email
- *
- * @param {number} authUserId - of user currently owning the quiz
- * @param {number} quizId - of the quiz to be transfered owned by authUserId
- * @param {string} userEmail - of the user to which the quiz is being
- *                             transferred to (the target user)
- * @returns {{}} - empty object
- */
-export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string): EmptyObject {
-  const data = getData();
-
-  if (!adminEmailInUse(userEmail)) {
-    throw new Error('The given user email is not a real user.');
-  }
-
-  const newUser = findUserByEmail(userEmail);
-  if (newUser.authUserId === authUserId) {
-    throw new Error('The user email refers to the current logged in user.');
-  }
-
-  // quiz to transfer
-  const quiz = findQuizById(quizId);
-  if (quizNameInUse(newUser.authUserId, quiz.name)) {
-    throw new Error('Quiz ID already refers to a quiz that has a name that is already used by the target user.');
-  }
-
-  // check all sessions for this quiz for being in the END state
-  if (quiz.activeSessions.length !== 0) {
-    throw new Error('Any session for this quiz is not in END state.');
-  }
-
-  // transferring the quiz
-  quiz.authUserId = newUser.authUserId;
-  quiz.timeLastEdited = currentTime();
-
-  setData(data);
-
-  return {};
-}
-
-/**
  * Duplicates a quiz question
  *
  * @param {number} quizId
@@ -685,18 +697,45 @@ export function adminQuizQuestionDuplicate (quizId: number, questionId: number):
 }
 
 /**
- * Starts a new session for a given quiz
+ * Updates the thumbnailUrl of a quiz
+ *
+ * @param {number} quizId
+ * @param {string} thumbnailUrl
+ * @returns {{}}
+ */
+export function adminQuizThumbnail(quizId: number, thumbnailUrl: string): EmptyObject {
+  if (thumbnailUrl.length === 0) {
+    throw new Error('The thumbnailUrl cannot be an empty string.');
+  }
+
+  if (!checkThumbnailUrlFileType(thumbnailUrl)) {
+    throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
+  }
+
+  if (!(thumbnailUrl.startsWith('https://') || thumbnailUrl.startsWith('http://'))) {
+    throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
+  }
+
+  const quiz = findQuizById(quizId);
+  quiz.thumbnailUrl = thumbnailUrl;
+  quiz.timeLastEdited = currentTime();
+
+  return {};
+}
+
+/**
+ * Starts a new session for the given quiz
  *
  * @param {number} quizId
  * @param {number} autoStartNum
  * @returns {{ sessionId: number}} - returns new session ID
  */
 export function adminQuizSessionStart(quizId: number, autoStartNum: number): { sessionId: number } {
+  const quiz = findQuizById(quizId);
+
   if (quizIsInTrash(quizId)) {
     throw new Error('The quiz is in trash.');
   }
-  const quiz = findQuizById(quizId);
-
   if (autoStartNum > MAX_AUTO_START_NUM) {
     throw new Error('AutoStartNum is a number greater than 50.');
   }
@@ -707,27 +746,22 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     throw new Error('The quiz does not have any questions in it.');
   }
 
-  const newSessionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  const newSessionId = getRandomInt();
   while (findQuizSessionById(newSessionId) !== undefined) {
-    Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    getRandomInt();
   }
 
   // adding new sessionId to active sessions array for this quiz
   quiz.activeSessions.push(newSessionId);
 
-  // copying quiz from quizzes array so any edits while session is running do
-  // not affect the active session. ignoring authUserId and active/inactive session
-  const quizInfoForSession = {
-    quizId: quizId,
-    name: quiz.name,
-    timeCreated: quiz.timeCreated,
-    timeLastEdited: quiz.timeLastEdited,
-    description: quiz.description,
-    numQuestions: quiz.questions.length,
-    questions: quiz.questions,
-    duration: quiz.duration,
-    thumbnailUrl: quiz.thumbnailUrl
-  };
+  // copying quiz from quizzes array so any edits to quiz do not affect metadata
+  // active session. ignoring authUserId, active and inactive sessionIds and
+  // adding numQuestions
+  const quizCopy = JSON.parse(JSON.stringify(quiz));
+  delete quizCopy.authUserId;
+  delete quizCopy.activeSessions;
+  delete quizCopy.inactiveSessions;
+  quizCopy.numQuestions = quizCopy.questions.length;
 
   const data = getData();
   data.quizSessions.push({
@@ -736,7 +770,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     atQuestion: 0,
     players: [],
     autoStartNum: autoStartNum,
-    quiz: quizInfoForSession,
+    quiz: quizCopy,
     usersRankedByScore: [],
     questionResults: [],
     messages: [],
@@ -788,24 +822,7 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     quizSession.state = QuizSessionState.FINAL_RESULTS;
     quizSession.atQuestion = 0;
   } else if (action === QuizSessionAction.NEXT_QUESTION) {
-    // increment atQuestion
-    quizSession.atQuestion++;
-    quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
-    // start countdown timer
-    const timeoutId = setTimeout(() => {
-      // update state
-      quizSession.state = QuizSessionState.QUESTION_OPEN;
-
-      // remove timerId from array (if it exists) after the 3 seconds and clear timer
-      const index = sessionIdToTimerArray.findIndex(i => i.timeoutId === timeoutId);
-      if (index !== -1) {
-        sessionIdToTimerArray.splice(index, 1);
-        clearTimeout(timeoutId);
-      }
-    }, WAIT_THREE_SECONDS * 1000);
-
-    // add timerID to array
-    sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+    beginQuestionCountdown(quizSession, sessionId);
   } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
     // clear timer if it exists and remove from array
     if (checkIfTimerExists(sessionId)) {
@@ -816,11 +833,10 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     }
 
     quizSession.state = QuizSessionState.QUESTION_OPEN;
-  } else if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
-    const duration = quizSession.quiz.questions[quizSession.atQuestion].duration;
-    setTimeout(() => {
-      quizSession.state = QuizSessionState.QUESTION_CLOSE;
-    }, duration * 1000);
+  }
+
+  if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
+    changeQuestionOpenToQuestionClose(quizSession, sessionId);
   }
 
   setData(data);
@@ -828,28 +844,49 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
 }
 
 /**
- * Updates the thumbnailUrl of a quiz
+ * Get the status of a particular quiz session
  *
  * @param {number} quizId
- * @param {string} thumbnailUrl
- * @returns {{}}
+ * @param {number} sessionId
+ * @returns {QuizSessionStatus}
  */
-export function adminQuizThumbnail(quizId: number, thumbnailUrl: string): EmptyObject {
-  if (thumbnailUrl.length === 0) {
-    throw new Error('The thumbnailUrl cannot be an empty string.');
+export function adminQuizGetSessionStatus(quizId: number, sessionId: number): QuizSessionStatus {
+  const quizSession = findQuizSessionById(sessionId);
+  if (!quizSession || quizSession.quiz.quizId !== quizId) {
+    throw new Error('The session ID does not refer to a valid session within this quiz.');
   }
 
-  if (!checkThumbnailUrlFileType(thumbnailUrl)) {
-    throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
+  // sort names into ascending order
+  const playerNames: string[] = [];
+  for (const player of quizSession.players) {
+    playerNames.push(player.name);
   }
+  const sortedPlayers = playerNames.sort();
 
-  if (!(thumbnailUrl.startsWith('https://') || thumbnailUrl.startsWith('http://'))) {
-    throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
-  }
+  const sessionStatus: QuizSessionStatus = {
+    state: quizSession.state,
+    atQuestion: quizSession.atQuestion,
+    players: sortedPlayers,
+    metadata: quizSession.quiz,
+  };
 
+  return sessionStatus;
+}
+
+/**
+ * Retrieves active and inactive session ids (sorted in ascending order) for a quiz
+ *
+ * @param {number} quizId
+ * @returns {QuizSessionsView}
+ */
+export function adminQuizSessionsView(quizId: number): QuizSessionsView {
   const quiz = findQuizById(quizId);
-  quiz.thumbnailUrl = thumbnailUrl;
-  quiz.timeLastEdited = currentTime();
 
-  return {};
+  quiz.activeSessions.sort((id1, id2) => id1 - id2);
+  quiz.inactiveSessions.sort((id1, id2) => id1 - id2);
+
+  return {
+    activeSessions: quiz.activeSessions,
+    inactiveSessions: quiz.inactiveSessions
+  };
 }
