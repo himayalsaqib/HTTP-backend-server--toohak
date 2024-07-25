@@ -1,6 +1,6 @@
 // includes quiz functions
 
-import { setData, getData, ErrorObject, EmptyObject, Question, Answer } from './dataStore';
+import { setData, getData, ErrorObject, EmptyObject, Question, Answer, Quizzes } from './dataStore';
 import {
   quizNameHasValidChars,
   quizNameInUse,
@@ -695,17 +695,10 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
 
   // copying quiz from quizzes array so any edits while session is running do
   // not affect the active session. ignoring authUserId and active/inactive session
-  const quizInfoForSession = {
-    quizId: quizId,
-    name: quiz.name,
-    timeCreated: quiz.timeCreated,
-    timeLastEdited: quiz.timeLastEdited,
-    description: quiz.description,
-    numQuestions: quiz.questions.length,
-    questions: quiz.questions,
-    duration: quiz.duration,
-    thumbnailUrl: quiz.thumbnailUrl
-  };
+  const quizCopy = JSON.parse(JSON.stringify(quiz));
+  delete quizCopy.authUserId;
+  delete quizCopy.activeSessions;
+  delete quizCopy.inactiveSessions;
 
   const data = getData();
   data.quizSessions.push({
@@ -714,7 +707,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     atQuestion: 1,
     players: [],
     autoStartNum: autoStartNum,
-    quiz: quizInfoForSession,
+    quiz: quizCopy,
     usersRankedByScore: [],
     questionResults: [],
   });

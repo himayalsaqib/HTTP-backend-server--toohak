@@ -1,6 +1,6 @@
 // includes http tests for the route POST /v1/admin/quiz/{quizid}/session/start
 
-import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
+import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
 import { QuestionBody, QuizSessionState } from '../quiz';
 
 beforeEach(() => {
@@ -103,7 +103,46 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
             }
           ],
           duration: questionBody.duration,
-          thumbnailUrl: questionBody.thumbnailUrl
+        }
+      });
+      expect(res.statusCode).toStrictEqual(200);
+    });
+
+    test.skip('Side effect: adminQuizSessionStatus does not show edits made to quiz after session started', () => {
+      let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
+      expect(res).toStrictEqual({ retval: { sessionId: expect.any(Number) }, statusCode: 200 });
+      const sessionId = res.retval.sessionId;
+
+      const updateQuizBody = { imgUrl: 'https://google.com/another/image/path.png' };
+      requestPut(updateQuizBody, `/v1/admin/quiz/${quizId}/thumbnail`, { token });
+
+      // not implemented yet
+      res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(res.retval).toStrictEqual({
+        state: QuizSessionState.LOBBY,
+        atQuestion: 1,
+        players: [],
+        metadata: {
+          quizId: quizId,
+          name: quizBody.name,
+          timeCreated: expect.any(Number),
+          timeLastEdited: expect.any(Number),
+          description: quizBody.description,
+          numQuestions: 1,
+          questions: [
+            {
+              questionId: questionId,
+              question: questionBody.question,
+              duration: questionBody.duration,
+              thumbnailUrl: questionBody.thumbnailUrl,
+              points: questionBody.points,
+              answers: [
+                { answerId: expect.any(Number), answer: 'Prince Charles', colour: expect.any(String), correct: true },
+                { answerId: expect.any(Number), answer: 'Prince William', colour: expect.any(String), correct: false }
+              ]
+            }
+          ],
+          duration: questionBody.duration,
         }
       });
       expect(res.statusCode).toStrictEqual(200);
