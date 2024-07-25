@@ -820,9 +820,9 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     quizSession.state = QuizSessionState.FINAL_RESULTS;
     quizSession.atQuestion = 0;
   } else if (action === QuizSessionAction.NEXT_QUESTION) {
+    quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
     // increment atQuestion
     quizSession.atQuestion++;
-    quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
     // start countdown timer
     const timeoutId = setTimeout(() => {
       // update state
@@ -848,11 +848,21 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     }
 
     quizSession.state = QuizSessionState.QUESTION_OPEN;
-  } else if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
+  } 
+  
+  if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
+    console.log('made it into question_open state else-if statement');
     const duration = quizSession.quiz.questions[quizSession.atQuestion].duration;
-    setTimeout(() => {
+    console.log(`the calc. duration is ${duration}`);
+
+    const timeoutId = setTimeout(() => {
       quizSession.state = QuizSessionState.QUESTION_CLOSE;
+      // const index = sessionIdToTimerArray.findIndex(t => t.timeoutId === timeoutId);
+      // clearTimeout(timeoutId);
+      // sessionIdToTimerArray.splice(index, 1);
     }, duration * 1000);
+    
+    //sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
   }
 
   setData(data);
