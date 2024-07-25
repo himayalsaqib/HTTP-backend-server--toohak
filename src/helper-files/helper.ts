@@ -534,17 +534,17 @@ export function beginQuestionCountdown(quizSession: QuizSessions, sessionId: num
       clearTimeout(timeoutId);
     }
 
-    // call helper funct.
+    changeQuestionOpenToQuestionClose(quizSession, sessionId);
   }, WAIT_THREE_SECONDS * 1000);
   // add timerID to array
   sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
 }
 
 /**
- * Calculate duration of a question using the atQuestion from quizSession and 
- * create a timer which changes the state of session from QUESTION_OPEN to 
+ * Calculate duration of a question using the atQuestion from quizSession and
+ * create a timer which changes the state of session from QUESTION_OPEN to
  * QUESTION_CLOSE
- * 
+ *
  * @param {QuizSessions} quizSession
  * @param {number} sessionId
  * @returns {void}
