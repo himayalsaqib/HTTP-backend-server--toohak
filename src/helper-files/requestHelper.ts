@@ -3,9 +3,19 @@
 import request from 'sync-request-curl';
 import { port, url } from '../config.json';
 import IncomingHttpHeaders from 'http';
+import { EmptyObject } from '../dataStore';
+import { UserDetails } from '../auth';
+import { QuizInfo, QuizList, QuizSessionsView } from '../quiz';
 
 const SERVER_URL = `${url}:${port}`;
 const TIMEOUT_MS = 5 * 1000;
+
+interface RequestReturn {
+  retval: EmptyObject | { token: string } | { user: UserDetails } | { quizzes: QuizList[] } |
+  { quizId: number } | QuizInfo | { questionId: number } |   {newQuestionId: number} | 
+  { sessionId: number } | QuizSessionsView,
+  statusCode: number
+} 
 
 /**
  * Function sends a GET request to the server
@@ -13,9 +23,9 @@ const TIMEOUT_MS = 5 * 1000;
  * @param {object} qs
  * @param {string} path
  * @param {IncomingHttpHeaders.IncomingHttpHeaders} header
- * @returns {any}
+ * @returns {RequestReturn}
  */
-export function requestGet(qs: object, path: string, header?: IncomingHttpHeaders.IncomingHttpHeaders): any {
+export function requestGet(qs: object, path: string, header?: IncomingHttpHeaders.IncomingHttpHeaders): RequestReturn {
   const res = request(
     'GET',
     SERVER_URL + path,
@@ -34,9 +44,9 @@ export function requestGet(qs: object, path: string, header?: IncomingHttpHeader
  * @param {object} qs
  * @param {string} path
  * @param {IncomingHttpHeaders.IncomingHttpHeaders} header
- * @returns {any}
+ * @returns {RequestReturn}
  */
-export function requestDelete(qs: object, path: string, header?: IncomingHttpHeaders.IncomingHttpHeaders): any {
+export function requestDelete(qs: object, path: string, header?: IncomingHttpHeaders.IncomingHttpHeaders): RequestReturn {
   const res = request(
     'DELETE',
     SERVER_URL + path,
@@ -55,9 +65,9 @@ export function requestDelete(qs: object, path: string, header?: IncomingHttpHea
  * @param {object} body
  * @param {string} path
  * @param {IncomingHttpHeaders.IncomingHttpHeaders} header
- * @returns {any}
+ * @returns {RequestReturn}
  */
-export function requestPut(body: object, path: string, header?: IncomingHttpHeaders.IncomingHttpHeaders): any {
+export function requestPut(body: object, path: string, header?: IncomingHttpHeaders.IncomingHttpHeaders): RequestReturn {
   const res = request(
     'PUT',
     SERVER_URL + path,
@@ -76,9 +86,9 @@ export function requestPut(body: object, path: string, header?: IncomingHttpHead
  * @param {object} body
  * @param {string} path
  * @param {IncomingHttpHeaders.IncomingHttpHeaders} header
- * @returns {any}
+ * @returns {RequestReturn}
  */
-export function requestPost(body: object, path: string, header?: IncomingHttpHeaders.IncomingHttpHeaders): any {
+export function requestPost(body: object, path: string, header?: IncomingHttpHeaders.IncomingHttpHeaders): RequestReturn {
   const res = request(
     'POST',
     SERVER_URL + path,
