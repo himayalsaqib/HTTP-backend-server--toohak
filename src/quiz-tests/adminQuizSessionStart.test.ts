@@ -56,7 +56,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
       });
     });
 
-    test.skip('Side effect: adminQuizViewAllSessions shows new session in activeSessions array', () => {
+    test('Side effect: adminQuizViewAllSessions shows new session in activeSessions array', () => {
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({ retval: { sessionId: expect.any(Number) }, statusCode: 200 });
       const sessionId = res.retval.sessionId;
@@ -71,7 +71,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
       });
     });
 
-    test.skip('Side effect: adminQuizSessionStatus shows status of new quiz session', () => {
+    test('Side effect: adminQuizSessionStatus shows status of new quiz session', () => {
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({ retval: { sessionId: expect.any(Number) }, statusCode: 200 });
       const sessionId = res.retval.sessionId;
@@ -80,7 +80,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
       res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(res.retval).toStrictEqual({
         state: QuizSessionState.LOBBY,
-        atQuestion: 1,
+        atQuestion: 0,
         players: [],
         metadata: {
           quizId: quizId,
@@ -108,19 +108,22 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
       expect(res.statusCode).toStrictEqual(200);
     });
 
-    test.skip('Side effect: adminQuizSessionStatus does not show edits made to quiz after session started', () => {
+    test('Side effect: adminQuizSessionStatus does not show edits to quiz after a session starts', () => {
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({ retval: { sessionId: expect.any(Number) }, statusCode: 200 });
       const sessionId = res.retval.sessionId;
 
+      res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      console.log(res);
+
       const updateQuizBody = { imgUrl: 'https://google.com/another/image/path.png' };
       requestPut(updateQuizBody, `/v1/admin/quiz/${quizId}/thumbnail`, { token });
 
-      // not implemented yet
       res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      console.log(res);
       expect(res.retval).toStrictEqual({
         state: QuizSessionState.LOBBY,
-        atQuestion: 1,
+        atQuestion: 0,
         players: [],
         metadata: {
           quizId: quizId,

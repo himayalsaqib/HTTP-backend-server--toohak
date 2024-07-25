@@ -63,7 +63,7 @@ interface QuizList {
   name: string;
 }
 
-// excludes authUserId, active sessions and inactive sessions
+// excludes authUserId, active sessions and inactive sessions from Quizzes interface
 export interface QuizInfo {
   quizId: number;
   name: string;
@@ -94,6 +94,11 @@ export interface QuizSessionStatus {
   atQuestion: number;
   players: string[];
   metadata: QuizInfo;
+}
+
+export interface QuizSessionsView {
+  activeSessions: number[];
+  inactiveSessions: number[];
 }
 
 // ================================= ENUMS ================================== //
@@ -888,9 +893,9 @@ export function adminQuizGetSessionStatus(quizId: number, sessionId: number): Qu
  * Retrieves active and inactive session ids (sorted in ascending order) for a quiz
  *
  * @param {number} quizId
- * @returns {{ activeSessions: number[], inactiveSessions: number[] }}
+ * @returns {QuizSessionsView}
  */
-export function adminQuizSessionsView(quizId: number): { activeSessions: number[], inactiveSessions: number[] } {
+export function adminQuizSessionsView(quizId: number): QuizSessionsView {
   const quiz = findQuizById(quizId);
 
   quiz.activeSessions.sort((id1, id2) => id1 - id2);
