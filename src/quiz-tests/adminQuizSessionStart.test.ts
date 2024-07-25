@@ -1,6 +1,6 @@
 // includes http tests for the route POST /v1/admin/quiz/{quizid}/session/start
 
-import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
+import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
 import { QuestionBody, QuizSessionState } from '../quiz';
 
 beforeEach(() => {
@@ -14,7 +14,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
   let token: string;
   let quizBody: { name: string, description: string };
   let quizId: number;
-  let createBody: { questionBody: QuestionBody };
+  let questionBody: QuestionBody;
   let questionId: number;
   let startSessionBody: { autoStartNum: number };
 
@@ -30,20 +30,18 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
     quizId = quizResponse.retval.quizId;
 
     // creating a quiz question
-    createBody = {
-      questionBody: {
-        question: 'Who is the Monarch of England?',
-        duration: 5,
-        points: 5,
-        answers: [
-          { answer: 'Prince Charles', correct: true },
-          { answer: 'Prince William', correct: false }
-        ],
-        thumbnailUrl: 'http://google.com/some/image/path.png'
-      }
+    questionBody = {
+      question: 'Who is the Monarch of England?',
+      duration: 5,
+      points: 5,
+      answers: [
+        { answer: 'Prince Charles', correct: true },
+        { answer: 'Prince William', correct: false }
+      ],
+      thumbnailUrl: 'http://google.com/some/image/path.png'
     };
-    const createResponse = requestPost(createBody, `/v2/admin/quiz/${quizId}/question`, { token });
-    questionId = createResponse.retval.questionId;
+    const questionResponse = requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
+    questionId = questionResponse.retval.questionId;
 
     // initialising body for start session route
     startSessionBody = { autoStartNum: 3 };
@@ -58,7 +56,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
       });
     });
 
-    test.skip('Side effect: adminQuizViewAllSessions shows new session in activeSessions array', () => {
+    test('Side effect: adminQuizViewAllSessions shows new session in activeSessions array', () => {
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({ retval: { sessionId: expect.any(Number) }, statusCode: 200 });
       const sessionId = res.retval.sessionId;
@@ -73,7 +71,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
       });
     });
 
-    test.skip('Side effect: adminQuizSessionStatus shows status of new quiz session', () => {
+    test('Side effect: adminQuizSessionStatus shows status of new quiz session', () => {
       let res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       expect(res).toStrictEqual({ retval: { sessionId: expect.any(Number) }, statusCode: 200 });
       const sessionId = res.retval.sessionId;
@@ -82,7 +80,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
       res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       expect(res.retval).toStrictEqual({
         state: QuizSessionState.LOBBY,
-        atQuestion: 1,
+        atQuestion: 0,
         players: [],
         metadata: {
           quizId: quizId,
@@ -94,21 +92,35 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
           questions: [
             {
               questionId: questionId,
-              question: createBody.questionBody.question,
-              duration: createBody.questionBody.duration,
-              thumbnailUrl: createBody.questionBody.thumbnailUrl,
-              points: createBody.questionBody.points,
+              question: questionBody.question,
+              duration: questionBody.duration,
+              thumbnailUrl: questionBody.thumbnailUrl,
+              points: questionBody.points,
               answers: [
                 { answerId: expect.any(Number), answer: 'Prince Charles', colour: expect.any(String), correct: true },
                 { answerId: expect.any(Number), answer: 'Prince William', colour: expect.any(String), correct: false }
               ]
             }
           ],
-          duration: createBody.questionBody.duration,
-          thumbnailUrl: createBody.questionBody.thumbnailUrl
+          duration: questionBody.duration,
         }
       });
       expect(res.statusCode).toStrictEqual(200);
+    });
+
+    test('Side effect: adminQuizSessionStatus does not show edits to quiz after a session starts', () => {
+      const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
+      expect(res).toStrictEqual({ retval: { sessionId: expect.any(Number) }, statusCode: 200 });
+      const sessionId = res.retval.sessionId;
+
+      const beforeUpdateRes = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(beforeUpdateRes.retval.metadata.description).toStrictEqual(quizBody.description);
+
+      // editing quiz description
+      requestPut({ description: 'Updated' }, `/v2/admin/quiz/${quizId}/description`, { token });
+
+      const afterUpdateRes = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      expect(afterUpdateRes.retval.metadata.description).toStrictEqual(quizBody.description);
     });
   });
 
@@ -194,8 +206,7 @@ describe('POST /v1/admin/quiz/{quizid}/session/start', () => {
     });
 
     test('Returns error when quiz doesn\'t exist', () => {
-      quizId++;
-      const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
+      const res = requestPost(startSessionBody, `/v1/admin/quiz/${quizId + 1}/session/start`, { token });
       expect(res).toStrictEqual({
         retval: ERROR,
         statusCode: 403
