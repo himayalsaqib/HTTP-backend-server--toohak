@@ -514,7 +514,7 @@ export function checkIfTimerExists(sessionId: number): boolean {
 /**
  * This function starts the 3 second timer that changes the state from QUESTION_COUNTDOWN
  * to QUESTION_OPEN in a quizSession
- * 
+ *
  * @param {QuizSessions} quizSession
  * @param {number} sessionId
  * @returns {void}
@@ -537,7 +537,6 @@ export function beginQuestionCountdown(quizSession: QuizSessions, sessionId: num
   // add timerID to array
   sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
 }
-
 
 // ======================== PLAYER HELPER FUNCTIONS ========================= //
 
