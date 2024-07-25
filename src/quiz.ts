@@ -752,12 +752,15 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
   // adding new sessionId to active sessions array for this quiz
   quiz.activeSessions.push(newSessionId);
 
-  // copying quiz from quizzes array so any edits while session is running do
-  // not affect the active session. ignoring authUserId and active/inactive session
+  // copying quiz from quizzes array so any edits to quiz do not affect metadata 
+  // active session. ignoring authUserId, active and inactive sessionIds and 
+  // adding numQuestions
   const quizCopy = JSON.parse(JSON.stringify(quiz));
   delete quizCopy.authUserId;
   delete quizCopy.activeSessions;
   delete quizCopy.inactiveSessions;
+  quizCopy.numQuestions = quizCopy.questions.length;
+  
 
   const data = getData();
   data.quizSessions.push({
@@ -870,7 +873,7 @@ export function adminQuizGetSessionStatus(quizId: number, sessionId: number): Qu
     throw new Error('The session ID does not refer to a valid session within this quiz.');
   }
 
-  const metadata = adminQuizInfo(quizId);
+  const metadata = quizSession.quiz;
 
   // sort names into ascending order
   const playerNames: string[] = [];
