@@ -512,11 +512,11 @@ export function checkIfTimerExists(sessionId: number): boolean {
 }
 
 /**
- * Initialised an array for question results that can be updated as session 
+ * Initialised an array for question results that can be updated as session
  * progresses and players answer
  *
  * @param {Question[]} questions
- * @returns {QuestionResults[]} 
+ * @returns {QuestionResults[]}
  */
 export function initialiseQuestionResults(questions: Question[]): QuestionResults[] {
   const questionResults = [];
@@ -529,7 +529,7 @@ export function initialiseQuestionResults(questions: Question[]): QuestionResult
       playersAnsweredList: [],
       averageAnswerTime: 0,
       percentCorrect: 0,
-    }
+    };
     questionResults.push(newQuestion);
     counter++;
   }
