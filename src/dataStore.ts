@@ -88,6 +88,7 @@ export interface QuestionResults {
 export interface PlayerAnswered {
   playerId: number;
   answerTime: number;
+  score: number; // 0 if wrong, points if correct
 }
 
 export interface Message {
