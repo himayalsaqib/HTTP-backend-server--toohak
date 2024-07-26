@@ -75,7 +75,7 @@ describe('POST /v1/player/join', () => {
       });
     });
 
-    test.skip('Side effect: adminQuizSessionStatus shows players joined', () => {
+    test('Side effect: adminQuizSessionStatus shows players joined', () => {
       playerBody = { sessionId: sessionId, name: 'JaneDoe' };
       requestPost(playerBody, '/v1/player/join');
 
@@ -89,7 +89,7 @@ describe('POST /v1/player/join', () => {
       ]);
     });
 
-    test.skip('Side effect: adminQuizSessionStatus shows correct state after autoStartNum players joined', () => {
+    test('Side effect: adminQuizSessionStatus shows correct state after autoStartNum players joined', () => {
       playerBody = { sessionId: sessionId, name: 'JaneDoe' };
       requestPost(playerBody, '/v1/player/join');
 
@@ -100,9 +100,7 @@ describe('POST /v1/player/join', () => {
       requestPost(playerBody, '/v1/player/join');
 
       const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      expect(res.retval.state).toStrictEqual([
-        'QUESTION_COUNTDOWN'
-      ]);
+      expect(res.retval.state).toStrictEqual('QUESTION_COUNTDOWN');
     });
   });
 
@@ -120,13 +118,21 @@ describe('POST /v1/player/join', () => {
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
 
-    test.skip('Join when session is not in LOBBY state', () => {
-      // make state: QuizSessionState.QUESTION_COUNTDOWN
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-
+    test('Join when session is not in LOBBY state', () => {
+      // 3 players join to autoStart - move from LOBBY to QUESTION_COUNTDOWN state
       playerBody = { sessionId: sessionId, name: 'JaneDoe' };
+      requestPost(playerBody, '/v1/player/join');
+
+      playerBody = { sessionId: sessionId, name: '' };
+      requestPost(playerBody, '/v1/player/join');
+
+      playerBody = { sessionId: sessionId, name: 'JohnDoe' };
+      requestPost(playerBody, '/v1/player/join');
+
+      // Attempt to join player while not in LOBBY state
+      playerBody = { sessionId: sessionId, name: 'Joe' };
       requestPost({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/start`, { token });
-      const res = requestPost({ playerBody }, '/v1/player/join');
+      const res = requestPost(playerBody, '/v1/player/join');
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
   });
