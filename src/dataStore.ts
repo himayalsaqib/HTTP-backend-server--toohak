@@ -6,6 +6,10 @@ import { QuizInfo, QuizSessionState } from './quiz';
 
 const path = __dirname + '/toohakData.json';
 
+export interface ErrorObject {
+  error: string
+}
+
 export type EmptyObject = Record<never, never>;
 
 export interface Users {
@@ -69,9 +73,8 @@ export interface UsersRanking {
 
 export interface QuestionResults {
   questionId: number;
-  playersCorrectList: string[]; 
-  // playersAnsweredList: { playerId, answerTime }
-  averageAnswerTime: number; // 0
+  playersCorrectList: string[];
+  averageAnswerTime: number;
   percentCorrect: number;
 }
 
