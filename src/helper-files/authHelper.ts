@@ -4,6 +4,15 @@ import crypto from 'crypto';
 // ========================= OTHER HELPER FUNCTIONS ========================= //
 
 /**
+ * Function gets the current time in seconds to 10 significant figures
+ *
+ * @returns {number} time
+ */
+export function currentTime(): number {
+  return Math.floor(Date.now() / 1000);
+}
+
+/**
  * Function generates and returns a random integer for ids
  *
  * @returns {number}

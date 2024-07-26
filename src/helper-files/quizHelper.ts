@@ -293,15 +293,6 @@ export function swapQuestions(questionIndex1: number, questionIndex2: number, qu
 }
 
 /**
- * Function gets the current time in seconds to 10 significant figures
- *
- * @returns {number} time
- */
-export function currentTime(): number {
-  return Math.floor(Date.now() / 1000);
-}
-
-/**
  * Function that checks whether the end of the given thumbnailUrl contains the
  * correct file type (jpg, jpeg, png)
  *
