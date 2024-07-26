@@ -1,6 +1,6 @@
 // includes player functions
 
-import { setData, getData, EmptyObject, Message } from './dataStore';
+import { setData, getData, EmptyObject, Message, UsersRanking } from './dataStore';
 import {
   findQuizSessionById,
   generateRandomName,
@@ -60,6 +60,14 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
   session.players.push(newPlayer);
   data.players.push(newPlayer);
 
+  // Initialise ranking field 
+  const newPlayerRank: UsersRanking = {
+    playerId: newPlayerId,
+    name: playerName,
+    score: 0
+  };
+  session.usersRankedByScore.push(newPlayerRank);
+
   // Update the session state if the number of players matches the autoStartNum
   updateSessionStateIfAutoStart(session);
 
@@ -70,7 +78,6 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
 
 /**
  * Allow a player to send a message during a session
- *
  * @param {number} playerId
  * @param {Message} message
  * @returns {{}}
