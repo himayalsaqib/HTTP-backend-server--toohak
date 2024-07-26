@@ -520,18 +520,15 @@ export function checkIfTimerExists(sessionId: number): boolean {
  */
 export function initialiseQuestionResults(questions: Question[]): QuestionResults[] {
   const questionResults = [];
-  let counter = 1;
   for (const question of questions) {
     const newQuestion: QuestionResults = {
-      questionNumber: counter,
       questionId: question.questionId,
       playersCorrectList: [],
       playersAnsweredList: [],
       averageAnswerTime: 0,
       percentCorrect: 0,
     };
-    questionResults.push(newQuestion);
-    counter++;
+    questionResults.push(newQuestion)
   }
 
   return questionResults;

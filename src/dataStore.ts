@@ -77,7 +77,6 @@ export interface UsersRanking {
 }
 
 export interface QuestionResults {
-  questionNumber: number;
   questionId: number;
   playersCorrectList: string[];
   playersAnsweredList: PlayerAnswered[];
