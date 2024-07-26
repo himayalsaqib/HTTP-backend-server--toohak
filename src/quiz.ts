@@ -26,6 +26,7 @@ import {
   checkIfTimerExists,
   beginQuestionCountdown,
   changeQuestionOpenToQuestionClose,
+  initialiseQuestionResults,
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -772,7 +773,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     autoStartNum: autoStartNum,
     quiz: quizCopy,
     usersRankedByScore: [],
-    questionResults: [],
+    questionResults: initialiseQuestionResults(quizCopy.questions),
     messages: [],
   });
 

@@ -1,6 +1,6 @@
 // Includes helper functions for auth.ts and quiz.ts
 
-import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
+import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions, QuestionResults } from '../dataStore';
 import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState, sessionIdToTimerArray, WAIT_THREE_SECONDS } from '../quiz';
 import crypto from 'crypto';
 
@@ -562,6 +562,29 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
   }, duration * 1000);
 
   sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+}
+
+/**
+ * Initialised an array for question results that can be updated as session
+ * progresses and players answer
+ *
+ * @param {Question[]} questions
+ * @returns {QuestionResults[]}
+ */
+export function initialiseQuestionResults(questions: Question[]): QuestionResults[] {
+  const questionResults = [];
+  for (const question of questions) {
+    const newQuestion: QuestionResults = {
+      questionId: question.questionId,
+      playersCorrectList: [],
+      playersAnsweredList: [],
+      averageAnswerTime: 0,
+      percentCorrect: 0,
+    };
+    questionResults.push(newQuestion);
+  }
+
+  return questionResults;
 }
 
 // ======================== PLAYER HELPER FUNCTIONS ========================= //
