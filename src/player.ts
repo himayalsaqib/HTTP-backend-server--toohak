@@ -97,6 +97,69 @@ export function getPlayerStatus (playerId: number): playerStatus {
 }
 
 /**
+ * Allows the current player to submit answer(s) to the currently active question.
+ * Question position starts at 1.
+ *
+ * @param {number} playerId
+ * @param {number} questionPosition
+ * @param {{ answerIds: number[] }} body
+ * @returns {{}}
+ */
+export function playerSubmitAnswer(playerId: number, questionPosition: number, body: { answerIds: number[] }): EmptyObject {
+  const data = getData();
+  if (!playerIdInUse(playerId)) {
+    throw new Error('Player ID does not exist');
+  }
+
+  const session = findSessionByPlayerId(playerId);
+
+  // Check if the question position is valid for the session the player is in
+  if (questionPosition < 1 || questionPosition > session.quiz.numQuestions) {
+    throw new Error('Invalid question position');
+  }
+
+  if (session.state !== QuizSessionState.QUESTION_OPEN) {
+    throw new Error('Session is not in QUESTION_OPEN state');
+  }
+
+  // Checking session is currently on this question
+  if (session.atQuestion !== questionPosition) {
+    throw new Error('Session is not currently on this question');
+  }
+
+  const currentQuestion = session.quiz.questions[questionPosition - 1]; 
+  const { answerIds } = body;
+
+  const validAnswerIds = new Set(currentQuestion.answers.map((answer) => answer.answerId));
+  const invalidAnswerIds = answerIds.filter((id) => !validAnswerIds.has(id));
+  if (invalidAnswerIds.length > 0) {
+    throw new Error('Invalid answer IDs provided');
+  }
+
+  // Check for duplicate answer ids
+  const uniqueAnswerIds = new Set(answerIds);
+  if (uniqueAnswerIds.size !== answerIds.length) {
+    throw new Error('Duplicate answer IDs provided');
+  }
+
+  // Throw error is less than 1 answer id submitted
+  if (answerIds.length < 1) {
+    throw new Error('Less than 1 answer id submitted');
+  }
+
+  // Submit or update the player's answers
+  const playerIndex = session.players.findIndex((player) => player.playerId === playerId);
+  if (playerIndex === -1) {
+    throw new Error('Player not found in session');
+  }
+
+
+  setData(data);
+
+  return {};
+}
+
+/**
  * Allow a player to send a message during a session
  *
  * @param {number} playerId
