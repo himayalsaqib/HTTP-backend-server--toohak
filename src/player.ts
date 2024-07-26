@@ -14,8 +14,17 @@ import {
 } from './helper-files/helper';
 import { QuizSessionState } from './quiz';
 
+// ============================ TYPE ANNOTATIONS ============================ //
+
 interface SendMessage {
   messageBody: string
+}
+
+interface PlayerQuestionResults {
+  questionId: number;
+  playersCorrectList: string[];
+  averageAnswerTime: number;
+  percentCorrect: number;
 }
 
 // =============================== FUNCTIONS ================================ //
@@ -29,7 +38,7 @@ interface SendMessage {
 export function playerJoin(sessionId: number, name: string): { playerId: number } {
   const session = findQuizSessionById(sessionId);
   if (!session) {
-    throw new Error('Session Id does not refer to a valid session');
+    throw new Error('Session Id does not refer to a valid session.');
   }
 
   let playerName = name;
@@ -43,12 +52,12 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
 
   const data = getData();
   if (playerNameExists(sessionId, playerName)) {
-    throw new Error('Name is not unique');
+    throw new Error('Name is not unique.');
   }
 
   // throw error for if session is not in lobby state
   if (session.state !== QuizSessionState.LOBBY) {
-    throw new Error('Session is not in LOBBY state');
+    throw new Error('Session is not in LOBBY state.');
   }
 
   let newPlayerId = getRandomInt();
@@ -77,13 +86,13 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
  */
 export function playerSendChat(playerId: number, message: SendMessage): EmptyObject {
   if (!playerIdInUse(playerId)) {
-    throw new Error('The player ID does not exist');
+    throw new Error('The player ID does not exist.');
   }
 
   const session = findSessionByPlayerId(playerId);
 
   if (message.messageBody.length < 1 || message.messageBody.length > 100) {
-    throw new Error('The message body is less than 1 character or more than 100 characters');
+    throw new Error('The message body is less than 1 character or more than 100 characters.');
   }
 
   const newMessage = {
@@ -105,10 +114,36 @@ export function playerSendChat(playerId: number, message: SendMessage): EmptyObj
  */
 export function playerViewChat(playerId: number): { messages: Message[] } {
   if (!playerIdInUse(playerId)) {
-    throw new Error('The player ID does not exist');
+    throw new Error('The player ID does not exist.');
   }
 
   const session = findSessionByPlayerId(playerId);
 
   return { messages: session.messages };
+}
+
+export function playerQuestionResults(playerId: number, questionPosition: number): PlayerQuestionResults {
+  const session = findSessionByPlayerId(playerId);
+
+  if (!playerIdInUse(playerId)) {
+    throw new Error('The player ID does not exist.');
+  }
+  if (questionPosition > session.quiz.questions.length) {
+    throw new Error('Question position is not valid for the session this player is in.');
+  }
+  if (session.state != QuizSessionState.ANSWER_SHOW) {
+    throw new Error('Session is not in ANSWER_SHOW state.');
+  }
+  if (session.atQuestion != questionPosition) {
+    throw new Error('Session is not currently on this question.');
+  }
+
+  const currentQuestion = session.questionResults[questionPosition - 1];
+
+  return {
+    questionId: currentQuestion.questionId,
+    playersCorrectList: currentQuestion.playersCorrectList,
+    averageAnswerTime: currentQuestion.averageAnswerTime,
+    percentCorrect: currentQuestion.percentCorrect,
+  };
 }
