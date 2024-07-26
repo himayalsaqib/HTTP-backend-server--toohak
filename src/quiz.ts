@@ -27,6 +27,9 @@ import {
   beginQuestionCountdown,
   changeQuestionOpenToQuestionClose,
   initialiseQuestionResults,
+  updateQuestionResults,
+  updateUsersRanking,
+  endOfQuestionUpdates,
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -817,13 +820,18 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     // add sessionId to inactive sessions and remove from active sessions
     quiz.inactiveSessions.push(sessionId);
     quiz.activeSessions.splice(quiz.activeSessions.indexOf(sessionId), 1);
+
   } else if (action === QuizSessionAction.GO_TO_ANSWER) {
     quizSession.state = QuizSessionState.ANSWER_SHOW;
+    endOfQuestionUpdates(quizSession);
+
   } else if (action === QuizSessionAction.GO_TO_FINAL_RESULTS) {
     quizSession.state = QuizSessionState.FINAL_RESULTS;
     quizSession.atQuestion = 0;
+
   } else if (action === QuizSessionAction.NEXT_QUESTION) {
     beginQuestionCountdown(quizSession, sessionId);
+
   } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
     // clear timer if it exists and remove from array
     if (checkIfTimerExists(sessionId)) {

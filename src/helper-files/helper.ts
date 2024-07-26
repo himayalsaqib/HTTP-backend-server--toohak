@@ -1,6 +1,7 @@
 // Includes helper functions for auth.ts and quiz.ts
 
-import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions, QuestionResults } from '../dataStore';
+import { Session } from 'inspector';
+import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions, QuestionResults, UsersRanking, PlayerAnswered } from '../dataStore';
 import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState, sessionIdToTimerArray, WAIT_THREE_SECONDS } from '../quiz';
 import crypto from 'crypto';
 
@@ -556,6 +557,8 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
 
   const timeoutId = setTimeout(() => {
     quizSession.state = QuizSessionState.QUESTION_CLOSE;
+    endOfQuestionUpdates(quizSession);
+
     const index = sessionIdToTimerArray.findIndex(t => t.timeoutId === timeoutId);
     clearTimeout(timeoutId);
     sessionIdToTimerArray.splice(index, 1);
@@ -565,7 +568,7 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
 }
 
 /**
- * Initialised an array for question results that can be updated as session
+ * Initialise an array for question results that can be updated as session
  * progresses and players answer
  *
  * @param {Question[]} questions
@@ -585,6 +588,61 @@ export function initialiseQuestionResults(questions: Question[]): QuestionResult
   }
 
   return questionResults;
+}
+
+/**
+ * calculate averageAnswerTime and percentCorrect after a question has finished
+ *
+ * @param {QuestionResults} questionResults
+ * @param {number} totalPlayers
+ * @returns {void}
+ */
+export function updateQuestionResults(questionResults: QuestionResults, totalPlayers: number): void {
+  // calculating average answer time (to the nearest second)
+  const answerTimeSum = questionResults.playersAnsweredList.reduce((sum, player) => sum + player.answerTime, 0);
+  questionResults.averageAnswerTime = Math.round(answerTimeSum / questionResults.playersAnsweredList.length);
+
+  // calculating percent correct (to the nearest whole number)
+  questionResults.percentCorrect = Math.round((questionResults.playersCorrectList.length / totalPlayers) * 100); 
+}
+
+/**
+ * Update every players' total score and the overall ranking for the session 
+ * after a question has finished
+ *
+ * @param {UsersRanking[]} usersRankedByScore
+ * @param {PlayerAnswered[]} playersAnswered
+ * @returns {void}
+ */
+export function updateUsersRanking(usersRankedByScore: UsersRanking[], playersAnswered: PlayerAnswered[]): void {
+  // first updating every player's score after the question
+  for (const user of usersRankedByScore) {
+    const player = playersAnswered.find(p => p.playerId === user.playerId);
+    // if they answered, adding their score (0 or points) to their final score
+    if (player !== undefined) {
+      user.score += player.score;
+    }
+  }
+
+  // updating usersRankedByScore to be in descending order by score
+  usersRankedByScore.sort((a, b) => b.score - a.score);
+}
+
+/**
+ * Find the questionResults for the question that just ended and update its 
+ * fields as well as update usersRankedByScore to ensure it is in descending
+ * order by score
+ *
+ * @param {QuizSessions} quizSession
+ * @returns {void}
+ */
+export function endOfQuestionUpdates(quizSession: QuizSessions): void {
+  // get questionResults info for question that just finished
+  const currentQuestionResults = quizSession.questionResults[quizSession.atQuestion - 1];
+
+  // updating questionResults and usersRankedByScore at the end of a question
+  updateQuestionResults(currentQuestionResults, quizSession.players.length);
+  updateUsersRanking(quizSession.usersRankedByScore, currentQuestionResults.playersAnsweredList);
 }
 
 // ======================== PLAYER HELPER FUNCTIONS ========================= //
