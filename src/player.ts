@@ -80,7 +80,7 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
  * @param {number} sessionId
  * @returns {playerStatus} - returns status of player
  */
-export function getPlayerStatus (playerId: number, sessionId: number): playerStatus {
+export function getPlayerStatus (playerId: number): playerStatus {
   if (!playerIdInUse(playerId)) {
     throw new Error('The player ID does not exist');
   }

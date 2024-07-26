@@ -982,10 +982,9 @@ app.post('/v1/player/:playerid/chat', (req: Request, res: Response) => {
 
 app.get('/v1/player/:playerid/', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerid as string);
-  const { sessionId } = req.query;
 
   try {
-    const status = getPlayerStatus(playerId, parseInt(sessionId as string));
+    const status = getPlayerStatus(playerId);
     res.json(status);
   } catch (error) {
     res.status(400).json({ error: error.message });
