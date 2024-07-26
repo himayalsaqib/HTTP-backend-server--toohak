@@ -18,6 +18,12 @@ interface SendMessage {
   messageBody: string
 }
 
+export interface playerStatus {
+  state: string;
+  numQuestions: number;
+  atQuestion: number;
+}
+
 // =============================== FUNCTIONS ================================ //
 /**
  * Allow a guest player to join a session
@@ -66,6 +72,28 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
   setData(data);
 
   return { playerId: newPlayerId };
+}
+
+/**
+ * Get the status of a guest player that has already joined a session
+ * @param {number} playerId
+ * @param {number} sessionId
+ * @returns {playerStatus} - returns status of player
+ */
+export function getPlayerStatus (playerId: number): playerStatus {
+  if (!playerIdInUse(playerId)) {
+    throw new Error('The player ID does not exist');
+  }
+
+  const session = findSessionByPlayerId(playerId);
+
+  const status = {
+    state: session.state,
+    numQuestions: session.quiz.numQuestions,
+    atQuestion: session.atQuestion
+  };
+
+  return status;
 }
 
 /**
