@@ -1,8 +1,8 @@
 // ======================== PLAYER HELPER FUNCTIONS ========================= //
 
-import { getData, QuizSessions } from "../dataStore";
-import { QuizSessionState } from "../quiz";
-import { findQuizSessionById } from "./quizHelper";
+import { getData, QuizSessions } from '../dataStore';
+import { QuizSessionState } from '../quiz';
+import { findQuizSessionById } from './quizHelper';
 
 /**
  * Function moves onto next state if number of players joined matches autoStartNum

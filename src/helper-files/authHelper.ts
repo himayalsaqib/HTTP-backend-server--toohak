@@ -1,4 +1,4 @@
-import { getData, Users } from "../dataStore";
+import { getData, Users } from '../dataStore';
 import crypto from 'crypto';
 
 // ========================= OTHER HELPER FUNCTIONS ========================= //

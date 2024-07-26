@@ -1,8 +1,8 @@
 // ========================= QUIZ HELPER FUNCTIONS ========================== //
 
-import { Answer, getData, Question, QuestionResults, QuizSessions, Quizzes, Trash } from "../dataStore";
-import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState, sessionIdToTimerArray, WAIT_THREE_SECONDS } from "../quiz";
-import { getRandomInt } from "./authHelper";
+import { Answer, getData, Question, QuestionResults, QuizSessions, Quizzes, Trash } from '../dataStore';
+import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState, sessionIdToTimerArray, WAIT_THREE_SECONDS } from '../quiz';
+import { getRandomInt } from './authHelper';
 
 /**
  * Function checks if a quiz name contains any invalid characters. Characters
