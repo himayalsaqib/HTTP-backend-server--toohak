@@ -86,15 +86,6 @@ export function getPlayerStatus (playerId: number): playerStatus {
   }
 
   const session = findSessionByPlayerId(playerId);
-  if (!session) {
-    throw new Error('Session Id does not refer to a valid session');
-  }
-
-  // Check if the player is in the session
-  const playerInSession = session.players.some(player => player.playerId === playerId);
-  if (!playerInSession) {
-    throw new Error('The player Id does not belong to this session');
-  }
 
   const status = {
     state: session.state,

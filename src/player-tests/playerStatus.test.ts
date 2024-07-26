@@ -18,6 +18,7 @@ describe('GET /v1/player/{playerid}', () => {
   let sessionId: number;
   let playerBody: { sessionId: number, name: string };
   let playerId: number;
+  let player2Id: number;
   let updateActionBody: { action: string };
 
   beforeEach(() => {
@@ -81,6 +82,21 @@ describe('GET /v1/player/{playerid}', () => {
           atQuestion: res.retval.atQuestion,
         },
         statusCode: 200,
+      });
+    });
+
+    test('Correct return type when second player joins ', () => {
+      const player2Body = { sessionId: sessionId, name: 'Player Two' };
+      const player2Res = requestPost(player2Body, '/v1/player/join');
+      player2Id = player2Res.retval.playerId;
+      const res = requestGet({}, `/v1/player/${player2Id}`);
+      expect(res).toStrictEqual({
+        retval: {
+          state: res.retval.state,
+          numQuestions: res.retval.numQuestions,
+          atQuestion: res.retval.atQuestion
+        },
+        statusCode: 200
       });
     });
   });
