@@ -24,6 +24,8 @@ import {
   getRandomInt,
   correctSessionStateForAction,
   checkIfTimerExists,
+  beginQuestionCountdown,
+  changeQuestionOpenToQuestionClose,
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -53,7 +55,7 @@ const MAX_AUTO_START_NUM = 50;
 
 const MAX_ACTIVE_QUIZ_SESSIONS = 10;
 
-const WAIT_THREE_SECONDS = 3;
+export const WAIT_THREE_SECONDS = 3;
 
 export const sessionIdToTimerArray: { sessionId: number, timeoutId: ReturnType<typeof setTimeout> }[] = [];
 
@@ -63,7 +65,7 @@ export interface QuizList {
   name: string;
 }
 
-// excludes authUserId, active sessions and inactive sessions
+// excludes authUserId, active sessions and inactive sessions from Quizzes interface
 export interface QuizInfo {
   quizId: number;
   name: string;
@@ -89,9 +91,16 @@ export interface QuestionBody {
   thumbnailUrl?: string;
 }
 
+export interface QuizSessionStatus {
+  state: QuizSessionState;
+  atQuestion: number;
+  players: string[];
+  metadata: QuizInfo;
+}
+
 export interface QuizSessionsView {
-  activeSessions: number[],
-  inactiveSessions: number[]
+  activeSessions: number[];
+  inactiveSessions: number[];
 }
 
 // ================================= ENUMS ================================== //
@@ -722,11 +731,11 @@ export function adminQuizThumbnail(quizId: number, thumbnailUrl: string): EmptyO
  * @returns {{ sessionId: number}} - returns new session ID
  */
 export function adminQuizSessionStart(quizId: number, autoStartNum: number): { sessionId: number } {
+  const quiz = findQuizById(quizId);
+
   if (quizIsInTrash(quizId)) {
     throw new Error('The quiz is in trash.');
   }
-  const quiz = findQuizById(quizId);
-
   if (autoStartNum > MAX_AUTO_START_NUM) {
     throw new Error('AutoStartNum is a number greater than 50.');
   }
@@ -745,19 +754,14 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
   // adding new sessionId to active sessions array for this quiz
   quiz.activeSessions.push(newSessionId);
 
-  // copying quiz from quizzes array so any edits while session is running do
-  // not affect the active session. ignoring authUserId and active/inactive session
-  const quizInfoForSession = {
-    quizId: quizId,
-    name: quiz.name,
-    timeCreated: quiz.timeCreated,
-    timeLastEdited: quiz.timeLastEdited,
-    description: quiz.description,
-    numQuestions: quiz.questions.length,
-    questions: quiz.questions,
-    duration: quiz.duration,
-    thumbnailUrl: quiz.thumbnailUrl
-  };
+  // copying quiz from quizzes array so any edits to quiz do not affect metadata
+  // active session. ignoring authUserId, active and inactive sessionIds and
+  // adding numQuestions
+  const quizCopy = JSON.parse(JSON.stringify(quiz));
+  delete quizCopy.authUserId;
+  delete quizCopy.activeSessions;
+  delete quizCopy.inactiveSessions;
+  quizCopy.numQuestions = quizCopy.questions.length;
 
   const data = getData();
   data.quizSessions.push({
@@ -766,7 +770,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     atQuestion: 0,
     players: [],
     autoStartNum: autoStartNum,
-    quiz: quizInfoForSession,
+    quiz: quizCopy,
     usersRankedByScore: [],
     questionResults: [],
     messages: [],
@@ -818,24 +822,7 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     quizSession.state = QuizSessionState.FINAL_RESULTS;
     quizSession.atQuestion = 0;
   } else if (action === QuizSessionAction.NEXT_QUESTION) {
-    // increment atQuestion
-    quizSession.atQuestion++;
-    quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
-    // start countdown timer
-    const timeoutId = setTimeout(() => {
-      // update state
-      quizSession.state = QuizSessionState.QUESTION_OPEN;
-
-      // remove timerId from array (if it exists) after the 3 seconds and clear timer
-      const index = sessionIdToTimerArray.findIndex(i => i.timeoutId === timeoutId);
-      if (index !== -1) {
-        sessionIdToTimerArray.splice(index, 1);
-        clearTimeout(timeoutId);
-      }
-    }, WAIT_THREE_SECONDS * 1000);
-
-    // add timerID to array
-    sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+    beginQuestionCountdown(quizSession, sessionId);
   } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
     // clear timer if it exists and remove from array
     if (checkIfTimerExists(sessionId)) {
@@ -846,11 +833,10 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     }
 
     quizSession.state = QuizSessionState.QUESTION_OPEN;
-  } else if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
-    const duration = quizSession.quiz.questions[quizSession.atQuestion].duration;
-    setTimeout(() => {
-      quizSession.state = QuizSessionState.QUESTION_CLOSE;
-    }, duration * 1000);
+  }
+
+  if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
+    changeQuestionOpenToQuestionClose(quizSession, sessionId);
   }
 
   setData(data);
@@ -858,12 +844,42 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
 }
 
 /**
+ * Get the status of a particular quiz session
+ *
+ * @param {number} quizId
+ * @param {number} sessionId
+ * @returns {QuizSessionStatus}
+ */
+export function adminQuizGetSessionStatus(quizId: number, sessionId: number): QuizSessionStatus {
+  const quizSession = findQuizSessionById(sessionId);
+  if (!quizSession || quizSession.quiz.quizId !== quizId) {
+    throw new Error('The session ID does not refer to a valid session within this quiz.');
+  }
+
+  // sort names into ascending order
+  const playerNames: string[] = [];
+  for (const player of quizSession.players) {
+    playerNames.push(player.name);
+  }
+  const sortedPlayers = playerNames.sort();
+
+  const sessionStatus: QuizSessionStatus = {
+    state: quizSession.state,
+    atQuestion: quizSession.atQuestion,
+    players: sortedPlayers,
+    metadata: quizSession.quiz,
+  };
+
+  return sessionStatus;
+}
+
+/**
  * Retrieves active and inactive session ids (sorted in ascending order) for a quiz
  *
  * @param {number} quizId
- * @returns {{ activeSessions: number[], inactiveSessions: number[] }}
+ * @returns {QuizSessionsView}
  */
-export function adminQuizSessionsView(quizId: number): { activeSessions: number[], inactiveSessions: number[] } {
+export function adminQuizSessionsView(quizId: number): QuizSessionsView {
   const quiz = findQuizById(quizId);
 
   quiz.activeSessions.sort((id1, id2) => id1 - id2);
