@@ -7,10 +7,9 @@ import {
   findSessionByPlayerId,
   generateRandomName,
   playerIdInUse,
-  playerNameExists,
-  updateSessionStateIfAutoStart
+  playerNameExists
 } from './helper-files/playerHelper';
-import { findQuizSessionById } from './helper-files/quizHelper';
+import { beginQuestionCountdown, findQuizSessionById } from './helper-files/quizHelper';
 import { QuizSessionState } from './quiz';
 
 interface SendMessage {
@@ -73,7 +72,9 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
   session.usersRankedByScore.push(newPlayerRank);
 
   // Update the session state if the number of players matches the autoStartNum
-  updateSessionStateIfAutoStart(session);
+  if (session.players.length === session.autoStartNum) {
+    beginQuestionCountdown(session, session.sessionId);
+  }
 
   setData(data);
 
