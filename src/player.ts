@@ -142,7 +142,7 @@ export function playerQuestionResults(playerId: number, questionPosition: number
 
   return {
     questionId: currentQuestion.questionId,
-    playersCorrectList: currentQuestion.playersCorrectList,
+    playersCorrectList: currentQuestion.playersCorrectList.sort(),
     averageAnswerTime: currentQuestion.averageAnswerTime,
     percentCorrect: currentQuestion.percentCorrect,
   };
