@@ -101,6 +101,23 @@ export interface QuizSessionsView {
   inactiveSessions: number[];
 }
 
+interface UsersRankedByScore {
+  name: string;
+  score: number;
+};
+
+interface QuestionResults {
+  questionId: number;
+  playersCorrectList: string[];
+  averageAnswerTime: number;
+  percentCorrect: number;
+}
+
+interface SessionFinalResults {
+  usersRankedByScore: UsersRankedByScore[];
+  questionResults: QuestionResults[];
+}
+
 // ================================= ENUMS ================================== //
 
 export enum QuizAnswerColours {
