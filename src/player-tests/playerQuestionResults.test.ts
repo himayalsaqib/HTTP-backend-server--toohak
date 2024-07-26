@@ -16,8 +16,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
   let quizBody: { name: string, description: string };
   let quizId: number;
   let questionBody: QuestionBody;
-  let questionId1: number;
-  let questionId2: number;
+  let questionIds: number[];
   let correctAnswerId: number;
   let wrongAnswerId: number
   let startSessionBody: { autoStartNum: number };
@@ -49,7 +48,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       thumbnailUrl: 'http://google.com/some/image/path.png'
     };
     let questionRes = requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
-    questionId1 = questionRes.retval.questionId;
+    questionIds.push(questionRes.retval.questionId);
 
     questionBody = {
       question: 'The sun is a ...',
@@ -62,7 +61,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       thumbnailUrl: 'http://google.com/some/image/path.png',
     };
     questionRes = requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
-    questionId2 = questionRes.retval.questionId;
+    questionIds.push(questionRes.retval.questionId);
 
     // getting the answerId for correct answer and wrong answer
     const quizInfoRes = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
@@ -98,7 +97,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionPosition}/results`);
       expect(res).toStrictEqual({
         retval: {
-          questionId: questionId1,
+          questionId: questionIds[0],
           playersCorrectList: [playerBody.name],
           averageAnswerTime: expect.any(Number),
           percentCorrect: 100
@@ -121,10 +120,47 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionPosition}/results`);
       expect(res).toStrictEqual({
         retval: {
-          questionId: questionId2,
+          questionId: questionIds[1],
           playersCorrectList: [],
           averageAnswerTime: expect.any(Number),
           percentCorrect: 0
+        },
+        statusCode: 200
+      });
+    });
+
+    test('Successfully returns playersCorrectList in alphabetical order', () => {
+      // starting a new session in LOBBY state
+      startSessionBody = { autoStartNum: 2 };
+      const sessionResponse = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
+      sessionId = sessionResponse.retval.sessionId;
+
+      // making 2 players join the session
+      // playerBody = { sessionId: sessionId, name: 'JaneDoe' };
+      let playerResponse = requestPost(playerBody, '/v1/player/join');
+      playerId = playerResponse.retval.playerId; 
+
+      const playerBody2 = { sessionId: sessionId, name: 'JohnDoe' };
+      playerResponse = requestPost(playerBody, '/v1/player/join');
+      const playerId2 = playerResponse.retval.playerId; 
+
+      // session state automatically goes LOBBY -> QUESTION_COUNTDOWN -> QUESTION_OPEN 
+      sleepSync(3 * 1000);
+
+      // submitting an answer for the player 
+      requestPut({ answerIds: [correctAnswerId] }, `/v1/player/${playerId}/question/${questionPosition}`);
+      requestPut({ answerIds: [correctAnswerId] }, `/v1/player/${playerId2}/question/${questionPosition}`);
+
+      // updating session state from QUESTION_OPEN --> ANSWER_SHOW
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+
+      const res = requestGet({}, `/v1/player/${playerId}/question/${questionPosition}/results`);
+      expect(res).toStrictEqual({
+        retval: {
+          questionId: questionIds[1],
+          playersCorrectList: [playerBody.name, playerBody2.name],
+          averageAnswerTime: expect.any(Number),
+          percentCorrect: 100
         },
         statusCode: 200
       });
