@@ -1,6 +1,6 @@
 // includes quiz functions
 
-import { setData, getData, ErrorObject, EmptyObject, Question, Answer, Quizzes } from './dataStore';
+import { setData, getData, EmptyObject, Question, Answer, Quizzes } from './dataStore';
 import {
   quizNameHasValidChars,
   quizNameInUse,
@@ -60,7 +60,7 @@ export const WAIT_THREE_SECONDS = 3;
 export const sessionIdToTimerArray: { sessionId: number, timeoutId: ReturnType<typeof setTimeout> }[] = [];
 
 // ============================ TYPE ANNOTATIONS ============================ //
-interface QuizList {
+export interface QuizList {
   quizId: number;
   name: string;
 }
@@ -165,7 +165,7 @@ export function adminQuizList(authUserId: number): { quizzes: QuizList[] } {
  * @param {string} description
  * @returns {{ quizId: number }} - assigns a quizId | error
  */
-export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } | ErrorObject {
+export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } {
   if (quizNameHasValidChars(name) === false) {
     throw new Error('Name contains invalid characters. Valid characters are alphanumeric and spaces.');
   }
@@ -325,7 +325,7 @@ export function adminQuizDescriptionUpdate (quizId: number, description: string)
 * @param {number} quizId
 * @returns {{}}
 */
-export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
+export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject {
   const data = getData();
   const trashedQuiz = findTrashedQuizById(quizId);
 
