@@ -1,32 +1,30 @@
 // includes quiz functions
 
-import { setData, getData, ErrorObject, EmptyObject, Question, Answer, Quizzes } from './dataStore';
+import { setData, getData, EmptyObject, Question, Answer, Quizzes } from './dataStore';
+import { adminEmailInUse, currentTime, findUserByEmail, getRandomInt } from './helper-files/authHelper';
 import {
-  quizNameHasValidChars,
-  quizNameInUse,
-  quizIdInUse,
-  findQuizById,
-  findTrashedQuizById,
+  beginQuestionCountdown,
   calculateSumQuestionDuration,
+  changeQuestionOpenToQuestionClose,
   checkAnswerLength,
   checkForAnsDuplicates,
   checkForNumCorrectAns,
-  questionIdInUse,
-  swapQuestions,
-  findQuestionById,
-  createAnswersArray,
-  adminEmailInUse,
-  findUserByEmail,
-  currentTime,
-  checkThumbnailUrlFileType,
-  findQuizSessionById,
-  quizIsInTrash,
-  getRandomInt,
-  correctSessionStateForAction,
   checkIfTimerExists,
-  beginQuestionCountdown,
-  changeQuestionOpenToQuestionClose,
-} from './helper-files/helper';
+  checkThumbnailUrlFileType,
+  correctSessionStateForAction,
+  createAnswersArray,
+  findQuestionById,
+  findQuizById,
+  findQuizSessionById,
+  findTrashedQuizById,
+  initialiseQuestionResults,
+  questionIdInUse,
+  quizIdInUse,
+  quizIsInTrash,
+  quizNameHasValidChars,
+  quizNameInUse,
+  swapQuestions
+} from './helper-files/quizHelper';
 
 // ============================= GLOBAL VARIABLES =========================== //
 const MIN_QUIZ_NAME_LEN = 3;
@@ -60,7 +58,7 @@ export const WAIT_THREE_SECONDS = 3;
 export const sessionIdToTimerArray: { sessionId: number, timeoutId: ReturnType<typeof setTimeout> }[] = [];
 
 // ============================ TYPE ANNOTATIONS ============================ //
-interface QuizList {
+export interface QuizList {
   quizId: number;
   name: string;
 }
@@ -165,7 +163,7 @@ export function adminQuizList(authUserId: number): { quizzes: QuizList[] } {
  * @param {string} description
  * @returns {{ quizId: number }} - assigns a quizId | error
  */
-export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } | ErrorObject {
+export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } {
   if (quizNameHasValidChars(name) === false) {
     throw new Error('Name contains invalid characters. Valid characters are alphanumeric and spaces.');
   }
@@ -325,7 +323,7 @@ export function adminQuizDescriptionUpdate (quizId: number, description: string)
 * @param {number} quizId
 * @returns {{}}
 */
-export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
+export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject {
   const data = getData();
   const trashedQuiz = findTrashedQuizById(quizId);
 
@@ -772,7 +770,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     autoStartNum: autoStartNum,
     quiz: quizCopy,
     usersRankedByScore: [],
-    questionResults: [],
+    questionResults: initialiseQuestionResults(quizCopy.questions),
     messages: [],
   });
 

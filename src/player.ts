@@ -1,21 +1,25 @@
 // includes player functions
 
-import { setData, getData, EmptyObject, Message } from './dataStore';
+import { setData, getData, EmptyObject, Message, UsersRanking } from './dataStore';
+import { currentTime, getRandomInt } from './helper-files/authHelper';
 import {
-  findQuizSessionById,
-  generateRandomName,
-  getRandomInt,
-  playerIdInUse,
-  playerNameExists,
-  updateSessionStateIfAutoStart,
-  findSessionByPlayerId,
   findNameByPlayerId,
-  currentTime,
-} from './helper-files/helper';
+  findSessionByPlayerId,
+  generateRandomName,
+  playerIdInUse,
+  playerNameExists
+} from './helper-files/playerHelper';
+import { beginQuestionCountdown, findQuizSessionById } from './helper-files/quizHelper';
 import { QuizSessionState } from './quiz';
 
 interface SendMessage {
   messageBody: string
+}
+
+export interface playerStatus {
+  state: string;
+  numQuestions: number;
+  atQuestion: number;
 }
 
 // =============================== FUNCTIONS ================================ //
@@ -46,7 +50,6 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
     throw new Error('Name is not unique');
   }
 
-  // throw error for if session is not in lobby state
   if (session.state !== QuizSessionState.LOBBY) {
     throw new Error('Session is not in LOBBY state');
   }
@@ -60,8 +63,18 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
   session.players.push(newPlayer);
   data.players.push(newPlayer);
 
+  // Initialise ranking field
+  const newPlayerRank: UsersRanking = {
+    playerId: newPlayerId,
+    name: playerName,
+    score: 0
+  };
+  session.usersRankedByScore.push(newPlayerRank);
+
   // Update the session state if the number of players matches the autoStartNum
-  updateSessionStateIfAutoStart(session);
+  if (session.players.length === session.autoStartNum) {
+    beginQuestionCountdown(session, session.sessionId);
+  }
 
   setData(data);
 
@@ -69,8 +82,28 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
 }
 
 /**
+ * Get the status of a guest player that has already joined a session
+ * @param {number} playerId
+ * @returns {playerStatus} - returns status of player
+ */
+export function getPlayerStatus (playerId: number): playerStatus {
+  if (!playerIdInUse(playerId)) {
+    throw new Error('The player ID does not exist');
+  }
+
+  const session = findSessionByPlayerId(playerId);
+
+  const status = {
+    state: session.state,
+    numQuestions: session.quiz.numQuestions,
+    atQuestion: session.atQuestion
+  };
+
+  return status;
+}
+
+/**
  * Allow a player to send a message during a session
- *
  * @param {number} playerId
  * @param {Message} message
  * @returns {{}}
