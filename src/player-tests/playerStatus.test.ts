@@ -1,4 +1,4 @@
-// contains HTTP tests for route POST /v1/player/{playerid}
+// contains HTTP tests for route GET /v1/player/{playerid}
 
 import { requestDelete, requestPost, requestPut, requestGet } from '../helper-files/requestHelper';
 import { QuestionBody, QuizSessionAction } from '../quiz';
