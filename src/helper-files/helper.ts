@@ -528,7 +528,7 @@ export function initialiseQuestionResults(questions: Question[]): QuestionResult
       averageAnswerTime: 0,
       percentCorrect: 0,
     };
-    questionResults.push(newQuestion)
+    questionResults.push(newQuestion);
   }
 
   return questionResults;
