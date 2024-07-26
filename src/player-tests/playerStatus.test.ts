@@ -50,7 +50,6 @@ describe('GET /v1/player/{playerid}', () => {
     // Starting a quiz session
     const sessionResponse = requestPost({}, `/v1/admin/quiz/${quizId}/session/start`, { token });
     sessionId = sessionResponse.retval.sessionId;
-    console.log('session idddd: ', sessionId);
 
     // Player joins the session
     playerBody = { sessionId: sessionId, name: 'Player One' };
@@ -73,9 +72,7 @@ describe('GET /v1/player/{playerid}', () => {
 
     test('Has correct return type after updating session state', () => {
       updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
-      const updateResponse = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      console.log('Session Update Response:', updateResponse);
-
+      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       const res = requestGet({}, `/v1/player/${playerId}`);
       expect(res).toStrictEqual({
         retval: {

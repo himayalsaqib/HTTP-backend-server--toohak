@@ -96,7 +96,7 @@ export function getPlayerStatus (playerId: number, sessionId: number): playerSta
     throw new Error('The player Id does not belong to this session');
   }
 
-  const status: playerStatus = {
+  const status = {
     state: session.state,
     numQuestions: session.quiz.numQuestions,
     atQuestion: session.atQuestion
