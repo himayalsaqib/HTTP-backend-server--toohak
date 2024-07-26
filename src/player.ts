@@ -1,23 +1,28 @@
 // includes player functions
 
 import { setData, getData, EmptyObject, Message } from './dataStore';
+import { currentTime, getRandomInt } from './helper-files/authHelper';
 import {
-  findQuizSessionById,
+  findNameByPlayerId,
+  findSessionByPlayerId,
   generateRandomName,
-  getRandomInt,
   playerIdInUse,
   playerNameExists,
-  updateSessionStateIfAutoStart,
-  findSessionByPlayerId,
-  findNameByPlayerId,
-  currentTime,
-} from './helper-files/helper';
+  updateSessionStateIfAutoStart
+} from './helper-files/playerHelper';
+import { findQuizSessionById } from './helper-files/quizHelper';
 import { QuizSessionState } from './quiz';
 
 // ============================ TYPE ANNOTATIONS ============================ //
 
 interface SendMessage {
   messageBody: string
+}
+
+export interface playerStatus {
+  state: string;
+  numQuestions: number;
+  atQuestion: number;
 }
 
 interface PlayerQuestionResults {
@@ -75,6 +80,27 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
   setData(data);
 
   return { playerId: newPlayerId };
+}
+
+/**
+ * Get the status of a guest player that has already joined a session
+ * @param {number} playerId
+ * @returns {playerStatus} - returns status of player
+ */
+export function getPlayerStatus (playerId: number): playerStatus {
+  if (!playerIdInUse(playerId)) {
+    throw new Error('The player ID does not exist');
+  }
+
+  const session = findSessionByPlayerId(playerId);
+
+  const status = {
+    state: session.state,
+    numQuestions: session.quiz.numQuestions,
+    atQuestion: session.atQuestion
+  };
+
+  return status;
 }
 
 /**

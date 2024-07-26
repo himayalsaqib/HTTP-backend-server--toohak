@@ -1,7 +1,8 @@
 // includes the helper function for server.ts routes
 
 import { ErrorObject, EmptyObject, Tokens, getData, setData } from '../dataStore';
-import { findQuizById, findTrashedQuizById, getRandomInt } from './helper';
+import { getRandomInt } from './authHelper';
+import { findQuizById, findTrashedQuizById } from './quizHelper';
 
 // ============================ TYPE ANNOTATIONS ============================ //
 

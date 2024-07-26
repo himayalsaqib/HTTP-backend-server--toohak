@@ -52,9 +52,9 @@ import {
   adminQuizGetSessionStatus,
   adminQuizSessionsView,
 } from './quiz';
-import { playerJoin, playerQuestionResults, playerSendChat, playerViewChat } from './player';
+import { playerJoin, playerQuestionResults, playerSendChat, playerViewChat, getPlayerStatus } from './player';
 import { load } from './dataStore';
-import { quizIsInTrash } from './helper-files/helper';
+import { quizIsInTrash } from './helper-files/quizHelper';
 
 // Set up web app
 const app = express();
@@ -977,6 +977,17 @@ app.post('/v1/player/:playerid/chat', (req: Request, res: Response) => {
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/v1/player/:playerid/', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerid as string);
+
+  try {
+    const status = getPlayerStatus(playerId);
+    res.json(status);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 });
 
