@@ -60,7 +60,7 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
   session.players.push(newPlayer);
   data.players.push(newPlayer);
 
-  // Initialise ranking field 
+  // Initialise ranking field
   const newPlayerRank: UsersRanking = {
     playerId: newPlayerId,
     name: playerName,

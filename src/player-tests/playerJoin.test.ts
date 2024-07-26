@@ -1,6 +1,6 @@
 // contains HTTP tests for route POST /v1/player/join
 
-import { requestDelete, requestPost, requestPut, requestGet } from '../helper-files/requestHelper';
+import { requestDelete, requestPost, requestGet } from '../helper-files/requestHelper';
 import { QuestionBody } from '../quiz';
 
 const ERROR = { error: expect.any(String) };
@@ -18,7 +18,6 @@ describe('POST /v1/player/join', () => {
   let startSessionBody: { autoStartNum: number };
   let sessionId: number;
   let playerBody: { sessionId: number, name: string };
-  let updateActionBody: { action: string };
 
   beforeEach(() => {
     // registering a user
