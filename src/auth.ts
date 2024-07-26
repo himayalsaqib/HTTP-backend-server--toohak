@@ -12,7 +12,7 @@ import {
   findUserByEmail,
   getHashOf,
   getRandomInt
-} from './helper-files/helper';
+} from './helper-files/authHelper';
 
 // ============================ GLOBAL VARIABLES ============================ //
 const MIN_PASSWORD_LENGTH = 8;

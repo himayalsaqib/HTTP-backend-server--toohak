@@ -1,17 +1,16 @@
 // includes player functions
 
 import { setData, getData, EmptyObject, Message, UsersRanking } from './dataStore';
+import { currentTime, getRandomInt } from './helper-files/authHelper';
 import {
-  findQuizSessionById,
+  findNameByPlayerId,
+  findSessionByPlayerId,
   generateRandomName,
-  getRandomInt,
   playerIdInUse,
   playerNameExists,
-  updateSessionStateIfAutoStart,
-  findSessionByPlayerId,
-  findNameByPlayerId,
-  currentTime,
-} from './helper-files/helper';
+  updateSessionStateIfAutoStart
+} from './helper-files/playerHelper';
+import { findQuizSessionById } from './helper-files/quizHelper';
 import { QuizSessionState } from './quiz';
 
 interface SendMessage {
@@ -84,7 +83,6 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
 /**
  * Get the status of a guest player that has already joined a session
  * @param {number} playerId
- * @param {number} sessionId
  * @returns {playerStatus} - returns status of player
  */
 export function getPlayerStatus (playerId: number): playerStatus {
