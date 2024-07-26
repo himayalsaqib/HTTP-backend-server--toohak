@@ -13,6 +13,7 @@ import {
   checkThumbnailUrlFileType,
   correctSessionStateForAction,
   createAnswersArray,
+  endOfQuestionUpdates,
   findQuestionById,
   findQuizById,
   findQuizSessionById,
