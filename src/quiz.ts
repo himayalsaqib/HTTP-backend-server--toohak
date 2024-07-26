@@ -1,6 +1,6 @@
 // includes quiz functions
 
-import { setData, getData, ErrorObject, EmptyObject, Question, Answer, Quizzes } from './dataStore';
+import { setData, getData, EmptyObject, Question, Answer, Quizzes } from './dataStore';
 import {
   quizNameHasValidChars,
   quizNameInUse,
@@ -24,6 +24,8 @@ import {
   getRandomInt,
   correctSessionStateForAction,
   checkIfTimerExists,
+  beginQuestionCountdown,
+  changeQuestionOpenToQuestionClose,
   initialiseQuestionResults,
 } from './helper-files/helper';
 
@@ -54,12 +56,12 @@ const MAX_AUTO_START_NUM = 50;
 
 const MAX_ACTIVE_QUIZ_SESSIONS = 10;
 
-const WAIT_THREE_SECONDS = 3;
+export const WAIT_THREE_SECONDS = 3;
 
 export const sessionIdToTimerArray: { sessionId: number, timeoutId: ReturnType<typeof setTimeout> }[] = [];
 
 // ============================ TYPE ANNOTATIONS ============================ //
-interface QuizList {
+export interface QuizList {
   quizId: number;
   name: string;
 }
@@ -164,7 +166,7 @@ export function adminQuizList(authUserId: number): { quizzes: QuizList[] } {
  * @param {string} description
  * @returns {{ quizId: number }} - assigns a quizId | error
  */
-export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } | ErrorObject {
+export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } {
   if (quizNameHasValidChars(name) === false) {
     throw new Error('Name contains invalid characters. Valid characters are alphanumeric and spaces.');
   }
@@ -324,7 +326,7 @@ export function adminQuizDescriptionUpdate (quizId: number, description: string)
 * @param {number} quizId
 * @returns {{}}
 */
-export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
+export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject {
   const data = getData();
   const trashedQuiz = findTrashedQuizById(quizId);
 
@@ -821,24 +823,7 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     quizSession.state = QuizSessionState.FINAL_RESULTS;
     quizSession.atQuestion = 0;
   } else if (action === QuizSessionAction.NEXT_QUESTION) {
-    // increment atQuestion
-    quizSession.atQuestion++;
-    quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
-    // start countdown timer
-    const timeoutId = setTimeout(() => {
-      // update state
-      quizSession.state = QuizSessionState.QUESTION_OPEN;
-
-      // remove timerId from array (if it exists) after the 3 seconds and clear timer
-      const index = sessionIdToTimerArray.findIndex(i => i.timeoutId === timeoutId);
-      if (index !== -1) {
-        sessionIdToTimerArray.splice(index, 1);
-        clearTimeout(timeoutId);
-      }
-    }, WAIT_THREE_SECONDS * 1000);
-
-    // add timerID to array
-    sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+    beginQuestionCountdown(quizSession, sessionId);
   } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
     // clear timer if it exists and remove from array
     if (checkIfTimerExists(sessionId)) {
@@ -849,11 +834,10 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     }
 
     quizSession.state = QuizSessionState.QUESTION_OPEN;
-  } else if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
-    const duration = quizSession.quiz.questions[quizSession.atQuestion].duration;
-    setTimeout(() => {
-      quizSession.state = QuizSessionState.QUESTION_CLOSE;
-    }, duration * 1000);
+  }
+
+  if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
+    changeQuestionOpenToQuestionClose(quizSession, sessionId);
   }
 
   setData(data);
