@@ -1,7 +1,7 @@
 // Includes helper functions for auth.ts and quiz.ts
 
-import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
-import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers } from '../quiz';
+import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions, QuestionResults } from '../dataStore';
+import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState, sessionIdToTimerArray, WAIT_THREE_SECONDS } from '../quiz';
 import crypto from 'crypto';
 
 /**
@@ -17,6 +17,15 @@ export function authUserIdExists(authUserId: number): boolean {
     return false;
   }
   return true;
+}
+
+/**
+ * Function generates and returns a random integer for ids
+ *
+ * @returns {number}
+ */
+export function getRandomInt(): number {
+  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
 }
 
 // ========================= AUTH HELPER FUNCTIONS ========================== //
@@ -354,9 +363,9 @@ export function checkForNumCorrectAns(questionBody: QuestionBody): number {
 export function createAnswersArray(givenAnswers: QuizQuestionAnswers[]): Answer[] {
   const questionAnswersArray = [];
   for (const answer of givenAnswers) {
-    let newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    let newAnswerId = getRandomInt();
     while (answerIdInUse(newAnswerId) === true) {
-      newAnswerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+      newAnswerId = getRandomInt();
     }
 
     questionAnswersArray.push({
@@ -438,4 +447,234 @@ export function checkThumbnailUrlFileType(thumbnailUrl: string): boolean {
 export function findQuizSessionById(sessionId: number): QuizSessions | undefined {
   const data = getData();
   return data.quizSessions.find(session => session.sessionId === sessionId);
+}
+
+/**
+ * Based on the state of a quizSession determine whether the action can be applied
+ *
+ * @param {QuizSessionState} state - of the current session
+ * @param {string} action - the action to change states
+ * @returns {boolean} - false if action is not applicable in current state,
+ *                      true otherwise
+ */
+export function correctSessionStateForAction(state: QuizSessionState, action: string): boolean {
+  if (state === QuizSessionState.ANSWER_SHOW) {
+    if (!(action === QuizSessionAction.END || action === QuizSessionAction.NEXT_QUESTION || action === QuizSessionAction.GO_TO_FINAL_RESULTS)) {
+      return false;
+    }
+  }
+
+  if (state === QuizSessionState.END) {
+    return false;
+  }
+
+  if (state === QuizSessionState.FINAL_RESULTS) {
+    if (!(action === QuizSessionAction.END)) {
+      return false;
+    }
+  }
+
+  if (state === QuizSessionState.LOBBY) {
+    if (!(action === QuizSessionAction.END || action === QuizSessionAction.NEXT_QUESTION)) {
+      return false;
+    }
+  }
+
+  if (state === QuizSessionState.QUESTION_CLOSE) {
+    if (action === QuizSessionAction.SKIP_COUNTDOWN) {
+      return false;
+    }
+  }
+
+  if (state === QuizSessionState.QUESTION_COUNTDOWN) {
+    if (!(action === QuizSessionAction.SKIP_COUNTDOWN || action === QuizSessionAction.END)) {
+      return false;
+    }
+  }
+
+  if (state === QuizSessionState.QUESTION_OPEN) {
+    if (!(action === QuizSessionAction.END || action === QuizSessionAction.GO_TO_ANSWER)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Checks whether a timer exists for a given sessionId
+ *
+ * @param {number} sessionId
+ * @returns {boolean} - true if a timeoutId exists, false otherwise
+ */
+export function checkIfTimerExists(sessionId: number): boolean {
+  return sessionIdToTimerArray.some(item => item.sessionId === sessionId);
+}
+
+/**
+ * This function starts the 3 second timer that changes the state from QUESTION_COUNTDOWN
+ * to QUESTION_OPEN in a quizSession
+ *
+ * @param {QuizSessions} quizSession
+ * @param {number} sessionId
+ * @returns {void}
+ */
+export function beginQuestionCountdown(quizSession: QuizSessions, sessionId: number): void {
+  quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
+  // increment atQuestion
+  quizSession.atQuestion++;
+  // start countdown timer
+  const timeoutId = setTimeout(() => {
+    // update state
+    quizSession.state = QuizSessionState.QUESTION_OPEN;
+    // remove timerId from array (if it exists) after the 3 seconds and clear timer
+    const index = sessionIdToTimerArray.findIndex(i => i.timeoutId === timeoutId);
+    if (index !== -1) {
+      sessionIdToTimerArray.splice(index, 1);
+      clearTimeout(timeoutId);
+    }
+
+    changeQuestionOpenToQuestionClose(quizSession, sessionId);
+  }, WAIT_THREE_SECONDS * 1000);
+  // add timerID to array
+  sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+}
+
+/**
+ * Calculate duration of a question using the atQuestion from quizSession and
+ * create a timer which changes the state of session from QUESTION_OPEN to
+ * QUESTION_CLOSE
+ *
+ * @param {QuizSessions} quizSession
+ * @param {number} sessionId
+ * @returns {void}
+ */
+export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, sessionId: number): void {
+  // calculate the index of the questions array
+  const index = quizSession.atQuestion - 1;
+  const duration = quizSession.quiz.questions[index].duration;
+
+  const timeoutId = setTimeout(() => {
+    quizSession.state = QuizSessionState.QUESTION_CLOSE;
+    const index = sessionIdToTimerArray.findIndex(t => t.timeoutId === timeoutId);
+    clearTimeout(timeoutId);
+    sessionIdToTimerArray.splice(index, 1);
+  }, duration * 1000);
+
+  sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+}
+
+/**
+ * Initialised an array for question results that can be updated as session
+ * progresses and players answer
+ *
+ * @param {Question[]} questions
+ * @returns {QuestionResults[]}
+ */
+export function initialiseQuestionResults(questions: Question[]): QuestionResults[] {
+  const questionResults = [];
+  for (const question of questions) {
+    const newQuestion: QuestionResults = {
+      questionId: question.questionId,
+      playersCorrectList: [],
+      playersAnsweredList: [],
+      averageAnswerTime: 0,
+      percentCorrect: 0,
+    };
+    questionResults.push(newQuestion);
+  }
+
+  return questionResults;
+}
+
+// ======================== PLAYER HELPER FUNCTIONS ========================= //
+
+/**
+ * Function moves onto next state if number of players joined matches autoStartNum
+ *
+ * @param {QuizSessions} session
+ */
+export function updateSessionStateIfAutoStart(session: QuizSessions): void {
+  if (session.players.length === session.autoStartNum) {
+    session.state = QuizSessionState.QUESTION_COUNTDOWN;
+  }
+}
+
+/**
+ * Function generates a random name if player name is empty string
+ *
+ * @param {}
+ * @returns {string} random name
+ */
+export function generateRandomName(): string {
+  const letters = 'abcdefghijklmnopqrstuvwxyz';
+  const numbers = '0123456789';
+  let name = '';
+
+  // Generate 5 unique letters
+  while (name.length < 5) {
+    const randomLetter = letters.charAt(Math.floor(Math.random() * letters.length));
+    if (!name.includes(randomLetter)) {
+      name += randomLetter;
+    }
+  }
+
+  // Generate 3 unique numbers
+  while (name.length < 8) {
+    const randomNumber = numbers.charAt(Math.floor(Math.random() * numbers.length));
+    if (!name.includes(randomNumber)) {
+      name += randomNumber;
+    }
+  }
+
+  return name;
+}
+
+/**
+ * Function checks if a player name already exists in the session
+ *
+ * @param {number} sessionId
+ * @param {string} playerName
+ * @returns {boolean} true if player name has been used, false if it has not
+ */
+export function playerNameExists(sessionId: number, playerName: string): boolean {
+  const session = findQuizSessionById(sessionId);
+  return session.players.some(player => player.name === playerName);
+}
+
+/**
+ * Function checks if a player ID has already been used by another player
+ *
+ * @param {Number} playerId
+ * @returns {boolean} true if player ID has been used, false if it has not
+ */
+export function playerIdInUse(playerId: number): boolean {
+  const data = getData();
+  return data.players.some(player => player.playerId === playerId);
+}
+
+/**
+ * Function returns the session the given player is in
+ *
+ * @param {number} playerId
+ * @returns {QuizSessions | undefined} sessionId | undefined if session does not exist
+ */
+export function findSessionByPlayerId(playerId: number): QuizSessions | undefined {
+  const data = getData();
+  const session = data.quizSessions.find(q =>
+    q.players.some(player => player.playerId === playerId) === true);
+
+  return session;
+}
+
+/**
+ * Function returns the name corresponding to a given player ID
+ *
+ * @param {number} playerId
+ * @returns {string | undefined} name | undefined if player does not exist
+ */
+export function findNameByPlayerId(playerId: number): string | undefined {
+  const data = getData();
+  const player = data.players.find(player => player.playerId === playerId);
+  return player?.name;
 }

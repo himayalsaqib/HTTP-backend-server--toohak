@@ -1,6 +1,6 @@
 // includes auth functions
 
-import { setData, getData, ErrorObject, EmptyObject, Tokens } from './dataStore';
+import { setData, getData, EmptyObject, Tokens } from './dataStore';
 import validator from 'validator';
 import {
   adminEmailInUse,
@@ -10,7 +10,8 @@ import {
   adminCheckPasswordHistory,
   findUserById,
   findUserByEmail,
-  getHashOf
+  getHashOf,
+  getRandomInt
 } from './helper-files/helper';
 
 // ============================ GLOBAL VARIABLES ============================ //
@@ -21,7 +22,7 @@ const INITIAL_NUM_FAILED_LOGINS = 0;
 const INITIAL_NUM_SUCCESSFUL_LOGINS = 1;
 
 // ============================ TYPE ANNOTATIONS ============================ //
-interface UserDetails {
+export interface UserDetails {
   userId: number;
   name: string;
   email: string;
@@ -68,9 +69,9 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
 
   const data = getData();
 
-  let newAuthUserId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  let newAuthUserId = getRandomInt();
   while (authUserIdExists(newAuthUserId)) {
-    newAuthUserId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    newAuthUserId = getRandomInt();
   }
 
   data.users.push({
@@ -198,9 +199,9 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
  * @param {string} email
  * @param {string} nameFirst
  * @param {string} nameLast
- * @returns {{} | { error: string }} empty | error
+ * @returns {{}} empty | error
  */
-export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string): EmptyObject | ErrorObject {
+export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string): EmptyObject {
   const userWithEmail = findUserByEmail(email);
   if (userWithEmail) {
     if (userWithEmail.authUserId !== authUserId) {

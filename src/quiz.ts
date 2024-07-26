@@ -1,6 +1,6 @@
 // includes quiz functions
 
-import { setData, getData, ErrorObject, EmptyObject, Question, Answer } from './dataStore';
+import { setData, getData, EmptyObject, Question, Answer, Quizzes } from './dataStore';
 import {
   quizNameHasValidChars,
   quizNameInUse,
@@ -20,7 +20,13 @@ import {
   currentTime,
   checkThumbnailUrlFileType,
   findQuizSessionById,
-  quizIsInTrash
+  quizIsInTrash,
+  getRandomInt,
+  correctSessionStateForAction,
+  checkIfTimerExists,
+  beginQuestionCountdown,
+  changeQuestionOpenToQuestionClose,
+  initialiseQuestionResults,
 } from './helper-files/helper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -50,13 +56,17 @@ const MAX_AUTO_START_NUM = 50;
 
 const MAX_ACTIVE_QUIZ_SESSIONS = 10;
 
+export const WAIT_THREE_SECONDS = 3;
+
+export const sessionIdToTimerArray: { sessionId: number, timeoutId: ReturnType<typeof setTimeout> }[] = [];
+
 // ============================ TYPE ANNOTATIONS ============================ //
-interface QuizList {
+export interface QuizList {
   quizId: number;
   name: string;
 }
 
-// excludes authUserId, active sessions and inactive sessions
+// excludes authUserId, active sessions and inactive sessions from Quizzes interface
 export interface QuizInfo {
   quizId: number;
   name: string;
@@ -82,6 +92,18 @@ export interface QuestionBody {
   thumbnailUrl?: string;
 }
 
+export interface QuizSessionStatus {
+  state: QuizSessionState;
+  atQuestion: number;
+  players: string[];
+  metadata: QuizInfo;
+}
+
+export interface QuizSessionsView {
+  activeSessions: number[];
+  inactiveSessions: number[];
+}
+
 // ================================= ENUMS ================================== //
 
 export enum QuizAnswerColours {
@@ -104,7 +126,16 @@ export enum QuizSessionState {
   END = 'END'
 }
 
+export enum QuizSessionAction {
+  NEXT_QUESTION = 'NEXT_QUESTION',
+  SKIP_COUNTDOWN = 'SKIP_COUNTDOWN',
+  GO_TO_ANSWER = 'GO_TO_ANSWER',
+  GO_TO_FINAL_RESULTS = 'GO_TO_FINAL_RESULTS',
+  END = 'END'
+}
+
 // =============================== FUNCTIONS ================================ //
+
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  *
@@ -135,7 +166,7 @@ export function adminQuizList(authUserId: number): { quizzes: QuizList[] } {
  * @param {string} description
  * @returns {{ quizId: number }} - assigns a quizId | error
  */
-export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } | ErrorObject {
+export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } {
   if (quizNameHasValidChars(name) === false) {
     throw new Error('Name contains invalid characters. Valid characters are alphanumeric and spaces.');
   }
@@ -150,25 +181,22 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
   }
 
   const data = getData();
-  let newQuizId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  let newQuizId = getRandomInt();
   while (quizIdInUse(newQuizId) === true) {
-    newQuizId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    newQuizId = getRandomInt();
   }
 
-  const emptyQuestions: Question[] = [];
-  const emptySessions: number[] = [];
-
-  const newQuiz = {
+  const newQuiz: Quizzes = {
     authUserId: authUserId,
     quizId: newQuizId,
     name: name,
     timeCreated: currentTime(),
     timeLastEdited: currentTime(),
     description: description,
-    questions: emptyQuestions,
+    questions: [],
     duration: 0,
-    activeSessions: emptySessions,
-    inactiveSessions: emptySessions,
+    activeSessions: [],
+    inactiveSessions: [],
   };
 
   data.quizzes.push(newQuiz);
@@ -292,97 +320,13 @@ export function adminQuizDescriptionUpdate (quizId: number, description: string)
 }
 
 /**
- * Create a new stub for question for a particular quiz.
- * When this route is called, and a question is created, the timeLastEdited is set
- * as the same as the created time, and the colours of all the answers of that
- * question are randomly generated
- *
- * @param {number} quizId
- * @param {object} questionBody
- * @returns { {questionId: number} }
- */
-export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBody): { questionId: number } {
-  const data = getData();
-  const quiz = findQuizById(quizId);
-
-  if (questionBody.question.length > MAX_QUESTION_LEN || questionBody.question.length < MIN_QUESTION_LEN) {
-    throw new Error('The question string cannot be less than 5 characters or greater than 50 characters in length.');
-  }
-
-  if (questionBody.answers.length > MAX_NUM_ANSWERS || questionBody.answers.length < MIN_NUM_ANSWERS) {
-    throw new Error('The question cannot have more than 6 answers or less than 2 answers.');
-  }
-
-  if (questionBody.duration <= MIN_QUIZ_QUESTIONS_DURATION) {
-    throw new Error('The question duration must be a positive number.');
-  }
-
-  if (calculateSumQuestionDuration(quizId, questionBody.duration) > MAX_QUIZ_QUESTIONS_DURATION) {
-    throw new Error('The sum of the question durations cannot exceed 3 minutes.');
-  }
-
-  if (questionBody.points > MAX_POINT_VALUE || questionBody.points < MIN_POINT_VALUE) {
-    throw new Error('The points awarded must not be less than 1 or not greater than 10.');
-  }
-
-  if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN)) {
-    throw new Error('The answer cannot be longer than 30 characters or shorter than 1 character.');
-  }
-
-  if (checkForAnsDuplicates(questionBody)) {
-    throw new Error('Answers cannot be duplicates of each other in the same question.');
-  }
-
-  if (checkForNumCorrectAns(questionBody) < MIN_CORRECT_ANS) {
-    throw new Error('There must be at least 1 correct answer.');
-  }
-
-  if (questionBody.thumbnailUrl !== undefined) {
-    if (questionBody.thumbnailUrl.length === 0) {
-      throw new Error('The thumbnailUrl cannot be an empty string.');
-    }
-
-    if (!checkThumbnailUrlFileType(questionBody.thumbnailUrl)) {
-      throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
-    }
-
-    if (!(questionBody.thumbnailUrl.startsWith('https://') || questionBody.thumbnailUrl.startsWith('http://'))) {
-      throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
-    }
-  }
-
-  let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-  while (questionIdInUse(newQuestionId) === true) {
-    newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-  }
-
-  const newQuestion = {
-    questionId: newQuestionId,
-    question: questionBody.question,
-    duration: questionBody.duration,
-    points: questionBody.points,
-    answers: createAnswersArray(questionBody.answers),
-    thumbnailUrl: questionBody.thumbnailUrl
-  };
-
-  // set timeLastEditied as the same as timeCreated for question
-  quiz.timeLastEdited = currentTime();
-  quiz.duration += questionBody.duration;
-
-  quiz.questions.push(newQuestion);
-  setData(data);
-
-  return { questionId: newQuestionId };
-}
-
-/**
 * Restores a quiz from trash
 *
 * @param {number} authUserId
 * @param {number} quizId
 * @returns {{}}
 */
-export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject | ErrorObject {
+export function adminQuizRestore (authUserId: number, quizId: number): EmptyObject {
   const data = getData();
   const trashedQuiz = findTrashedQuizById(quizId);
 
@@ -453,6 +397,131 @@ export function adminQuizTrashEmpty(quizIds: number[]): EmptyObject {
   setData(data);
 
   return {};
+}
+
+/**
+ * Transfer ownership of a quiz to a different user based on their email
+ *
+ * @param {number} authUserId - of user currently owning the quiz
+ * @param {number} quizId - of the quiz to be transfered owned by authUserId
+ * @param {string} userEmail - of the user to which the quiz is being
+ *                             transferred to (the target user)
+ * @returns {{}} - empty object
+ */
+export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string): EmptyObject {
+  const data = getData();
+
+  if (!adminEmailInUse(userEmail)) {
+    throw new Error('The given user email is not a real user.');
+  }
+
+  const newUser = findUserByEmail(userEmail);
+  if (newUser.authUserId === authUserId) {
+    throw new Error('The user email refers to the current logged in user.');
+  }
+
+  // quiz to transfer
+  const quiz = findQuizById(quizId);
+  if (quizNameInUse(newUser.authUserId, quiz.name)) {
+    throw new Error('Quiz ID already refers to a quiz that has a name that is already used by the target user.');
+  }
+
+  // check all sessions for this quiz for being in the END state
+  if (quiz.activeSessions.length !== 0) {
+    throw new Error('Any session for this quiz is not in END state.');
+  }
+
+  // transferring the quiz
+  quiz.authUserId = newUser.authUserId;
+  quiz.timeLastEdited = currentTime();
+
+  setData(data);
+
+  return {};
+}
+
+/**
+ * Create a new stub for question for a particular quiz.
+ * When this route is called, and a question is created, the timeLastEdited is set
+ * as the same as the created time, and the colours of all the answers of that
+ * question are randomly generated
+ *
+ * @param {number} quizId
+ * @param {object} questionBody
+ * @returns { {questionId: number} }
+ */
+export function adminQuizCreateQuestion(quizId: number, questionBody: QuestionBody): { questionId: number } {
+  const data = getData();
+  const quiz = findQuizById(quizId);
+
+  if (questionBody.question.length > MAX_QUESTION_LEN || questionBody.question.length < MIN_QUESTION_LEN) {
+    throw new Error('The question string cannot be less than 5 characters or greater than 50 characters in length.');
+  }
+
+  if (questionBody.answers.length > MAX_NUM_ANSWERS || questionBody.answers.length < MIN_NUM_ANSWERS) {
+    throw new Error('The question cannot have more than 6 answers or less than 2 answers.');
+  }
+
+  if (questionBody.duration <= MIN_QUIZ_QUESTIONS_DURATION) {
+    throw new Error('The question duration must be a positive number.');
+  }
+
+  if (calculateSumQuestionDuration(quizId, questionBody.duration) > MAX_QUIZ_QUESTIONS_DURATION) {
+    throw new Error('The sum of the question durations cannot exceed 3 minutes.');
+  }
+
+  if (questionBody.points > MAX_POINT_VALUE || questionBody.points < MIN_POINT_VALUE) {
+    throw new Error('The points awarded must not be less than 1 or not greater than 10.');
+  }
+
+  if (checkAnswerLength(questionBody, MIN_ANS_LEN, MAX_ANS_LEN)) {
+    throw new Error('The answer cannot be longer than 30 characters or shorter than 1 character.');
+  }
+
+  if (checkForAnsDuplicates(questionBody)) {
+    throw new Error('Answers cannot be duplicates of each other in the same question.');
+  }
+
+  if (checkForNumCorrectAns(questionBody) < MIN_CORRECT_ANS) {
+    throw new Error('There must be at least 1 correct answer.');
+  }
+
+  if (questionBody.thumbnailUrl !== undefined) {
+    if (questionBody.thumbnailUrl.length === 0) {
+      throw new Error('The thumbnailUrl cannot be an empty string.');
+    }
+
+    if (!checkThumbnailUrlFileType(questionBody.thumbnailUrl)) {
+      throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
+    }
+
+    if (!(questionBody.thumbnailUrl.startsWith('https://') || questionBody.thumbnailUrl.startsWith('http://'))) {
+      throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
+    }
+  }
+
+  let newQuestionId = getRandomInt();
+  while (questionIdInUse(newQuestionId) === true) {
+    newQuestionId = getRandomInt();
+  }
+
+  const newQuestion = {
+    questionId: newQuestionId,
+    question: questionBody.question,
+    duration: questionBody.duration,
+    points: questionBody.points,
+    answers: createAnswersArray(questionBody.answers),
+    thumbnailUrl: questionBody.thumbnailUrl
+  };
+
+  // set timeLastEditied as the same as timeCreated for question
+  quiz.timeLastEdited = currentTime();
+  quiz.duration += questionBody.duration;
+
+  quiz.questions.push(newQuestion);
+  setData(data);
+
+  return { questionId: newQuestionId };
 }
 
 /**
@@ -585,46 +654,6 @@ export function adminQuizQuestionDelete(quizId: number, questionId: number): Emp
 
   return {};
 }
-/**
- * Transfer ownership of a quiz to a different user based on their email
- *
- * @param {number} authUserId - of user currently owning the quiz
- * @param {number} quizId - of the quiz to be transfered owned by authUserId
- * @param {string} userEmail - of the user to which the quiz is being
- *                             transferred to (the target user)
- * @returns {{}} - empty object
- */
-export function adminQuizTransfer(quizId: number, authUserId: number, userEmail: string): EmptyObject {
-  const data = getData();
-
-  if (!adminEmailInUse(userEmail)) {
-    throw new Error('The given user email is not a real user.');
-  }
-
-  const newUser = findUserByEmail(userEmail);
-  if (newUser.authUserId === authUserId) {
-    throw new Error('The user email refers to the current logged in user.');
-  }
-
-  // quiz to transfer
-  const quiz = findQuizById(quizId);
-  if (quizNameInUse(newUser.authUserId, quiz.name)) {
-    throw new Error('Quiz ID already refers to a quiz that has a name that is already used by the target user.');
-  }
-
-  // check all sessions for this quiz for being in the END state
-  if (quiz.activeSessions.length !== 0) {
-    throw new Error('Any session for this quiz is not in END state.');
-  }
-
-  // transferring the quiz
-  quiz.authUserId = newUser.authUserId;
-  quiz.timeLastEdited = currentTime();
-
-  setData(data);
-
-  return {};
-}
 
 /**
  * Duplicates a quiz question
@@ -644,10 +673,10 @@ export function adminQuizQuestionDuplicate (quizId: number, questionId: number):
   }
 
   const question = quiz.questions[questionIndex];
-  let newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  let newQuestionId = getRandomInt();
 
   while (questionIdInUse(newQuestionId) === true) {
-    newQuestionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    newQuestionId = getRandomInt();
   }
   const newQuestion: Question = {
     ...question,
@@ -668,12 +697,46 @@ export function adminQuizQuestionDuplicate (quizId: number, questionId: number):
   return { newQuestionId: newQuestion.questionId };
 }
 
+/**
+ * Updates the thumbnailUrl of a quiz
+ *
+ * @param {number} quizId
+ * @param {string} thumbnailUrl
+ * @returns {{}}
+ */
+export function adminQuizThumbnail(quizId: number, thumbnailUrl: string): EmptyObject {
+  if (thumbnailUrl.length === 0) {
+    throw new Error('The thumbnailUrl cannot be an empty string.');
+  }
+
+  if (!checkThumbnailUrlFileType(thumbnailUrl)) {
+    throw new Error('The thumbnailUrl must end with either of the following filetypes: jpg, jpeg, png');
+  }
+
+  if (!(thumbnailUrl.startsWith('https://') || thumbnailUrl.startsWith('http://'))) {
+    throw new Error('The thumbnailUrl must start with \'http:// or \'https://');
+  }
+
+  const quiz = findQuizById(quizId);
+  quiz.thumbnailUrl = thumbnailUrl;
+  quiz.timeLastEdited = currentTime();
+
+  return {};
+}
+
+/**
+ * Starts a new session for the given quiz
+ *
+ * @param {number} quizId
+ * @param {number} autoStartNum
+ * @returns {{ sessionId: number}} - returns new session ID
+ */
 export function adminQuizSessionStart(quizId: number, autoStartNum: number): { sessionId: number } {
+  const quiz = findQuizById(quizId);
+
   if (quizIsInTrash(quizId)) {
     throw new Error('The quiz is in trash.');
   }
-  const quiz = findQuizById(quizId);
-
   if (autoStartNum > MAX_AUTO_START_NUM) {
     throw new Error('AutoStartNum is a number greater than 50.');
   }
@@ -684,41 +747,147 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     throw new Error('The quiz does not have any questions in it.');
   }
 
-  const newSessionId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+  const newSessionId = getRandomInt();
   while (findQuizSessionById(newSessionId) !== undefined) {
-    Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
+    getRandomInt();
   }
 
   // adding new sessionId to active sessions array for this quiz
   quiz.activeSessions.push(newSessionId);
 
-  // copying quiz from quizzes array so any edits while session is running do
-  // not affect the active session. ignoring authUserId and active/inactive session
-  const quizInfoForSession = {
-    quizId: quizId,
-    name: quiz.name,
-    timeCreated: quiz.timeCreated,
-    timeLastEdited: quiz.timeLastEdited,
-    description: quiz.description,
-    numQuestions: quiz.questions.length,
-    questions: quiz.questions,
-    duration: quiz.duration,
-    thumbnailUrl: quiz.thumbnailUrl
-  };
+  // copying quiz from quizzes array so any edits to quiz do not affect metadata
+  // active session. ignoring authUserId, active and inactive sessionIds and
+  // adding numQuestions
+  const quizCopy = JSON.parse(JSON.stringify(quiz));
+  delete quizCopy.authUserId;
+  delete quizCopy.activeSessions;
+  delete quizCopy.inactiveSessions;
+  quizCopy.numQuestions = quizCopy.questions.length;
 
   const data = getData();
   data.quizSessions.push({
     sessionId: newSessionId,
     state: QuizSessionState.LOBBY,
-    atQuestion: 1,
+    atQuestion: 0,
     players: [],
     autoStartNum: autoStartNum,
-    quiz: quizInfoForSession,
+    quiz: quizCopy,
     usersRankedByScore: [],
-    questionResults: [],
+    questionResults: initialiseQuestionResults(quizCopy.questions),
+    messages: [],
   });
 
   setData(data);
 
   return { sessionId: newSessionId };
+}
+
+/**
+ * Update the state of a particular quiz session by sending an action command
+ *
+ * @param {number} quizId
+ * @param {number} sessionId
+ * @param {QuizSessionAction} action
+ * @returns {{}} - an empty object
+ */
+export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, action: string): EmptyObject {
+  const data = getData();
+  const quiz = findQuizById(quizId);
+
+  // sessionId is not valid for this quiz
+  const quizSession = findQuizSessionById(sessionId);
+  if (quizSession === undefined || quizSession.quiz.quizId !== quizId) {
+    throw new Error('The sesssion ID does not refer to a valid session within this quiz.');
+  }
+
+  // action is not a valid Action enum
+  if (!(action in QuizSessionAction)) {
+    throw new Error('The action provided is not a valid Action enum.');
+  }
+
+  // action enum cannot be applied in the current state
+  if (!correctSessionStateForAction(quizSession.state, action)) {
+    throw new Error('The action cannot be applied in the current state of the session.');
+  }
+
+  // session state update
+  if (action === QuizSessionAction.END) {
+    quizSession.state = QuizSessionState.END;
+    quizSession.atQuestion = 0;
+    // add sessionId to inactive sessions and remove from active sessions
+    quiz.inactiveSessions.push(sessionId);
+    quiz.activeSessions.splice(quiz.activeSessions.indexOf(sessionId), 1);
+  } else if (action === QuizSessionAction.GO_TO_ANSWER) {
+    quizSession.state = QuizSessionState.ANSWER_SHOW;
+  } else if (action === QuizSessionAction.GO_TO_FINAL_RESULTS) {
+    quizSession.state = QuizSessionState.FINAL_RESULTS;
+    quizSession.atQuestion = 0;
+  } else if (action === QuizSessionAction.NEXT_QUESTION) {
+    beginQuestionCountdown(quizSession, sessionId);
+  } else if (action === QuizSessionAction.SKIP_COUNTDOWN) {
+    // clear timer if it exists and remove from array
+    if (checkIfTimerExists(sessionId)) {
+      const timerId = sessionIdToTimerArray.find(i => i.sessionId === sessionId);
+      const index = sessionIdToTimerArray.findIndex(i => i.sessionId === sessionId);
+      clearTimeout(timerId.timeoutId);
+      sessionIdToTimerArray.splice(index, 1);
+    }
+
+    quizSession.state = QuizSessionState.QUESTION_OPEN;
+  }
+
+  if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
+    changeQuestionOpenToQuestionClose(quizSession, sessionId);
+  }
+
+  setData(data);
+  return {};
+}
+
+/**
+ * Get the status of a particular quiz session
+ *
+ * @param {number} quizId
+ * @param {number} sessionId
+ * @returns {QuizSessionStatus}
+ */
+export function adminQuizGetSessionStatus(quizId: number, sessionId: number): QuizSessionStatus {
+  const quizSession = findQuizSessionById(sessionId);
+  if (!quizSession || quizSession.quiz.quizId !== quizId) {
+    throw new Error('The session ID does not refer to a valid session within this quiz.');
+  }
+
+  // sort names into ascending order
+  const playerNames: string[] = [];
+  for (const player of quizSession.players) {
+    playerNames.push(player.name);
+  }
+  const sortedPlayers = playerNames.sort();
+
+  const sessionStatus: QuizSessionStatus = {
+    state: quizSession.state,
+    atQuestion: quizSession.atQuestion,
+    players: sortedPlayers,
+    metadata: quizSession.quiz,
+  };
+
+  return sessionStatus;
+}
+
+/**
+ * Retrieves active and inactive session ids (sorted in ascending order) for a quiz
+ *
+ * @param {number} quizId
+ * @returns {QuizSessionsView}
+ */
+export function adminQuizSessionsView(quizId: number): QuizSessionsView {
+  const quiz = findQuizById(quizId);
+
+  quiz.activeSessions.sort((id1, id2) => id1 - id2);
+  quiz.inactiveSessions.sort((id1, id2) => id1 - id2);
+
+  return {
+    activeSessions: quiz.activeSessions,
+    inactiveSessions: quiz.inactiveSessions
+  };
 }
