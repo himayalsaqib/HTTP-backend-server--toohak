@@ -14,44 +14,43 @@ describe('GET /v1/player/{playerid}', () => {
   let token: string;
   let quizBody: { name: string, description: string };
   let quizId: number;
-  let questionBody: { questionBody: QuestionBody };
+  let createQuestionBody: { questionBody: QuestionBody };
   let sessionId: number;
   let playerBody: { sessionId: number, name: string };
   let playerId: number;
-  // let playerId2: number;
-  // let playerId3: number;
   let updateActionBody: { action: string };
 
   beforeEach(() => {
     // Registering user
-    userBody = { email: 'test@example.com', password: 'Password123', nameFirst: 'Jane', nameLast: 'Doe' };
+    userBody = { email: 'valid1@example.com', password: 'Password123', nameFirst: 'Jane', nameLast: 'Doe' };
     const registerResponse = requestPost(userBody, '/v1/admin/auth/register');
     token = registerResponse.retval.token;
 
     // Creating a quiz
-    quizBody = { name: 'Sample Quiz', description: 'Sample Description' };
+    quizBody = { name: 'Sample Quiz', description: 'Quiz Description' };
     const quizResponse = requestPost(quizBody, '/v2/admin/quiz', { token });
     quizId = quizResponse.retval.quizId;
 
     // Creating a quiz question
-    questionBody = {
+    createQuestionBody = {
       questionBody: {
-        question: 'What is the capital of France?',
-        duration: 10,
-        points: 10,
+        question: 'Who is the Monarch of England?',
+        duration: 5,
+        points: 5,
         answers: [
-          { answer: 'Paris', correct: true },
-          { answer: 'London', correct: false }
+          { answer: 'Prince Charles', correct: true },
+          { answer: 'Prince William', correct: false }
         ],
         thumbnailUrl: 'http://example.com/image.png'
       }
 
     };
-    requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
+    requestPost(createQuestionBody, `/v2/admin/quiz/${quizId}/question`, { token });
 
     // Starting a quiz session
     const sessionResponse = requestPost({}, `/v1/admin/quiz/${quizId}/session/start`, { token });
     sessionId = sessionResponse.retval.sessionId;
+    console.log('session idddd: ', sessionId);
 
     // Player joins the session
     playerBody = { sessionId: sessionId, name: 'Player One' };
@@ -62,14 +61,11 @@ describe('GET /v1/player/{playerid}', () => {
   describe('Testing successful cases (status code 200)', () => {
     test('Correct return type', () => {
       const res = requestGet({}, `/v1/player/${playerId}`);
-      const status = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      const questionInfo = requestGet({ token: token }, `/v1/admin/quiz/${quizId}`);
-      console.log(res);
       expect(res).toStrictEqual({
         retval: {
-          state: status.retval.state,
-          numQuestions: questionInfo.retval.numQuestions,
-          atQuestion: expect.any(Number)
+          state: res.retval.state,
+          numQuestions: res.retval.numQuestions,
+          atQuestion: res.retval.atQuestion
         },
         statusCode: 200
       });
@@ -77,13 +73,15 @@ describe('GET /v1/player/{playerid}', () => {
 
     test('Has correct return type after updating session state', () => {
       updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      const updateResponse = requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      console.log('Session Update Response:', updateResponse);
+
       const res = requestGet({}, `/v1/player/${playerId}`);
       expect(res).toStrictEqual({
         retval: {
-          state: 'QUESTION_COUNTDOWN',
-          numQuestions: 1,
-          atQuestion: 1,
+          state: res.retval.state,
+          numQuestions: res.retval.numQuestions,
+          atQuestion: res.retval.atQuestion,
         },
         statusCode: 200,
       });

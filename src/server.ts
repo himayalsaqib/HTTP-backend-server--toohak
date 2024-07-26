@@ -52,7 +52,7 @@ import {
   adminQuizGetSessionStatus,
   adminQuizSessionsView,
 } from './quiz';
-import { playerJoin, playerSendChat, playerViewChat, playerStatus } from './player';
+import { playerJoin, playerSendChat, playerViewChat, getPlayerStatus } from './player';
 import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/helper';
 
@@ -981,12 +981,11 @@ app.post('/v1/player/:playerid/chat', (req: Request, res: Response) => {
 });
 
 app.get('/v1/player/:playerid/', (req: Request, res: Response) => {
-  const { playerId, sessionId } = req.body;
-  // const playerId = parseInt(req.params.playerid as string);
-  // const sessionId = parseInt(req.params.sessionid as string);
+  const playerId = parseInt(req.params.playerid as string);
+  const { sessionId } = req.query;
 
   try {
-    const status = playerStatus(playerId, sessionId);
+    const status = getPlayerStatus(playerId, parseInt(sessionId as string));
     res.json(status);
   } catch (error) {
     res.status(400).json({ error: error.message });

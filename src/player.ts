@@ -78,17 +78,14 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
  * Get the status of a guest player that has already joined a session
  * @param {number} playerId
  * @param {number} sessionId
- * @returns {{ status }} - returns status of player
+ * @returns {playerStatus} - returns status of player
  */
-export function playerStatus (playerId: number, sessionId: number): playerStatus {
-  // Check if the player ID exists
-  console.log(playerId);
+export function getPlayerStatus (playerId: number, sessionId: number): playerStatus {
   if (!playerIdInUse(playerId)) {
     throw new Error('The player ID does not exist');
   }
 
-  // Find the session by ID
-  const session = findQuizSessionById(sessionId);
+  const session = findSessionByPlayerId(playerId);
   if (!session) {
     throw new Error('Session Id does not refer to a valid session');
   }
@@ -96,7 +93,7 @@ export function playerStatus (playerId: number, sessionId: number): playerStatus
   // Check if the player is in the session
   const playerInSession = session.players.some(player => player.playerId === playerId);
   if (!playerInSession) {
-    throw new Error('The player ID does not belong to this session');
+    throw new Error('The player Id does not belong to this session');
   }
 
   const status: playerStatus = {
