@@ -1,16 +1,15 @@
 // includes player functions
 
-import { setData, getData, EmptyObject, Message } from './dataStore';
+import { setData, getData, EmptyObject, Message, UsersRanking } from './dataStore';
 import { currentTime, getRandomInt } from './helper-files/authHelper';
 import {
   findNameByPlayerId,
   findSessionByPlayerId,
   generateRandomName,
   playerIdInUse,
-  playerNameExists,
-  updateSessionStateIfAutoStart
+  playerNameExists
 } from './helper-files/playerHelper';
-import { findQuizSessionById } from './helper-files/quizHelper';
+import { beginQuestionCountdown, findQuizSessionById } from './helper-files/quizHelper';
 import { QuizSessionState } from './quiz';
 
 interface SendMessage {
@@ -51,7 +50,6 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
     throw new Error('Name is not unique');
   }
 
-  // throw error for if session is not in lobby state
   if (session.state !== QuizSessionState.LOBBY) {
     throw new Error('Session is not in LOBBY state');
   }
@@ -65,8 +63,18 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
   session.players.push(newPlayer);
   data.players.push(newPlayer);
 
+  // Initialise ranking field
+  const newPlayerRank: UsersRanking = {
+    playerId: newPlayerId,
+    name: playerName,
+    score: 0
+  };
+  session.usersRankedByScore.push(newPlayerRank);
+
   // Update the session state if the number of players matches the autoStartNum
-  updateSessionStateIfAutoStart(session);
+  if (session.players.length === session.autoStartNum) {
+    beginQuestionCountdown(session, session.sessionId);
+  }
 
   setData(data);
 
@@ -96,7 +104,6 @@ export function getPlayerStatus (playerId: number): playerStatus {
 
 /**
  * Allow a player to send a message during a session
- *
  * @param {number} playerId
  * @param {Message} message
  * @returns {{}}
