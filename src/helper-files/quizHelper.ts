@@ -1,131 +1,9 @@
-// Includes helper functions for auth.ts and quiz.ts
-
-import { Answer, getData, Question, Quizzes, Users, Trash, QuizSessions } from '../dataStore';
-import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState, sessionIdToTimerArray, WAIT_THREE_SECONDS } from '../quiz';
-import crypto from 'crypto';
-
-/**
- * Function checks if an authUserId exists in the dataStore
- *
- * @param {number} authUserId
- * @returns {boolean} true if authUserId is valid otherwise false
- */
-export function authUserIdExists(authUserId: number): boolean {
-  const user = findUserById(authUserId);
-
-  if (user === undefined) {
-    return false;
-  }
-  return true;
-}
-
-/**
- * Function generates and returns a random integer for ids
- *
- * @returns {number}
- */
-export function getRandomInt(): number {
-  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
-}
-
-// ========================= AUTH HELPER FUNCTIONS ========================== //
-/**
- * Function checks if an email is already being used by an existing user
- *
- * @param {string} email
- * @returns {boolean} true if email exists, false if not
- */
-export function adminEmailInUse(email: string): boolean {
-  const user = findUserByEmail(email);
-
-  if (user === undefined) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-/**
- * Function checks if a name is valid (ie doesn't contain a number or
- * special characters other than spaces, hyphens or apostrophes)
- *
- * @param {string} name
- * @returns {boolean} true if a name is valid otherwise false
- */
-export function adminUserNameIsValid(name: string): boolean {
-  // specialCharacters will match any string that includes a special
-  // character except for space, hyphen or apostrophe
-  const specialCharacters = /[^A-Za-z\s'-]/;
-  if (specialCharacters.test(name)) {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-/**
- * Function checks whether the given password contains atleast one number and
- * atleast one letter
- *
- * @param {string} password to check
- * @returns {boolean} true if password has neccessary chars otherwise false
- */
-export function adminPasswordHasValidChars(password: string): boolean {
-  return /\d/.test(password) && /[a-zA-Z]/.test(password);
-}
-
-/**
- * Function checks previousPassword array to determine whether a user has already
- * used a password when updating the password
- *
- * @param {number} authUserId
- * @param {string} newPassword
- * @returns {boolean} true if newPassword matches any previous passwords
- */
-export function adminCheckPasswordHistory(authUserId: number, newPassword: string): boolean {
-  const user = findUserById(authUserId);
-  for (const password of user.previousPasswords) {
-    if (password === newPassword) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/**
- * Finds a user in the data store by authUserId
- *
- * @param {number} authUserId - The authUserId to find
- * @returns {Users | undefined} - The user object if found | undefined
- */
-export function findUserById(authUserId: number): Users | undefined {
-  const data = getData();
-  return data.users.find(user => user.authUserId === authUserId);
-}
-
-/**
- * Finds a user in the data store by email
- *
- * @param {string} email - The email to find
- * @returns {Users | undefined} - The user object if found | undefined
- */
-export function findUserByEmail(email: string): Users | undefined {
-  const data = getData();
-  return data.users.find(user => user.email === email);
-}
-
-/**
- * generates a sha256 hash for given password
- *
- * @param {string} password
- * @returns {string} hash of password
- */
-export function getHashOf(password: string): string {
-  return crypto.createHash('sha256').update(password).digest('hex');
-}
-
 // ========================= QUIZ HELPER FUNCTIONS ========================== //
+
+import { Answer, getData, Question, QuestionResults, QuizSessions, Quizzes, Trash } from '../dataStore';
+import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState, sessionIdToTimerArray, WAIT_THREE_SECONDS } from '../quiz';
+import { getRandomInt } from './authHelper';
+
 /**
  * Function checks if a quiz name contains any invalid characters. Characters
  * are considered invalid if they are not alphanumeric or spaces e.g. @
@@ -415,15 +293,6 @@ export function swapQuestions(questionIndex1: number, questionIndex2: number, qu
 }
 
 /**
- * Function gets the current time in seconds to 10 significant figures
- *
- * @returns {number} time
- */
-export function currentTime(): number {
-  return Math.floor(Date.now() / 1000);
-}
-
-/**
  * Function that checks whether the end of the given thumbnailUrl contains the
  * correct file type (jpg, jpeg, png)
  *
@@ -564,94 +433,25 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
   sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
 }
 
-// ======================== PLAYER HELPER FUNCTIONS ========================= //
-
 /**
- * Function moves onto next state if number of players joined matches autoStartNum
+ * Initialised an array for question results that can be updated as session
+ * progresses and players answer
  *
- * @param {QuizSessions} session
+ * @param {Question[]} questions
+ * @returns {QuestionResults[]}
  */
-export function updateSessionStateIfAutoStart(session: QuizSessions): void {
-  if (session.players.length === session.autoStartNum) {
-    session.state = QuizSessionState.QUESTION_COUNTDOWN;
-  }
-}
-
-/**
- * Function generates a random name if player name is empty string
- *
- * @param {}
- * @returns {string} random name
- */
-export function generateRandomName(): string {
-  const letters = 'abcdefghijklmnopqrstuvwxyz';
-  const numbers = '0123456789';
-  let name = '';
-
-  // Generate 5 unique letters
-  while (name.length < 5) {
-    const randomLetter = letters.charAt(Math.floor(Math.random() * letters.length));
-    if (!name.includes(randomLetter)) {
-      name += randomLetter;
-    }
+export function initialiseQuestionResults(questions: Question[]): QuestionResults[] {
+  const questionResults = [];
+  for (const question of questions) {
+    const newQuestion: QuestionResults = {
+      questionId: question.questionId,
+      playersCorrectList: [],
+      playersAnsweredList: [],
+      averageAnswerTime: 0,
+      percentCorrect: 0,
+    };
+    questionResults.push(newQuestion);
   }
 
-  // Generate 3 unique numbers
-  while (name.length < 8) {
-    const randomNumber = numbers.charAt(Math.floor(Math.random() * numbers.length));
-    if (!name.includes(randomNumber)) {
-      name += randomNumber;
-    }
-  }
-
-  return name;
-}
-
-/**
- * Function checks if a player name already exists in the session
- *
- * @param {number} sessionId
- * @param {string} playerName
- * @returns {boolean} true if player name has been used, false if it has not
- */
-export function playerNameExists(sessionId: number, playerName: string): boolean {
-  const session = findQuizSessionById(sessionId);
-  return session.players.some(player => player.name === playerName);
-}
-
-/**
- * Function checks if a player ID has already been used by another player
- *
- * @param {Number} playerId
- * @returns {boolean} true if player ID has been used, false if it has not
- */
-export function playerIdInUse(playerId: number): boolean {
-  const data = getData();
-  return data.players.some(player => player.playerId === playerId);
-}
-
-/**
- * Function returns the session the given player is in
- *
- * @param {number} playerId
- * @returns {QuizSessions | undefined} sessionId | undefined if session does not exist
- */
-export function findSessionByPlayerId(playerId: number): QuizSessions | undefined {
-  const data = getData();
-  const session = data.quizSessions.find(q =>
-    q.players.some(player => player.playerId === playerId) === true);
-
-  return session;
-}
-
-/**
- * Function returns the name corresponding to a given player ID
- *
- * @param {number} playerId
- * @returns {string | undefined} name | undefined if player does not exist
- */
-export function findNameByPlayerId(playerId: number): string | undefined {
-  const data = getData();
-  const player = data.players.find(player => player.playerId === playerId);
-  return player?.name;
+  return questionResults;
 }
