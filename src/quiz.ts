@@ -1,33 +1,30 @@
 // includes quiz functions
 
 import { setData, getData, EmptyObject, Question, Answer, Quizzes } from './dataStore';
+import { adminEmailInUse, currentTime, findUserByEmail, getRandomInt } from './helper-files/authHelper';
 import {
-  quizNameHasValidChars,
-  quizNameInUse,
-  quizIdInUse,
-  findQuizById,
-  findTrashedQuizById,
+  beginQuestionCountdown,
   calculateSumQuestionDuration,
+  changeQuestionOpenToQuestionClose,
   checkAnswerLength,
   checkForAnsDuplicates,
   checkForNumCorrectAns,
-  questionIdInUse,
-  swapQuestions,
-  findQuestionById,
-  createAnswersArray,
-  adminEmailInUse,
-  findUserByEmail,
-  currentTime,
-  checkThumbnailUrlFileType,
-  findQuizSessionById,
-  quizIsInTrash,
-  getRandomInt,
-  correctSessionStateForAction,
   checkIfTimerExists,
-  beginQuestionCountdown,
-  changeQuestionOpenToQuestionClose,
+  checkThumbnailUrlFileType,
+  correctSessionStateForAction,
+  createAnswersArray,
+  findQuestionById,
+  findQuizById,
+  findQuizSessionById,
+  findTrashedQuizById,
   initialiseQuestionResults,
-} from './helper-files/helper';
+  questionIdInUse,
+  quizIdInUse,
+  quizIsInTrash,
+  quizNameHasValidChars,
+  quizNameInUse,
+  swapQuestions
+} from './helper-files/quizHelper';
 
 // ============================= GLOBAL VARIABLES =========================== //
 const MIN_QUIZ_NAME_LEN = 3;

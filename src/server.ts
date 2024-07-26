@@ -54,7 +54,7 @@ import {
 } from './quiz';
 import { playerJoin, playerSendChat, playerViewChat, getPlayerStatus } from './player';
 import { load } from './dataStore';
-import { quizIsInTrash } from './helper-files/helper';
+import { quizIsInTrash } from './helper-files/quizHelper';
 
 // Set up web app
 const app = express();
