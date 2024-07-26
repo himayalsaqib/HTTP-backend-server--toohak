@@ -63,7 +63,7 @@ describe('GET /v1/player/{playerid}', () => {
       const res = requestGet({}, `/v1/player/${playerId}`);
       expect(res).toStrictEqual({
         retval: {
-          state: "LOBBY",
+          state: 'LOBBY',
           numQuestions: 1,
           atQuestion: 0
         },
@@ -77,7 +77,7 @@ describe('GET /v1/player/{playerid}', () => {
       const res = requestGet({}, `/v1/player/${playerId}`);
       expect(res).toStrictEqual({
         retval: {
-          state: "QUESTION_COUNTDOWN",
+          state: 'QUESTION_COUNTDOWN',
           numQuestions: 1,
           atQuestion: 1,
         },
@@ -92,7 +92,7 @@ describe('GET /v1/player/{playerid}', () => {
       const res = requestGet({}, `/v1/player/${player2Id}`);
       expect(res).toStrictEqual({
         retval: {
-          state: "LOBBY",
+          state: 'LOBBY',
           numQuestions: 1,
           atQuestion: 0
         },
