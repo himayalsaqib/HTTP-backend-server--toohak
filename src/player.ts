@@ -46,7 +46,6 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
     throw new Error('Name is not unique');
   }
 
-  // throw error for if session is not in lobby state
   if (session.state !== QuizSessionState.LOBBY) {
     throw new Error('Session is not in LOBBY state');
   }
