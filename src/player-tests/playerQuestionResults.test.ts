@@ -80,7 +80,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
 
     // updating session state from LOBBY -> QUESTION_COUNTDOWN -> QUESTION_OPEN 
     requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-    sleepSync(3 * 1000);
+    requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
     // initialising questionposition for path
     questionPosition = 1;
@@ -109,7 +109,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
     test('Successfully returns results for a particular quiz question when player is wrong', () => {
       // updating session state from ANSWER_SHOW --> QUESTION_COUNTDOWN --> QUESTION_OPEN
       requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      sleepSync(3 * 1000);
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       // player submits wrong answer for question 2
       requestPut({ answerIds: [wrongAnswerId] }, `/v1/player/${playerId}/question/${questionPosition + 1}`);
