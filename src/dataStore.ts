@@ -64,6 +64,7 @@ export interface QuizSessions {
   questionResults: QuestionResults[];
   messages: Message[];
   playerAnswers?: Record<number, number[]>;
+  questionOpenTime?: number;
 }
 
 export interface Player {
