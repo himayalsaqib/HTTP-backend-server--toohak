@@ -73,9 +73,10 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       expect(res.statusCode).toStrictEqual(200);
     });
 
-    test.skip('Side effect: player results correctly displays ', () => {
+    test.skip('Side effect: player results correctly displays correct answered question', () => {
       const submitAns = { answerIds: [answerIds[0]] };
       const questionPosition = 1;
+      const questionResponse = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(res.retval).toStrictEqual({});
       expect(res.statusCode).toStrictEqual(200);
@@ -83,7 +84,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       const verifyRes = requestGet(submitAns, `/v1/player/${playerId}/question/${questionPosition}/results`);
       expect(verifyRes.retval).toStrictEqual(
         {
-          questionId: expect.any(Number),
+          questionId: questionResponse.retval.questions[questionPosition].questionId,
           playersCorrectList: [
             'Player One'
           ],
