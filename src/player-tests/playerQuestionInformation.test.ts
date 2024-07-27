@@ -241,7 +241,7 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
 
   describe('Testing for session state error cases (status code 400)', () => {
     const questionposition = 1;
-    
+
     test('Session is in LOBBY state', () => {
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionposition}`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
