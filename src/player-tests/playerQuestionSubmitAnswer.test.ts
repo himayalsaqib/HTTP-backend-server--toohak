@@ -45,7 +45,6 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
     };
     requestPost(createQuestionBody, `/v2/admin/quiz/${quizId}/question`, { token });
     const questionResponse = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
-    // answerIds = questionResponse.retval.questions[0].answers;
     answerIds = questionResponse.retval.questions[0].answers.map((answer: any) => answer.answerId);
 
     // Starting a quiz session
@@ -155,7 +154,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       questionAction = { action: QuizSessionAction.GO_TO_ANSWER };
       requestPut(questionAction, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
-      // Try to answer the previous question
+      // Attempt to answer previous question
       const submitAns = { answerIds: [answerIds[0]] };
       const questionPosition = 1;
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
