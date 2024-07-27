@@ -188,8 +188,11 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
     questionResults.playersCorrectList.push(findNameByPlayerId(playerId));
   }
 
-  // Calculate score
-  const score = isCorrect ? question.points : 0;
+  // Calculate score: first calculating how many points for every correct answer 
+  // then score is all points if completely correct else multiply num correct 
+  // answers by the points per answer
+  const pointsPerAnswer = question.points / correctAnswerIds.length;
+  const score = isCorrect ? question.points : correctAnswers.length * pointsPerAnswer;
 
   if (questionResults) {
     const playerAnswered: PlayerAnswered = {
