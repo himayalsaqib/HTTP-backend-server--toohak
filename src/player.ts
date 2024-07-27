@@ -97,12 +97,11 @@ export function getPlayerStatus (playerId: number): playerStatus {
 }
 
 /**
- * Allows the current player to submit answer(s) to the currently active question.
- * Question position starts at 1.
+ * Allows the player to submit answer/s to a question.
  *
  * @param {number} playerId
  * @param {number} questionPosition
- * @param {{ answerIds: number[] }} body
+ * @param {{ answerIds: number[] }} 
  * @returns {{}}
  */
 export function playerSubmitAnswer(playerId: number, questionPosition: number, body: { answerIds: number[] }): EmptyObject {
@@ -117,7 +116,7 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   if (questionPosition < 1 || questionPosition > session.quiz.numQuestions) {
     throw new Error('Invalid question position');
   }
-
+  // Check if session state is QUESTION_OPEN
   if (session.state !== QuizSessionState.QUESTION_OPEN) {
     throw new Error('Session is not in QUESTION_OPEN state');
   }
@@ -126,20 +125,23 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   if (session.atQuestion !== questionPosition) {
     throw new Error('Session is not currently on this question');
   }
-
-  const currentQuestion = session.quiz.questions[questionPosition - 1]; 
+  
   const { answerIds } = body;
+  const question = session.quiz.questions[questionPosition - 1];
 
-  const validAnswerIds = new Set(currentQuestion.answers.map((answer) => answer.answerId));
+  const validAnswerIds = new Set(
+    question.answers.map((answer: { answerId: number }) => answer.answerId)
+  );
+
   const invalidAnswerIds = answerIds.filter((id) => !validAnswerIds.has(id));
   if (invalidAnswerIds.length > 0) {
-    throw new Error('Invalid answer IDs provided');
+    throw new Error('Invalid answer ids provided');
   }
 
   // Check for duplicate answer ids
   const uniqueAnswerIds = new Set(answerIds);
   if (uniqueAnswerIds.size !== answerIds.length) {
-    throw new Error('Duplicate answer IDs provided');
+    throw new Error('Duplicate answer ids provided');
   }
 
   // Throw error is less than 1 answer id submitted
@@ -152,7 +154,9 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   if (playerIndex === -1) {
     throw new Error('Player not found in session');
   }
-
+  session.playerAnswers = session.playerAnswers || {};
+  session.playerAnswers[playerId] = answerIds;
+ 
 
   setData(data);
 
