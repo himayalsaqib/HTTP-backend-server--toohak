@@ -1,23 +1,25 @@
 // ========================= QUIZ HELPER FUNCTIONS ========================== //
 
-import { 
-  Answer, 
-  getData, 
+import {
+  Answer,
+  getData,
   PlayerAnswered,
-  Question, 
-  QuestionResults, 
-  QuizSessions, 
-  Quizzes, 
-  Trash, 
-  UsersRanking } from '../dataStore';
-import { 
-  QuestionBody, 
-  QuizAnswerColours, 
-  QuizQuestionAnswers, 
-  QuizSessionAction, 
-  QuizSessionState, 
-  sessionIdToTimerArray, 
-  WAIT_THREE_SECONDS } from '../quiz';
+  Question,
+  QuestionResults,
+  QuizSessions,
+  Quizzes,
+  Trash,
+  UsersRanking
+} from '../dataStore';
+import {
+  QuestionBody,
+  QuizAnswerColours,
+  QuizQuestionAnswers,
+  QuizSessionAction,
+  QuizSessionState,
+  sessionIdToTimerArray,
+  WAIT_THREE_SECONDS
+} from '../quiz';
 import { currentTime, getRandomInt } from './authHelper';
 
 /**
@@ -488,11 +490,11 @@ export function updateQuestionResults(questionResults: QuestionResults, totalPla
   questionResults.averageAnswerTime = Math.round(answerTimeSum / questionResults.playersAnsweredList.length);
 
   // calculating percent correct (to the nearest whole number)
-  questionResults.percentCorrect = Math.round((questionResults.playersCorrectList.length / totalPlayers) * 100); 
+  questionResults.percentCorrect = Math.round((questionResults.playersCorrectList.length / totalPlayers) * 100);
 }
 
 /**
- * Update every players' total score and the overall ranking for the session 
+ * Update every players' total score and the overall ranking for the session
  * after a question has finished
  *
  * @param {UsersRanking[]} usersRankedByScore
@@ -514,7 +516,7 @@ export function updateUsersRanking(usersRankedByScore: UsersRanking[], playersAn
 }
 
 /**
- * Find the questionResults for the question that just ended and update its 
+ * Find the questionResults for the question that just ended and update its
  * fields as well as update usersRankedByScore to ensure it is in descending
  * order by score
  *

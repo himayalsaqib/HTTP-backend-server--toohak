@@ -1024,7 +1024,7 @@ app.get('/v1/player/:playerid/question/:questionposition/results', (req: Request
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-})
+});
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================

@@ -1,13 +1,13 @@
 // includes http tests for the route GET /v1/player/{playerid}/question/{questionposition}/results
 
-import { requestDelete, requestGet, requestPost, requestPut } from "../helper-files/requestHelper";
-import { QuestionBody, QuizSessionAction } from "../quiz";
+import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
+import { QuestionBody, QuizSessionAction } from '../quiz';
 import sleepSync from 'slync';
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
 });
-  
+
 const ERROR = { error: expect.any(String) };
 
 describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => {
@@ -18,7 +18,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
   let questionBody: QuestionBody;
   let questionIds: number[];
   let correctAnswerIds: number[];
-  let wrongAnswerId: number
+  let wrongAnswerId: number;
   let startSessionBody: { autoStartNum: number };
   let sessionId: number;
   let playerBody: { sessionId: number, name: string };
@@ -82,14 +82,14 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
     const playerResponse = requestPost(playerBody, '/v1/player/join');
     playerId = playerResponse.retval.playerId;
 
-    // updating session state from LOBBY -> QUESTION_COUNTDOWN -> QUESTION_OPEN 
+    // updating session state from LOBBY -> QUESTION_COUNTDOWN -> QUESTION_OPEN
     requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
     requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
     // initialising questionposition for path
     questionPosition = 1;
 
-    // submitting an answer for the player 
+    // submitting an answer for the player
     requestPut({ answerIds: [correctAnswerIds[0]] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
 
     // updating session state from QUESTION_OPEN --> ANSWER_SHOW
@@ -116,7 +116,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       // player submits wrong answer for question 2
-      const playerAnswer = { answerIds: [wrongAnswerId] }
+      const playerAnswer = { answerIds: [wrongAnswerId] };
       requestPut(playerAnswer, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
 
       // updating session state from QUESTION_OPEN --> ANSWER_SHOW
@@ -140,7 +140,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       // player submits only one correct answer for question 2
-      const playerAnswer = { answerIds: [correctAnswerIds[1]] }
+      const playerAnswer = { answerIds: [correctAnswerIds[1]] };
       requestPut(playerAnswer, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
 
       // updating session state from QUESTION_OPEN --> ANSWER_SHOW
@@ -165,7 +165,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
 
       // player submits only one correct answer for question 2 but after 1 second
       sleepSync(1000);
-      const playerAnswer = { answerIds: [correctAnswerIds[1]] }
+      const playerAnswer = { answerIds: [correctAnswerIds[1]] };
       requestPut(playerAnswer, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
 
       // updating session state from QUESTION_OPEN --> ANSWER_SHOW
@@ -192,23 +192,22 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       // making 2 players join the session
       playerBody.sessionId = sessionId;
       let playerResponse = requestPost(playerBody, '/v1/player/join');
-      playerId = playerResponse.retval.playerId; 
+      playerId = playerResponse.retval.playerId;
 
       const playerBody2 = { sessionId: sessionId, name: 'JohnDoe' };
       playerResponse = requestPost(playerBody2, '/v1/player/join');
-      const playerId2 = playerResponse.retval.playerId; 
+      const playerId2 = playerResponse.retval.playerId;
 
-      // session state goes LOBBY -> QUESTION_COUNTDOWN -> QUESTION_OPEN 
+      // session state goes LOBBY -> QUESTION_COUNTDOWN -> QUESTION_OPEN
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
-      // submitting an answer for the player 
+      // players submit answers
       requestPut({ answerIds: [correctAnswerIds[0]] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       requestPut({ answerIds: [correctAnswerIds[0]] }, `/v1/player/${playerId2}/question/${questionPosition}/answer`);
 
       // updating session state from QUESTION_OPEN --> ANSWER_SHOW
-      const res1 = requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      console.log(res1);
-    
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionPosition}/results`);
       expect(res).toStrictEqual({
         retval: {
@@ -219,7 +218,6 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
         },
         statusCode: 200
       });
-      
     });
   });
 
@@ -253,7 +251,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
 
     test('If session is not currently on this question', () => {
       // update session state from ANSWER_SHOW --> QUESTION_COUNTDOWN
-      requestPut({ action: QuizSessionAction.NEXT_QUESTION}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionPosition}/results`);
       expect(res).toStrictEqual({

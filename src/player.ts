@@ -173,7 +173,7 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   const timeTaken = answerTime - (session.questionOpenTime || 0);
 
   // Find correct answer ids in the question
-  let correctAnswerIds = question.answers.flatMap(
+  const correctAnswerIds = question.answers.flatMap(
     answer => answer.correct ? answer.answerId : []
   );
 
@@ -188,8 +188,8 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
     questionResults.playersCorrectList.push(findNameByPlayerId(playerId));
   }
 
-  // Calculate score: first calculating how many points for every correct answer 
-  // then score is all points if completely correct else multiply num correct 
+  // Calculate score: first calculating how many points for every correct answer
+  // then score is all points if completely correct else multiply num correct
   // answers by the points per answer
   const pointsPerAnswer = question.points / correctAnswerIds.length;
   const score = isCorrect ? question.points : correctAnswers.length * pointsPerAnswer;
@@ -253,7 +253,6 @@ export function playerViewChat(playerId: number): { messages: Message[] } {
 }
 
 export function playerQuestionResults(playerId: number, questionPosition: number): PlayerQuestionResults {
-  const data = getData();
   if (!playerIdInUse(playerId)) {
     throw new Error('Player id does not exist');
   }
@@ -263,10 +262,10 @@ export function playerQuestionResults(playerId: number, questionPosition: number
   if (questionPosition < 1 || questionPosition > session.quiz.numQuestions) {
     throw new Error('Question position is not valid for the session this player is in');
   }
-  if (session.state != QuizSessionState.ANSWER_SHOW) {
+  if (session.state !== QuizSessionState.ANSWER_SHOW) {
     throw new Error('Session is not in ANSWER_SHOW state.');
   }
-  if (session.atQuestion != questionPosition) {
+  if (session.atQuestion !== questionPosition) {
     throw new Error('Session is not currently on this question.');
   }
 
