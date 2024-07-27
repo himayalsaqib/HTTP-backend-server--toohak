@@ -77,7 +77,8 @@ beforeEach(() => {
     correctAnswerIds = [];
     correctAnswerIds.push(quizInfoRes.retval.questions[0].answers[0].answerId);
     correctAnswerIds.push(quizInfoRes.retval.questions[1].answers[0].answerId);
-    wrongAnswerId = quizInfoRes.retval.questions[1].answers[1].answerId;
+		correctAnswerIds.push(quizInfoRes.retval.questions[1].answers[2].answerId);
+    wrongAnswerId = quizInfoRes.retval.questions[1].answers[0].answerId;
 
 		// starting a new session in LOBBY state
     startSessionBody = { autoStartNum: 3 };
@@ -113,33 +114,33 @@ beforeEach(() => {
 		requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 		requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 		requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-
-		// submitting answer to question 2 after 3 seconds
-		sleepSync(3000);
-		requestPut({ answerIds: [correctAnswerIds[1]] }, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
-
-		// player 2 submits answer to question 2 after 4 seconds
-		sleepSync(1000);
-		requestPut({ answerIds: [correctAnswerIds[0]] }, `/v1/player/${playerId2}/question/${questionPosition}/answer`);
-
-		sleepSync(createBody.questionBody.duration * 1000);
-		requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-		requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 });
 
 	describe('Testing for correct return type (status code 200)', () => {
+		const questionPosition = 1;
 		test('Successfully returns results for a session', () => {
+			// player 1 submits answer to question 2 after 3 seconds
+			sleepSync(3000);
+			requestPut({ answerIds: [correctAnswerIds[1]] }, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
+
+			// player 2 submits answer to question 2 after 4 seconds
+			sleepSync(1000);
+			requestPut({ answerIds: [correctAnswerIds[1]] }, `/v1/player/${playerId2}/question/${questionPosition + 1}/answer`);
+
+			sleepSync(createBody.questionBody.duration * 1000);
+			requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+			requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 			const res = requestGet({}, `/v1/player/${playerId}/results`);
 			expect(res).toStrictEqual({
 				retval: {
 					usersRankedByScore: [
 						{
 							name: 'JaneDoe',
-							score: 2
+							score: 10
 						},
 						{
 							name: 'Joe',
-							score: 1
+							score: 5
 						}
 					],
 					questionResults: [
@@ -166,10 +167,57 @@ beforeEach(() => {
 				statusCode: 200
 			});
 		});
+
+	test('Successfully returns results where both players tie for a question', () => {
+		requestPut({ answerIds: wrongAnswerId }, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
+		requestPut({ answerIds: wrongAnswerId }, `/v1/player/${playerId2}/question/${questionPosition + 1}/answer`);
+		sleepSync(createBody.questionBody.duration * 1000);
+			requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+			requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+			const res = requestGet({}, `/v1/player/${playerId}/results`);
+			expect(res).toStrictEqual({
+				retval: {
+					usersRankedByScore: [
+						{
+							name: 'JaneDoe',
+							score: 5
+						},
+						{
+							name: 'Joe',
+							score: 3
+						}
+					],
+					questionResults: [
+						{
+							questionId: questionId,
+							playersCorrectList: [
+								'JaneDoe',
+								'Joe'
+							],
+							averageAnswerTime: 2,
+							percentCorrect: 100
+						},
+						{
+							questionId: questionId2,
+							playersCorrectList: [
+								'JaneDoe',
+								'Joe'
+							],
+							averageAnswerTime: 0,
+							percentCorrect: 0
+						},
+					]
+				},
+				statusCode: 200
+			});
+		});
+
+		test('Successfully returns results where both players tie for the final results', () => {
+			
+		});
 	});
-	
+
 	describe('Testing for error cases (status code 400)', () => {
-		const questionPosition = 1;
 		test('PlayerId does not exist', () => {
       const res = requestGet({}, `/v1/player/${playerId}/results`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
