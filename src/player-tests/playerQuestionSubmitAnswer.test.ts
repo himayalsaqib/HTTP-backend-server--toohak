@@ -80,6 +80,8 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       expect(res.retval).toStrictEqual({});
       expect(res.statusCode).toStrictEqual(200);
       // call question results to verify 
+      // const verify = requestGet(submitAns,`/v1/player/${playerid}/question/${questionposition}/results`);
+      // expect(verify.retval.percentageCorrect).toStrictEqual({100});
     });
 
     test('Correct return type after re-submitting answer', () => {
