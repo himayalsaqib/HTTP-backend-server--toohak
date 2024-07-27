@@ -154,8 +154,19 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   if (playerIndex === -1) {
     throw new Error('Player not found in session');
   }
+
+  const currentTime = Date.now(); // Current timestamp
+  const playerStartTime = session.playerStartTimes[playerId] || currentTime; // Start time when the player started answering
+  const answerTime = currentTime - playerStartTime;
+
   session.playerAnswers = session.playerAnswers || {};
   session.playerAnswers[playerId] = answerIds;
+  session.questionResults[questionPosition].playersAnsweredList.
+  // session.questionResults[playerId] = {
+  //   playerId,
+  //   answerTime,
+  //   score,
+  // };
  
 
   setData(data);
