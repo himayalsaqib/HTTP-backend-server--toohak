@@ -1,6 +1,6 @@
 // includes player functions
 
-import { setData, getData, EmptyObject, Message, UsersRanking } from './dataStore';
+import { setData, getData, EmptyObject, Message, UsersRanking, PlayerAnswered } from './dataStore';
 import { currentTime, getRandomInt } from './helper-files/authHelper';
 import {
   findNameByPlayerId,
@@ -132,6 +132,8 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
     throw new Error('Session is not currently on this question');
   }
   
+  const startTime = currentTime(); 
+
   const { answerIds } = body;
   const question = session.quiz.questions[questionPosition - 1];
 
@@ -161,20 +163,22 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
     throw new Error('Player not found in session');
   }
 
-  const currentTime = Date.now(); // Current timestamp
-  const playerStartTime = session.playerStartTimes[playerId] || currentTime; // Start time when the player started answering
-  const answerTime = currentTime - playerStartTime;
+  const answerTime = currentTime();
+  const timeTaken = answerTime - startTime;
 
   session.playerAnswers = session.playerAnswers || {};
   session.playerAnswers[playerId] = answerIds;
-  session.questionResults[questionPosition].playersAnsweredList.
-  // session.questionResults[playerId] = {
-  //   playerId,
-  //   answerTime,
-  //   score,
-  // };
- 
-
+  
+  // Update answerTime
+  const questionResults = session.questionResults.find(result => result.questionId === questionPosition);
+  if (questionResults) {
+    const playerAnswered: PlayerAnswered = {
+      playerId,
+      answerTime: timeTaken, 
+      score: 0, 
+    };
+    questionResults.playersAnsweredList.push(playerAnswered);
+  }
   setData(data);
 
   return {};
