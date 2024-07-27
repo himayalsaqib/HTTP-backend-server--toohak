@@ -1,6 +1,7 @@
 // includes player functions
 
-import { setData, getData, EmptyObject, Message, UsersRanking, PlayerAnswered } from './dataStore';
+import { isPrivateIdentifier } from 'typescript';
+import { setData, getData, EmptyObject, Message, UsersRanking, PlayerAnswered, Question } from './dataStore';
 import { currentTime, getRandomInt } from './helper-files/authHelper';
 import {
   findNameByPlayerId,
@@ -10,7 +11,8 @@ import {
   playerNameExists
 } from './helper-files/playerHelper';
 import { beginQuestionCountdown, findQuizSessionById } from './helper-files/quizHelper';
-import { QuizSessionState } from './quiz';
+import { quizBelongsToUser } from './helper-files/serverHelper';
+import { QuizSessionState, QuizInfo, QuizAnswerColours } from './quiz';
 
 interface SendMessage {
   messageBody: string
@@ -20,6 +22,19 @@ export interface playerStatus {
   state: string;
   numQuestions: number;
   atQuestion: number;
+}
+
+export interface QuestionDisplay {
+  questionId: number;
+  question: string;
+  duration: number;
+  thumbnailUrl: string;
+  points: number;
+  answers: {
+    answerId: number;
+    answer: string;
+    colour: QuizAnswerColours;
+  }[];
 }
 
 // =============================== FUNCTIONS ================================ //
@@ -100,6 +115,54 @@ export function getPlayerStatus (playerId: number): playerStatus {
   };
 
   return status;
+}
+
+/**
+ * Get the information about a question that the guest player is on. 
+ * @param {number} playerId
+ * @param {number} questionPosition
+ * @returns {{ QuestionDisplay } } - returns question information 
+ */
+export function playerQuestionInformation(playerId: number, questionPosition: number): QuestionDisplay  {
+  if (!playerIdInUse(playerId)) {
+    throw new Error('Player ID does not exist');
+  }
+  const session = findSessionByPlayerId(playerId);
+
+  const invalidStates = [
+    QuizSessionState.LOBBY,
+    QuizSessionState.QUESTION_COUNTDOWN,
+    QuizSessionState.FINAL_RESULTS,
+    QuizSessionState.END,
+  ];
+  
+  if (invalidStates.includes(session.state)) {
+    throw new Error('Session is in LOBBY, QUESTION_COUNTDOWN, FINAL_RESULTS or END state');
+  }
+  if (questionPosition < 1 || questionPosition > session.quiz.numQuestions) {
+    throw new Error('Question position is not valid for the session this player is in');
+  }
+  if (questionPosition !== session.atQuestion) {
+    throw new Error('Session is not currently on this question');
+  }
+
+  const question = session.quiz.questions[questionPosition - 1];
+  
+  // Produce new answers array without property correct
+  const answersDisplay = question.answers.map(({ answerId, answer, colour }) => ({
+    answerId,
+    answer,
+    colour,
+  }));
+
+  return {
+    questionId: question.questionId,
+    question: question.question,
+    duration: question.duration,
+    thumbnailUrl: question.thumbnailUrl,
+    points: question.points,
+    answers: answersDisplay,
+  };
 }
 
 /**
