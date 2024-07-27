@@ -17,7 +17,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
   let quizId: number;
   let questionBody: QuestionBody;
   let questionIds: number[];
-  let correctAnswerId: number;
+  let correctAnswerIds: number[];
   let wrongAnswerId: number
   let startSessionBody: { autoStartNum: number };
   let sessionId: number;
@@ -57,7 +57,8 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       points: 5,
       answers: [
         { answer: 'star', correct: true },
-        { answer: 'planet', correct: false }
+        { answer: 'planet', correct: false },
+        { answer: 'moon', correct: true }
       ],
       thumbnailUrl: 'http://google.com/some/image/path.png',
     };
@@ -66,7 +67,9 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
 
     // getting the answerId for correct answer and wrong answer
     const quizInfoRes = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
-    correctAnswerId = quizInfoRes.retval.questions[0].answers[0].answerId;
+    correctAnswerIds = [];
+    correctAnswerIds.push(quizInfoRes.retval.questions[0].answers[0].answerId);
+    correctAnswerIds.push(quizInfoRes.retval.questions[1].answers[0].answerId);
     wrongAnswerId = quizInfoRes.retval.questions[1].answers[1].answerId;
 
     // starting a new session in LOBBY state
@@ -87,7 +90,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
     questionPosition = 1;
 
     // submitting an answer for the player 
-    requestPut({ answerIds: [correctAnswerId] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
+    requestPut({ answerIds: [correctAnswerIds[0]] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
 
     // updating session state from QUESTION_OPEN --> ANSWER_SHOW
     requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
@@ -131,7 +134,56 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       });
     });
 
-    test('Successfully returns playersCorrectList in alphabetical order', () => {
+    test('Successfully returns results for a particular quiz question when player partially correct', () => {
+      // updating session state from ANSWER_SHOW --> QUESTION_COUNTDOWN --> QUESTION_OPEN
+      requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+
+      // player submits only one correct answer for question 2
+      const playerAnswer = { answerIds: [correctAnswerIds[1]] }
+      requestPut(playerAnswer, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
+
+      // updating session state from QUESTION_OPEN --> ANSWER_SHOW
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+
+      const res = requestGet({}, `/v1/player/${playerId}/question/${questionPosition + 1}/results`);
+      expect(res).toStrictEqual({
+        retval: {
+          questionId: questionIds[1],
+          playersCorrectList: [],
+          averageAnswerTime: expect.any(Number),
+          percentCorrect: 0
+        },
+        statusCode: 200
+      });
+    });
+
+    test('Side effect: successfully returns averageAnswerTime', () => {
+      // updating session state from ANSWER_SHOW --> QUESTION_COUNTDOWN --> QUESTION_OPEN
+      requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+
+      // player submits only one correct answer for question 2 but after 1 second
+      sleepSync(1000);
+      const playerAnswer = { answerIds: [correctAnswerIds[1]] }
+      requestPut(playerAnswer, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
+
+      // updating session state from QUESTION_OPEN --> ANSWER_SHOW
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+
+      const res = requestGet({}, `/v1/player/${playerId}/question/${questionPosition + 1}/results`);
+      expect(res).toStrictEqual({
+        retval: {
+          questionId: questionIds[1],
+          playersCorrectList: [],
+          averageAnswerTime: 1,
+          percentCorrect: 0
+        },
+        statusCode: 200
+      });
+    });
+
+    test('Side effect: successfully returns playersCorrectList in alphabetical order', () => {
       // starting a new session in LOBBY state
       startSessionBody = { autoStartNum: 2 };
       const sessionResponse = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
@@ -150,8 +202,8 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       // submitting an answer for the player 
-      requestPut({ answerIds: [correctAnswerId] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
-      requestPut({ answerIds: [correctAnswerId] }, `/v1/player/${playerId2}/question/${questionPosition}/answer`);
+      requestPut({ answerIds: [correctAnswerIds[0]] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
+      requestPut({ answerIds: [correctAnswerIds[0]] }, `/v1/player/${playerId2}/question/${questionPosition}/answer`);
 
       // updating session state from QUESTION_OPEN --> ANSWER_SHOW
       const res1 = requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
