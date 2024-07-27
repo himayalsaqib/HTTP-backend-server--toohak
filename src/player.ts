@@ -166,7 +166,7 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   // Filter player answer ids to check for correct answers
   const correctAnswers = answerIds.filter((id) => validAnswerIds.has(id));
   const isCorrect = correctAnswers.length === validAnswerIds.size;
-  
+
   // Calculate score
   const score = isCorrect ? question.points : 0;
 
