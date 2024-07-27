@@ -132,8 +132,6 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
     throw new Error('Session is not currently on this question');
   }
 
-  const startTime = currentTime();
-
   const { answerIds } = body;
   const question = session.quiz.questions[questionPosition - 1];
 
@@ -164,7 +162,7 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   }
 
   const answerTime = currentTime();
-  const timeTaken = answerTime - startTime;
+   const timeTaken = answerTime - (session.questionOpenTime || 0); 
 
   session.playerAnswers = session.playerAnswers || {};
   session.playerAnswers[playerId] = answerIds;
