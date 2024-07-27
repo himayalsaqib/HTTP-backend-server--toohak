@@ -10,7 +10,6 @@ import {
   checkAnswerLength,
   checkForAnsDuplicates,
   checkForNumCorrectAns,
-  checkIfTimerExists,
   checkThumbnailUrlFileType,
   correctSessionStateForAction,
   createAnswersArray,
@@ -774,6 +773,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number): { s
     usersRankedByScore: [],
     questionResults: initialiseQuestionResults(quizCopy.questions),
     messages: [],
+    resultsUpdated: false
   });
 
   setData(data);

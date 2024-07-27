@@ -427,6 +427,8 @@ export function beginQuestionCountdown(quizSession: QuizSessions, sessionId: num
   quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
   // increment atQuestion
   quizSession.atQuestion++;
+  // new question so results not updated
+  quizSession.resultsUpdated = false;
   // start countdown timer
   const timeoutId = setTimeout(() => {
     // update state
@@ -545,12 +547,14 @@ export function updateUsersRanking(usersRankedByScore: UsersRanking[], playersAn
  * @returns {void}
  */
 export function endOfQuestionUpdates(quizSession: QuizSessions): void {
-  console.log('ENTERED')
+  if (!quizSession.resultsUpdated) {
+    // get questionResults info for question that just finished
+    const currentQuestionResults = quizSession.questionResults[quizSession.atQuestion - 1];
 
-  // get questionResults info for question that just finished
-  const currentQuestionResults = quizSession.questionResults[quizSession.atQuestion - 1];
+    // updating questionResults and usersRankedByScore at the end of a question
+    updateQuestionResults(currentQuestionResults, quizSession.players.length);
+    updateUsersRanking(quizSession.usersRankedByScore, currentQuestionResults.playersAnsweredList);
 
-  // updating questionResults and usersRankedByScore at the end of a question
-  updateQuestionResults(currentQuestionResults, quizSession.players.length);
-  updateUsersRanking(quizSession.usersRankedByScore, currentQuestionResults.playersAnsweredList);
+    quizSession.resultsUpdated = true;
+  }
 }
