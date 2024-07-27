@@ -73,6 +73,15 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       expect(res.statusCode).toStrictEqual(200);
     });
 
+    test.skip('Correct return type after submiting 1 answer, verify answer submission', () => {
+      const submitAns = { answerIds: [answerIds[0]] };
+      const questionPosition = 1;
+      const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
+      expect(res.retval).toStrictEqual({});
+      expect(res.statusCode).toStrictEqual(200);
+      // call question results to verify 
+    });
+
     test('Correct return type after re-submitting answer', () => {
       const submitAns = { answerIds: [answerIds[0]] };
       const questionPosition = 1;
