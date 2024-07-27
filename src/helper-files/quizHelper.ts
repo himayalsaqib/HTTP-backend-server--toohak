@@ -400,6 +400,22 @@ export function checkIfTimerExists(sessionId: number): boolean {
 }
 
 /**
+ * Checks whether a timer exists for a given sessionId and cancels it. For 
+ * two scenarios: (QUESTION_OPEN --> ANSWER_SHOW) or (if SKIP_COUNTDOWN action)
+ *
+ * @param {number} sessionId
+ * @returns {void}
+ */
+export function cancelTimer(sessionId: number): void {
+  if (checkIfTimerExists(sessionId)) {
+    const timerId = sessionIdToTimerArray.find(i => i.sessionId === sessionId);
+    const index = sessionIdToTimerArray.findIndex(i => i.sessionId === sessionId);
+    clearTimeout(timerId.timeoutId);
+    sessionIdToTimerArray.splice(index, 1);
+  }
+}
+
+/**
  * This function starts the 3 second timer that changes the state from QUESTION_COUNTDOWN
  * to QUESTION_OPEN in a quizSession
  *
