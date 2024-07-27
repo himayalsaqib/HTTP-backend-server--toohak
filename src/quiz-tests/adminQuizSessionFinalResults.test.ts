@@ -49,6 +49,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
     const questionRes = requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
     questionId = questionRes.retval.questionId;
     
+    // get the answer IDs for the question answers
     const quizInfo = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
     answerIdCorrect = quizInfo.retval.questions[0].answers[0].answerId;
     answerIdIncorrect = quizInfo.retval.questions[0].answers[1].answerId;
