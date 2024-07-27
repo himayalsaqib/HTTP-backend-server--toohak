@@ -189,7 +189,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
 
     test('Returns error when session is not currently on this question', () => {
       const submitAns = { answerIds: [answerIds[0]] };
-      const questionPosition = 2; 
+      const questionPosition = 2;
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(res.retval).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
