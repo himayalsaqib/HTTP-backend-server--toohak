@@ -104,7 +104,7 @@ export interface QuizSessionsView {
 interface UsersRankedByScore {
   name: string;
   score: number;
-};
+}
 
 interface QuestionResults {
   questionId: number;
@@ -909,13 +909,12 @@ export function adminQuizSessionsView(quizId: number): QuizSessionsView {
 
 /**
  * Get the final results for all players for a completed quiz session
- * 
- * @param {number} quizId 
- * @param {number} sessionId 
- * @returns {SessionFinalResults} 
+ *
+ * @param {number} quizId
+ * @param {number} sessionId
+ * @returns {SessionFinalResults}
  */
 export function adminQuizSessionFinalResults(quizId: number, sessionId: number): SessionFinalResults {
-  const data = getData();
   const quizSession = findQuizSessionById(sessionId);
   if (!quizSession) {
     throw new Error('The session Id does not refer to a valid session within this quiz.');
@@ -925,12 +924,16 @@ export function adminQuizSessionFinalResults(quizId: number, sessionId: number):
     throw new Error('The session is not in FINAL_RESULTS state.');
   }
 
+  // removed playerId key from array of objects
+  const UsersAndScoreArray = quizSession.usersRankedByScore.map(({ playerId: _, ...rest }) => rest);
+
+  // removed playersAnsweredList from array of objects
+  const questionResultsArray = quizSession.questionResults.map(({ playersAnsweredList: _, ...rest }) => rest);
+
   const sessionFinalResults = {
-    usersRankedByScore: quizSession.usersRankedByScore,
-    questionResults: quizSession.questionResults,
+    usersRankedByScore: UsersAndScoreArray.sort((a, b) => b.score - a.score),
+    questionResults: questionResultsArray,
   };
-  
-  setData(data);
 
   return sessionFinalResults;
 }
