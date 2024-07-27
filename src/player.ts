@@ -162,7 +162,7 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   }
 
   const answerTime = currentTime();
-   const timeTaken = answerTime - (session.questionOpenTime || 0); 
+  const timeTaken = answerTime - (session.questionOpenTime || 0);
 
   session.playerAnswers = session.playerAnswers || {};
   session.playerAnswers[playerId] = answerIds;
