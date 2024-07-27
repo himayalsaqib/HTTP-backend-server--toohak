@@ -44,6 +44,22 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       }
     };
     requestPost(createQuestionBody, `/v2/admin/quiz/${quizId}/question`, { token });
+
+    // Creating another  quiz question
+    const answerBody4 = { answer: 'Tokyo', correct: false };
+    const answerBody5 = { answer: 'Osaka', correct: true };
+    const answerBody6 = { answer: 'Kyoto', correct: false };
+    createQuestionBody = {
+      questionBody: {
+        question: 'Which is the second largest city in Japan?',
+        duration: 5,
+        points: 5,
+        answers: [answerBody4, answerBody5, answerBody6],
+        thumbnailUrl: 'http://example.com/image2.png'
+      }
+    };
+    requestPost(createQuestionBody, `/v2/admin/quiz/${quizId}/question`, { token });
+
     const questionResponse = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
     // answer object has type { answerId: number } in an array
     answerIds = (questionResponse.retval.questions[0].answers as { answerId: number }[]).map(answer => answer.answerId);
@@ -172,12 +188,8 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
     });
 
     test('Returns error when session is not currently on this question', () => {
-      questionAction = { action: QuizSessionAction.GO_TO_ANSWER };
-      requestPut(questionAction, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-
-      // Attempt to answer previous question
       const submitAns = { answerIds: [answerIds[0]] };
-      const questionPosition = 1;
+      const questionPosition = 2; 
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(res.retval).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
