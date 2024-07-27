@@ -86,9 +86,9 @@ export interface QuestionResults {
 }
 
 export interface PlayerAnswered {
-  playerId: number;
-  answerTime: number;
-  score: number;
+  playerId?: number;
+  answerTime?: number;
+  score?: number;
 }
 
 export interface Message {
