@@ -63,6 +63,7 @@ export interface QuizSessions {
   usersRankedByScore: UsersRanking[];
   questionResults: QuestionResults[];
   messages: Message[];
+  playerAnswers?: Record<number, number[]>;
 }
 
 export interface Player {
