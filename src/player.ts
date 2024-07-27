@@ -107,7 +107,7 @@ export function getPlayerStatus (playerId: number): playerStatus {
  *
  * @param {number} playerId
  * @param {number} questionPosition
- * @param {{ answerIds: number[] }} 
+ * @param {{ answerIds: number[] }}
  * @returns {{}}
  */
 export function playerSubmitAnswer(playerId: number, questionPosition: number, body: { answerIds: number[] }): EmptyObject {
@@ -131,8 +131,8 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   if (session.atQuestion !== questionPosition) {
     throw new Error('Session is not currently on this question');
   }
-  
-  const startTime = currentTime(); 
+
+  const startTime = currentTime();
 
   const { answerIds } = body;
   const question = session.quiz.questions[questionPosition - 1];
@@ -168,14 +168,14 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
 
   session.playerAnswers = session.playerAnswers || {};
   session.playerAnswers[playerId] = answerIds;
-  
+
   // Update answerTime
   const questionResults = session.questionResults.find(result => result.questionId === questionPosition);
   if (questionResults) {
     const playerAnswered: PlayerAnswered = {
       playerId,
-      answerTime: timeTaken, 
-      score: 0, 
+      answerTime: timeTaken,
+      score: 0,
     };
     questionResults.playersAnsweredList.push(playerAnswered);
   }

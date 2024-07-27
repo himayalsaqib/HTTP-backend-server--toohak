@@ -31,9 +31,9 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
     quizId = quizResponse.retval.quizId;
 
     // Creating 1 quiz question
-    const answerBody1 = { answer: 'Prince Charles', correct: true};
-    const answerBody2 = { answer: 'Prince William', correct: false};
-    const answerBody3 = { answer: 'Prince Harry', correct: false};
+    const answerBody1 = { answer: 'Prince Charles', correct: true };
+    const answerBody2 = { answer: 'Prince William', correct: false };
+    const answerBody3 = { answer: 'Prince Harry', correct: false };
     createQuestionBody = {
       questionBody: {
         question: 'Who is the Monarch of England?',
@@ -45,7 +45,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
     };
     requestPost(createQuestionBody, `/v2/admin/quiz/${quizId}/question`, { token });
     const questionResponse = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
-    //answerIds = questionResponse.retval.questions[0].answers;
+    // answerIds = questionResponse.retval.questions[0].answers;
     answerIds = questionResponse.retval.questions[0].answers.map((answer: any) => answer.answerId);
 
     // Starting a quiz session
@@ -63,7 +63,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
     // Skip countdown to make sure the question is in QUESION_OPEN state
     questionAction = { action: QuizSessionAction.SKIP_COUNTDOWN };
     requestPut(questionAction, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-  })
+  });
 
   describe('Testing successful cases (status code 200)', () => {
     test('Correct return type after submiting 1 answer', () => {
@@ -72,7 +72,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(res.retval).toStrictEqual({});
       expect(res.statusCode).toStrictEqual(200);
-    })
+    });
 
     test('Correct return type after re-submitting answer', () => {
       const submitAns = { answerIds: [answerIds[0]] };
@@ -85,7 +85,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       const newRes = requestPut(reSubmitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(newRes.retval).toStrictEqual({});
       expect(newRes.statusCode).toStrictEqual(200);
-    })
+    });
 
     test('Correct return type after submiting multiple answers', () => {
       const submitAns = { answerIds: [answerIds[1], answerIds[0]] };
@@ -93,9 +93,8 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(res.retval).toStrictEqual({});
       expect(res.statusCode).toStrictEqual(200);
-    })
-
-  })
+    });
+  });
 
   describe('Testing error cases (status code 400', () => {
     test('Returns errors for invalid player id', () => {
@@ -109,7 +108,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
 
     test('Returns error for invalid question position', () => {
       const submitAns = { answerIds: [answerIds[0]] };
-      const invalidQuestionPosition = 100; 
+      const invalidQuestionPosition = 100;
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${invalidQuestionPosition}/answer`);
       expect(res.retval).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
@@ -162,6 +161,6 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(res.retval).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
-    })
-  })
+    });
+  });
 });
