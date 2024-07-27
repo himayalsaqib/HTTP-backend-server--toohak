@@ -400,7 +400,7 @@ export function checkIfTimerExists(sessionId: number): boolean {
 }
 
 /**
- * Checks whether a timer exists for a given sessionId and cancels it. For 
+ * Checks whether a timer exists for a given sessionId and cancels it. For
  * two scenarios: (QUESTION_OPEN --> ANSWER_SHOW) or (if SKIP_COUNTDOWN action)
  *
  * @param {number} sessionId
