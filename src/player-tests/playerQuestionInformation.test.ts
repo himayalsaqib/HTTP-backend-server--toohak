@@ -20,8 +20,8 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
   let playerBody: { sessionId: number, name: string };
   let updateActionBody: { action: string };
   let playerId: number;
-  let questionId: number; 
-  let questionId2: number; 
+  let questionId: number;
+  let questionId2: number;
 
   beforeEach(() => {
     // registering a user
@@ -50,24 +50,24 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
     const questionResponse = requestPost(createBody, `/v2/admin/quiz/${quizId}/question`, { token });
     questionId = questionResponse.retval.questionId;
 
-     // creating quiz question 2
-     createBody = {
-       questionBody: {
-         question: 'Which is the second largest city in Japan?',
-         duration: 5,
-         points: 5,
-         answers: [
+    // creating quiz question 2
+    createBody = {
+      questionBody: {
+        question: 'Which is the second largest city in Japan?',
+        duration: 5,
+        points: 5,
+        answers: [
           { answer: 'Tokyo', correct: false },
           { answer: 'Osaka', correct: true },
           { answer: 'Kyoto', correct: false }
-         ],
-         thumbnailUrl: 'http://example.com/image2.png'
-       }
-     };
-     const questionResponse2 = requestPost(createBody, `/v2/admin/quiz/${quizId}/question`, { token });
-     questionId2 = questionResponse2.retval.questionId;
+        ],
+        thumbnailUrl: 'http://example.com/image2.png'
+      }
+    };
+    const questionResponse2 = requestPost(createBody, `/v2/admin/quiz/${quizId}/question`, { token });
+    questionId2 = questionResponse2.retval.questionId;
 
-    // start a quiz session 
+    // start a quiz session
     const sessionResponse = requestPost({}, `/v1/admin/quiz/${quizId}/session/start`, { token });
     sessionId = sessionResponse.retval.sessionId;
 
@@ -77,18 +77,16 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
     playerId = playerResponse.retval.playerId;
   });
 
-
   describe('Testing for correct return type (status code 200)', () => {
     const questionposition = 1;
 
     beforeEach(() => {
-    // Update updateActionBody to QUESTION_OPEN state 
-    updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
-    requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-    updateActionBody = { action: QuizSessionAction.SKIP_COUNTDOWN };
-    requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+    // Update updateActionBody to QUESTION_OPEN state
+      updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
+      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      updateActionBody = { action: QuizSessionAction.SKIP_COUNTDOWN };
+      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
     });
-
 
     test('Has correct return type for player on QUESTION_OPEN STATE', () => {
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionposition}`);
@@ -215,15 +213,16 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
       });
     });
   });
-  
+
   describe('Testing for error cases (status code 400)', () => {
     const questionposition = 1;
-    // Update updateActionBody to QUESTION_OPEN state 
-    updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
-    requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-    updateActionBody = { action: QuizSessionAction.SKIP_COUNTDOWN };
-    requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-
+    beforeEach(() => {
+    // Update updateActionBody to QUESTION_OPEN state
+      updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
+      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      updateActionBody = { action: QuizSessionAction.SKIP_COUNTDOWN };
+      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+    });
     test('PlayerId does not exist', () => {
       const res = requestGet({}, `/v1/player/${playerId + 1}/question/${questionposition}`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
@@ -242,10 +241,12 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
 
   describe('Testing for session state error cases (status code 400)', () => {
     const questionposition = 1;
+    
     test('Session is in LOBBY state', () => {
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionposition}`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
+
     test('Session is in QUESTION_COUNTDOWN state', () => {
       updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
       requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
@@ -253,6 +254,7 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionposition}`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
+
     test('Session is in FINAL_RESULTS state', () => {
       updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
       requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
@@ -263,20 +265,19 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
       const duration = createBody.questionBody.duration;
       sleepSync(duration * 1000);
 
+      // update to FINAL_RESULTS
       updateActionBody = { action: QuizSessionAction.GO_TO_FINAL_RESULTS };
       requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionposition}`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
+
     test('Session is in END state', () => {
-      updateActionBody = { action: QuizSessionAction.END};
+      updateActionBody = { action: QuizSessionAction.END };
       requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      
+
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionposition}`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
   });
 });
-
-
-
