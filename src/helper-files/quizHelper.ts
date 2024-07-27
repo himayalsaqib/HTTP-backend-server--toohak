@@ -18,7 +18,7 @@ import {
   QuizSessionState, 
   sessionIdToTimerArray, 
   WAIT_THREE_SECONDS } from '../quiz';
-import { getRandomInt } from './authHelper';
+import { currentTime, getRandomInt } from './authHelper';
 
 /**
  * Function checks if a quiz name contains any invalid characters. Characters
@@ -445,6 +445,9 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
     clearTimeout(timeoutId);
     sessionIdToTimerArray.splice(index, 1);
   }, duration * 1000);
+
+  // time of duration start
+  quizSession.questionOpenTime = currentTime();
 
   sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
 }

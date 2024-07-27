@@ -840,7 +840,6 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
   }
 
   if (quizSession.state === QuizSessionState.QUESTION_OPEN) {
-    quizSession.questionOpenTime = currentTime();
     changeQuestionOpenToQuestionClose(quizSession, sessionId);
   }
 
