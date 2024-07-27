@@ -73,15 +73,23 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       expect(res.statusCode).toStrictEqual(200);
     });
 
-    test.skip('Correct return type after submiting 1 answer, verify answer submission', () => {
+    test.skip('Side effect: player results correctly displays ', () => {
       const submitAns = { answerIds: [answerIds[0]] };
       const questionPosition = 1;
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(res.retval).toStrictEqual({});
       expect(res.statusCode).toStrictEqual(200);
       // call question results to verify 
-      // const verify = requestGet(submitAns,`/v1/player/${playerid}/question/${questionposition}/results`);
-      // expect(verify.retval.percentageCorrect).toStrictEqual({100});
+       const verifyRes = requestGet(submitAns,`/v1/player/${playerId}/question/${questionPosition}/results`);
+       expect(verifyRes.retval).toStrictEqual(
+        {
+          "questionId": expect.any(Number),
+          "playersCorrectList": [
+            "Player One"
+          ],
+          "averageAnswerTime": expect.any(Number),
+          "percentCorrect": 100
+        });
     });
 
     test('Correct return type after re-submitting answer', () => {
