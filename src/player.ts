@@ -113,7 +113,7 @@ export function getPlayerStatus (playerId: number): playerStatus {
 export function playerSubmitAnswer(playerId: number, questionPosition: number, body: { answerIds: number[] }): EmptyObject {
   const data = getData();
   if (!playerIdInUse(playerId)) {
-    throw new Error('Player ID does not exist');
+    throw new Error('Player id does not exist');
   }
 
   const session = findSessionByPlayerId(playerId);
