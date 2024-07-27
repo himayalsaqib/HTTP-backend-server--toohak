@@ -91,7 +91,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
 
   describe('Testing successful cases (status code 200)', () => {
     test('Correctly returns a link', () => {
-      // Update session state from LOBBY -> QUESTION_COUNTDOWN -> QUESTION_OPEN
+      // Update session state from LOBBY to QUESTION_COUNTDOWN to QUESTION_OPEN
       requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
@@ -100,10 +100,10 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
       requestPut({ answerIds: [correctAnswerIds[0]] }, `/v1/player/${playerId2}/question/1/answer`);
       requestPut({ answerIds: [correctAnswerIds[0]] }, `/v1/player/${playerId3}/question/1/answer`);
 
-      // Update session state from QUESTION_OPEN -> ANSWER_SHOW
+      // Update session state from QUESTION_OPEN to ANSWER_SHOW
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
-      // Update session state from ANSWER_SHOW -> QUESTION_COUNTDOWN -> QUESTION_OPEN
+      // Update session state from ANSWER_SHOW to QUESTION_COUNTDOWN to QUESTION_OPEN
       requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
@@ -112,7 +112,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
       requestPut({ answerIds: [correctAnswerIds[1]] }, `/v1/player/${playerId2}/question/2/answer`);
       requestPut({ answerIds: [correctAnswerIds[1]] }, `/v1/player/${playerId3}/question/2/answer`);
 
-      // Update session state from QUESTION_OPEN -> ANSWER_SHOW
+      // Update session state from QUESTION_OPEN to ANSWER_SHOW
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       // End the session to move to FINAL_RESULTS
@@ -120,8 +120,8 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
 
       // Fetching CSV results
       const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/results/csv`, { token });
-
-      const expectedCSVUrl = expect.stringMatching(/^http(s)?:\/\/\S+\.csv$/); // Expect URL to be a valid CSV URL
+      // Expect URL to be a valid CSV URL
+      const expectedCSVUrl = expect.stringMatching(/^http(s)?:\/\/\S+\.csv$/); 
 
       expect(res).toStrictEqual({
         retval: { url: expectedCSVUrl },
