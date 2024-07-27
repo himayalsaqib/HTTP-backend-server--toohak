@@ -155,7 +155,6 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
     throw new Error('Less than 1 answer id submitted');
   }
 
-  // Submit or update the player's answers
   const playerIndex = session.players.findIndex((player) => player.playerId === playerId);
   if (playerIndex === -1) {
     throw new Error('Player not found in session');
@@ -164,14 +163,20 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   const answerTime = currentTime();
   const timeTaken = answerTime - (session.questionOpenTime || 0);
 
-  session.playerAnswers = session.playerAnswers || {};
-  session.playerAnswers[playerId] = answerIds;
+  // Filter player answer ids to check for correct answers
+  const correctAnswers = answerIds.filter((id) => validAnswerIds.has(id));
+  const isCorrect = correctAnswers.length === validAnswerIds.size;
+  
+  // Calculate score
+  const score = isCorrect ? question.points : 0;
 
-  // Update answerTime
   const questionResults = session.questionResults.find(result => result.questionId === questionPosition);
   if (questionResults) {
     const playerAnswered: PlayerAnswered = {
+      playerId: playerId,
       answerTime: timeTaken,
+      correctAnswer: isCorrect,
+      score: score,
     };
     questionResults.playersAnsweredList.push(playerAnswered);
   }
