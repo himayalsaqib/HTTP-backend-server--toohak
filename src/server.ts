@@ -1016,7 +1016,7 @@ app.get('/v1/player/:playerid/chat', (req: Request, res: Response) => {
 
 app.get('/v1/player/:playerid/question/:questionposition/results', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerid as string);
-  const questionPosition = parseInt(req.params.playerid as string);
+  const questionPosition = parseInt(req.params.questionposition as string);
 
   try {
     const response = playerQuestionResults(playerId, questionPosition);

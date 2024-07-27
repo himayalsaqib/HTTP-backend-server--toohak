@@ -239,13 +239,15 @@ export function playerViewChat(playerId: number): { messages: Message[] } {
 }
 
 export function playerQuestionResults(playerId: number, questionPosition: number): PlayerQuestionResults {
+  const data = getData();
+  if (!playerIdInUse(playerId)) {
+    throw new Error('Player id does not exist');
+  }
+
   const session = findSessionByPlayerId(playerId);
 
-  if (!playerIdInUse(playerId)) {
-    throw new Error('The player ID does not exist.');
-  }
-  if (questionPosition > session.quiz.questions.length) {
-    throw new Error('Question position is not valid for the session this player is in.');
+  if (questionPosition < 1 || questionPosition > session.quiz.numQuestions) {
+    throw new Error('Question position is not valid for the session this player is in');
   }
   if (session.state != QuizSessionState.ANSWER_SHOW) {
     throw new Error('Session is not in ANSWER_SHOW state.');
