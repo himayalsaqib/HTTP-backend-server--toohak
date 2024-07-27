@@ -914,6 +914,7 @@ export function adminQuizSessionsView(quizId: number): QuizSessionsView {
  * @returns {SessionFinalResults} 
  */
 export function adminQuizSessionFinalResults(quizId: number, sessionId: number): SessionFinalResults {
+  const data = getData();
   const quizSession = findQuizSessionById(sessionId);
   if (!quizSession) {
     throw new Error('The session Id does not refer to a valid session within this quiz.');
@@ -922,7 +923,13 @@ export function adminQuizSessionFinalResults(quizId: number, sessionId: number):
   if (quizSession.state !== QuizSessionState.FINAL_RESULTS) {
     throw new Error('The session is not in FINAL_RESULTS state.');
   }
+
+  const sessionFinalResults = {
+    usersRankedByScore: quizSession.usersRankedByScore,
+    questionResults: quizSession.questionResults,
+  };
   
-  
-  return {};
+  setData(data);
+
+  return sessionFinalResults;
 }
