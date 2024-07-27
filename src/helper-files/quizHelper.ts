@@ -8,6 +8,7 @@ import {
   QuestionResults,
   QuizSessions,
   Quizzes,
+  setData,
   Trash,
   UsersRanking
 } from '../dataStore';
@@ -442,7 +443,10 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
   const duration = quizSession.quiz.questions[index].duration;
 
   const timeoutId = setTimeout(() => {
+    const data = getData();
     quizSession.state = QuizSessionState.QUESTION_CLOSE;
+    setData(data);
+    
     const index = sessionIdToTimerArray.findIndex(t => t.timeoutId === timeoutId);
     clearTimeout(timeoutId);
     sessionIdToTimerArray.splice(index, 1);
