@@ -3,7 +3,7 @@
 import { requestGet, requestDelete, requestPost, requestPut } from "../helper-files/requestHelper";
 import { QuestionBody, QuizSessionAction } from "../quiz";
 
-const ERROR = expect.any(String);
+const ERROR = { error: expect.any(String)};
 
 beforeEach(() => {
   requestDelete({}, '/v1/clear');
@@ -48,8 +48,10 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
 
     const questionRes = requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
     questionId = questionRes.retval.questionId;
-    answerIdCorrect = questionRes.retval.answers[0].answerId;
-    answerIdIncorrect = questionRes.retval.answers[1].answerId;
+    
+    const quizInfo = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
+    answerIdCorrect = quizInfo.retval.questions[0].answers[0].answerId;
+    answerIdIncorrect = quizInfo.retval.questions[0].answers[1].answerId;
 
     // start a session i.e. state = LOBBY
     sessionStartBody = { autoStartNum: 4 };
