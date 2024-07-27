@@ -1,7 +1,6 @@
 // includes player functions
 
-import { isPrivateIdentifier } from 'typescript';
-import { setData, getData, EmptyObject, Message, UsersRanking, PlayerAnswered, Question } from './dataStore';
+import { setData, getData, EmptyObject, Message, UsersRanking, PlayerAnswered } from './dataStore';
 import { currentTime, getRandomInt } from './helper-files/authHelper';
 import {
   findNameByPlayerId,
@@ -11,8 +10,7 @@ import {
   playerNameExists
 } from './helper-files/playerHelper';
 import { beginQuestionCountdown, findQuizSessionById } from './helper-files/quizHelper';
-import { quizBelongsToUser } from './helper-files/serverHelper';
-import { QuizSessionState, QuizInfo, QuizAnswerColours } from './quiz';
+import { QuizSessionState, QuizAnswerColours } from './quiz';
 
 interface SendMessage {
   messageBody: string
@@ -118,12 +116,12 @@ export function getPlayerStatus (playerId: number): playerStatus {
 }
 
 /**
- * Get the information about a question that the guest player is on. 
+ * Get the information about a question that the guest player is on.
  * @param {number} playerId
  * @param {number} questionPosition
- * @returns {{ QuestionDisplay } } - returns question information 
+ * @returns {{ QuestionDisplay } } - returns question information
  */
-export function playerQuestionInformation(playerId: number, questionPosition: number): QuestionDisplay  {
+export function playerQuestionInformation(playerId: number, questionPosition: number): QuestionDisplay {
   if (!playerIdInUse(playerId)) {
     throw new Error('Player ID does not exist');
   }
@@ -135,7 +133,7 @@ export function playerQuestionInformation(playerId: number, questionPosition: nu
     QuizSessionState.FINAL_RESULTS,
     QuizSessionState.END,
   ];
-  
+
   if (invalidStates.includes(session.state)) {
     throw new Error('Session is in LOBBY, QUESTION_COUNTDOWN, FINAL_RESULTS or END state');
   }
@@ -147,7 +145,7 @@ export function playerQuestionInformation(playerId: number, questionPosition: nu
   }
 
   const question = session.quiz.questions[questionPosition - 1];
-  
+
   // Produce new answers array without property correct
   const answersDisplay = question.answers.map(({ answerId, answer, colour }) => ({
     answerId,
