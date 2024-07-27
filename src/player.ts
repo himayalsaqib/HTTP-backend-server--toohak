@@ -173,9 +173,7 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   const questionResults = session.questionResults.find(result => result.questionId === questionPosition);
   if (questionResults) {
     const playerAnswered: PlayerAnswered = {
-      playerId,
       answerTime: timeTaken,
-      score: 0,
     };
     questionResults.playersAnsweredList.push(playerAnswered);
   }
