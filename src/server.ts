@@ -982,15 +982,15 @@ app.post('/v1/player/:playerid/chat', (req: Request, res: Response) => {
 
 app.get('/v1/player/:playerid/question/:questionposition', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerid as string);
-  const questionposition = parseInt(req.params.questionposition as string);
-  
+  const questionPosition = parseInt(req.params.questionposition as string);
+
   try {
-    const response = playerQuestionInformation(playerId, questionposition);
+    const response = playerQuestionInformation(playerId, questionPosition);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-  });
+});
 
 app.get('/v1/player/:playerid/', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerid as string);
