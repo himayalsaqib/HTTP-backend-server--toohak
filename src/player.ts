@@ -172,14 +172,25 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   const answerTime = currentTime();
   const timeTaken = answerTime - (session.questionOpenTime || 0);
 
+  // Find correct answer ids in the question
+  let correctAnswerIds = question.answers.flatMap(
+    answer => answer.correct ? answer.answerId : []
+  );
+
   // Filter player answer ids to check for correct answers
-  const correctAnswers = answerIds.filter((id) => validAnswerIds.has(id));
-  const isCorrect = correctAnswers.length === validAnswerIds.size;
+  const correctAnswers = answerIds.filter((id) => correctAnswerIds.includes(id));
+  const isCorrect = correctAnswers.length === correctAnswerIds.length;
+
+  const questionResults = session.questionResults[questionPosition - 1];
+
+  // if player is completely correct adding their name to playersCorrectList
+  if (isCorrect) {
+    questionResults.playersCorrectList.push(findNameByPlayerId(playerId));
+  }
 
   // Calculate score
   const score = isCorrect ? question.points : 0;
 
-  const questionResults = session.questionResults[questionPosition - 1];
   if (questionResults) {
     const playerAnswered: PlayerAnswered = {
       playerId: playerId,
