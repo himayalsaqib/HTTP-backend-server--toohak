@@ -59,7 +59,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
 
     requestPut(questionAction, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
-    // Skip countdown to make sure the question is in QUESION_OPEN state
+    // Skip countdown so that question is in QUESION_OPEN state
     questionAction = { action: QuizSessionAction.SKIP_COUNTDOWN };
     requestPut(questionAction, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
   });
