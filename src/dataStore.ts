@@ -89,7 +89,6 @@ export interface PlayerAnswered {
   playerId: number;
   answerTime: number;
   score: number;
-  correctAnswer: boolean;
 }
 
 export interface Message {

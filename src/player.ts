@@ -194,15 +194,13 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   const pointsPerAnswer = question.points / correctAnswerIds.length;
   const score = isCorrect ? question.points : correctAnswers.length * pointsPerAnswer;
 
-  if (questionResults) {
-    const playerAnswered: PlayerAnswered = {
-      playerId: playerId,
-      answerTime: timeTaken,
-      correctAnswer: isCorrect,
-      score: score,
-    };
-    questionResults.playersAnsweredList.push(playerAnswered);
-  }
+  const playerAnswered: PlayerAnswered = {
+    playerId: playerId,
+    answerTime: timeTaken,
+    score: score,
+  };
+  questionResults.playersAnsweredList.push(playerAnswered);
+
   setData(data);
 
   return {};
