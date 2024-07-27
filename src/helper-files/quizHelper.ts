@@ -432,7 +432,9 @@ export function beginQuestionCountdown(quizSession: QuizSessions, sessionId: num
   // start countdown timer
   const timeoutId = setTimeout(() => {
     // update state
+    const data = getData();
     quizSession.state = QuizSessionState.QUESTION_OPEN;
+    setData(data);
     // remove timerId from array (if it exists) after the 3 seconds and clear timer
     const index = sessionIdToTimerArray.findIndex(i => i.timeoutId === timeoutId);
     if (index !== -1) {

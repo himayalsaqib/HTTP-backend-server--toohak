@@ -91,7 +91,6 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
 
     // submitting an answer for the player
     requestPut({ answerIds: [correctAnswerIds[0]] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
-
     // updating session state from QUESTION_OPEN --> ANSWER_SHOW
     requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
   });
