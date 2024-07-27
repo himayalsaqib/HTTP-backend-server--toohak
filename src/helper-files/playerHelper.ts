@@ -1,19 +1,7 @@
 // ======================== PLAYER HELPER FUNCTIONS ========================= //
 
 import { getData, QuizSessions } from '../dataStore';
-import { QuizSessionState } from '../quiz';
 import { findQuizSessionById } from './quizHelper';
-
-/**
- * Function moves onto next state if number of players joined matches autoStartNum
- *
- * @param {QuizSessions} session
- */
-export function updateSessionStateIfAutoStart(session: QuizSessions): void {
-  if (session.players.length === session.autoStartNum) {
-    session.state = QuizSessionState.QUESTION_COUNTDOWN;
-  }
-}
 
 /**
  * Function generates a random name if player name is empty string
