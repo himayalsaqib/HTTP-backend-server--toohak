@@ -63,7 +63,6 @@ export interface QuizSessions {
   usersRankedByScore: UsersRanking[];
   questionResults: QuestionResults[];
   messages: Message[];
-  playerAnswers?: Record<number, number[]>;
   questionOpenTime?: number;
 }
 
@@ -87,9 +86,10 @@ export interface QuestionResults {
 }
 
 export interface PlayerAnswered {
-  playerId?: number;
-  answerTime?: number;
-  score?: number;
+  playerId: number;
+  answerTime: number;
+  score: number;
+  correctAnswer: boolean;
 }
 
 export interface Message {
