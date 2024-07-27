@@ -170,7 +170,7 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   // Calculate score
   const score = isCorrect ? question.points : 0;
 
-  const questionResults = session.questionResults.find(result => result.questionId === questionPosition);
+  const questionResults = session.questionResults[questionPosition - 1];
   if (questionResults) {
     const playerAnswered: PlayerAnswered = {
       playerId: playerId,
