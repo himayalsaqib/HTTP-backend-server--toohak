@@ -79,16 +79,16 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(res.retval).toStrictEqual({});
       expect(res.statusCode).toStrictEqual(200);
-      // call question results to verify 
-       const verifyRes = requestGet(submitAns,`/v1/player/${playerId}/question/${questionPosition}/results`);
-       expect(verifyRes.retval).toStrictEqual(
+      // call question results to verify
+      const verifyRes = requestGet(submitAns, `/v1/player/${playerId}/question/${questionPosition}/results`);
+      expect(verifyRes.retval).toStrictEqual(
         {
-          "questionId": expect.any(Number),
-          "playersCorrectList": [
-            "Player One"
+          questionId: expect.any(Number),
+          playersCorrectList: [
+            'Player One'
           ],
-          "averageAnswerTime": expect.any(Number),
-          "percentCorrect": 100
+          averageAnswerTime: expect.any(Number),
+          percentCorrect: 100
         });
     });
 
