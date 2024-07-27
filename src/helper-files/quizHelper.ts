@@ -445,8 +445,9 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
   const timeoutId = setTimeout(() => {
     const data = getData();
     quizSession.state = QuizSessionState.QUESTION_CLOSE;
+    endOfQuestionUpdates(quizSession);
     setData(data);
-    
+
     const index = sessionIdToTimerArray.findIndex(t => t.timeoutId === timeoutId);
     clearTimeout(timeoutId);
     sessionIdToTimerArray.splice(index, 1);
@@ -528,6 +529,8 @@ export function updateUsersRanking(usersRankedByScore: UsersRanking[], playersAn
  * @returns {void}
  */
 export function endOfQuestionUpdates(quizSession: QuizSessions): void {
+  console.log('ENTERED')
+
   // get questionResults info for question that just finished
   const currentQuestionResults = quizSession.questionResults[quizSession.atQuestion - 1];
 

@@ -816,6 +816,14 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
     quiz.inactiveSessions.push(sessionId);
     quiz.activeSessions.splice(quiz.activeSessions.indexOf(sessionId), 1);
   } else if (action === QuizSessionAction.GO_TO_ANSWER) {
+    if (quizSession.state ===QuizSessionState.QUESTION_OPEN) {
+      if (checkIfTimerExists(sessionId)) {
+        const timerId = sessionIdToTimerArray.find(i => i.sessionId === sessionId);
+        const index = sessionIdToTimerArray.findIndex(i => i.sessionId === sessionId);
+        clearTimeout(timerId.timeoutId);
+        sessionIdToTimerArray.splice(index, 1);
+      }
+    }
     quizSession.state = QuizSessionState.ANSWER_SHOW;
     endOfQuestionUpdates(quizSession);
   } else if (action === QuizSessionAction.GO_TO_FINAL_RESULTS) {
