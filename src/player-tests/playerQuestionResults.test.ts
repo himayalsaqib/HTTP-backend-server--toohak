@@ -48,6 +48,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       thumbnailUrl: 'http://google.com/some/image/path.png'
     };
     let questionRes = requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
+    questionIds = [];
     questionIds.push(questionRes.retval.questionId);
 
     questionBody = {
@@ -86,7 +87,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
     questionPosition = 1;
 
     // submitting an answer for the player 
-    requestPut({ answerIds: [correctAnswerId] }, `/v1/player/${playerId}/question/${questionPosition}`);
+    requestPut({ answerIds: [correctAnswerId] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
 
     // updating session state from QUESTION_OPEN --> ANSWER_SHOW
     requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
@@ -112,12 +113,13 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       // player submits wrong answer for question 2
-      requestPut({ answerIds: [wrongAnswerId] }, `/v1/player/${playerId}/question/${questionPosition + 1}`);
+      const playerAnswer = { answerIds: [wrongAnswerId] }
+      requestPut(playerAnswer, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
 
       // updating session state from QUESTION_OPEN --> ANSWER_SHOW
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
-      const res = requestGet({}, `/v1/player/${playerId}/question/${questionPosition}/results`);
+      const res = requestGet({}, `/v1/player/${playerId}/question/${questionPosition + 1}/results`);
       expect(res).toStrictEqual({
         retval: {
           questionId: questionIds[1],
@@ -136,34 +138,36 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       sessionId = sessionResponse.retval.sessionId;
 
       // making 2 players join the session
-      // playerBody = { sessionId: sessionId, name: 'JaneDoe' };
+      playerBody.sessionId = sessionId;
       let playerResponse = requestPost(playerBody, '/v1/player/join');
       playerId = playerResponse.retval.playerId; 
 
       const playerBody2 = { sessionId: sessionId, name: 'JohnDoe' };
-      playerResponse = requestPost(playerBody, '/v1/player/join');
+      playerResponse = requestPost(playerBody2, '/v1/player/join');
       const playerId2 = playerResponse.retval.playerId; 
 
-      // session state automatically goes LOBBY -> QUESTION_COUNTDOWN -> QUESTION_OPEN 
-      sleepSync(3 * 1000);
+      // session state goes LOBBY -> QUESTION_COUNTDOWN -> QUESTION_OPEN 
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       // submitting an answer for the player 
-      requestPut({ answerIds: [correctAnswerId] }, `/v1/player/${playerId}/question/${questionPosition}`);
-      requestPut({ answerIds: [correctAnswerId] }, `/v1/player/${playerId2}/question/${questionPosition}`);
+      requestPut({ answerIds: [correctAnswerId] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
+      requestPut({ answerIds: [correctAnswerId] }, `/v1/player/${playerId2}/question/${questionPosition}/answer`);
 
       // updating session state from QUESTION_OPEN --> ANSWER_SHOW
-      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-
+      const res1 = requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      console.log(res1);
+    
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionPosition}/results`);
       expect(res).toStrictEqual({
         retval: {
-          questionId: questionIds[1],
+          questionId: questionIds[0],
           playersCorrectList: [playerBody.name, playerBody2.name],
           averageAnswerTime: expect.any(Number),
           percentCorrect: 100
         },
         statusCode: 200
       });
+      
     });
   });
 
