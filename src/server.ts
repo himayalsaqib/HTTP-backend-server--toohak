@@ -51,10 +51,12 @@ import {
   adminQuizThumbnail,
   adminQuizGetSessionStatus,
   adminQuizSessionsView,
+  adminQuizSessionFinalResults,
 } from './quiz';
 import { playerJoin, playerSendChat, playerViewChat, getPlayerStatus } from './player';
 import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/quizHelper';
+import { error } from 'console';
 
 // Set up web app
 const app = express();
@@ -624,6 +626,24 @@ app.get('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Respons
 
   try {
     const response = adminQuizGetSessionStatus(quizId, quizSessionId);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/v1/admin/quiz/:quizid/session/:sessionid/', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const quizSessionId = parseInt(req.params.sessionid as string);
+  const sessionId = parseInt(req.header('token'));
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  try {
+    const response = adminQuizSessionFinalResults(quizId, quizSessionId);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
