@@ -168,8 +168,6 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
     });
 
     test('Has correct return type for player on a different question position', () => {
-      const duration = createBody.questionBody.duration;
-      sleepSync(duration * 1000);
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
