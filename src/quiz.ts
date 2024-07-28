@@ -25,7 +25,8 @@ import {
   quizNameInUse,
   swapQuestions,
   saveCSVToFile,
-  generateCSVContent
+  generateCSVContent,
+  generatePlayerData
 } from './helper-files/quizHelper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -907,35 +908,6 @@ export function adminQuizSessionResultsCSV(quizId: number, sessionId: number): Q
   const csvFilePath = saveCSVToFile(csvFilename, csvContent);
 
   return { url: csvFilePath };
-}
-
-/**
- * Generates data for a player including scores and ranks.
- *
- * @param player - The player.
- * @param questionResults - The question results.
- * @returns An object with player's name, scores, and ranks.
- */
-function generatePlayerData(player: Player, questionResults: QuestionResults[]): { name: string; [key: string]: number | string } {
-  const playerData: { name: string; [key: string]: number | string } = {
-    name: player.name
-  };
-
-  questionResults.forEach((result, index) => {
-    const playerResult = result.playersAnsweredList.find(
-      (p) => p.playerId === player.playerId
-    );
-
-    const score = playerResult ? playerResult.score : 0;
-    const rank = playerResult
-      ? result.playersCorrectList.indexOf(player.playerId.toString()) + 1
-      : 0;
-
-    playerData[`question${index + 1}score`] = score;
-    playerData[`question${index + 1}rank`] = rank;
-  });
-
-  return playerData;
 }
 
 /**
