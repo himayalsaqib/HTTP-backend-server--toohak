@@ -235,7 +235,6 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
     });
 
     test('Session is in QUESTION_COUNTDOWN state', () => {
-
       requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionposition}`);
@@ -247,7 +246,7 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       // update session state to ANSWER_SHOW
-      requestPut({ action: QuizSessionAction.GO_TO_ANSWER}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       // update to FINAL_RESULTS
       requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
