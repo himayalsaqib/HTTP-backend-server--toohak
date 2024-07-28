@@ -1,6 +1,6 @@
 // includes player functions
 
-import { setData, getData, EmptyObject, Message, UsersRanking, PlayerAnswered, QuestionResults} from './dataStore';
+import { setData, getData, EmptyObject, Message, UsersRanking, PlayerAnswered } from './dataStore';
 import { currentTime, getRandomInt } from './helper-files/authHelper';
 import {
   findNameByPlayerId,
@@ -196,7 +196,6 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   // if player is completely correct adding their name to playersCorrectList
   if (isCorrect) {
     questionResults.playersCorrectList.push(findNameByPlayerId(playerId));
-    
   }
 
   // Calculate score based on player's position in playersCorrectList
@@ -243,10 +242,10 @@ export function playerResults(playerId: number): FinalResults {
   const finalResults: FinalResults = {
     usersRankedByScore,
     questionResults
-  }
+  };
   console.log(getData().quizSessions[0]);
-  //console.log(finalResults);
-  //console.log(questionResults);
+  // console.log(finalResults);
+  // console.log(questionResults);
 
   return finalResults;
 }
