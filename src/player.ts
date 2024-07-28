@@ -207,9 +207,10 @@ export function playerResults(playerId: number): FinalResults {
   }
 
   const finalResults: FinalResults = {
-    usersRankedByScore: session.usersRankedByScore.sort(),
+    usersRankedByScore: session.usersRankedByScore,
     questionResults: session.questionResults
   }
+  console.log(finalResults);
 
   return finalResults;
 }
