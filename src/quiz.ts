@@ -923,10 +923,10 @@ export function adminQuizSessionFinalResults(sessionId: number): SessionFinalRes
     throw new Error('The session is not in FINAL_RESULTS state.');
   }
 
-  // removed playerId key from array of objects
+  // removes playerId key from array of objects
   const UsersAndScoreArray = quizSession.usersRankedByScore.map(({ playerId: _, ...rest }) => rest);
 
-  // removed playersAnsweredList from array of objects
+  // removes playersAnsweredList from array of objects
   const questionResultsArray = quizSession.questionResults.map(({ playersAnsweredList: _, ...rest }) => rest);
 
   const sessionFinalResults = {
