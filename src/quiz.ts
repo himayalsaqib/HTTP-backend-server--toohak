@@ -1,6 +1,6 @@
 // includes quiz functions
 
-import { setData, getData, EmptyObject, Question, Answer, Quizzes } from './dataStore';
+import { setData, getData, EmptyObject, Question, Answer, Quizzes, Player, PlayerAnswered } from './dataStore';
 import { adminEmailInUse, currentTime, findUserByEmail, getRandomInt } from './helper-files/authHelper';
 import {
   beginQuestionCountdown,
@@ -23,7 +23,9 @@ import {
   quizIsInTrash,
   quizNameHasValidChars,
   quizNameInUse,
-  swapQuestions
+  swapQuestions,
+  saveCSVToFile,
+  generateCSVContent
 } from './helper-files/quizHelper';
 
 // ============================= GLOBAL VARIABLES =========================== //
@@ -101,6 +103,27 @@ export interface QuizSessionsView {
   inactiveSessions: number[];
 }
 
+interface QuizSessionResultsCSV {
+  url: string;
+}
+
+interface UsersRankedByScore {
+  name: string;
+  score: number;
+}
+
+interface QuestionResults {
+  questionId: number;
+  playersCorrectList: string[];
+  playersAnsweredList: PlayerAnswered[];
+  averageAnswerTime: number;
+  percentCorrect: number;
+}
+
+interface SessionFinalResults {
+  usersRankedByScore: UsersRankedByScore[];
+  questionResults: QuestionResults[];
+}
 // ================================= ENUMS ================================== //
 
 export enum QuizAnswerColours {
@@ -840,6 +863,79 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
 
   setData(data);
   return {};
+}
+
+/**
+ * Get a link to final results in CSV format for completed quiz session
+ *
+ * @param {number} quizId
+ * @param {number} sessionId
+ * @returns {QuizSessionResultsCSV}
+ */
+export function adminQuizSessionResultsCSV(quizId: number, sessionId: number): QuizSessionResultsCSV {
+  //const data = getData();
+  const quizSession = findQuizSessionById(sessionId);
+  if (!quizSession) {
+    throw new Error('The session Id does not refer to a valid session within this quiz.');
+  }
+
+  if (quizSession.state !== QuizSessionState.FINAL_RESULTS) {
+    throw new Error('The session is not in FINAL_RESULTS state.');
+  }
+
+  // Prepare CSV headers
+  const numQuestions = quizSession.questionResults.length;
+  const headers = ['Player'];
+
+  for (let i = 1; i <= numQuestions; i++) {
+    headers.push(`question${i}score`, `question${i}rank`);
+  }
+
+  // Prepare player data
+  const playersData = quizSession.players.map((player) =>
+    generatePlayerData(player, quizSession.questionResults)
+  );
+
+  // Sort players by name
+  playersData.sort((a, b) => a.name.localeCompare(b.name));
+
+  // Generate CSV content
+  const csvContent = generateCSVContent(headers, playersData);
+
+  // Save CSV content to a file
+  const csvFilename = `quiz_${quizId}_session_${sessionId}_results.csv`;
+  const csvFilePath = saveCSVToFile(csvFilename, csvContent);
+
+  return { url: csvFilePath };
+}
+
+/**
+ * Generates data for a player including scores and ranks.
+ *
+ * @param player - The player.
+ * @param questionResults - The question results.
+ * @returns An object with player's name, scores, and ranks.
+ */
+function generatePlayerData(player: Player, questionResults: QuestionResults[]): { name: string; [key: string]: number | string } {
+  const playerData: { name: string; [key: string]: number | string } = {
+    name: player.name
+  };
+
+  questionResults.forEach((result, index) => {
+    const playerResult = result.playersAnsweredList.find(
+      (p) => p.playerId === player.playerId
+    );
+
+    const score = playerResult ? playerResult.score : 0;
+    const rank = playerResult
+      ? result.playersCorrectList.indexOf(player.playerId.toString()) + 1
+      : 0;
+
+    playerData[`question${index + 1}score`] = score;
+    playerData[`question${index + 1}rank`] = rank;
+  });
+
+  return playerData;
 }
 
 /**
