@@ -1,6 +1,6 @@
 // includes player functions
 
-import { setData, getData, EmptyObject, Message, UsersRanking, PlayerAnswered } from './dataStore';
+import { setData, getData, EmptyObject, Message, UsersRanking, PlayerAnswered, QuestionResults} from './dataStore';
 import { currentTime, getRandomInt } from './helper-files/authHelper';
 import {
   findNameByPlayerId,
@@ -20,6 +20,11 @@ export interface playerStatus {
   state: string;
   numQuestions: number;
   atQuestion: number;
+}
+
+interface FinalResults {
+  usersRankedByScore: UsersRanking[];
+  questionResults: QuestionResults[];
 }
 
 // =============================== FUNCTIONS ================================ //
@@ -183,6 +188,30 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   setData(data);
 
   return {};
+}
+
+/**
+ * Allows the player to submit answer/s to a question.
+ *
+ * @param {number} playerId
+ * @returns {{ FinalResults }}
+ */
+export function playerResults(playerId: number): FinalResults {
+  if (!playerIdInUse(playerId)) {
+    throw new Error('Player ID does not exist');
+  }
+
+  const session = findSessionByPlayerId(playerId);
+  if (session.state !== QuizSessionState.FINAL_RESULTS) {
+    throw new Error('Session is not in FINAL_RESULTS state');
+  }
+
+  const finalResults: FinalResults = {
+    usersRankedByScore: session.usersRankedByScore.sort(),
+    questionResults: session.questionResults
+  }
+
+  return finalResults;
 }
 
 /**
