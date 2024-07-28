@@ -18,7 +18,6 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
   let createBody: { questionBody: QuestionBody };
   let sessionId: number;
   let playerBody: { sessionId: number, name: string };
-  let updateActionBody: { action: string };
   let playerId: number;
   let questionId: number;
   let questionId2: number;
@@ -82,10 +81,8 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
 
     beforeEach(() => {
     // Update updateActionBody to QUESTION_OPEN state
-      updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      updateActionBody = { action: QuizSessionAction.SKIP_COUNTDOWN };
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
     });
 
     test('Has correct return type for player on QUESTION_OPEN STATE', () => {
@@ -143,10 +140,7 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
     });
 
     test('Has correct return type for player on ANSWER_SHOW state', () => {
-      const duration = createBody.questionBody.duration;
-      sleepSync(duration * 1000);
-      updateActionBody = { action: QuizSessionAction.GO_TO_ANSWER };
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionposition}`);
       expect(res).toStrictEqual({
@@ -176,12 +170,9 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
     test('Has correct return type for player on a different question position', () => {
       const duration = createBody.questionBody.duration;
       sleepSync(duration * 1000);
-      updateActionBody = { action: QuizSessionAction.GO_TO_ANSWER };
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      updateActionBody = { action: QuizSessionAction.SKIP_COUNTDOWN };
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionposition + 1}`);
       expect(res).toStrictEqual({
@@ -218,10 +209,8 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
     const questionposition = 1;
     beforeEach(() => {
     // Update updateActionBody to QUESTION_OPEN state
-      updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      updateActionBody = { action: QuizSessionAction.SKIP_COUNTDOWN };
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
     });
     test('PlayerId does not exist', () => {
       const res = requestGet({}, `/v1/player/${playerId + 1}/question/${questionposition}`);
@@ -248,33 +237,28 @@ describe('GET /v1/player/:playerid/question/:questionposition', () => {
     });
 
     test('Session is in QUESTION_COUNTDOWN state', () => {
-      updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+
+      requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionposition}`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
 
     test('Session is in FINAL_RESULTS state', () => {
-      updateActionBody = { action: QuizSessionAction.NEXT_QUESTION };
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      updateActionBody = { action: QuizSessionAction.SKIP_COUNTDOWN };
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
-      // wait question duration to go to QUESTION_CLOSE
-      const duration = createBody.questionBody.duration;
-      sleepSync(duration * 1000);
+      // update session state to ANSWER_SHOW
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER}, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       // update to FINAL_RESULTS
-      updateActionBody = { action: QuizSessionAction.GO_TO_FINAL_RESULTS };
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionposition}`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
 
     test('Session is in END state', () => {
-      updateActionBody = { action: QuizSessionAction.END };
-      requestPut(updateActionBody, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.END }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionposition}`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
