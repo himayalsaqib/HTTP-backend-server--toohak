@@ -199,9 +199,8 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
     
   }
 
-  // Calculate score based on player's position in usersRankedByScore
-  const usersRankedByScore = session.usersRankedByScore;
-  const userRank = usersRankedByScore.findIndex(user => user.playerId === playerId) + 1;
+  // Calculate score based on player's position in playersCorrectList
+  const userRank = questionResults.playersCorrectList.findIndex(name => name === findNameByPlayerId(playerId)) + 1;
   const score = isCorrect ? Math.round(question.points / userRank) : 0;
 
   const playerAnswered: PlayerAnswered = {
