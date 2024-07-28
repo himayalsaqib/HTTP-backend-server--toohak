@@ -1,4 +1,5 @@
 // includes http tests for the route /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv
+import { error } from 'console';
 import { requestDelete, requestPost, requestPut, requestGet } from '../helper-files/requestHelper';
 import { QuestionBody, QuizSessionAction } from '../quiz';
 
@@ -94,13 +95,13 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
   describe('Testing for session errors (status code 400)', () => {
     test('Returns error when session id does not refer to a valid session within this quiz', () => {
       const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId + 1}/results/csv`, { token });
-      expect(res.retval).toStrictEqual({ ERROR });
+      expect(res.retval).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
 
     test('Returns error when session is not in FINAL_RESULTS state', () => {
       const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/results/csv`, { token });
-      expect(res.retval).toStrictEqual({ ERROR });
+      expect(res.retval).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
   });
@@ -109,14 +110,14 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
     test('Returns error when token is empty', () => {
       requestDelete({}, '/v1/clear');
       const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/results/csv`, { token });
-      expect(res.retval).toStrictEqual({ ERROR });
+      expect(res.retval).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(401);
     });
 
     test('Returns error when token is invalid', () => {
       const invalidToken = token + '1';
       const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/results/csv`, { token: invalidToken });
-      expect(res.retval).toStrictEqual({ ERROR });
+      expect(res.retval).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(401);
     });
   });
@@ -129,14 +130,14 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
       const newToken = newUserRes.retval.token;
 
       const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/results/csv`, { token: newToken });
-      expect(res.retval).toStrictEqual({ ERROR });
+      expect(res.retval).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(403);
     });
 
     test('Returns error when quiz does not exist', () => {
       const invalidQuizId = quizId + 1;
       const res = requestGet({}, `/v1/admin/quiz/${invalidQuizId}/session/${sessionId}/results/csv`, { token });
-      expect(res.retval).toStrictEqual({ ERROR });
+      expect(res.retval).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(403);
     });
   });
