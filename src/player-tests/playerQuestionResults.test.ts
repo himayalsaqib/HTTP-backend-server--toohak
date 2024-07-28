@@ -78,7 +78,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
     sessionId = sessionResponse.retval.sessionId;
 
     // making a player join the session
-    playerBody = { sessionId: sessionId, name: 'JaneDoe' };
+    playerBody = { sessionId: sessionId, name: 'Jane' };
     const playerResponse = requestPost(playerBody, '/v1/player/join');
     playerId = playerResponse.retval.playerId;
 
@@ -193,7 +193,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       let playerResponse = requestPost(playerBody, '/v1/player/join');
       playerId = playerResponse.retval.playerId;
 
-      const playerBody2 = { sessionId: sessionId, name: 'JohnDoe' };
+      const playerBody2 = { sessionId: sessionId, name: 'Doe' };
       playerResponse = requestPost(playerBody2, '/v1/player/join');
       const playerId2 = playerResponse.retval.playerId;
 
@@ -211,7 +211,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
       expect(res).toStrictEqual({
         retval: {
           questionId: questionIds[0],
-          playersCorrectList: [playerBody.name, playerBody2.name],
+          playersCorrectList: [playerBody2.name, playerBody.name],
           averageAnswerTime: expect.any(Number),
           percentCorrect: 100
         },
