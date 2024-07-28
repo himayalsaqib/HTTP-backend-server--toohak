@@ -96,13 +96,10 @@ describe('GET /v1/player/:playerid/results', () => {
     requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
     requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
-    // submitting answer to question 1 after 1 second
+    // player 1 and 2 submit asnwer to question 1 after 1 second
     sleepSync(1000);
     const questionPosition = 1;
     requestPut({ answerIds: [correctAnswerIds[0]] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
-
-    // player 2 submits answer to question 1 after 2 seconds
-    sleepSync(1000);
     requestPut({ answerIds: [correctAnswerIds[0]] }, `/v1/player/${playerId2}/question/${questionPosition}/answer`);
 
     // Updating session state from QUESTION_OPEN -> ANSWER_SHOW -> QUESTION_COUNTDOWN -> QUESTION_OPEN
@@ -142,7 +139,7 @@ describe('GET /v1/player/:playerid/results', () => {
                 'Doe',
                 'Jane'
               ],
-              averageAnswerTime: 2,
+              averageAnswerTime: 1,
               percentCorrect: 100
             },
             {
@@ -187,7 +184,7 @@ describe('GET /v1/player/:playerid/results', () => {
                 'Doe',
                 'Jane'
               ],
-              averageAnswerTime: 2,
+              averageAnswerTime: 1,
               percentCorrect: 100
             },
             {
@@ -235,7 +232,7 @@ describe('GET /v1/player/:playerid/results', () => {
                 'Doe',
                 'Jane'
               ],
-              averageAnswerTime: 2,
+              averageAnswerTime: 1,
               percentCorrect: 100
             },
             {
