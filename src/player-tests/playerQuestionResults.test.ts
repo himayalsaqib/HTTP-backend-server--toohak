@@ -251,8 +251,11 @@ describe('GET /v1/player/{playerid}/question/{questionposition}/results', () => 
     test('If session is not currently on this question', () => {
       // update session state from ANSWER_SHOW --> QUESTION_COUNTDOWN
       requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       const res = requestGet({}, `/v1/player/${playerId}/question/${questionPosition}/results`);
+      console.log(res);
       expect(res).toStrictEqual({
         retval: ERROR,
         statusCode: 400
