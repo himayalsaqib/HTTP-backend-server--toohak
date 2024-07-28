@@ -642,7 +642,7 @@ app.get('/v1/admin/quiz/:quizid/session/:sessionid/results', (req: Request, res:
   }
 
   try {
-    const response = adminQuizSessionFinalResults(quizId, quizSessionId);
+    const response = adminQuizSessionFinalResults(quizSessionId);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });

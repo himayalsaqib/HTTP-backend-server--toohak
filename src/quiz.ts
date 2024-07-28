@@ -910,11 +910,10 @@ export function adminQuizSessionsView(quizId: number): QuizSessionsView {
 /**
  * Get the final results for all players for a completed quiz session
  *
- * @param {number} quizId
  * @param {number} sessionId
  * @returns {SessionFinalResults}
  */
-export function adminQuizSessionFinalResults(quizId: number, sessionId: number): SessionFinalResults {
+export function adminQuizSessionFinalResults(sessionId: number): SessionFinalResults {
   const quizSession = findQuizSessionById(sessionId);
   if (!quizSession) {
     throw new Error('The session Id does not refer to a valid session within this quiz.');
