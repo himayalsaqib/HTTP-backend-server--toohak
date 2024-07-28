@@ -930,7 +930,7 @@ export function adminQuizSessionFinalResults(sessionId: number): SessionFinalRes
   const questionResultsArray = quizSession.questionResults.map(({ playersAnsweredList: _, ...rest }) => rest);
 
   const sessionFinalResults = {
-    usersRankedByScore: UsersAndScoreArray.sort((a, b) => b.score - a.score),
+    usersRankedByScore: UsersAndScoreArray,
     questionResults: questionResultsArray,
   };
 
