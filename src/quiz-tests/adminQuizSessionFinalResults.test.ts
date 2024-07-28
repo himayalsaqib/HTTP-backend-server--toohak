@@ -15,12 +15,12 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
   let quizBody: { name: string, description: string };
   let quizId: number;
   let questionBody: QuestionBody;
-  let questionId: number;
+  let questionIds: number[];
   let sessionStartBody: { autoStartNum: number };
   let sessionId: number;
   let playerId: number;
-  let answerIdCorrect: number;
-  let answerIdIncorrect: number;
+  let correctAnsIds: number[];
+  let incorrectAnsIds: number[];
   let questionPosistion: number;
 
   beforeEach(() => {
@@ -34,7 +34,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
     const quizRes = requestPost(quizBody, '/v2/admin/quiz', { token });
     quizId = quizRes.retval.quizId;
 
-    // question a question
+    // create a question
     questionBody = {
       question: 'Who is your favourite artist\'s favourite artist?',
       duration: 4,
@@ -47,12 +47,15 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
     };
 
     const questionRes = requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
-    questionId = questionRes.retval.questionId;
+    questionIds = [];
+    questionIds.push(questionRes.retval.questionId);
 
     // get the answer IDs for the question answers
     const quizInfo = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
-    answerIdCorrect = quizInfo.retval.questions[0].answers[0].answerId;
-    answerIdIncorrect = quizInfo.retval.questions[0].answers[1].answerId;
+    correctAnsIds = [];
+    incorrectAnsIds = [];
+    correctAnsIds.push(quizInfo.retval.questions[0].answers[0].answerId);
+    incorrectAnsIds.push(quizInfo.retval.questions[0].answers[1].answerId);
 
     // start a session i.e. state = LOBBY
     sessionStartBody = { autoStartNum: 4 };
@@ -66,14 +69,15 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
   });
 
   describe('Testing successful cases (status code 200)', () => {
-    test.skip('Has the correct return type with one player', () => {
+    test('Has the correct return type with one player and one question', () => {
       // update state to FINAL_RESULTS
       requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       // player submits answer
-      requestPut({ answerIds: [answerIdCorrect] }, `/v1/player/${playerId}/question/${questionPosistion}/answer`);
+      requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId}/question/${questionPosistion}/answer`);
 
+      // sets state to FINAL_RESULTS
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
@@ -88,7 +92,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
           ],
           questionResults: [
             {
-              questionId: questionId,
+              questionId: questionIds[0],
               playersCorrectList: [
                 'Jane'
               ],
@@ -101,7 +105,105 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
       });
     });
 
-    test.skip('Side-effect: Correctly lists usersRankedByScore in descending order with multiple players', () => {
+    test.only('Has the correct return type with multiple players and multiple questions', () => {
+      // create a second question
+      questionBody = {
+        question: 'Who is the Monarch of England',
+        duration: 5,
+        points: 5,
+        answers: [
+          { answer: 'Prince Charles', correct: true },
+          { answer: 'Prince William', correct: false }
+        ],
+        thumbnailUrl: 'http://google.com/some/file/path.png'
+      };
+      // get questionId
+      const questionRes = requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
+      questionIds.push(questionRes.retval.questionId);
+
+      // qet answerIds for the correct and incorrect ans
+      const quizInfoRes = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
+      correctAnsIds.push(quizInfoRes.retval.questions[1].answers[0].answerId);
+      incorrectAnsIds.push(quizInfoRes.retval.questions[1].answers[1].answerId);
+
+      // start new session in LOBBY states
+      sessionStartBody = { autoStartNum: 4 };
+      const sessionRes = requestPost(sessionStartBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
+      const newSessionId = sessionRes.retval.sessionId;
+      questionPosistion = 1;
+
+      // multiple players join
+      playerId = requestPost({ sessionId: newSessionId, name: 'John' }, '/v1/player/join').retval.playerId;
+      const playerId2 = requestPost({ sessionId: newSessionId, name: 'Charli' }, '/v1/player/join').retval.playerId;
+      const playerId3 = requestPost({ sessionId: newSessionId, name: 'Wendy' }, '/v1/player/join').retval.playerId;
+
+      // update state to QUESTION_OPEN
+      requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
+
+      // submit answers for first question
+      requestPut({ answerIds: [incorrectAnsIds[0]] }, `/v1/player/${playerId}/question/${questionPosistion}/answer`);
+      requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId2}/question/${questionPosistion}/answer`);
+      requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId3}/question/${questionPosistion}/answer`);
+
+      // move to the next question
+      questionPosistion = 2;
+
+      // update state to QUESTION_OPEN
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
+      requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
+
+      // submit next answers
+      requestPut({ answerIds: [incorrectAnsIds[1]] }, `/v1/player/${playerId}/question/${questionPosistion}/answer`);
+      requestPut({ answerIds: [incorrectAnsIds[1]] }, `/v1/player/${playerId2}/question/${questionPosistion}/answer`);
+      requestPut({ answerIds: [correctAnsIds[1]] }, `/v1/player/${playerId3}/question/${questionPosistion}/answer`);
+
+      // sets state to FINAL_RESULTS
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
+      requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
+
+      const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${newSessionId}/results`, { token });
+      expect(res).toStrictEqual({
+        retval: {
+          usersRankedByScore: [
+            {
+              name: 'Wendy',
+              score: 14
+            },
+            {
+              name: 'Charli',
+              score: 9
+            },
+            {
+              name: 'John',
+              score: 0,
+            }
+          ],
+          questionResults: [
+            {
+              questionId: questionIds[0],
+              playersCorrectList: [
+                'Charli', 'Wendy'
+              ],
+              averageAnswerTime: expect.any(Number),
+              percentCorrect: 67,
+            },
+            {
+              questionId: questionIds[1],
+              playersCorrectList: [
+                'Wendy'
+              ],
+              averageAnswerTime: expect.any(Number),
+              percentCorrect: 33,
+            }
+          ]
+        },
+        statusCode: 200,
+      });
+    });
+
+    test('Side-effect: Correctly lists usersRankedByScore in descending order with multiple players', () => {
       // two more players join
       const playerId2 = requestPost({ sessionId: sessionId, name: 'Charli' }, '/v1/player/join').retval.playerId;
       const playerId3 = requestPost({ sessionId: sessionId, name: 'Wendy' }, '/v1/player/join').retval.playerId;
@@ -111,9 +213,9 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       // players submit answers
-      requestPut({ answerIds: [answerIdIncorrect] }, `/v1/player/${playerId}/question/${questionPosistion}/answer`);
-      requestPut({ answerIds: [answerIdCorrect] }, `/v1/player/${playerId2}/question/${questionPosistion}/answer`);
-      requestPut({ answerIds: [answerIdCorrect] }, `/v1/player/${playerId3}/question/${questionPosistion}/answer`);
+      requestPut({ answerIds: [incorrectAnsIds[0]] }, `/v1/player/${playerId}/question/${questionPosistion}/answer`);
+      requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId2}/question/${questionPosistion}/answer`);
+      requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId3}/question/${questionPosistion}/answer`);
 
       // update state to FINAL_RESULTS
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
@@ -129,7 +231,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
             },
             {
               name: 'Wendy',
-              score: 5
+              score: 9
             },
             {
               name: 'Jane',
@@ -138,7 +240,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
           ],
           questionResults: [
             {
-              questionId: questionId,
+              questionId: questionIds[0],
               playersCorrectList: [
                 'Charli', 'Wendy'
               ],
