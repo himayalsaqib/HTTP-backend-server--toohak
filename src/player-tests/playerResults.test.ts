@@ -130,9 +130,6 @@ describe('GET /v1/player/:playerid/results', () => {
       requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       const res = requestGet({}, `/v1/player/${playerId}/results`);
 
-      console.log('Response from /v1/player/:playerid/results:', res);
-      console.log(res.retval.usersRankedByScore);
-      console.log(res.retval.questionResults);
       expect(res).toStrictEqual({
         retval: {
           usersRankedByScore: [
@@ -269,13 +266,11 @@ describe('GET /v1/player/:playerid/results', () => {
 
   describe('Testing for error cases (status code 400)', () => {
     test('PlayerId does not exist', () => {
-      const res = requestGet({}, `/v1/player/${playerId}/results`);
+      const res = requestGet({}, `/v1/player/${playerId + 1}/results`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
 
     test('Session is not in FINAL_RESULTS stage', () => {
-      requestPut({ action: QuizSessionAction.END }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-
       const res = requestGet({}, `/v1/player/${playerId}/results`);
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });

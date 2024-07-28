@@ -243,9 +243,6 @@ export function playerResults(playerId: number): FinalResults {
     usersRankedByScore,
     questionResults
   };
-  console.log(getData().quizSessions[0]);
-  // console.log(finalResults);
-  // console.log(questionResults);
 
   return finalResults;
 }
