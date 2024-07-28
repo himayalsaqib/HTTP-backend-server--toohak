@@ -1,5 +1,6 @@
 // includes http tests for the route /v1/admin/quiz/{quizid}/session/{sessionid}/results
 
+import sleepSync from 'slync';
 import { requestGet, requestDelete, requestPost, requestPut } from '../helper-files/requestHelper';
 import { QuestionBody, QuizSessionAction } from '../quiz';
 
@@ -70,7 +71,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
 
   describe('Testing successful cases (status code 200)', () => {
     test('Has the correct return type with one player and one question', () => {
-      // update state to FINAL_RESULTS
+      // update state to QUESTION_OPEN
       requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
@@ -105,7 +106,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
       });
     });
 
-    test.only('Has the correct return type with multiple players and multiple questions', () => {
+    test('Has the correct return type with multiple players and multiple questions', () => {
       // create a second question
       questionBody = {
         question: 'Who is the Monarch of England',
@@ -250,6 +251,43 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
           ]
         },
         statusCode: 200,
+      });
+    });
+
+    test('Side-effect: The averageAnswerTime is correctly calculated', () => {
+      // update state to QUESTION_OPEN
+      requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+
+      // player submits answer after 2 seconds
+      sleepSync(2000);
+      requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId}/question/${questionPosistion}/answer`);
+
+      // sets state to FINAL_RESULTS
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+
+      const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/results`, { token });
+      expect(res).toStrictEqual({
+        retval: {
+          usersRankedByScore: [
+            {
+              name: 'Jane',
+              score: 9,
+            }
+          ],
+          questionResults: [
+            {
+              questionId: questionIds[0],
+              playersCorrectList: [
+                'Jane'
+              ],
+              averageAnswerTime: 2,
+              percentCorrect: 100,
+            }
+          ]
+        },
+        statusCode: 200
       });
     });
   });
