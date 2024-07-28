@@ -105,10 +105,7 @@ describe('GET /v1/player/:playerid/results', () => {
     sleepSync(1000);
     requestPut({ answerIds: [correctAnswerIds[0]] }, `/v1/player/${playerId2}/question/${questionPosition}/answer`);
 
-    // moving from QUESTION_OPEN to QUESTION_CLOSED after question duration
-    sleepSync(createBody.questionBody.duration * 1000);
-
-    // Updating session state from QUESTION_CLOSED -> ANSWER_SHOW -> QUESTION_COUNTDOWN -> QUESTION_OPEN
+    // Updating session state from QUESTION_OPEN -> ANSWER_SHOW -> QUESTION_COUNTDOWN -> QUESTION_OPEN
     requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
     requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
     requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
@@ -125,7 +122,6 @@ describe('GET /v1/player/:playerid/results', () => {
       sleepSync(1000);
       requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId2}/question/${questionPosition + 1}/answer`);
 
-      sleepSync(createBody.questionBody.duration * 1000);
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       const res = requestGet({}, `/v1/player/${playerId}/results`);
@@ -172,7 +168,6 @@ describe('GET /v1/player/:playerid/results', () => {
       requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
       requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId2}/question/${questionPosition + 1}/answer`);
 
-      sleepSync(createBody.questionBody.duration * 1000);
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       const res = requestGet({}, `/v1/player/${playerId}/results`);
@@ -222,7 +217,6 @@ describe('GET /v1/player/:playerid/results', () => {
       sleepSync(1000);
       requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
 
-      sleepSync(createBody.questionBody.duration * 1000);
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
       const res = requestGet({}, `/v1/player/${playerId}/results`);
