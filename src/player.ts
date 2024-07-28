@@ -260,7 +260,7 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   }
 
   // Calculate score based on player's position in playersCorrectList
-  const userRank = questionResults.playersCorrectList.findIndex(name => name === findNameByPlayerId(playerId)) + 1;
+  const userRank = questionResults.playersCorrectList.length;
   const score = isCorrect ? Math.round(question.points / userRank) : 0;
 
   const playerAnswered: PlayerAnswered = {
