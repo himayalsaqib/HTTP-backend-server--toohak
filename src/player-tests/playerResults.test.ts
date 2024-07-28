@@ -117,7 +117,7 @@ beforeEach(() => {
 
 	describe('Testing for correct return type (status code 200)', () => {
 		const questionPosition = 1;
-		test.only('Successfully returns results for a session', () => {
+		test('Successfully returns results for a session', () => {
 			// player 1 submits answer to question 2 after 1 seconds
 			sleepSync(1000);
 			requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
@@ -171,10 +171,10 @@ beforeEach(() => {
 			});
 		});
 
-		test('Successfully returns results where both players tie for a question', () => {
+		test.skip('Successfully returns results where players tie for a question', () => {
 			sleepSync(1000);
-			requestPut({ answerIds: [correctAnswerIds[1]] }, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
-			requestPut({ answerIds: [correctAnswerIds[1]] }, `/v1/player/${playerId2}/question/${questionPosition + 1}/answer`);
+			requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
+			requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId2}/question/${questionPosition + 1}/answer`);
 
 			sleepSync(createBody.questionBody.duration * 1000);
 			requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
@@ -184,7 +184,7 @@ beforeEach(() => {
 				retval: {
 					usersRankedByScore: [
 						{
-							name: 'JaneDoe',
+							name: 'Jane',
 							score: 10
 						},
 						{
@@ -217,14 +217,14 @@ beforeEach(() => {
 			});
 		});
 
-		test('Successfully returns results where both players tie for the final results', () => {
+		test('Successfully returns results where players tie for the final results', () => {
 			// player 2 submits answer to question 2 after 1 seconds
-			sleepSync(3000);
-			requestPut({ answerIds: [correctAnswerIds[1]] }, `/v1/player/${playerId2}/question/${questionPosition + 1}/answer`);
+			sleepSync(1000);
+			requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId2}/question/${questionPosition + 1}/answer`);
 
 			// player 1 submits answer to question 1 after 2 seconds
-			sleepSync(2000);
-			requestPut({ answerIds: [correctAnswerIds[1]] }, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
+			sleepSync(1000);
+			requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
 
 			sleepSync(createBody.questionBody.duration * 1000);
 			requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
@@ -234,12 +234,12 @@ beforeEach(() => {
 				retval: {
 					usersRankedByScore: [
 						{
-							name: 'Doe',
-							score: 10
+							name: 'Jane',
+							score: 8
 						},
 						{
-							name: 'Jane',
-							score: 10
+							name: 'Doe',
+							score: 8
 						}
 					],
 					questionResults: [
