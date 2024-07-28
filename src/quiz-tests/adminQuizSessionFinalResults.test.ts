@@ -232,7 +232,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
             },
             {
               name: 'Wendy',
-              score: 9
+              score: 5
             },
             {
               name: 'Jane',
