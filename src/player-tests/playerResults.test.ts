@@ -17,7 +17,7 @@ describe('GET /v1/player/:playerid/results', () => {
   let quizId: number;
   let createBody: { questionBody: QuestionBody };
   let correctAnswerIds: number[];
-  // let wrongAnswerId: number;
+  let wrongAnswerId: number;
   let startSessionBody: { autoStartNum: number };
   let sessionId: number;
   let playerBody: { sessionId: number, name: string };
@@ -77,7 +77,7 @@ describe('GET /v1/player/:playerid/results', () => {
     correctAnswerIds.push(quizInfoRes.retval.questions[0].answers[0].answerId);
     correctAnswerIds.push(quizInfoRes.retval.questions[1].answers[0].answerId);
     correctAnswerIds.push(quizInfoRes.retval.questions[1].answers[2].answerId);
-    // wrongAnswerId = quizInfoRes.retval.questions[1].answers[1].answerId;
+    wrongAnswerId = quizInfoRes.retval.questions[1].answers[1].answerId;
 
     // starting a new session in LOBBY state
     const sessionResponse = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
@@ -114,12 +114,9 @@ describe('GET /v1/player/:playerid/results', () => {
   describe('Testing for correct return type (status code 200)', () => {
     const questionPosition = 1;
     test('Successfully returns results for a session', () => {
-      // player 1 submits answer to question 2 after 1 seconds
+      // player 1 and 2 submits answer to question 2 after 1 seconds
       sleepSync(1000);
       requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
-
-      // player 2 submits answer to question 2 after 2 seconds
-      sleepSync(1000);
       requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId2}/question/${questionPosition + 1}/answer`);
 
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
@@ -154,7 +151,7 @@ describe('GET /v1/player/:playerid/results', () => {
                 'Doe',
                 'Jane'
               ],
-              averageAnswerTime: 2,
+              averageAnswerTime: 1,
               percentCorrect: 100
             },
           ]
@@ -163,9 +160,9 @@ describe('GET /v1/player/:playerid/results', () => {
       });
     });
 
-    test.skip('Successfully returns results where players tie for a question', () => {
+    test('Successfully returns results where a player submits incorrect answer', () => {
       sleepSync(1000);
-      requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
+      requestPut({ answerIds: [wrongAnswerId] }, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
       requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId2}/question/${questionPosition + 1}/answer`);
 
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
@@ -175,12 +172,12 @@ describe('GET /v1/player/:playerid/results', () => {
         retval: {
           usersRankedByScore: [
             {
-              name: 'Jane',
-              score: 10
-            },
-            {
               name: 'Doe',
               score: 8
+            },
+            {
+              name: 'Jane',
+              score: 5
             }
           ],
           questionResults: [
@@ -196,11 +193,10 @@ describe('GET /v1/player/:playerid/results', () => {
             {
               questionId: questionId2,
               playersCorrectList: [
-                'Doe',
-                'Jane'
+                'Doe'
               ],
               averageAnswerTime: 1,
-              percentCorrect: 100
+              percentCorrect: 50
             },
           ]
         },
