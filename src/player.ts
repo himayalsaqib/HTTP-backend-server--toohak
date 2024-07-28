@@ -31,9 +31,14 @@ interface PlayerQuestionResults {
   percentCorrect: number;
 }
 
+interface SimplifiedUsersRanking {
+  name: string;
+  score: number;
+}
+
 interface FinalResults {
-  usersRankedByScore: UsersRanking[];
-  questionResults: QuestionResults[];
+  usersRankedByScore: SimplifiedUsersRanking[];
+  questionResults: PlayerQuestionResults[];
 }
 
 // =============================== FUNCTIONS ================================ //
@@ -191,13 +196,13 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   // if player is completely correct adding their name to playersCorrectList
   if (isCorrect) {
     questionResults.playersCorrectList.push(findNameByPlayerId(playerId));
+    
   }
 
-  // Calculate score: first calculating how many points for every correct answer
-  // then score is all points if completely correct else multiply num correct
-  // answers by the points per answer
-  const pointsPerAnswer = question.points / correctAnswerIds.length;
-  const score = isCorrect ? question.points : correctAnswers.length * pointsPerAnswer;
+  // Calculate score based on player's position in usersRankedByScore
+  const usersRankedByScore = session.usersRankedByScore;
+  const userRank = usersRankedByScore.findIndex(user => user.playerId === playerId) + 1;
+  const score = isCorrect ? Math.round(question.points / userRank) : 0;
 
   const playerAnswered: PlayerAnswered = {
     playerId: playerId,
@@ -227,11 +232,22 @@ export function playerResults(playerId: number): FinalResults {
     throw new Error('Session is not in FINAL_RESULTS state');
   }
 
+  const usersRankedByScore = session.usersRankedByScore.map(({ name, score }) => ({ name, score }));
+
+  const questionResults: PlayerQuestionResults[] = session.questionResults.map(result => ({
+    questionId: result.questionId,
+    playersCorrectList: result.playersCorrectList.sort(),
+    averageAnswerTime: result.averageAnswerTime,
+    percentCorrect: result.percentCorrect
+  }));
+
   const finalResults: FinalResults = {
-    usersRankedByScore: session.usersRankedByScore,
-    questionResults: session.questionResults
+    usersRankedByScore,
+    questionResults
   }
-  console.log(finalResults);
+  console.log(getData().quizSessions[0]);
+  //console.log(finalResults);
+  //console.log(questionResults);
 
   return finalResults;
 }
