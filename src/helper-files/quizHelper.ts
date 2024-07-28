@@ -434,6 +434,41 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
 }
 
 /**
+ * Saves CSV content to a file and returns the file path.
+ *
+ * @param {filename} - The name of the CSV file.
+ * @param {content} - The CSV content to save.
+ * @returns The file path to the saved CSV file.
+ */
+export function saveCSVToFile(filename: string, content: string): string {
+  const fs = require('fs');
+  const path = require('path');
+
+  const filePath = path.join(__dirname, 'csv', filename);
+
+  // Create directory if it doesn't exist
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+
+  fs.writeFileSync(filePath, content, 'utf8');
+
+  return filePath;
+}
+
+export function generateCSVContent(
+  headers: string[],
+  playersData: { name: string; [key: string]: number | string }[]
+): string {
+  const csvRows = playersData.map((player) =>
+    headers.map((header) => player[header]).join(',')
+  );
+
+  return [headers.join(','), ...csvRows].join('\n');
+}
+
+/**
  * Initialised an array for question results that can be updated as session
  * progresses and players answer
  *
