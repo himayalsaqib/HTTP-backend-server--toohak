@@ -64,6 +64,7 @@ export interface QuizSessions {
   questionResults: QuestionResults[];
   messages: Message[];
   questionOpenTime?: number;
+  resultsUpdated: boolean;
 }
 
 export interface Player {
@@ -89,7 +90,6 @@ export interface PlayerAnswered {
   playerId: number;
   answerTime: number;
   score: number;
-  correctAnswer: boolean;
 }
 
 export interface Message {

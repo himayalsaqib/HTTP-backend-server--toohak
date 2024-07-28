@@ -1,8 +1,27 @@
 // ========================= QUIZ HELPER FUNCTIONS ========================== //
 
-import { Answer, getData, Question, QuestionResults, QuizSessions, Quizzes, Trash } from '../dataStore';
-import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState, sessionIdToTimerArray, WAIT_THREE_SECONDS } from '../quiz';
-import { getRandomInt } from './authHelper';
+import {
+  Answer,
+  getData,
+  PlayerAnswered,
+  Question,
+  QuestionResults,
+  QuizSessions,
+  Quizzes,
+  setData,
+  Trash,
+  UsersRanking
+} from '../dataStore';
+import {
+  QuestionBody,
+  QuizAnswerColours,
+  QuizQuestionAnswers,
+  QuizSessionAction,
+  QuizSessionState,
+  sessionIdToTimerArray,
+  WAIT_THREE_SECONDS
+} from '../quiz';
+import { currentTime, getRandomInt } from './authHelper';
 
 /**
  * Function checks if a quiz name contains any invalid characters. Characters
@@ -381,6 +400,22 @@ export function checkIfTimerExists(sessionId: number): boolean {
 }
 
 /**
+ * Checks whether a timer exists for a given sessionId and cancels it. For
+ * two scenarios: (QUESTION_OPEN --> ANSWER_SHOW) or (if SKIP_COUNTDOWN action)
+ *
+ * @param {number} sessionId
+ * @returns {void}
+ */
+export function cancelTimer(sessionId: number): void {
+  if (checkIfTimerExists(sessionId)) {
+    const timerId = sessionIdToTimerArray.find(i => i.sessionId === sessionId);
+    const index = sessionIdToTimerArray.findIndex(i => i.sessionId === sessionId);
+    clearTimeout(timerId.timeoutId);
+    sessionIdToTimerArray.splice(index, 1);
+  }
+}
+
+/**
  * This function starts the 3 second timer that changes the state from QUESTION_COUNTDOWN
  * to QUESTION_OPEN in a quizSession
  *
@@ -392,10 +427,14 @@ export function beginQuestionCountdown(quizSession: QuizSessions, sessionId: num
   quizSession.state = QuizSessionState.QUESTION_COUNTDOWN;
   // increment atQuestion
   quizSession.atQuestion++;
+  // new question so results not updated
+  quizSession.resultsUpdated = false;
   // start countdown timer
   const timeoutId = setTimeout(() => {
     // update state
+    const data = getData();
     quizSession.state = QuizSessionState.QUESTION_OPEN;
+    setData(data);
     // remove timerId from array (if it exists) after the 3 seconds and clear timer
     const index = sessionIdToTimerArray.findIndex(i => i.timeoutId === timeoutId);
     if (index !== -1) {
@@ -424,11 +463,18 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
   const duration = quizSession.quiz.questions[index].duration;
 
   const timeoutId = setTimeout(() => {
+    const data = getData();
     quizSession.state = QuizSessionState.QUESTION_CLOSE;
+    endOfQuestionUpdates(quizSession);
+    setData(data);
+
     const index = sessionIdToTimerArray.findIndex(t => t.timeoutId === timeoutId);
     clearTimeout(timeoutId);
     sessionIdToTimerArray.splice(index, 1);
   }, duration * 1000);
+
+  // time of duration start
+  quizSession.questionOpenTime = currentTime();
 
   sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
 }
@@ -454,4 +500,63 @@ export function initialiseQuestionResults(questions: Question[]): QuestionResult
   }
 
   return questionResults;
+}
+
+/**
+ * calculate averageAnswerTime and percentCorrect after a question has finished
+ *
+ * @param {QuestionResults} questionResults
+ * @param {number} totalPlayers
+ * @returns {void}
+ */
+export function updateQuestionResults(questionResults: QuestionResults, totalPlayers: number): void {
+  // calculating average answer time (to the nearest second)
+  const answerTimeSum = questionResults.playersAnsweredList.reduce((sum, player) => sum + player.answerTime, 0);
+  questionResults.averageAnswerTime = Math.round(answerTimeSum / questionResults.playersAnsweredList.length);
+
+  // calculating percent correct (to the nearest whole number)
+  questionResults.percentCorrect = Math.round((questionResults.playersCorrectList.length / totalPlayers) * 100);
+}
+
+/**
+ * Update every players' total score and the overall ranking for the session
+ * after a question has finished
+ *
+ * @param {UsersRanking[]} usersRankedByScore
+ * @param {PlayerAnswered[]} playersAnswered
+ * @returns {void}
+ */
+export function updateUsersRanking(usersRankedByScore: UsersRanking[], playersAnswered: PlayerAnswered[]): void {
+  // first updating every player's score after the question
+  for (const user of usersRankedByScore) {
+    const player = playersAnswered.find(p => p.playerId === user.playerId);
+    // if they answered, adding their score (0 or points) to their final score
+    if (player !== undefined) {
+      user.score += player.score;
+    }
+  }
+
+  // updating usersRankedByScore to be in descending order by score
+  usersRankedByScore.sort((a, b) => b.score - a.score);
+}
+
+/**
+ * Find the questionResults for the question that just ended and update its
+ * fields as well as update usersRankedByScore to ensure it is in descending
+ * order by score
+ *
+ * @param {QuizSessions} quizSession
+ * @returns {void}
+ */
+export function endOfQuestionUpdates(quizSession: QuizSessions): void {
+  if (!quizSession.resultsUpdated) {
+    // get questionResults info for question that just finished
+    const currentQuestionResults = quizSession.questionResults[quizSession.atQuestion - 1];
+
+    // updating questionResults and usersRankedByScore at the end of a question
+    updateQuestionResults(currentQuestionResults, quizSession.players.length);
+    updateUsersRanking(quizSession.usersRankedByScore, currentQuestionResults.playersAnsweredList);
+
+    quizSession.resultsUpdated = true;
+  }
 }
