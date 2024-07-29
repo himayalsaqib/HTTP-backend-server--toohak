@@ -1,7 +1,9 @@
 // includes quiz functions
 
-import { setData, getData, EmptyObject, Question, Answer, Quizzes, Player, PlayerAnswered } from './dataStore';
+import { setData, getData, EmptyObject, Question, Answer, Quizzes, PlayerAnswered } from './dataStore';
 import { adminEmailInUse, currentTime, findUserByEmail, getRandomInt } from './helper-files/authHelper';
+import { stringify } from 'csv-stringify';
+import fs from 'fs';
 import {
   beginQuestionCountdown,
   calculateSumQuestionDuration,
@@ -24,10 +26,9 @@ import {
   quizNameHasValidChars,
   quizNameInUse,
   swapQuestions,
-  saveCSVToFile,
-  generateCSVContent,
   generatePlayerData
 } from './helper-files/quizHelper';
+import path from 'path';
 
 // ============================= GLOBAL VARIABLES =========================== //
 const MIN_QUIZ_NAME_LEN = 3;
@@ -874,7 +875,8 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
  * @returns {QuizSessionResultsCSV}
  */
 export function adminQuizSessionResultsCSV(quizId: number, sessionId: number): QuizSessionResultsCSV {
-  //const data = getData();
+  // const data = getData();
+  console.log('BLAHHHHHHH 1');
   const quizSession = findQuizSessionById(sessionId);
   if (!quizSession) {
     throw new Error('The session Id does not refer to a valid session within this quiz.');
@@ -886,28 +888,79 @@ export function adminQuizSessionResultsCSV(quizId: number, sessionId: number): Q
 
   // Prepare CSV headers
   const numQuestions = quizSession.questionResults.length;
+  console.log('num questions: ', numQuestions);
   const headers = ['Player'];
 
   for (let i = 1; i <= numQuestions; i++) {
     headers.push(`question${i}score`, `question${i}rank`);
   }
 
+  console.log('headers: ', headers); // Log headers for debugging
+
   // Prepare player data
   const playersData = quizSession.players.map((player) =>
     generatePlayerData(player, quizSession.questionResults)
   );
 
+  console.log('players data: ', playersData); // Log players data for debugging
+
   // Sort players by name
   playersData.sort((a, b) => a.name.localeCompare(b.name));
 
-  // Generate CSV content
-  const csvContent = generateCSVContent(headers, playersData);
+  // Convert player data to array format for csv-stringify
+  const data = playersData.map((player) => {
+    const playerRow = [player.name];
+    for (let i = 1; i <= numQuestions; i++) {
+      playerRow.push(player[`question${i}score`] || 0, player[`question${i}rank`] || 0);
+    }
+    return playerRow;
+  });
 
-  // Save CSV content to a file
+  console.log('CSV data: ', data);
+
+  // Generate CSV content using csv-stringify
+  const csvOptions = { header: true, columns: headers };
+  let csvContent: string = '';
+
+  stringify(data, csvOptions, (err, output) => {
+    if (err) {
+      console.error('Error generating CSV:', err);
+      throw err;
+    }
+    csvContent = output;
+  });
+
+  console.log('Generated CSV content: ', csvContent); // Log CSV content for debugging
+
+  const csvDirectory = path.join(__dirname, 'csv');
+
+  // Ensure directory exists
+  if (!fs.existsSync(csvDirectory)) {
+    fs.mkdirSync(csvDirectory, { recursive: true });
+  }
+
+  // Define CSV file path
   const csvFilename = `quiz_${quizId}_session_${sessionId}_results.csv`;
-  const csvFilePath = saveCSVToFile(csvFilename, csvContent);
+  const csvFilePath = path.join(csvDirectory, csvFilename);
 
-  return { url: csvFilePath };
+  // Write CSV content to the file
+  try {
+    fs.writeFileSync(csvFilePath, csvContent, 'utf8');
+  } catch (writeError) {
+    console.error('Error writing CSV file:', writeError);
+    throw writeError;
+  }
+
+  console.log('CSV file written successfully.'); // Confirm CSV file written
+
+  // Construct the full URL for the CSV file
+  const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+  const csvUrl = `${baseUrl}/csv/${csvFilename}`;
+
+  console.log('CSV URL: ', csvUrl);
+
+  // Return the URL in the expected format
+  return { url: csvUrl };
 }
 
 /**
