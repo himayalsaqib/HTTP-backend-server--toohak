@@ -51,9 +51,10 @@ import {
   adminQuizThumbnail,
   adminQuizGetSessionStatus,
   adminQuizSessionsView,
-  adminQuizSessionResultsCSV
+  adminQuizSessionResultsCSV,
+  adminQuizSessionFinalResults
 } from './quiz';
-import { playerJoin, playerQuestionResults, playerSendChat, playerViewChat, getPlayerStatus, playerSubmitAnswer, playerQuestionInformation } from './player';
+import { playerJoin, playerQuestionResults, playerSendChat, playerViewChat, getPlayerStatus, playerSubmitAnswer, playerQuestionInformation, playerResults } from './player';
 import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/quizHelper';
 
@@ -633,6 +634,24 @@ app.get('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Respons
   }
 });
 
+app.get('/v1/admin/quiz/:quizid/session/:sessionid/results', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const quizSessionId = parseInt(req.params.sessionid as string);
+  const sessionId = parseInt(req.header('token'));
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  try {
+    const response = adminQuizSessionFinalResults(quizSessionId);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
 app.put('/v1/admin/quiz/:quizid/thumbnail', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(req.header('token'));
@@ -1032,6 +1051,17 @@ app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request,
   try {
     const response = playerSubmitAnswer(playerId, questionPosition, { answerIds });
     res.json(response);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/v1/player/:playerid/results', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerid as string);
+
+  try {
+    const status = playerResults(playerId);
+    res.json(status);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

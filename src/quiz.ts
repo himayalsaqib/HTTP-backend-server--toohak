@@ -106,6 +106,57 @@ export interface QuizSessionsView {
   inactiveSessions: number[];
 }
 
+interface UsersRankedByScore {
+  name: string;
+  score: number;
+}
+
+interface QuestionResults {
+  questionId: number;
+  playersCorrectList: string[];
+  averageAnswerTime: number;
+  percentCorrect: number;
+}
+
+interface SessionFinalResults {
+  usersRankedByScore: UsersRankedByScore[];
+  questionResults: QuestionResults[];
+}
+
+interface UsersRankedByScore {
+  name: string;
+  score: number;
+}
+
+interface QuestionResults {
+  questionId: number;
+  playersCorrectList: string[];
+  averageAnswerTime: number;
+  percentCorrect: number;
+}
+
+interface SessionFinalResults {
+  usersRankedByScore: UsersRankedByScore[];
+  questionResults: QuestionResults[];
+}
+
+interface UsersRankedByScore {
+  name: string;
+  score: number;
+}
+
+interface QuestionResults {
+  questionId: number;
+  playersCorrectList: string[];
+  averageAnswerTime: number;
+  percentCorrect: number;
+}
+
+interface SessionFinalResults {
+  usersRankedByScore: UsersRankedByScore[];
+  questionResults: QuestionResults[];
+}
+
 export interface PlayerResultsData {
   name: string;
   [playerInfo: string]: number | string;
@@ -968,4 +1019,34 @@ export function adminQuizSessionsView(quizId: number): QuizSessionsView {
     activeSessions: quiz.activeSessions,
     inactiveSessions: quiz.inactiveSessions
   };
+}
+
+/**
+ * Get the final results for all players for a completed quiz session
+ *
+ * @param {number} sessionId
+ * @returns {SessionFinalResults}
+ */
+export function adminQuizSessionFinalResults(sessionId: number): SessionFinalResults {
+  const quizSession = findQuizSessionById(sessionId);
+  if (!quizSession) {
+    throw new Error('The session Id does not refer to a valid session within this quiz.');
+  }
+
+  if (quizSession.state !== QuizSessionState.FINAL_RESULTS) {
+    throw new Error('The session is not in FINAL_RESULTS state.');
+  }
+
+  // removes playerId key from array of objects
+  const UsersAndScoreArray = quizSession.usersRankedByScore.map(({ playerId: _, ...rest }) => rest);
+
+  // removes playersAnsweredList from array of objects
+  const questionResultsArray = quizSession.questionResults.map(({ playersAnsweredList: _, ...rest }) => rest);
+
+  const sessionFinalResults = {
+    usersRankedByScore: UsersAndScoreArray,
+    questionResults: questionResultsArray,
+  };
+
+  return sessionFinalResults;
 }

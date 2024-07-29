@@ -44,6 +44,16 @@ export interface QuestionDisplay {
   }[];
 }
 
+interface SimplifiedUsersRanking {
+  name: string;
+  score: number;
+}
+
+interface FinalResults {
+  usersRankedByScore: SimplifiedUsersRanking[];
+  questionResults: PlayerQuestionResults[];
+}
+
 // =============================== FUNCTIONS ================================ //
 /**
  * Allow a guest player to join a session
@@ -249,11 +259,9 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
     questionResults.playersCorrectList.push(findNameByPlayerId(playerId));
   }
 
-  // Calculate score: first calculating how many points for every correct answer
-  // then score is all points if completely correct else multiply num correct
-  // answers by the points per answer
-  const pointsPerAnswer = question.points / correctAnswerIds.length;
-  const score = isCorrect ? question.points : correctAnswers.length * pointsPerAnswer;
+  // Calculate score based on player's position in playersCorrectList
+  const userRank = questionResults.playersCorrectList.length;
+  const score = isCorrect ? Math.round(question.points / userRank) : 0;
 
   const playerAnswered: PlayerAnswered = {
     playerId: playerId,
@@ -265,6 +273,39 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
   setData(data);
 
   return {};
+}
+
+/**
+ * Allows the player to submit answer/s to a question.
+ *
+ * @param {number} playerId
+ * @returns {{ FinalResults }}
+ */
+export function playerResults(playerId: number): FinalResults {
+  if (!playerIdInUse(playerId)) {
+    throw new Error('Player ID does not exist');
+  }
+
+  const session = findSessionByPlayerId(playerId);
+  if (session.state !== QuizSessionState.FINAL_RESULTS) {
+    throw new Error('Session is not in FINAL_RESULTS state');
+  }
+
+  const usersRankedByScore = session.usersRankedByScore.map(({ name, score }) => ({ name, score }));
+
+  const questionResults: PlayerQuestionResults[] = session.questionResults.map(result => ({
+    questionId: result.questionId,
+    playersCorrectList: result.playersCorrectList.sort(),
+    averageAnswerTime: result.averageAnswerTime,
+    percentCorrect: result.percentCorrect
+  }));
+
+  const finalResults: FinalResults = {
+    usersRankedByScore,
+    questionResults
+  };
+
+  return finalResults;
 }
 
 /**
