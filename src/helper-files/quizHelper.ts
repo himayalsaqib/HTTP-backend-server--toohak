@@ -1,6 +1,6 @@
 // ========================= QUIZ HELPER FUNCTIONS ========================== //
 
-import { Answer, getData, Player, Question, QuestionResults, QuizSessions, Quizzes, Trash } from '../dataStore';
+import { Answer, getData, Question, QuestionResults, QuizSessions, Quizzes, Trash } from '../dataStore';
 import { QuestionBody, QuizAnswerColours, QuizQuestionAnswers, QuizSessionAction, QuizSessionState, sessionIdToTimerArray, WAIT_THREE_SECONDS } from '../quiz';
 import { getRandomInt } from './authHelper';
 
@@ -432,42 +432,6 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
 
   sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
 }
-
-/**
- * Saves CSV content to a file and returns the file path.
- *
- * @param {filename} - The name of the CSV file.
- * @param {content} - The CSV content to save.
- * @returns The file path to the saved CSV file.
- */
-export function saveCSVToFile(filename: string, content: string): string {
-  const fs = require('fs');
-  const path = require('path');
-
-  const filePath = path.join(__dirname, 'csv', filename);
-
-  // Create directory if it doesn't exist
-  const dir = path.dirname(filePath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
-  }
-
-  fs.writeFileSync(filePath, content, 'utf8');
-
-  return filePath;
-}
-
-export function generateCSVContent(
-  headers: string[],
-  playersData: { name: string; [key: string]: number | string }[]
-): string {
-  const csvRows = playersData.map((player) =>
-    headers.map((header) => player[header]).join(',')
-  );
-
-  return [headers.join(','), ...csvRows].join('\n');
-}
-
 /**
  * Generates data for a player including scores and ranks for csv results file
  *
@@ -475,23 +439,18 @@ export function generateCSVContent(
  * @param questionResults - The question results.
  * @returns An object with player's name, scores, and ranks.
  */
-export function generatePlayerData(player: Player, questionResults: QuestionResults[]): { name: string; [key: string]: number | string } {
-  const playerData: { name: string; [key: string]: number | string } = {
-    name: player.name
-  };
+export function generatePlayerData(player: any, questionResults: any[]): any {
+  // Implement the function to generate player data
+  const playerData: { [key: string]: any } = { name: player.name };
+
+  // questionResults.forEach((result, index) => {
+  //   playerData[`question${index + 1}score`] = player.scores[index] || 0;
+  //   playerData[`question${index + 1}rank`] = player.ranks[index] || 0;
+  // });
 
   questionResults.forEach((result, index) => {
-    const playerResult = result.playersAnsweredList.find(
-      (p) => p.playerId === player.playerId
-    );
-
-    const score = playerResult ? playerResult.score : 0;
-    const rank = playerResult
-      ? result.playersCorrectList.indexOf(player.playerId.toString()) + 1
-      : 0;
-
-    playerData[`question${index + 1}score`] = score;
-    playerData[`question${index + 1}rank`] = rank;
+    playerData[`question${index + 1}score`] = player.scores?.[index] ?? 0;
+    playerData[`question${index + 1}rank`] = player.ranks?.[index] ?? 0;
   });
 
   return playerData;
