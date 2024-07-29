@@ -116,11 +116,5 @@ describe('PUT /v1/admin/quiz/:quizid/thumbnail', () => {
       const res = requestPut({ imgUrl: thumbnailUrl }, `/v1/admin/quiz/${quizId}/thumbnail`, { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
-
-    test.skip('The thumbnailUrl is not a real image', () => {
-      const thumbnailUrl = 'http://google.com/some/image/path.jpg';
-      const res = requestPut({ imgUrl: thumbnailUrl }, `/v1/admin/quiz/${quizId}/thumbnail`, { token });
-      expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
-    });
   });
 });
