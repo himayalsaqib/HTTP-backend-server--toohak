@@ -88,8 +88,8 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
       expect(res.retval).toHaveProperty('url');
     });
 
-    test.only('Correctly returns a link with data for muliple question and multiple players', () => {
-      // create a second question
+    test('Correctly returns a link with data for muliple question and multiple players', () => {
+      // Create a second question
       questionBody = {
         question: 'Who is the Monarch of England',
         duration: 5,
@@ -100,48 +100,48 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
         ],
         thumbnailUrl: 'http://google.com/some/file/path.png'
       };
-      // get questionId
+      // Get questionId
       requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
 
-      // qet answerIds for the correct and incorrect ans
+      // Get answerIds for the correct and incorrect ans
       const quizInfoRes = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
       correctAnsIds.push(quizInfoRes.retval.questions[1].answers[0].answerId);
       incorrectAnsIds.push(quizInfoRes.retval.questions[1].answers[1].answerId);
 
-      // start new session in LOBBY state
+      // Start new session in LOBBY state
       sessionStartBody = { autoStartNum: 4 };
       const sessionRes = requestPost(sessionStartBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       const newSessionId = sessionRes.retval.sessionId;
       questionPosistion = 1;
 
-      // multiple players join
+      // Multiple players join
       playerId = requestPost({ sessionId: newSessionId, name: 'Aelin' }, '/v1/player/join').retval.playerId;
       const playerId2 = requestPost({ sessionId: newSessionId, name: 'Rowan' }, '/v1/player/join').retval.playerId;
       const playerId3 = requestPost({ sessionId: newSessionId, name: 'Lysandra' }, '/v1/player/join').retval.playerId;
 
-      // update state to QUESTION_OPEN
+      // Update state to QUESTION_OPEN
       requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
 
-      // submit answers for first question
+      // Submit answers for first question
       requestPut({ answerIds: [incorrectAnsIds[0]] }, `/v1/player/${playerId}/question/${questionPosistion}/answer`);
       requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId2}/question/${questionPosistion}/answer`);
       requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId3}/question/${questionPosistion}/answer`);
 
-      // move to the next question
+      // Move to the next question
       questionPosistion = 2;
 
-      // update state to QUESTION_OPEN
+      // Update state to QUESTION_OPEN
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
       requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
 
-      // submit next answers
+      // Submit next answers
       requestPut({ answerIds: [incorrectAnsIds[1]] }, `/v1/player/${playerId}/question/${questionPosistion}/answer`);
       requestPut({ answerIds: [incorrectAnsIds[1]] }, `/v1/player/${playerId2}/question/${questionPosistion}/answer`);
       requestPut({ answerIds: [correctAnsIds[1]] }, `/v1/player/${playerId3}/question/${questionPosistion}/answer`);
 
-      // sets state to FINAL_RESULTS
+      // Set state to FINAL_RESULTS
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
       requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
 
@@ -149,7 +149,6 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
       // Expect URL to be a valid CSV URL usging regex
       expect(res.retval.url).toMatch(/^http:\/\/localhost:3200\/csv\/.+\.csv$/);
       expect(res.statusCode).toBe(200);
-      expect(res.retval).toHaveProperty('url');
     });
   });
 
