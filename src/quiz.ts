@@ -912,10 +912,9 @@ export function adminQuizSessionResultsCSV(quizId: number, sessionId: number): Q
         player[`question${i}rank`] || 0
       );
     }
-    
+
     return playerInfo;
   });
-
 
   // Creating CSV content using csv-stringify
   const csvOptions = { header: true, columns: header };

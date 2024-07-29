@@ -483,7 +483,7 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
 /**
  * Generates data for a player including scores and ranks for csv results file
  *
- * @param {UsersRanking} player 
+ * @param {UsersRanking} player
  * @param {QuestionResults[]} questionResults
  * @param {QuizSessions} quizSession
  * @returns {Object}
@@ -491,10 +491,10 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
 export function generatePlayerData(player: UsersRanking, questionResults: QuestionResults[], quizSession: QuizSessions): PlayerResultsData {
   const playerData: PlayerResultsData = { name: player.name }; questionResults.forEach((_result, index) => {
     const playerResult = quizSession.usersRankedByScore.find((pr) => pr.playerId === player.playerId);
-    
+
     if (playerResult) {
       playerData[`question${index + 1}score`] = playerResult.score;
-      
+
       // Get the rank of the player for this question from playerResults
       const rank = quizSession.usersRankedByScore.findIndex((pr) => pr.playerId === player.playerId) + 1;
       playerData[`question${index + 1}rank`] = rank;

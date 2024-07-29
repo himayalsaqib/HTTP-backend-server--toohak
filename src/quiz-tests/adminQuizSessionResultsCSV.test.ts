@@ -101,7 +101,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
         thumbnailUrl: 'http://google.com/some/file/path.png'
       };
       // get questionId
-     requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
+      requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token });
 
       // qet answerIds for the correct and incorrect ans
       const quizInfoRes = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
@@ -150,8 +150,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
       expect(res.retval.url).toMatch(/^http:\/\/localhost:3200\/csv\/.+\.csv$/);
       expect(res.statusCode).toBe(200);
       expect(res.retval).toHaveProperty('url');
-
-    })
+    });
   });
 
   describe('Testing for session errors (status code 400)', () => {
