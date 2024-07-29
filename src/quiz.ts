@@ -1,6 +1,6 @@
 // includes quiz functions
 
-import { setData, getData, EmptyObject, Question, Answer, Quizzes, PlayerAnswered } from './dataStore';
+import { setData, getData, EmptyObject, Question, Answer, Quizzes } from './dataStore';
 import { adminEmailInUse, currentTime, findUserByEmail, getRandomInt } from './helper-files/authHelper';
 import { stringify } from 'csv-stringify/sync';
 import fs from 'fs';
@@ -104,40 +104,6 @@ export interface QuizSessionStatus {
 export interface QuizSessionsView {
   activeSessions: number[];
   inactiveSessions: number[];
-}
-
-interface UsersRankedByScore {
-  name: string;
-  score: number;
-}
-
-interface QuestionResults {
-  questionId: number;
-  playersCorrectList: string[];
-  averageAnswerTime: number;
-  percentCorrect: number;
-}
-
-interface SessionFinalResults {
-  usersRankedByScore: UsersRankedByScore[];
-  questionResults: QuestionResults[];
-}
-
-interface UsersRankedByScore {
-  name: string;
-  score: number;
-}
-
-interface QuestionResults {
-  questionId: number;
-  playersCorrectList: string[];
-  averageAnswerTime: number;
-  percentCorrect: number;
-}
-
-interface SessionFinalResults {
-  usersRankedByScore: UsersRankedByScore[];
-  questionResults: QuestionResults[];
 }
 
 interface UsersRankedByScore {
