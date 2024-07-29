@@ -930,7 +930,7 @@ app.delete('/v2/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
 app.get('/v1/admin/quiz/:quizid/session/:sessionid/results/csv', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const quizSessionId = parseInt(req.params.sessionid as string);
-  const sessionId = parseInt(req.header('token'));
+  const sessionId = parseInt(req.header('token') as string);
 
   const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
   if ('error' in errorCheckResponse) {
