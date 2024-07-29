@@ -216,6 +216,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
       // players submit answers
       requestPut({ answerIds: [incorrectAnsIds[0]] }, `/v1/player/${playerId}/question/${questionPosistion}/answer`);
       requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId2}/question/${questionPosistion}/answer`);
+      sleepSync(1000);
       requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId3}/question/${questionPosistion}/answer`);
 
       // update state to FINAL_RESULTS
