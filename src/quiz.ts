@@ -114,24 +114,6 @@ export interface PlayerResultsData {
 interface QuizSessionResultsCSV {
   url: string;
 }
-
-interface UsersRankedByScore {
-  name: string;
-  score: number;
-}
-
-interface QuestionResults {
-  questionId: number;
-  playersCorrectList: string[];
-  playersAnsweredList: PlayerAnswered[];
-  averageAnswerTime: number;
-  percentCorrect: number;
-}
-
-interface SessionFinalResults {
-  usersRankedByScore: UsersRankedByScore[];
-  questionResults: QuestionResults[];
-}
 // ================================= ENUMS ================================== //
 
 export enum QuizAnswerColours {

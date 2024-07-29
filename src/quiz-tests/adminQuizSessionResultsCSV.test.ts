@@ -68,7 +68,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
     playerId = playerJoinRes.retval.playerId;
   });
 
-  describe.only('Testing successful cases (status code 200)', () => {
+  describe('Testing successful cases (status code 200)', () => {
     test('Correctly returns a link with data for 1 question, 1 player', () => {
       // Update state to QUESTION_OPEN
       requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
