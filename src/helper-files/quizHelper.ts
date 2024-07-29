@@ -19,7 +19,8 @@ import {
   QuizSessionAction,
   QuizSessionState,
   sessionIdToTimerArray,
-  WAIT_THREE_SECONDS
+  WAIT_THREE_SECONDS,
+  PlayerResultsData
 } from '../quiz';
 import { currentTime, getRandomInt } from './authHelper';
 
@@ -478,25 +479,29 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
 
   sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
 }
+
 /**
  * Generates data for a player including scores and ranks for csv results file
  *
- * @param player - The player.
- * @param questionResults - The question results.
- * @returns An object with player's name, scores, and ranks.
+ * @param {UsersRanking} player 
+ * @param {QuestionResults[]} questionResults
+ * @param {QuizSessions} quizSession
+ * @returns {Object}
  */
-export function generatePlayerData(player: any, questionResults: any[]): any {
-  // Implement the function to generate player data
-  const playerData: { [key: string]: any } = { name: player.name };
-
-  // questionResults.forEach((result, index) => {
-  //   playerData[`question${index + 1}score`] = player.scores[index] || 0;
-  //   playerData[`question${index + 1}rank`] = player.ranks[index] || 0;
-  // });
-
-  questionResults.forEach((result, index) => {
-    playerData[`question${index + 1}score`] = player.scores?.[index] ?? 0;
-    playerData[`question${index + 1}rank`] = player.ranks?.[index] ?? 0;
+export function generatePlayerData(player: UsersRanking, questionResults: QuestionResults[], quizSession: QuizSessions): PlayerResultsData {
+  const playerData: PlayerResultsData = { name: player.name }; questionResults.forEach((_result, index) => {
+    const playerResult = quizSession.usersRankedByScore.find((pr) => pr.playerId === player.playerId);
+    
+    if (playerResult) {
+      playerData[`question${index + 1}score`] = playerResult.score;
+      
+      // Get the rank of the player for this question from playerResults
+      const rank = quizSession.usersRankedByScore.findIndex((pr) => pr.playerId === player.playerId) + 1;
+      playerData[`question${index + 1}rank`] = rank;
+    } else {
+      playerData[`question${index + 1}score`] = 0;
+      playerData[`question${index + 1}rank`] = 0;
+    }
   });
 
   return playerData;
