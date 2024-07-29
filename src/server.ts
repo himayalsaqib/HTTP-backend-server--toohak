@@ -70,7 +70,6 @@ app.use(morgan('dev'));
 const file = fs.readFileSync(path.join(process.cwd(), 'swagger.yaml'), 'utf8');
 app.get('/', (req: Request, res: Response) => res.redirect('/docs'));
 app.use('/docs', sui.serve, sui.setup(YAML.parse(file), { swaggerOptions: { docExpansion: config.expandDocs ? 'full' : 'list' } }));
-// Serve the CSV directory statically
 app.use('/csv', express.static(path.join(__dirname, 'csv')));
 
 const PORT: number = parseInt(process.env.PORT || config.port);
