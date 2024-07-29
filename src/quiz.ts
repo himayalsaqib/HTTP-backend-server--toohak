@@ -2,7 +2,7 @@
 
 import { setData, getData, EmptyObject, Question, Answer, Quizzes, PlayerAnswered } from './dataStore';
 import { adminEmailInUse, currentTime, findUserByEmail, getRandomInt } from './helper-files/authHelper';
-import { stringify } from 'csv-stringify';
+import { stringify } from 'csv-stringify/sync';
 import fs from 'fs';
 import {
   beginQuestionCountdown,
@@ -104,6 +104,11 @@ export interface QuizSessionStatus {
 export interface QuizSessionsView {
   activeSessions: number[];
   inactiveSessions: number[];
+}
+
+export interface PlayerResultsData {
+  name: string;
+  [playerInfo: string]: number | string;
 }
 
 interface QuizSessionResultsCSV {
@@ -875,75 +880,58 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
  * @returns {QuizSessionResultsCSV}
  */
 export function adminQuizSessionResultsCSV(quizId: number, sessionId: number): QuizSessionResultsCSV {
-  // const data = getData();
-  console.log('BLAHHHHHHH 1');
   const quizSession = findQuizSessionById(sessionId);
   if (!quizSession) {
     throw new Error('The session Id does not refer to a valid session within this quiz.');
   }
-
   if (quizSession.state !== QuizSessionState.FINAL_RESULTS) {
     throw new Error('The session is not in FINAL_RESULTS state.');
   }
 
   // Prepare CSV headers
   const numQuestions = quizSession.questionResults.length;
-  console.log('num questions: ', numQuestions);
-  const headers = ['Player'];
+  const header = ['Player'];
 
   for (let i = 1; i <= numQuestions; i++) {
-    headers.push(`question${i}score`, `question${i}rank`);
+    header.push(`question${i}score`, `question${i}rank`);
   }
 
-  console.log('headers: ', headers); // Log headers for debugging
-
-  // Prepare player data
-  const playersData = quizSession.players.map((player) =>
-    generatePlayerData(player, quizSession.questionResults)
+  const playersData = quizSession.usersRankedByScore.map((playerRank) =>
+    generatePlayerData(playerRank, quizSession.questionResults, quizSession)
   );
-
-  console.log('players data: ', playersData); // Log players data for debugging
 
   // Sort players by name
   playersData.sort((a, b) => a.name.localeCompare(b.name));
 
-  // Convert player data to array format for csv-stringify
+  // Turning player data into an array for csv-stringify
   const data = playersData.map((player) => {
-    const playerRow = [player.name];
+    const playerInfo: (number | string)[] = [player.name];
     for (let i = 1; i <= numQuestions; i++) {
-      playerRow.push(player[`question${i}score`] || 0, player[`question${i}rank`] || 0);
+      playerInfo.push(
+        player[`question${i}score`] || 0,
+        player[`question${i}rank`] || 0
+      );
     }
-    return playerRow;
+    
+    return playerInfo;
   });
 
-  console.log('CSV data: ', data);
 
-  // Generate CSV content using csv-stringify
-  const csvOptions = { header: true, columns: headers };
-  let csvContent: string = '';
-
-  stringify(data, csvOptions, (err, output) => {
-    if (err) {
-      console.error('Error generating CSV:', err);
-      throw err;
-    }
-    csvContent = output;
-  });
-
-  console.log('Generated CSV content: ', csvContent); // Log CSV content for debugging
-
+  // Creating CSV content using csv-stringify
+  const csvOptions = { header: true, columns: header };
+  const csvContent = stringify(data, csvOptions);
   const csvDirectory = path.join(__dirname, 'csv');
 
-  // Ensure directory exists
+  // Checking directory exists, if not create one
   if (!fs.existsSync(csvDirectory)) {
     fs.mkdirSync(csvDirectory, { recursive: true });
   }
 
-  // Define CSV file path
+  // Creating CSV file path
   const csvFilename = `quiz_${quizId}_session_${sessionId}_results.csv`;
   const csvFilePath = path.join(csvDirectory, csvFilename);
 
-  // Write CSV content to the file
+  // Writing CSV contents to the file
   try {
     fs.writeFileSync(csvFilePath, csvContent, 'utf8');
   } catch (writeError) {
@@ -951,15 +939,10 @@ export function adminQuizSessionResultsCSV(quizId: number, sessionId: number): Q
     throw writeError;
   }
 
-  console.log('CSV file written successfully.'); // Confirm CSV file written
-
-  // Construct the full URL for the CSV file
-  const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+  // Creating the URL for the CSV file
+  const baseUrl = process.env.BASE_URL || 'http://localhost:3200';
   const csvUrl = `${baseUrl}/csv/${csvFilename}`;
 
-  console.log('CSV URL: ', csvUrl);
-
-  // Return the URL in the expected format
   return { url: csvUrl };
 }
 
