@@ -52,7 +52,7 @@ import {
   adminQuizGetSessionStatus,
   adminQuizSessionsView,
 } from './quiz';
-import { playerJoin, playerQuestionResults, playerSendChat, playerViewChat, getPlayerStatus, playerSubmitAnswer, playerQuestionInformation } from './player';
+import { playerJoin, playerQuestionResults, playerSendChat, playerViewChat, getPlayerStatus, playerSubmitAnswer, playerQuestionInformation, playerResults } from './player';
 import { load } from './dataStore';
 import { quizIsInTrash } from './helper-files/quizHelper';
 
@@ -1011,6 +1011,17 @@ app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request,
   try {
     const response = playerSubmitAnswer(playerId, questionPosition, { answerIds });
     res.json(response);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/v1/player/:playerid/results', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerid as string);
+
+  try {
+    const status = playerResults(playerId);
+    res.json(status);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
