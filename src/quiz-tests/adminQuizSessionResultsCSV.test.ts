@@ -1,5 +1,4 @@
 // includes http tests for the route /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv
-import { error } from 'console';
 import { requestDelete, requestPost, requestPut, requestGet } from '../helper-files/requestHelper';
 import { QuestionBody, QuizSessionAction } from '../quiz';
 
@@ -70,25 +69,32 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
 
   describe('Testing successful cases (status code 200)', () => {
     test('Correctly returns a link', () => {
-       // Update state to QUESTION_OPEN
-       requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
- 
-       // Player submits answer
-       requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
- 
-       // Sets state to FINAL_RESULTS
-       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-       requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token }); 
-        // Fetching CSV results
-        const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/results/csv`, { token });
-        // Expect URL to be a valid CSV URL usging regex
-        const expectedCSVUrl = expect.stringMatching(/^http(s)?:\/\/\S+\.csv$/); 
-        expect(res.retval.url).toStrictEqual(/^https?:\/\/.+\..+\/.+\.csv$/);
-        expect(res).toStrictEqual({
-          retval: { url: expectedCSVUrl },
-          statusCode: 200
-        });
+      // Update state to QUESTION_OPEN
+      requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+
+      // Player submits answer
+      requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
+
+      // Sets state to FINAL_RESULTS
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      // Fetching CSV results
+      // const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/results/csv`, { token });
+      const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/results/csv`, { token });
+      // Expect URL to be a valid CSV URL usging regex
+      // const expectedCSVUrl = expect.stringMatching(/^http(s)?:\/\/\S+\.csv$/);
+      console.log('res: ', res);
+      // expect(res.retval.url).toStrictEqual(/^https?:\/\/.+\..+\/.+\.csv$/);
+      expect(res.retval.url).toMatch(/^http:\/\/localhost:3000\/csv\/.+\.csv$/);
+      expect(res.statusCode).toBe(200);
+      expect(res.retval).toHaveProperty('url'); // Check for url property
+      // expect(res.retval.url).toMatch(/^http:\/\/localhost:3000\/csv\/quiz_\d+_session_\d+_results\.csv$/); // Validate URL pattern
+
+      // expect(res).toStrictEqual({
+      //   retval: { url: expectedCSVUrl },
+      //   statusCode: 200
+      // });
     });
   });
 
