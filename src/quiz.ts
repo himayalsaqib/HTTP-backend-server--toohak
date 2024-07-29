@@ -888,7 +888,7 @@ export function adminQuizSessionResultsCSV(quizId: number, sessionId: number): Q
     throw new Error('The session is not in FINAL_RESULTS state.');
   }
 
-  // Prepare CSV headers
+  // Preparing CSV headers
   const numQuestions = quizSession.questionResults.length;
   const header = ['Player'];
 
@@ -900,7 +900,7 @@ export function adminQuizSessionResultsCSV(quizId: number, sessionId: number): Q
     generatePlayerData(playerRank, quizSession.questionResults, quizSession)
   );
 
-  // Sort players by name
+  // Sorting players by name
   playersData.sort((a, b) => a.name.localeCompare(b.name));
 
   // Turning player data into an array for csv-stringify
@@ -921,7 +921,7 @@ export function adminQuizSessionResultsCSV(quizId: number, sessionId: number): Q
   const csvContent = stringify(data, csvOptions);
   const csvDirectory = path.join(__dirname, 'csv');
 
-  // Checking directory exists, if not create one
+  // Checking if directory exists, if not create one
   if (!fs.existsSync(csvDirectory)) {
     fs.mkdirSync(csvDirectory, { recursive: true });
   }
@@ -931,14 +931,9 @@ export function adminQuizSessionResultsCSV(quizId: number, sessionId: number): Q
   const csvFilePath = path.join(csvDirectory, csvFilename);
 
   // Writing CSV contents to the file
-  try {
-    fs.writeFileSync(csvFilePath, csvContent, 'utf8');
-  } catch (writeError) {
-    console.error('Error writing CSV file:', writeError);
-    throw writeError;
-  }
+  fs.writeFileSync(csvFilePath, csvContent, 'utf8');
 
-  // Creating the URL for the CSV file
+  // Creating the url for the CSV file
   const baseUrl = process.env.BASE_URL || 'http://localhost:3200';
   const csvUrl = `${baseUrl}/csv/${csvFilename}`;
 

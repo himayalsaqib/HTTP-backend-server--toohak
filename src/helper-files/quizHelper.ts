@@ -495,7 +495,7 @@ export function generatePlayerData(player: UsersRanking, questionResults: Questi
     if (playerResult) {
       playerData[`question${index + 1}score`] = playerResult.score;
 
-      // Get the rank of the player for this question from playerResults
+      // Get the rank of the player
       const rank = quizSession.usersRankedByScore.findIndex((pr) => pr.playerId === player.playerId) + 1;
       playerData[`question${index + 1}rank`] = rank;
     } else {
