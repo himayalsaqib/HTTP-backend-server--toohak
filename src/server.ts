@@ -51,6 +51,7 @@ import {
   adminQuizThumbnail,
   adminQuizGetSessionStatus,
   adminQuizSessionsView,
+  adminQuizSessionResultsCSV
 } from './quiz';
 import { playerJoin, playerSendChat, playerViewChat, getPlayerStatus, playerSubmitAnswer } from './player';
 import { load } from './dataStore';
@@ -68,6 +69,8 @@ app.use(morgan('dev'));
 const file = fs.readFileSync(path.join(process.cwd(), 'swagger.yaml'), 'utf8');
 app.get('/', (req: Request, res: Response) => res.redirect('/docs'));
 app.use('/docs', sui.serve, sui.setup(YAML.parse(file), { swaggerOptions: { docExpansion: config.expandDocs ? 'full' : 'list' } }));
+// Serve the CSV directory statically
+app.use('/csv', express.static(path.join(__dirname, 'csv')));
 
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || '127.0.0.1';
@@ -900,6 +903,24 @@ app.delete('/v2/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
 
   try {
     const response = adminQuizQuestionDelete(quizId, questionId);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/v1/admin/quiz/:quizid/session/:sessionid/results/csv', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const quizSessionId = parseInt(req.params.sessionid as string);
+  const sessionId = parseInt(req.header('token'));
+
+  const errorCheckResponse = quizRoutesErrorChecking(sessionId, quizId);
+  if ('error' in errorCheckResponse) {
+    return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
+  }
+
+  try {
+    const response = adminQuizSessionResultsCSV(quizId, quizSessionId);
     res.json(response);
   } catch (error) {
     return res.status(400).json({ error: error.message });
