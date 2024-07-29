@@ -145,6 +145,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
       // submit answers for first question
       requestPut({ answerIds: [incorrectAnsIds[0]] }, `/v1/player/${playerId}/question/${questionPosistion}/answer`);
       requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId2}/question/${questionPosistion}/answer`);
+      sleepSync(1000);
       requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId3}/question/${questionPosistion}/answer`);
 
       // move to the next question
@@ -170,7 +171,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results', () => {
           usersRankedByScore: [
             {
               name: 'Wendy',
-              score: 14
+              score: 10
             },
             {
               name: 'Charli',
