@@ -187,7 +187,6 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       // requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       const resubmitRes = requestGet({}, `/v1/player/${playerId}/question/${questionPosition}/results`);
-      console.log(resubmitRes.retval);
       expect(resubmitRes.retval.playersCorrectList).toStrictEqual(['Player One']);
     });
 
