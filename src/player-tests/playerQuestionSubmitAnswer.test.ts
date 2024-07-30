@@ -83,7 +83,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
   });
 
   describe('Testing successful cases (status code 200)', () => {
-    test('Correct return type after submiting 1 answer', () => {
+    test('Correct return type after submitting 1 answer', () => {
       const submitAns = { answerIds: [answerIds[0]] };
       const questionPosition = 1;
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
