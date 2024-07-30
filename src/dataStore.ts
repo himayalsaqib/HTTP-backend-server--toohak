@@ -84,7 +84,7 @@ export interface QuestionResults {
   playersAnsweredList: PlayerAnswered[];
   averageAnswerTime: number;
   percentCorrect: number;
-  userRankingForQuestion: Player[];
+  userRankingForQuestion: UsersRanking[];
 }
 
 export interface PlayerAnswered {
