@@ -83,6 +83,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
 
       const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/results/csv`, { token });
       // Expect URL to be a valid CSV URL usging regex
+      console.log('res: ', res);
       expect(res.retval.url).toMatch(/^http:\/\/localhost:3200\/csv\/.+\.csv$/);
       expect(res.statusCode).toBe(200);
       expect(res.retval).toHaveProperty('url');
@@ -146,6 +147,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
       requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
       const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${newSessionId}/results/csv`, { token });
       // Expect URL to be a valid CSV URL usging regex
+      console.log(res);
       expect(res.retval.url).toMatch(/^http:\/\/localhost:3200\/csv\/.+\.csv$/);
       expect(res.statusCode).toBe(200);
     });

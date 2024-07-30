@@ -93,7 +93,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
     test.skip('Side effect: player results correctly displays correct answered question', () => {
       const submitAns = { answerIds: [answerIds[0]] };
       const questionPosition = 1;
-      const questionResponse = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
+      const questionResponse = requestGet({ token }, `/v2/admin/quiz/${quizId}`);
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(res.retval).toStrictEqual({});
       expect(res.statusCode).toStrictEqual(200);
