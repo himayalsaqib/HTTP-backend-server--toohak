@@ -489,7 +489,8 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
  * @returns {Object}
  */
 export function generatePlayerData(player: UsersRanking, questionResults: QuestionResults[], quizSession: QuizSessions): PlayerResultsData {
-  const playerData: PlayerResultsData = { name: player.name }; questionResults.forEach((_result, index) => {
+  const playerData: PlayerResultsData = { name: player.name }; 
+  questionResults.forEach((_result, index) => {
     const playerResult = quizSession.usersRankedByScore.find((pr) => pr.playerId === player.playerId);
 
     if (playerResult) {
