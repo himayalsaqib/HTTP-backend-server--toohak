@@ -275,7 +275,7 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
     questionResults.playersCorrectList.push(findNameByPlayerId(playerId));
   }
 
-  // **Calculate score based on player's position in playersCorrectList**
+  // Calculate score based on player's position in playersCorrectList
   const userRank = questionResults.playersCorrectList.length;
   const score = isCorrect ? Math.round(question.points / userRank) : 0;
 
