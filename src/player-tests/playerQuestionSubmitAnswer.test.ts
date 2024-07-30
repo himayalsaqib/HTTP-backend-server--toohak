@@ -61,7 +61,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
     };
     requestPost(createQuestionBody, `/v2/admin/quiz/${quizId}/question`, { token });
 
-    const questionResponse = requestGet({ token }, `/v2/admin/quiz/${quizId}`);
+    const questionResponse = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
     // answer object has type { answerId: number } in an array
     answerIds = (questionResponse.retval.questions[0].answers as { answerId: number }[]).map(answer => answer.answerId);
 
@@ -94,7 +94,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
     test('Side effect: player results correctly displays correct answered question', () => {
       const submitAns = { answerIds: [answerIds[0]] };
       const questionPosition = 1;
-      const questionResponse = requestGet({ token }, `/v2/admin/quiz/${quizId}`);
+      const questionResponse = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(res.retval).toStrictEqual({});
       expect(res.statusCode).toStrictEqual(200);
@@ -118,7 +118,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       sleepSync(2000);
       const submitAns = { answerIds: [answerIds[0]] };
       let questionPosition = 1;
-      const questionResponse = requestGet({ token }, `/v2/admin/quiz/${quizId}`);
+      const questionResponse = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
       requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
 
       // Move to next question
