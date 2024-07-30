@@ -1,4 +1,5 @@
 // includes http tests for the route /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv
+import sleepSync from 'slync';
 import { requestDelete, requestPost, requestPut, requestGet } from '../helper-files/requestHelper';
 import { QuestionBody, QuizSessionAction } from '../quiz';
 
@@ -125,6 +126,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
       // Submit answers for first question
       requestPut({ answerIds: [incorrectAnsIds[0]] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId2}/question/${questionPosition}/answer`);
+      sleepSync(1000);
       requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId3}/question/${questionPosition}/answer`);
 
       // Move to the next question
@@ -137,13 +139,11 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
 
       // Submit next answers
       requestPut({ answerIds: [incorrectAnsIds[1]] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
-      requestPut({ answerIds: [incorrectAnsIds[1]] }, `/v1/player/${playerId2}/question/${questionPosition}/answer`);
       requestPut({ answerIds: [correctAnsIds[1]] }, `/v1/player/${playerId3}/question/${questionPosition}/answer`);
 
       // Set state to FINAL_RESULTS
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
       requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
-
       const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${newSessionId}/results/csv`, { token });
       // Expect URL to be a valid CSV URL usging regex
       expect(res.retval.url).toMatch(/^http:\/\/localhost:3200\/csv\/.+\.csv$/);
