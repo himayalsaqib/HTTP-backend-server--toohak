@@ -338,7 +338,7 @@ describe('POST /v1/admin/quiz/{quizid}/question', () => {
       });
     });
 
-    test.only('There are no correct answers', () => {
+    test('There are no correct answers', () => {
       const answerBody1 = { answer: 'valid', correct: false };
       const answerBody2 = { answer: 'another valid ans', correct: false };
       const answerBody3 = { answer: 'also valid ans', correct: false };
@@ -767,7 +767,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       });
     });
 
-    test.only('There are no correct answers', () => {
+    test('There are no correct answers', () => {
       const answerBody1 = { answer: 'valid', correct: false };
       const answerBody2 = { answer: 'another valid ans', correct: false };
       const answerBody3 = { answer: 'also valid ans', correct: false };
