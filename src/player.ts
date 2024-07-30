@@ -254,12 +254,28 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
 
   const questionResults = session.questionResults[questionPosition - 1];
 
-  // if player is completely correct adding their name to playersCorrectList
+  // Remove previous submission if player resubmits
+  const existingAnswerIndex = questionResults.playersAnsweredList.findIndex(
+    (answered) => answered.playerId === playerId
+  );
+
+  if (existingAnswerIndex !== -1) {
+    questionResults.playersAnsweredList.splice(existingAnswerIndex, 1);
+  }
+
+  const correctIndex = questionResults.playersCorrectList.indexOf(
+    findNameByPlayerId(playerId)
+  );
+  if (correctIndex !== -1) {
+    questionResults.playersCorrectList.splice(correctIndex, 1);
+  }
+
+  // if player is correct add their name to playersCorrectList
   if (isCorrect) {
     questionResults.playersCorrectList.push(findNameByPlayerId(playerId));
   }
 
-  // Calculate score based on player's position in playersCorrectList
+  // **Calculate score based on player's position in playersCorrectList**
   const userRank = questionResults.playersCorrectList.length;
   const score = isCorrect ? Math.round(question.points / userRank) : 0;
 
@@ -268,6 +284,7 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
     answerTime: timeTaken,
     score: score,
   };
+
   questionResults.playersAnsweredList.push(playerAnswered);
 
   setData(data);
