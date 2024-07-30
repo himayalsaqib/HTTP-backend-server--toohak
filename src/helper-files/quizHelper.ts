@@ -495,6 +495,7 @@ export function initialiseQuestionResults(questions: Question[]): QuestionResult
       playersAnsweredList: [],
       averageAnswerTime: 0,
       percentCorrect: 0,
+      userRankingForQuestion: []
     };
     questionResults.push(newQuestion);
   }
