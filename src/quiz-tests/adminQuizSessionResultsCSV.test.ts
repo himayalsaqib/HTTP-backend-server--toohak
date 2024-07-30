@@ -84,7 +84,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
       const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/results/csv`, { token });
       // Expect URL to be a valid CSV URL usging regex
       expect(res.retval.url).toMatch(/^http:\/\/localhost:3200\/csv\/.+\.csv$/);
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toStrictEqual(200);
     });
 
     test('Correctly returns a link with data for muliple question and multiple players', () => {
@@ -146,7 +146,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
       const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${newSessionId}/results/csv`, { token });
       // Expect URL to be a valid CSV URL usging regex
       expect(res.retval.url).toMatch(/^http:\/\/localhost:3200\/csv\/.+\.csv$/);
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toStrictEqual(200);
     });
   });
 
