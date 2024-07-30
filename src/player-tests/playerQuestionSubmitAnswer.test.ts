@@ -90,18 +90,21 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       expect(res.statusCode).toStrictEqual(200);
     });
 
-    test.skip('Side effect: player results correctly displays correct answered question', () => {
+    test('Side effect: player results correctly displays correct answered question', () => {
       const submitAns = { answerIds: [answerIds[0]] };
       const questionPosition = 1;
       const questionResponse = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(res.retval).toStrictEqual({});
       expect(res.statusCode).toStrictEqual(200);
-      // call question results to verify
-      const verifyRes = requestGet(submitAns, `/v1/player/${playerId}/question/${questionPosition}/results`);
+      
+      // Updating state to GO_TO_ANSWER
+      // Calling playerQuestionQResults to verify correct results displayed
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      const verifyRes = requestGet({}, `/v1/player/${playerId}/question/${questionPosition}/results`)
       expect(verifyRes.retval).toStrictEqual(
         {
-          questionId: questionResponse.retval.questions[questionPosition].questionId,
+          questionId: questionResponse.retval.questions[questionPosition - 1].questionId,
           playersCorrectList: [
             'Player One'
           ],
@@ -109,6 +112,63 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
           percentCorrect: 100
         });
     });
+
+    test('Side effect: session final resutls correctly calcualtes player\'s points', () => {
+      const submitAns = { answerIds: [answerIds[0]] };
+      let questionPosition = 1;
+      const questionResponse1 = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
+      requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
+
+      // Move to next question
+      questionPosition = 2;
+
+      // Update state to QUESTION_OPEN
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.NEXT_QUESTION }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      
+      // Submit incorrect answer
+      requestPut({ answerIds: [answerIds[0]] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
+      const questionResponse2 = requestGet({ token }, `/v1/admin/quiz/${quizId}`);
+
+      // Set state to FINAL_RESULTS
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+
+      const res = requestGet({}, `/v1/admin/quiz/${quizId}/session/${sessionId}/results`, { token });
+      console.log(res);
+      console.log(questionResponse1.retval.questions[questionPosition - 1].questionId);
+      console.log(questionResponse2.retval.questions[questionPosition - 1].questionId)
+      expect(res).toStrictEqual({
+        retval : {
+          usersRankedByScore: [
+
+            {
+              name: 'Player One',
+              score: 5,
+          }
+          ],
+          questionResults: [
+            {
+              questionId: questionResponse1.retval.questions[questionPosition - 1].questionId,
+              playersCorrectList: [
+                'Player One'
+              ],
+              averageAnswerTime: expect.any(Number),
+              percentCorrect: 67,
+            },
+            {
+              questionId: questionResponse2.retval.questions[questionPosition - 1].questionId,
+              playersCorrectList: [],
+              averageAnswerTime: expect.any(Number),
+              percentCorrect: 33,
+            }
+          ]
+
+        }
+      })
+
+    })
 
     test('Correct return type after re-submitting answer', () => {
       const submitAns = { answerIds: [answerIds[0]] };
