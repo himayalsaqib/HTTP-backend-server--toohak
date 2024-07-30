@@ -505,7 +505,7 @@ export function generatePlayerData(player: UsersRanking, questionResults: Questi
       playerData[`question${index + 1}rank`] = rank;
     } else {
       playerData[`question${index + 1}score`] = 0;
-      playerData[`question${index + 1}rank`] = 0;
+      playerData[`question${index + 1}rank`] = null;
     }
   });
 
