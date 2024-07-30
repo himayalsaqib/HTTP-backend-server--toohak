@@ -19,6 +19,8 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
   let playerId: number;
   let questionAction: { action: string };
   let answerIds: number[] = [];
+  let questionId1: number;
+  let questionId2: number;
 
   beforeEach(() => {
     // Registering a user
@@ -44,7 +46,8 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
         thumbnailUrl: 'http://example.com/image.png'
       }
     };
-    requestPost(createQuestionBody, `/v2/admin/quiz/${quizId}/question`, { token });
+    const questionResponse1 = requestPost(createQuestionBody, `/v2/admin/quiz/${quizId}/question`, { token });
+    questionId1 = questionResponse1.retval.questionId;
 
     // Creating another  quiz question
     const answerBody4 = { answer: 'Tokyo', correct: false };
@@ -59,11 +62,12 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
         thumbnailUrl: 'http://example.com/image2.png'
       }
     };
-    requestPost(createQuestionBody, `/v2/admin/quiz/${quizId}/question`, { token });
+    const questionResponse2 = requestPost(createQuestionBody, `/v2/admin/quiz/${quizId}/question`, { token });
+    questionId2 = questionResponse2.retval.questionId;
 
-    const questionResponse = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
+    const quizInfoResponse = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
     // answer object has type { answerId: number } in an array
-    answerIds = (questionResponse.retval.questions[0].answers as { answerId: number }[]).map(answer => answer.answerId);
+    answerIds = (quizInfoResponse.retval.questions[0].answers as { answerId: number }[]).map(answer => answer.answerId);
 
     // Starting a quiz session
     const startSessionResponse = requestPost({}, `/v1/admin/quiz/${quizId}/session/start`, { token });
@@ -94,7 +98,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
     test('Side effect: player results correctly displays correct answered question', () => {
       const submitAns = { answerIds: [answerIds[0]] };
       const questionPosition = 1;
-      const questionResponse = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
+      requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(res.retval).toStrictEqual({});
       expect(res.statusCode).toStrictEqual(200);
@@ -105,7 +109,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       const verifyRes = requestGet({}, `/v1/player/${playerId}/question/${questionPosition}/results`);
       expect(verifyRes.retval).toStrictEqual(
         {
-          questionId: questionResponse.retval.questions[questionPosition - 1].questionId,
+          questionId: questionId1,
           playersCorrectList: [
             'Player One'
           ],
@@ -114,11 +118,11 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
         });
     });
 
-    test('Side effect: session final resutls correctly calculates player\'s points', () => {
+    test('Side effect: session final results correctly calculates player\'s points', () => {
       sleepSync(2000);
       const submitAns = { answerIds: [answerIds[0]] };
       let questionPosition = 1;
-      const questionResponse = requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
+      requestGet({}, `/v2/admin/quiz/${quizId}`, { token });
       requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
 
       // Move to next question
@@ -147,7 +151,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
           ],
           questionResults: [
             {
-              questionId: questionResponse.retval.questions[questionPosition - 2].questionId,
+              questionId: questionId1,
               playersCorrectList: [
                 'Player One'
               ],
@@ -155,7 +159,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
               percentCorrect: 100,
             },
             {
-              questionId: questionResponse.retval.questions[questionPosition - 1].questionId,
+              questionId: questionId2,
               playersCorrectList: [],
               averageAnswerTime: 0,
               percentCorrect: 0,
@@ -166,17 +170,25 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
       });
     });
 
-    test('Correct return type after re-submitting answer', () => {
-      const submitAns = { answerIds: [answerIds[0]] };
+    test('Side effect: playerResults correctly shows playersCorrectList after resubmitting correct answer', () => {
+      const submitAns = { answerIds: [answerIds[1]] };
       const questionPosition = 1;
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(res.retval).toStrictEqual({});
       expect(res.statusCode).toStrictEqual(200);
 
-      const reSubmitAns = { answerIds: [answerIds[1]] };
+      // Resubmitting the correct answer
+      const reSubmitAns = { answerIds: [answerIds[0]] };
       const newRes = requestPut(reSubmitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(newRes.retval).toStrictEqual({});
       expect(newRes.statusCode).toStrictEqual(200);
+
+      requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+      // requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
+
+      const resubmitRes = requestGet({}, `/v1/player/${playerId}/question/${questionPosition}/results`);
+      console.log(resubmitRes.retval);
+      expect(resubmitRes.retval.playersCorrectList).toStrictEqual(['Player One']);
     });
 
     test('Correct return type after submiting multiple answers', () => {
