@@ -161,7 +161,6 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
               percentCorrect: 0,
             }
           ]
-
         },
         statusCode: 200,
       });
