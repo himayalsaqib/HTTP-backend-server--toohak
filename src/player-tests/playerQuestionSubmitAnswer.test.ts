@@ -114,7 +114,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
         });
     });
 
-    test('Side effect: session final resutls correctly calcualtes player\'s points', () => {
+    test('Side effect: session final resutls correctly calculates player\'s points', () => {
       sleepSync(2000);
       const submitAns = { answerIds: [answerIds[0]] };
       let questionPosition = 1;
