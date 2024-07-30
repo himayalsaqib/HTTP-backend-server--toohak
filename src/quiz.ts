@@ -1007,7 +1007,7 @@ export function adminQuizSessionFinalResults(sessionId: number): SessionFinalRes
   const UsersAndScoreArray = quizSession.usersRankedByScore.map(({ playerId: _, ...rest }) => rest);
 
   // removes playersAnsweredList from array of objects
-  const questionResultsArray = quizSession.questionResults.map(({ playersAnsweredList: _, ...rest }) => rest);
+  const questionResultsArray = quizSession.questionResults.map(({ playersAnsweredList, userRankingForQuestion: _, ...rest }) => rest);
 
   const sessionFinalResults = {
     usersRankedByScore: UsersAndScoreArray,
