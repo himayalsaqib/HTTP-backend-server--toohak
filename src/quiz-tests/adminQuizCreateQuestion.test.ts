@@ -1,4 +1,5 @@
 // includes http tests for the route /v1/admin/quiz/{quizid}/question
+// and /v2/admin/quiz/{quizid}/question
 
 import { requestDelete, requestGet, requestPost } from '../helper-files/requestHelper';
 import { QuizAnswerColours, QuizQuestionAnswers } from '../quiz';
@@ -341,7 +342,7 @@ describe('POST /v1/admin/quiz/{quizid}/question', () => {
       const answerBody1 = { answer: 'valid', correct: false };
       const answerBody2 = { answer: 'another valid ans', correct: false };
       const answerBody3 = { answer: 'also valid ans', correct: false };
-      questionBody = { question: 'bad', duration: 2, points: 9, answers: [answerBody1, answerBody2, answerBody3] };
+      questionBody = { question: 'valid question', duration: 2, points: 9, answers: [answerBody1, answerBody2, answerBody3] };
 
       expect(requestPost({ token: token, questionBody: questionBody }, `/v1/admin/quiz/${quizId}/question`)).toStrictEqual({
         retval: ERROR,
@@ -770,7 +771,7 @@ describe('POST /v2/amdin/quiz/{quizid}/question', () => {
       const answerBody1 = { answer: 'valid', correct: false };
       const answerBody2 = { answer: 'another valid ans', correct: false };
       const answerBody3 = { answer: 'also valid ans', correct: false };
-      questionBody = { question: 'bad', duration: 2, points: 9, answers: [answerBody1, answerBody2, answerBody3], thumbnailUrl: thumbnailUrlExample };
+      questionBody = { question: 'valid question', duration: 2, points: 9, answers: [answerBody1, answerBody2, answerBody3], thumbnailUrl: thumbnailUrlExample };
 
       expect(requestPost({ questionBody }, `/v2/admin/quiz/${quizId}/question`, { token })).toStrictEqual({
         retval: ERROR,
