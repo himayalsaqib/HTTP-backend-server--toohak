@@ -189,7 +189,7 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
   });
 
   describe('Testing error cases (status code 400', () => {
-    test('Returns errors for invalid player id', () => {
+    test('Returns error for invalid player id', () => {
       const submitAns = { answerIds: [answerIds[0]] };
       const questionPosition = 1;
       const invalidPlayerId = playerId + 1;
