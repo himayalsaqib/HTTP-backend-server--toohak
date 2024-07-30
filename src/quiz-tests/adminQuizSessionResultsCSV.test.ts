@@ -21,7 +21,6 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
   let correctAnsIds: number[];
   let incorrectAnsIds: number[];
   let questionPosition: number;
-  let questionPosistion: number;
 
   beforeEach(() => {
     // Registering a user
@@ -112,7 +111,7 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
       sessionStartBody = { autoStartNum: 4 };
       const sessionRes = requestPost(sessionStartBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
       const newSessionId = sessionRes.retval.sessionId;
-      questionPosistion = 1;
+      questionPosition = 1;
 
       // Multiple players join
       playerId = requestPost({ sessionId: newSessionId, name: 'Aelin' }, '/v1/player/join').retval.playerId;
@@ -124,12 +123,12 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
 
       // Submit answers for first question
-      requestPut({ answerIds: [incorrectAnsIds[0]] }, `/v1/player/${playerId}/question/${questionPosistion}/answer`);
-      requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId2}/question/${questionPosistion}/answer`);
-      requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId3}/question/${questionPosistion}/answer`);
+      requestPut({ answerIds: [incorrectAnsIds[0]] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
+      requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId2}/question/${questionPosition}/answer`);
+      requestPut({ answerIds: [correctAnsIds[0]] }, `/v1/player/${playerId3}/question/${questionPosition}/answer`);
 
       // Move to the next question
-      questionPosistion = 2;
+      questionPosition = 2;
 
       // Update state to QUESTION_OPEN
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
@@ -137,9 +136,9 @@ describe('GET /v1/admin/quiz/{quizid}/session/{sessionid}/results/csv', () => {
       requestPut({ action: QuizSessionAction.SKIP_COUNTDOWN }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
 
       // Submit next answers
-      requestPut({ answerIds: [incorrectAnsIds[1]] }, `/v1/player/${playerId}/question/${questionPosistion}/answer`);
-      requestPut({ answerIds: [incorrectAnsIds[1]] }, `/v1/player/${playerId2}/question/${questionPosistion}/answer`);
-      requestPut({ answerIds: [correctAnsIds[1]] }, `/v1/player/${playerId3}/question/${questionPosistion}/answer`);
+      requestPut({ answerIds: [incorrectAnsIds[1]] }, `/v1/player/${playerId}/question/${questionPosition}/answer`);
+      requestPut({ answerIds: [incorrectAnsIds[1]] }, `/v1/player/${playerId2}/question/${questionPosition}/answer`);
+      requestPut({ answerIds: [correctAnsIds[1]] }, `/v1/player/${playerId3}/question/${questionPosition}/answer`);
 
       // Set state to FINAL_RESULTS
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${newSessionId}`, { token });
