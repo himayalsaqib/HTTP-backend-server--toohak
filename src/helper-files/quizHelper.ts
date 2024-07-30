@@ -22,6 +22,7 @@ import {
   WAIT_THREE_SECONDS
 } from '../quiz';
 import { currentTime, getRandomInt } from './authHelper';
+import { findNameByPlayerId } from './playerHelper';
 
 /**
  * Function checks if a quiz name contains any invalid characters. Characters
@@ -495,6 +496,7 @@ export function initialiseQuestionResults(questions: Question[]): QuestionResult
       playersAnsweredList: [],
       averageAnswerTime: 0,
       percentCorrect: 0,
+      userRankingForQuestion: []
     };
     questionResults.push(newQuestion);
   }
@@ -509,13 +511,34 @@ export function initialiseQuestionResults(questions: Question[]): QuestionResult
  * @param {number} totalPlayers
  * @returns {void}
  */
-export function updateQuestionResults(questionResults: QuestionResults, totalPlayers: number): void {
+export function updateQuestionResults(quizSession: QuizSessions, questionResults: QuestionResults): void {
   // calculating average answer time (to the nearest second)
   const answerTimeSum = questionResults.playersAnsweredList.reduce((sum, player) => sum + player.answerTime, 0);
   questionResults.averageAnswerTime = Math.round(answerTimeSum / questionResults.playersAnsweredList.length);
 
   // calculating percent correct (to the nearest whole number)
+  const totalPlayers = quizSession.players.length;
   questionResults.percentCorrect = Math.round((questionResults.playersCorrectList.length / totalPlayers) * 100);
+
+  // creating userRankingForQuestionArray
+  for (const player of quizSession.players) {
+    // checking if player in the session has answered to see their score
+    const playerResults = questionResults.playersAnsweredList.find(p => p.playerId === player.playerId);
+    let playerScore;
+    if (playerResults === undefined) {
+      playerScore = 0;
+    } else {
+      playerScore = playerResults.score;
+    }
+
+    questionResults.userRankingForQuestion.push({
+      playerId: player.playerId,
+      name: findNameByPlayerId(player.playerId),
+      score: playerScore
+    });
+  }
+  // sorting the rankings in descending order by score.
+  questionResults.userRankingForQuestion.sort((a, b) => b.score - a.score);
 }
 
 /**
@@ -554,7 +577,7 @@ export function endOfQuestionUpdates(quizSession: QuizSessions): void {
     const currentQuestionResults = quizSession.questionResults[quizSession.atQuestion - 1];
 
     // updating questionResults and usersRankedByScore at the end of a question
-    updateQuestionResults(currentQuestionResults, quizSession.players.length);
+    updateQuestionResults(quizSession, currentQuestionResults);
     updateUsersRanking(quizSession.usersRankedByScore, currentQuestionResults.playersAnsweredList);
 
     quizSession.resultsUpdated = true;
