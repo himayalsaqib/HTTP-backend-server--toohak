@@ -2257,7 +2257,7 @@ paths:
       summary: Delete a player from a quiz session
       description: Remove a player from a quiz session.
       tags:
-        - # - "By Topic: Player Management"
+        - # - "By Topic: Quiz Management"
         - "Interface Design HTTP Endpoints"
       parameters:
         - $ref: '#/components/path/QuizId'
