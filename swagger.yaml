@@ -952,6 +952,21 @@ components:
           items:
             $ref: '#/components/group/Message'
 
+    PlayerScore:
+      type: array
+      items:
+        type: object
+          properties:
+            score:
+              type: number
+              example: 12
+              description: The score after the question has closed
+            name:
+              type: string
+              example: Jane
+              description: The name of the player that has that score
+      description: A list of all players ranked by score after a question has closed
+
 paths:
 
 
@@ -2292,6 +2307,9 @@ paths:
             $ref: '#/components/return/Error'
       security:
         - Iteration 3 Token Authentication: []
+
+
+
   /v1/player/{playerid}/question/{questionposition}/score:
     get:
       summary: List the scores of all players
@@ -2302,8 +2320,21 @@ paths:
       parameters:
       - $ref: '#/components/path/PlayerId'
       - $ref: '#/components/path/QuestionPosition'
-      - $ref: '#/components/header/Token'
-
+    - responses:
+      200: 
+      description: OK
+      schema:
+        $ref: '#/components/return/PlayerScore'
+      400:
+      description: | 
+        If any of the following are true:
+        - session is not in SCORE_SHOW state
+        - questionPosition is not valid for the session
+        - playerId does not exist
+        - if session is not currently on this question
+      schema:
+        $ref: '#/components/return/Error'
+      
 
 
 
