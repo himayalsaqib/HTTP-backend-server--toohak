@@ -302,6 +302,9 @@ components:
         properties:
           quizId:
             $ref: '#/components/prim/QuizId'
+          owner:
+            type: string
+            example: Hayden Smith
           name:
             type: string
             example: My Quiz Name
@@ -434,7 +437,7 @@ components:
       required: true 
       schema:
         type: string
-        $ref: '#/components/prim/Subject'
+        example: '#/components/prim/Subject'
     QuizBrowseKeywords:
       in: query
       name: keywords
