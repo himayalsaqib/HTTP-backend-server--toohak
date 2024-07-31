@@ -2264,11 +2264,12 @@ paths:
         - $ref: '#/components/path/SessionId'
         - $ref: '#/components/header/Token'
         - in: query
-          name: Hayden
+          name: playerName
           description: Name of the player to be removed from the session
           required: true
           schema:
             type: string
+            example: "Hayden"
       responses:
         200:
           description: OK
