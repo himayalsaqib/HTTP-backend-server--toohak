@@ -44,7 +44,7 @@ describe('POST /v1/admin/auth/login', () => {
     test('Side effect: correctly updates user details after a failed login', () => {
       bodyLogin.password = 'Password34';
       requestPost(bodyLogin, '/v1/admin/auth/login');
-      expect(requestGet({ token }, '/v1/admin/user/details')).toStrictEqual({
+      expect(requestGet({}, '/v2/admin/user/details', { token })).toStrictEqual({
         retval: {
           user: {
             userId: expect.any(Number),
@@ -67,7 +67,7 @@ describe('POST /v1/admin/auth/login', () => {
       const loginResponse = requestPost(bodyLogin, '/v1/admin/auth/login');
       token = loginResponse.retval.token;
 
-      expect(requestGet({ token }, '/v1/admin/user/details')).toStrictEqual({
+      expect(requestGet({}, '/v2/admin/user/details', { token })).toStrictEqual({
         retval: {
           user: {
             userId: expect.any(Number),

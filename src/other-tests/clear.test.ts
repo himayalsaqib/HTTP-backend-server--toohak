@@ -33,7 +33,7 @@ describe('DELETE /v1/clear', () => {
       });
 
       // get the details of the user
-      expect(requestGet({ token }, '/v1/admin/user/details')).toStrictEqual({
+      expect(requestGet({}, '/v2/admin/user/details', { token })).toStrictEqual({
         retval: {
           user: {
             userId: expect.any(Number),
@@ -50,7 +50,7 @@ describe('DELETE /v1/clear', () => {
       requestDelete({}, '/v1/clear');
 
       // call the route to give the details of the cleared user, return error
-      expect(requestGet({ token }, '/v1/admin/user/details')).toStrictEqual({
+      expect(requestGet({}, '/v2/admin/user/details', { token })).toStrictEqual({
         retval: error,
         statusCode: 401
       });
