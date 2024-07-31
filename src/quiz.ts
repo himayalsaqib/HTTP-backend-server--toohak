@@ -2,6 +2,8 @@
 
 import { setData, getData, EmptyObject, Question, Answer, Quizzes } from './dataStore';
 import { adminEmailInUse, currentTime, findUserByEmail, getRandomInt } from './helper-files/authHelper';
+import { stringify } from 'csv-stringify/sync';
+import fs from 'fs';
 import {
   beginQuestionCountdown,
   calculateSumQuestionDuration,
@@ -24,8 +26,10 @@ import {
   quizIsInTrash,
   quizNameHasValidChars,
   quizNameInUse,
-  swapQuestions
+  swapQuestions,
+  generatePlayerData
 } from './helper-files/quizHelper';
+import path from 'path';
 
 // ============================= GLOBAL VARIABLES =========================== //
 const MIN_QUIZ_NAME_LEN = 3;
@@ -119,6 +123,14 @@ interface SessionFinalResults {
   questionResults: QuestionResults[];
 }
 
+export interface PlayerResultsData {
+  name: string;
+  [playerInfo: string]: number | string;
+}
+
+interface QuizSessionResultsCSV {
+  url: string;
+}
 // ================================= ENUMS ================================== //
 
 export enum QuizAnswerColours {
@@ -857,6 +869,74 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
 
   setData(data);
   return {};
+}
+
+/**
+ * Get a link to final results in CSV format for completed quiz session
+ *
+ * @param {number} quizId
+ * @param {number} sessionId
+ * @returns {QuizSessionResultsCSV}
+ */
+export function adminQuizSessionResultsCSV(quizId: number, sessionId: number): QuizSessionResultsCSV {
+  const quizSession = findQuizSessionById(sessionId);
+  if (!quizSession) {
+    throw new Error('The session Id does not refer to a valid session within this quiz.');
+  }
+  if (quizSession.state !== QuizSessionState.FINAL_RESULTS) {
+    throw new Error('The session is not in FINAL_RESULTS state.');
+  }
+
+  // Preparing CSV headers
+  const numQuestions = quizSession.questionResults.length;
+  const header = ['Player'];
+
+  for (let i = 1; i <= numQuestions; i++) {
+    header.push(`question${i}score`, `question${i}rank`);
+  }
+
+  const playersData = quizSession.usersRankedByScore.map((playerRank) =>
+    generatePlayerData(playerRank, quizSession.questionResults, quizSession)
+  );
+
+  // Sorting players by name
+  playersData.sort((a, b) => a.name.localeCompare(b.name));
+
+  // Turning player data into an array for csv-stringify
+  const data = playersData.map((player) => {
+    const playerInfo: (number | string)[] = [player.name];
+    for (let i = 1; i <= numQuestions; i++) {
+      playerInfo.push(
+        player[`question${i}score`] || 0,
+        player[`question${i}rank`] || 0
+      );
+    }
+
+    return playerInfo;
+  });
+
+  // Creating CSV content using csv-stringify
+  const csvOptions = { header: true, columns: header };
+  const csvContent = stringify(data, csvOptions);
+  const csvDirectory = path.join(__dirname, 'csv');
+
+  // Checking if directory exists, if not create one
+  if (!fs.existsSync(csvDirectory)) {
+    fs.mkdirSync(csvDirectory, { recursive: true });
+  }
+
+  // Creating CSV file path
+  const csvFilename = `quiz_${quizId}_session_${sessionId}_results.csv`;
+  const csvFilePath = path.join(csvDirectory, csvFilename);
+
+  // Writing CSV contents to the file
+  fs.writeFileSync(csvFilePath, csvContent, 'utf8');
+
+  // Creating the url for the CSV file
+  const baseUrl = process.env.BASE_URL || 'http://localhost:3200';
+  const csvUrl = `${baseUrl}/csv/${csvFilename}`;
+
+  return { url: csvUrl };
 }
 
 /**
