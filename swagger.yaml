@@ -18,6 +18,8 @@ tags:
     description: Iteration 3 routes are a modification of iteration 1 and iteration 2 routes
   - name: "Iteration 3 (New)"
     description: Iteration 3 routes that are a mix of new routes as well as slightly modified routes from iteration 1 and 2
+  - name: "Interface Design HTTP Endpoints"
+    description: "HTTP endpoints for future capabilties of our proposed solutions to problems described as requirements"
 
 components:
   prim:
@@ -2135,6 +2137,39 @@ paths:
             $ref: '#/components/return/Error'
       security:
         - Iteration 3 Token Authentication: []
+  /v1/admin/quiz/{quizid}/public:
+    put:
+      summary: Update permissions for the quiz
+      description: Update the quiz permissions so it is public. All quizzes set to private as default.
+      tags:
+        # - "By Topic: Quiz Management"
+        - "Iteration 3 (New)"
+      parameters:
+        - $ref: '#/components/path/QuizId'
+        - $ref: '#/components/path/SessionId'
+        - $ref: '#/components/header/Token'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/components/return/QuizSessionResultsCsv'
+        401:
+          description: Token is empty or invalid (does not refer to valid logged in user session)
+          schema:
+            $ref: '#/components/return/Error'
+        403:
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
+          schema:
+            $ref: '#/components/return/Error'
+        400:
+          description: |
+            If any of the following are true:
+            - Session Id does not refer to a valid session within this quiz
+            - Session is not in FINAL_RESULTS state
+          schema:
+            $ref: '#/components/return/Error'
+      security:
+        - Iteration 3 Token Authentication: []
         
 
 
@@ -2339,7 +2374,6 @@ paths:
             $ref: '#/components/return/Error'
       security:
         - Iteration 3 Token Authentication: []
-
 
 
 
