@@ -295,6 +295,24 @@ components:
         thumbnailUrl:
           $ref: '#/components/prim/Url'
 
+    QuizzesBrowsed:
+      type: array
+      items:
+        type: object
+        properties:
+          quizId:
+            $ref: '#/components/prim/QuizId'
+          name:
+            type: string
+            example: My Quiz Name
+          description: 
+            type: string
+            example: This quiz is so we can have a lot of fun
+          numQuestions:
+            $ref: '#/components/prim/NumQuestions'
+          duration:
+            $ref: '#/components/prim/QuizQuestionDuration'
+
     MessagePayload:
       type: object
       properties:
@@ -410,6 +428,13 @@ components:
       schema:
         type: string
         example: "[3,4,5,6,7]"
+    QuizSubject:
+      in: body
+      name: body
+      required: true 
+      schema:
+        type: string
+        $ref: '#/components/prim/Subject'
   body:
     Token:
       in: body
@@ -673,15 +698,6 @@ components:
         properties:
           userEmail:
             $ref: '#/components/prim/Email'
-    QuizSubject:
-      in: body
-      name: body
-      required: true 
-      schema:
-        type: object
-        properties:
-          subject:
-            $ref: '#/components/prim/Subject'
     QuizQuestionMutateIter2:
       in: body
       name: body
@@ -735,6 +751,15 @@ components:
             type: integer
             example: 1
             description: Position 0 is the very beginning, position 1 is between the 1st and 2nd question, etc. So position n-1 is the final position where n is the number of questions
+    QuizSubject:
+      in: body
+      name: body
+      required: true 
+      schema:
+        type: object
+        properties:
+          subject:
+            $ref: '#/components/prim/Subject'
     QuizSessionStartIter3:
       in: body
       name: body
@@ -845,6 +870,11 @@ components:
       properties:
         newQuestionId:
           $ref: '#/components/prim/QuestionId'
+    QuizBrowse:
+      type: object
+      properties:
+        quizzes: 
+          $ref: '#/components/group/QuizzesBrowsed' 
     QuizSessionStart:
       type: object
       properties:
@@ -1776,67 +1806,6 @@ paths:
             $ref: '#/components/return/Error'
       security:
         - Iteration 3 Token Authentication: []
-  /v1/admin/quiz/{quizid}/public:
-    put:
-      summary: Update the quiz permissions
-      description: 
-        Update the quiz permissions so it is public. All quizzes set to private as default.
-        When this route is called, the timeLastEdited is updated.
-      tags:
-        # - "By Topic: Quiz Management"
-        - "Interface Design HTTP Endpoints"
-      parameters:
-        - $ref: '#/components/path/QuizId'
-        - $ref: '#/components/header/Token'
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/components/return/Empty'
-        401:
-          description: Token is empty or invalid (does not refer to valid logged in user session)
-          schema:
-            $ref: '#/components/return/Error'
-        403:
-          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
-          schema:
-            $ref: '#/components/return/Error'
-      security:
-        - Iteration 3 Token Authentication: []
-  /v1/admin/quiz/{quizid}/subject:
-    put:
-      summary: Update the quiz subject
-      description: 
-        Update the subject of the quiz by passing in one of the subject options.
-        When this route is called, the timeLastEdited is updated.
-      tags:
-        # - "By Topic: Quiz Management"
-        - "Interface Design HTTP Endpoints"
-      parameters:
-        - $ref: '#/components/path/QuizId'
-        - $ref: '#/components/header/Token'
-        - $ref: '#/components/body/QuizSubject'
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/components/return/Empty'
-        401:
-          description: Token is empty or invalid (does not refer to valid logged in user session)
-          schema:
-            $ref: '#/components/return/Error'
-        403:
-          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
-          schema:
-            $ref: '#/components/return/Error'
-        400:
-          description: |
-            If any of the following are true:
-            - Subject provided is not a valid Subject enum
-          schema:
-            $ref: '#/components/return/Error'
-      security:
-        - Iteration 3 Token Authentication: []
   
   /v1/admin/quiz/{quizid}/question:
     post:
@@ -2210,7 +2179,109 @@ paths:
             $ref: '#/components/return/Error'
       security:
         - Iteration 3 Token Authentication: []
-  
+
+  /v1/admin/quiz/{quizid}/public:
+    put:
+      summary: Update the quiz permissions
+      description: 
+        Update the quiz permissions so it is public. All quizzes set to private as default.
+        When this route is called, the timeLastEdited is updated.
+      tags:
+        # - "By Topic: Quiz Management"
+        - "Interface Design HTTP Endpoints"
+      parameters:
+        - $ref: '#/components/path/QuizId'
+        - $ref: '#/components/header/Token'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/components/return/Empty'
+        401:
+          description: Token is empty or invalid (does not refer to valid logged in user session)
+          schema:
+            $ref: '#/components/return/Error'
+        403:
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
+          schema:
+            $ref: '#/components/return/Error'
+      security:
+        - Iteration 3 Token Authentication: []
+  /v1/admin/quiz/{quizid}/subject:
+    put:
+      summary: Update the quiz subject
+      description: 
+        Update the subject of the quiz by passing in one of the subject options.
+        When this route is called, the timeLastEdited is updated.
+      tags:
+        # - "By Topic: Quiz Management"
+        - "Interface Design HTTP Endpoints"
+      parameters:
+        - $ref: '#/components/path/QuizId'
+        - $ref: '#/components/header/Token'
+        - $ref: '#/components/body/QuizSubject'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/components/return/Empty'
+        401:
+          description: Token is empty or invalid (does not refer to valid logged in user session)
+          schema:
+            $ref: '#/components/return/Error'
+        403:
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
+          schema:
+            $ref: '#/components/return/Error'
+        400:
+          description: |
+            If any of the following are true:
+            - Subject provided is not a valid Subject enum
+          schema:
+            $ref: '#/components/return/Error'
+      security:
+        - Iteration 3 Token Authentication: []
+
+
+
+
+
+
+
+
+
+
+
+  /v1/admin/quiz/browse/subject:
+    get:
+      summary: Get quizzes on a specific subject
+      description: Get all of the public quizzes on the provided subject
+      tags:
+        # - "By Topic: Quiz Browsing"
+        - "Interface Design HTTP Endpoints"
+      parameters:
+        - $ref: '#/components/header/Token'
+        - $ref: '#/components/query/QuizSubject'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/components/return/QuizBrowse'
+        401:
+          description: Token is empty or invalid (does not refer to valid logged in user session)
+          schema:
+            $ref: '#/components/return/Error'
+        400:
+          description: |
+            If any of the following are true:
+            - Subject provided is not a valid Subject enum
+          schema:
+            $ref: '#/components/return/Error'
+      security:
+        - Iteration 3 Token Authentication: []
+
+
+
 
 
 
