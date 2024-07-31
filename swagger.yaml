@@ -2143,29 +2143,21 @@ paths:
       description: Update the quiz permissions so it is public. All quizzes set to private as default.
       tags:
         # - "By Topic: Quiz Management"
-        - "Iteration 3 (New)"
+        - "Interface Design HTTP Endpoints"
       parameters:
         - $ref: '#/components/path/QuizId'
-        - $ref: '#/components/path/SessionId'
         - $ref: '#/components/header/Token'
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/components/return/QuizSessionResultsCsv'
+            $ref: '#/components/return/Empty'
         401:
           description: Token is empty or invalid (does not refer to valid logged in user session)
           schema:
             $ref: '#/components/return/Error'
         403:
           description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
-          schema:
-            $ref: '#/components/return/Error'
-        400:
-          description: |
-            If any of the following are true:
-            - Session Id does not refer to a valid session within this quiz
-            - Session is not in FINAL_RESULTS state
           schema:
             $ref: '#/components/return/Error'
       security:
