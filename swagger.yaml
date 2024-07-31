@@ -2294,8 +2294,17 @@ paths:
         - Iteration 3 Token Authentication: []
   /v1/player/{playerid}/question/{questionposition}/score:
     get:
-      summary: See the scores of all players
-      
+      summary: List the scores of all players
+      description: List the scores for all players after a question
+      tags:
+      # - "By Topic: Session Management"
+      - "Interface Design HTTP Endpoints"
+      parameters:
+      - $ref: '#/components/path/PlayerId'
+      - $ref: '#/components/path/QuestionPosition'
+      - $ref: '#/components/header/Token'
+
+
 
 
 
