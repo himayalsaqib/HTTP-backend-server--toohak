@@ -964,9 +964,9 @@ components:
             type: number
             example: 12
             description: Score of a player
-        required:
-          - name
-          - score
+        # required:
+        #   - name
+        #   - score
 paths:
 
 
@@ -2376,7 +2376,7 @@ paths:
   /v1/player/{playerid}/question/{questionposition}/score:
     get:
     summary: Lists the scores of all players
-    description: List the scores for all players in a session after a question has closed
+    description: List the scores for all players in a session after a question has closed. QuestionPosition starts at 1.
     tags:
       # - "By Topic: Playing a Session"
       - "Interface Design HTTP Endpoints"
