@@ -967,8 +967,6 @@ components:
     
 paths:
 
-
-
   /v1/admin/auth/register:
     post:
       summary: Register a new admin user
@@ -2394,7 +2392,7 @@ paths:
             - playerId does not exist
             - if session is not currently on this question
           schema:
-            $ref: '#/compoments/return/Error'
+            $ref: '#/components/return/Error'
       security:
           - Iteration 3 Token Authentication: []
 
