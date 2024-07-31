@@ -964,9 +964,9 @@ components:
             type: number
             example: 12
             description: Score of a player
-        # required:
-        #   - name
-        #   - score
+        required:
+          - name
+          - score
 paths:
 
 
