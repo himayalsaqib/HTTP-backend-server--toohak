@@ -963,7 +963,7 @@ components:
               description: The score after the question has closed
             name:
               type: string
-              example: Jane
+              example: "Jane"
               description: The name of the player that has that score
       description: A list of all players ranked by score after a question has closed
 
