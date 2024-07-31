@@ -2393,7 +2393,7 @@ paths:
           - session is not in SCORE_SHOW state
           - sessionId does not exist
         schema:
-          $ref: '#/compoments/return/Error'
+          $ref: '#/components/return/Error'
     security:
         - Iteration 3 Token Authentication: []
 
