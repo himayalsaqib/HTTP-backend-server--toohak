@@ -951,7 +951,22 @@ components:
           type: array
           items:
             $ref: '#/components/group/Message'
-
+    PlayerScores:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            example: Jane
+            description: Name of a player
+          score:
+            type: number
+            example: 12
+            description: Score of a player
+        required:
+          - name
+          - score
 paths:
 
 
@@ -2358,6 +2373,20 @@ paths:
       security:
         - Iteration 3 Token Authentication: []
 
+  /v1/player/{playerid}/question/{questionposition}/score:
+    get:
+    summary: Lists the scores of all players
+    description: List the scores for all players in a session after a question has closed
+    tags:
+      # - "By Topic: Playing a Session"
+      - "Interface Design HTTP Endpoints"
+    parameters:
+      - $ref: '#/components/path/PlayerId'
+      - $ref: '#/compnents/path/QuestionPosition'
+    responses:
+      200:
+        description: OK
+        schema: 
 
 
 
