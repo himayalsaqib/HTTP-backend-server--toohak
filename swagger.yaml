@@ -429,12 +429,19 @@ components:
         type: string
         example: "[3,4,5,6,7]"
     QuizSubject:
-      in: body
-      name: body
+      in: query
+      name: subject
       required: true 
       schema:
         type: string
         $ref: '#/components/prim/Subject'
+    QuizBrowseKeywords:
+      in: query
+      name: keywords
+      required: true 
+      schema: 
+        type: string
+        example: My Quiz Name
   body:
     Token:
       in: body
@@ -1197,7 +1204,7 @@ paths:
             $ref: '#/components/return/Error'
       security:
         - Iteration 3 Token Authentication: []
-        
+
 
 
 
@@ -2251,7 +2258,6 @@ paths:
 
 
 
-
   /v1/admin/quiz/browse/subject:
     get:
       summary: Get quizzes on a specific subject
@@ -2280,6 +2286,34 @@ paths:
       security:
         - Iteration 3 Token Authentication: []
 
+  /v1/admin/quiz/browse:
+    get:
+      summary: Get quizzes based on a word or phrase
+      description: Get all of the public quizzes containing given word or phrase in the quiz name
+      tags:
+        # - "By Topic: Quiz Browsing"
+        - "Interface Design HTTP Endpoints"
+      parameters:
+        - $ref: '#/components/header/Token'
+        - $ref: '#/components/query/QuizBrowseKeywords'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/components/return/QuizBrowse'
+        401:
+          description: Token is empty or invalid (does not refer to valid logged in user session)
+          schema:
+            $ref: '#/components/return/Error'
+        400:
+          description: |
+            If any of the following are true:
+            - keywords is less than 3 characters or more than 30 characters long
+            - keywords contains invalid characters. Valid characters are alphanumeric and spaces
+          schema:
+            $ref: '#/components/return/Error'
+      security:
+        - Iteration 3 Token Authentication: []
 
 
 
