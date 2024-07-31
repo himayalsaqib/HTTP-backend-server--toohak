@@ -2369,32 +2369,8 @@ paths:
       security:
         - Iteration 3 Token Authentication: []
 
-  /v1/player/{playerid}/question/{questionposition}/score:
-    get:
-      summary: Lists the scores of all players
-      description: List the scores for all players in a session after a question has closed. QuestionPosition starts at 1.
-      tags:
-        # - "By Topic: Playing a Session"
-        - "Interface Design HTTP Endpoints"
-      parameters:
-        - $ref: '#/components/path/PlayerId'
-        - $ref: '#/components/path/QuestionPosition'
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: '#/components/return/PlayerScores'
-        400: 
-          description: |
-            If any of the following are true:
-            - session is not in SCORE_SHOW state
-            - questionPosition is not valid for the session
-            - playerId does not exist
-            - if session is not currently on this question
-          schema:
-            $ref: '#/components/return/Error'
-      security:
-          - Iteration 3 Token Authentication: []
+
+  
 
 
 
@@ -2609,14 +2585,6 @@ paths:
 
 
 
-
-
-
-
-
-
-
-
   /v1/player/join:
     post:
       summary: Allow a guest player to join a session
@@ -2800,7 +2768,36 @@ paths:
             - If message body is less than 1 character or more than 100 characters
           schema:
             $ref: '#/components/return/Error'
-      
+  
+  /v1/player/{playerid}/question/{questionposition}/score:
+    get:
+      summary: Lists the scores of all players
+      description: List the scores for all players in a session after a question has closed. QuestionPosition starts at 1.
+      tags:
+        # - "By Topic: Playing a Session"
+        - "Interface Design HTTP Endpoints"
+      parameters:
+        - $ref: '#/components/path/PlayerId'
+        - $ref: '#/components/path/QuestionPosition'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/components/return/PlayerScores'
+        400: 
+          description: |
+            If any of the following are true:
+            - session is not in SCORE_SHOW state
+            - questionPosition is not valid for the session
+            - playerId does not exist
+            - if session is not currently on this question
+          schema:
+            $ref: '#/components/return/Error'
+      security:
+          - Iteration 3 Token Authentication: []
+
+
+
 
 
   /v1/clear:
