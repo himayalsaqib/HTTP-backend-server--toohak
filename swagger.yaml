@@ -2292,7 +2292,10 @@ paths:
             $ref: '#/components/return/Error'
       security:
         - Iteration 3 Token Authentication: []
-
+  /v1/player/{playerid}/question/{questionposition}/score:
+    get:
+      summary: See the scores of all players
+      
 
 
 
