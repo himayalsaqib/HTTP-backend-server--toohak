@@ -2397,6 +2397,8 @@ paths:
           - if session is not currently on this question
         schema:
           $ref: '#/compoments/return/Error'
+    security:
+        - Iteration 3 Token Authentication: []
 
 
 
