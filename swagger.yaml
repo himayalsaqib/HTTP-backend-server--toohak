@@ -2295,34 +2295,6 @@ paths:
 
 
 
-  /v1/player/{playerid}/question/{questionposition}/score:
-    get:
-      summary: List the scores of all players
-      description: List the scores for all players after a question
-      tags:
-      # - "By Topic: Playing A Session"
-      - "Interface Design HTTP Endpoints"
-      parameters:
-      - $ref: '#/components/path/PlayerId'
-      - $ref: '#/components/path/QuestionPosition'
-    - responses:
-      200: 
-      description: OK
-      schema:
-        $ref: '#/components/return/Empty'
-      400:
-      description: | 
-        If any of the following are true:
-        - session is not in SCORE_SHOW state
-        - questionPosition is not valid for the session
-        - playerId does not exist
-        - if session is not currently on this question
-      schema:
-        $ref: '#/components/return/Error'
-      
-
-
-
 
 
 
