@@ -2382,7 +2382,7 @@ paths:
       - "Interface Design HTTP Endpoints"
     parameters:
       - $ref: '#/components/path/PlayerId'
-      - $ref: '#/compnents/path/QuestionPosition'
+      - $ref: '#/components/path/QuestionPosition'
     responses:
       200:
         description: OK
@@ -2397,7 +2397,6 @@ paths:
           - if session is not currently on this question
         schema:
           $ref: '#/compoments/return/Error'
-
 
 
 
