@@ -32,7 +32,7 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Side effect: adminUserDetails successfully returns registered user\'s details', () => {
-      expect(requestGet({ token }, '/v1/admin/user/details')).toStrictEqual({
+      expect(requestGet({}, '/v2/admin/user/details', { token })).toStrictEqual({
         retval: {
           user: {
             userId: expect.any(Number),
