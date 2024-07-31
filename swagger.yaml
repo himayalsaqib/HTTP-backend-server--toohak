@@ -952,21 +952,6 @@ components:
           items:
             $ref: '#/components/group/Message'
 
-    PlayerScore:
-      type: array
-      items:
-        type: object
-          properties:
-            score:
-              type: number
-              example: 12
-              description: The score after the question has closed
-            name:
-              type: string
-              example: "Jane"
-              description: The name of the player that has that score
-      description: A list of all players ranked by score after a question has closed
-
 paths:
 
 
@@ -2315,7 +2300,7 @@ paths:
       summary: List the scores of all players
       description: List the scores for all players after a question
       tags:
-      # - "By Topic: Session Management"
+      # - "By Topic: Playing A Session"
       - "Interface Design HTTP Endpoints"
       parameters:
       - $ref: '#/components/path/PlayerId'
@@ -2324,7 +2309,7 @@ paths:
       200: 
       description: OK
       schema:
-        $ref: '#/components/return/PlayerScore'
+        $ref: '#/components/return/Empty'
       400:
       description: | 
         If any of the following are true:
