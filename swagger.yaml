@@ -2252,7 +2252,45 @@ paths:
             $ref: '#/components/return/Error'
       security:
         - Iteration 3 Token Authentication: []
-
+  /v1/admin/quiz/{quizid}/session/{sessionid}/players:
+    delete:
+    summary: Delete a player from a quiz session
+    description: Remove a player from a quiz session.
+    tags:
+      - "Player Management"
+      - "Interface Design HTTP Endpoints"
+    parameters:
+      - $ref: '#/components/path/QuizId'
+      - $ref: '#/components/path/SessionId'
+      - $ref: '#/components/header/Token'
+      - in: query
+        name: playerName
+        description: Name of the player to be removed from the session
+        required: true
+        schema:
+          type: string
+    responses:
+      200:
+        description: OK
+        schema:
+          $ref: '#/components/return/Empty'
+      401:
+        description: Token is empty or invalid (does not refer to a valid logged in user session)
+        schema:
+          $ref: '#/components/return/Error'
+      403:
+        description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
+        schema:
+          $ref: '#/components/return/Error'
+      400:
+        description: |
+          If any of the following are true:
+          - The specified player does not exist in the session
+          - The session is not in the correct state to remove players (e.g., not in LOBBY state)
+        schema:
+          $ref: '#/components/return/Error'
+    security:
+      - Iteration 3 Token Authentication: []
 
 
 
