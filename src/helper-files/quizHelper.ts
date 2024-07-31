@@ -19,7 +19,8 @@ import {
   QuizSessionAction,
   QuizSessionState,
   sessionIdToTimerArray,
-  WAIT_THREE_SECONDS
+  WAIT_THREE_SECONDS,
+  PlayerResultsData
 } from '../quiz';
 import { currentTime, getRandomInt } from './authHelper';
 import { findNameByPlayerId } from './playerHelper';
@@ -478,6 +479,37 @@ export function changeQuestionOpenToQuestionClose(quizSession: QuizSessions, ses
   quizSession.questionOpenTime = currentTime();
 
   sessionIdToTimerArray.push({ sessionId: sessionId, timeoutId: timeoutId });
+}
+
+/**
+ * Generates data for a player including scores and ranks for csv results file
+ *
+ * @param {UsersRanking} player
+ * @param {QuestionResults[]} questionResults
+ * @param {QuizSessions} quizSession
+ * @returns {Object}
+ */
+export function generatePlayerData(player: UsersRanking, questionResults: QuestionResults[], quizSession: QuizSessions): PlayerResultsData {
+  const playerData: PlayerResultsData = { name: player.name };
+  questionResults.forEach((_result, index) => {
+    const playerResultIndex = _result.userRankingForQuestion.findIndex((pr) => pr.playerId === player.playerId);
+
+    if (playerResultIndex !== -1) {
+      const playerResult = _result.userRankingForQuestion[playerResultIndex];
+
+      // Assigning the score
+      playerData[`question${index + 1}score`] = playerResult.score;
+
+      // Finding the rank
+      const rank = playerResultIndex + 1;
+      playerData[`question${index + 1}rank`] = rank;
+    } else {
+      playerData[`question${index + 1}score`] = 0;
+      playerData[`question${index + 1}rank`] = null;
+    }
+  });
+
+  return playerData;
 }
 
 /**
