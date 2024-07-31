@@ -2386,7 +2386,17 @@ paths:
     responses:
       200:
         description: OK
-        schema: 
+        schema:
+          $ref: '#/components/return/PlayerScores'
+      400: 
+        description: |
+          If any of the following are true:
+          - session is not in SCORE_SHOW state
+          - questionPosition is not valid for the session
+          - playerId does not exist
+          - if session is not currently on this question
+        schema:
+          $ref: '#/compoments/return/Error'
 
 
 
