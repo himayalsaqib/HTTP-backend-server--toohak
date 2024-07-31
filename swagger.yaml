@@ -435,9 +435,10 @@ components:
       in: query
       name: subject
       required: true 
+      description: A valid subject from subject enum
       schema:
         type: string
-        example: '#/components/prim/Subject'
+        example: "SCIENCE"
     QuizBrowseKeywords:
       in: query
       name: keywords
