@@ -30,6 +30,7 @@ import {
   generatePlayerData
 } from './helper-files/quizHelper';
 import path from 'path';
+import config from './config.json';
 
 // ============================= GLOBAL VARIABLES =========================== //
 const MIN_QUIZ_NAME_LEN = 3;
@@ -933,8 +934,9 @@ export function adminQuizSessionResultsCSV(quizId: number, sessionId: number): Q
   fs.writeFileSync(csvFilePath, csvContent, 'utf8');
 
   // Creating the url for the CSV file
-  const baseUrl = process.env.BASE_URL || 'http://localhost:3200';
-  const csvUrl = `${baseUrl}/csv/${csvFilename}`;
+  const baseUrl = process.env.BASE_URL || 'http://localhost';
+  const port = parseInt(process.env.PORT || config.port);
+  const csvUrl = `${baseUrl}:${port}/csv/${csvFilename}`;
 
   return { url: csvUrl };
 }
