@@ -350,45 +350,45 @@ export function findQuizSessionById(sessionId: number): QuizSessions | undefined
 export function correctSessionStateForAction(state: QuizSessionState, action: string): boolean {
   if (state === QuizSessionState.ANSWER_SHOW) {
     if (!(action === QuizSessionAction.END || action === QuizSessionAction.NEXT_QUESTION || action === QuizSessionAction.GO_TO_FINAL_RESULTS)) {
-      return true;
+      return false;
     }
   }
 
   if (state === QuizSessionState.END) {
-    return true;
+    return false;
   }
 
   if (state === QuizSessionState.FINAL_RESULTS) {
     if (!(action === QuizSessionAction.END)) {
-      return true;
+      return false;
     }
   }
 
   if (state === QuizSessionState.LOBBY) {
     if (!(action === QuizSessionAction.END || action === QuizSessionAction.NEXT_QUESTION)) {
-      return true;
+      return false;
     }
   }
 
   if (state === QuizSessionState.QUESTION_CLOSE) {
     if (action === QuizSessionAction.SKIP_COUNTDOWN) {
-      return true;
+      return false;
     }
   }
 
   if (state === QuizSessionState.QUESTION_COUNTDOWN) {
     if (!(action === QuizSessionAction.SKIP_COUNTDOWN || action === QuizSessionAction.END)) {
-      return true;
+      return false;
     }
   }
 
   if (state === QuizSessionState.QUESTION_OPEN) {
     if (!(action === QuizSessionAction.END || action === QuizSessionAction.GO_TO_ANSWER)) {
-      return true;
+      return false;
     }
   }
 
-  return false;
+  return true;
 }
 
 /**

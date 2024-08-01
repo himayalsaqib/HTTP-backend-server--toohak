@@ -834,7 +834,7 @@ export function adminQuizSessionStateUpdate(quizId: number, sessionId: number, a
   }
 
   // action enum cannot be applied in the current state
-  if (correctSessionStateForAction(quizSession.state, action)) {
+  if (!correctSessionStateForAction(quizSession.state, action)) {
     throw new Error('The action cannot be applied in the current state of the session.');
   }
 
