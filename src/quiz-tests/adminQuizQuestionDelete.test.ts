@@ -275,8 +275,9 @@ describe('DELETE /v2/admin/quiz/:quizid/question/:questionid', () => {
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });
 
-    test.skip('Any session for this quiz is not in END state', () => {
-      // Call quiz session to create session and make it end state
+    test('Any session for this quiz is not in END state', () => {
+      // Start a session in lobby state
+      requestPost({}, `/v1/admin/quiz/${quizId}/session/start`, { token });
       const res = requestDelete({}, `/v2/admin/quiz/${quizId}/question/${questionId}`, { token });
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 400 });
     });

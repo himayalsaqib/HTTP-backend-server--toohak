@@ -79,6 +79,9 @@ describe('GET /v1/player/:playerid/results', () => {
     correctAnswerIds.push(quizInfoRes.retval.questions[1].answers[2].answerId);
     wrongAnswerId = quizInfoRes.retval.questions[1].answers[1].answerId;
 
+    // initialising body for start session route
+    startSessionBody = { autoStartNum: 0 };
+
     // starting a new session in LOBBY state
     const sessionResponse = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
     sessionId = sessionResponse.retval.sessionId;
@@ -111,7 +114,7 @@ describe('GET /v1/player/:playerid/results', () => {
   describe('Testing for correct return type (status code 200)', () => {
     const questionPosition = 1;
     test('Successfully returns results for a session', () => {
-      // player 1 and 2 submits answer to question 2 after 1 seconds
+      // player 1 and 2 submits answer to question 2 after 1 second
       sleepSync(1000);
       requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId}/question/${questionPosition + 1}/answer`);
       requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId2}/question/${questionPosition + 1}/answer`);
@@ -202,7 +205,7 @@ describe('GET /v1/player/:playerid/results', () => {
     });
 
     test('Successfully returns results where players tie for the final results', () => {
-      // player 2 submits answer to question 2 after 1 seconds
+      // player 2 submits answer to question 2 after 1 second
       sleepSync(1000);
       requestPut({ answerIds: [correctAnswerIds[1], correctAnswerIds[2]] }, `/v1/player/${playerId2}/question/${questionPosition + 1}/answer`);
 
