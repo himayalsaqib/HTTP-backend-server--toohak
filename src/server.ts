@@ -322,9 +322,6 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   } catch (error) {
     return res.status(400).json({ error: error.message });
   }
-
-  const response = adminQuizRemove(quizId);
-  res.json(response);
 });
 
 app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
