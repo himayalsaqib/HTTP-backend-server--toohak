@@ -36,7 +36,7 @@ describe('PUT /v1/admin/quiz/{quizid}/session/{sessionid}', () => {
     questionBody = {
       questionBody: {
         question: 'Who is your favourite artist\'s favourite artist?',
-        duration: 7,
+        duration: 3,
         points: 9,
         answers: [
           { answer: 'Chappell Roan', correct: true },
