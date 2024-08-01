@@ -115,7 +115,7 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
 
 /**
  * Get the status of a guest player that has already joined a session
- * 
+ *
  * @param {number} playerId
  * @returns {playerStatus} - returns status of player
  */
@@ -328,7 +328,7 @@ export function playerResults(playerId: number): FinalResults {
 
 /**
  * Allow a player to send a message during a session
- * 
+ *
  * @param {number} playerId
  * @param {Message} message
  * @returns {{}}
