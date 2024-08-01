@@ -1,3 +1,5 @@
+// includes helper functions for quiz.ts
+
 // ========================= QUIZ HELPER FUNCTIONS ========================== //
 
 import {

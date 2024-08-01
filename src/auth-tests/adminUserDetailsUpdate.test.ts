@@ -1,4 +1,4 @@
-// includes http tests for the route /v1/admin/user/details PUT
+// includes http tests for the route /v1/admin/user/details PUT and /v2/admin/user/details
 
 import { requestDelete, requestGet, requestPost, requestPut } from '../helper-files/requestHelper';
 

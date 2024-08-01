@@ -1,3 +1,5 @@
+// includes helper functions for auth.ts and other functions used by multiple files
+
 import { getData, Users } from '../dataStore';
 import crypto from 'crypto';
 
