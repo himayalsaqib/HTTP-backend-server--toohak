@@ -18,6 +18,7 @@ describe('GET /v1/player/:playerid/results', () => {
   let createBody: { questionBody: QuestionBody };
   let correctAnswerIds: number[];
   let wrongAnswerId: number;
+  let startSessionBody: { autoStartNum: number };
   let sessionId: number;
   let playerBody: { sessionId: number, name: string };
   let playerId: number;
@@ -78,8 +79,11 @@ describe('GET /v1/player/:playerid/results', () => {
     correctAnswerIds.push(quizInfoRes.retval.questions[1].answers[2].answerId);
     wrongAnswerId = quizInfoRes.retval.questions[1].answers[1].answerId;
 
+    // initialising body for start session route
+    startSessionBody = { autoStartNum: 0 };
+
     // starting a new session in LOBBY state
-    const sessionResponse = requestPost({}, `/v1/admin/quiz/${quizId}/session/start`, { token });
+    const sessionResponse = requestPost(startSessionBody, `/v1/admin/quiz/${quizId}/session/start`, { token });
     sessionId = sessionResponse.retval.sessionId;
 
     // player joins the session
