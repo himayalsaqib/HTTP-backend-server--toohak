@@ -171,23 +171,23 @@ describe('PUT /v1/player/{playerid}/question/{questionposition}/answer', () => {
     });
 
     test('Side effect: playerResults correctly shows playersCorrectList after resubmitting correct answer', () => {
-      const submitAns = { answerIds: [answerIds[1]] };
+      // player submits correct answer
+      const submitAns = { answerIds: [answerIds[0]] };
       const questionPosition = 1;
       const res = requestPut(submitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(res.retval).toStrictEqual({});
       expect(res.statusCode).toStrictEqual(200);
 
-      // Resubmitting the correct answer
-      const reSubmitAns = { answerIds: [answerIds[0]] };
+      // Resubmitting the wrong answer
+      const reSubmitAns = { answerIds: [answerIds[1]] };
       const newRes = requestPut(reSubmitAns, `/v1/player/${playerId}/question/${questionPosition}/answer`);
       expect(newRes.retval).toStrictEqual({});
       expect(newRes.statusCode).toStrictEqual(200);
 
       requestPut({ action: QuizSessionAction.GO_TO_ANSWER }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
-      // requestPut({ action: QuizSessionAction.GO_TO_FINAL_RESULTS }, `/v1/admin/quiz/${quizId}/session/${sessionId}`, { token });
 
       const resubmitRes = requestGet({}, `/v1/player/${playerId}/question/${questionPosition}/results`);
-      expect(resubmitRes.retval.playersCorrectList).toStrictEqual(['Player One']);
+      expect(resubmitRes.retval.playersCorrectList).toStrictEqual([]);
     });
 
     test('Correct return type after submiting multiple answers', () => {

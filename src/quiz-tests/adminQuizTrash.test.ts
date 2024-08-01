@@ -75,13 +75,13 @@ describe('GET /v1/admin/quiz/trash', () => {
 
     test('Returns errors when token is empty', () => {
       requestDelete({}, '/v1/clear');
-      const res = requestDelete({ token: token }, '/v1/admin/quiz/trash');
+      const res = requestGet({ token: token }, '/v1/admin/quiz/trash');
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
 
     test('Returns errors when sessionId is invalid', () => {
       const sessionId = parseInt(token) + 1;
-      const res = requestDelete({ token: sessionId.toString() }, '/v1/admin/quiz/trash');
+      const res = requestGet({ token: sessionId.toString() }, '/v1/admin/quiz/trash');
       expect(res).toStrictEqual({ retval: ERROR, statusCode: 401 });
     });
   });

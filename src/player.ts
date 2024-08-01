@@ -236,10 +236,7 @@ export function playerSubmitAnswer(playerId: number, questionPosition: number, b
     throw new Error('Less than 1 answer id submitted');
   }
 
-  const playerIndex = session.players.findIndex((player) => player.playerId === playerId);
-  if (playerIndex === -1) {
-    throw new Error('Player not found in session');
-  }
+  session.players.findIndex((player) => player.playerId === playerId);
 
   const answerTime = currentTime();
   const timeTaken = answerTime - (session.questionOpenTime || 0);
