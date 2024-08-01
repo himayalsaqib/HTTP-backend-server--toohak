@@ -671,12 +671,8 @@ app.get('/v1/admin/quiz/:quizid/sessions', (req: Request, res: Response) => {
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
-  try {
-    const response = adminQuizSessionsView(quizId);
-    res.json(response);
-  } catch (error) {
-    return res.status(400).json({ error: error.message });
-  }
+  const response = adminQuizSessionsView(quizId);
+  res.json(response);
 });
 
 // VERSION 2 //
