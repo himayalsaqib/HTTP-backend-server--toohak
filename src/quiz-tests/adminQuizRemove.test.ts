@@ -152,7 +152,7 @@ describe('DELETE /v2/admin/quiz/:quizid', () => {
       });
     });
 
-    describe('Testing other quiz errors', () => {
+    describe('Testing other quiz errors (status code 400)', () => {
       test('Any session for this quiz is not in END state', () => {
         const createQuiz = requestPost(quizBody, '/v2/admin/quiz', { token });
         const quizIdOne = createQuiz.retval.quizId;
