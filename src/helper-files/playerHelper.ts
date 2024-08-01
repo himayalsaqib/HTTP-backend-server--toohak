@@ -1,3 +1,5 @@
+// helper functions for player.ts
+
 // ======================== PLAYER HELPER FUNCTIONS ========================= //
 
 import { getData, QuizSessions } from '../dataStore';
@@ -6,7 +8,6 @@ import { findQuizSessionById } from './quizHelper';
 /**
  * Function generates a random name if player name is empty string
  *
- * @param {}
  * @returns {string} random name
  */
 export function generateRandomName(): string {
