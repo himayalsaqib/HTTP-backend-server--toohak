@@ -115,6 +115,7 @@ export function playerJoin(sessionId: number, name: string): { playerId: number 
 
 /**
  * Get the status of a guest player that has already joined a session
+ * 
  * @param {number} playerId
  * @returns {playerStatus} - returns status of player
  */
@@ -187,7 +188,7 @@ export function playerQuestionInformation(playerId: number, questionPosition: nu
  *
  * @param {number} playerId
  * @param {number} questionPosition
- * @param {{ answerIds: number[] }}
+ * @param {{ answerIds: number[] }} body
  * @returns {{}}
  */
 export function playerSubmitAnswer(playerId: number, questionPosition: number, body: { answerIds: number[] }): EmptyObject {
@@ -327,6 +328,7 @@ export function playerResults(playerId: number): FinalResults {
 
 /**
  * Allow a player to send a message during a session
+ * 
  * @param {number} playerId
  * @param {Message} message
  * @returns {{}}
