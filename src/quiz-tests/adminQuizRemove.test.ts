@@ -102,6 +102,8 @@ describe('DELETE /v2/admin/quiz/:quizid', () => {
   let userBody: { email: string, password: string, nameFirst: string, nameLast: string };
   let quizBody: { name: string, description: string };
   let token: string;
+  let answerBody: { answer: string, correct: boolean }[];
+  let questionBody: { question: string, duration: number, points: number, answers: { answer: string, correct: boolean }[] };
 
   describe('Testing for correct return type (status code 200)', () => {
     beforeEach(() => {
@@ -151,9 +153,31 @@ describe('DELETE /v2/admin/quiz/:quizid', () => {
     });
 
     describe('Testing other quiz errors', () => {
-      test.skip('Any session for this quiz is not in END state', () => {
-        // make a session not in end state
-        expect(requestDelete({}, '/v2/admin/quiz/:quizId', { token })).toStrictEqual({
+      test('Any session for this quiz is not in END state', () => {
+        const createQuiz = requestPost(quizBody, '/v2/admin/quiz', { token });
+        const quizIdOne = createQuiz.retval.quizId;
+        answerBody = [
+          { answer: 'Answer 1', correct: false },
+          { answer: 'Answer 2', correct: true },
+          { answer: 'Answer 3', correct: false },
+          { answer: 'Answer 4', correct: false }
+        ];
+
+        questionBody = {
+          question: 'Sample Question 1?',
+          duration: 30,
+          points: 10,
+          answers: answerBody
+        };
+
+        // Creating quiz question and answers
+        const createBody = { questionBody: questionBody };
+        requestPost(createBody, `/v2/admin/quiz/${quizIdOne}/question`, { token });
+
+        requestPost({}, `/v1/admin/quiz/${quizIdOne}/session/start`, { token });
+
+        const removeRes = requestDelete({}, `/v2/admin/quiz/${quizIdOne}`, { token });
+        expect(removeRes).toStrictEqual({
           retval: ERROR,
           statusCode: 400
         });

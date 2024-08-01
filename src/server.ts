@@ -316,6 +316,13 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
+  try {
+    const response = adminQuizRemove(quizId);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+
   const response = adminQuizRemove(quizId);
   res.json(response);
 });
@@ -848,8 +855,12 @@ app.delete('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
     return res.status(errorCheckResponse.code).json({ error: errorCheckResponse.error });
   }
 
-  const response = adminQuizRemove(quizId);
-  res.json(response);
+  try {
+    const response = adminQuizRemove(quizId);
+    res.json(response);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
 });
 
 app.post('/v2/admin/quiz/:quizid/question', (req: Request, res: Response) => {
