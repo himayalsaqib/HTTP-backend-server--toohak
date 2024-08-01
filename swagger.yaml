@@ -18,6 +18,8 @@ tags:
     description: Iteration 3 routes are a modification of iteration 1 and iteration 2 routes
   - name: "Iteration 3 (New)"
     description: Iteration 3 routes that are a mix of new routes as well as slightly modified routes from iteration 1 and 2
+  - name: "Interface Design HTTP Endpoints"
+    description: "HTTP endpoints for future capabilties of our proposed solutions to problems described as requirements"
 
 components:
   prim:
@@ -62,10 +64,10 @@ components:
       example: 2384
     Action:
       type: string
-      enum: [NEXT_QUESTION, SKIP_COUNTDOWN, GO_TO_ANSWER, GO_TO_FINAL_RESULTS, END]
+      enum: [NEXT_QUESTION, SKIP_COUNTDOWN, GO_TO_ANSWER, GO_TO_FINAL_RESULTS, GO_TO_SCORES, END]
     State:
       type: string
-      enum: [LOBBY, QUESTION_COUNTDOWN, QUESTION_OPEN, QUESTION_CLOSE, ANSWER_SHOW, FINAL_RESULTS, END]
+      enum: [LOBBY, QUESTION_COUNTDOWN, QUESTION_OPEN, QUESTION_CLOSE, ANSWER_SHOW, SCORE_SHOW, FINAL_RESULTS, END]
     Url:
       type: string
       example: http://google.com/some/image/path.jpg
@@ -76,6 +78,9 @@ components:
       type: integer
       example: 1683019484
       description: In seconds. You can find more information that here https://en.wikipedia.org/wiki/Unix_time
+    Subject:
+      type: string
+      enum: [MATHS, ENGLISH, SCIENCE, HISTORY, GEOGRAPHY, ARTS, SOCIAL STUDIES, PHYSICAL EDUCATION, LANGUAGES, MUSIC, TECH]
     QuizQuestion:
       type: string
       example: Who is the Monarch of England?
@@ -290,6 +295,27 @@ components:
         thumbnailUrl:
           $ref: '#/components/prim/Url'
 
+    QuizzesBrowsed:
+      type: array
+      items:
+        type: object
+        properties:
+          quizId:
+            $ref: '#/components/prim/QuizId'
+          owner:
+            type: string
+            example: Hayden Smith
+          name:
+            type: string
+            example: My Quiz Name
+          description: 
+            type: string
+            example: This quiz is so we can have a lot of fun
+          numQuestions:
+            $ref: '#/components/prim/NumQuestions'
+          duration:
+            $ref: '#/components/prim/QuizQuestionDuration'
+
     MessagePayload:
       type: object
       properties:
@@ -405,6 +431,21 @@ components:
       schema:
         type: string
         example: "[3,4,5,6,7]"
+    QuizSubject:
+      in: query
+      name: subject
+      required: true 
+      description: A valid subject from subject enum
+      schema:
+        type: string
+        example: "SCIENCE"
+    QuizBrowseKeywords:
+      in: query
+      name: keywords
+      required: true 
+      schema: 
+        type: string
+        example: My Quiz Name
   body:
     Token:
       in: body
@@ -721,6 +762,15 @@ components:
             type: integer
             example: 1
             description: Position 0 is the very beginning, position 1 is between the 1st and 2nd question, etc. So position n-1 is the final position where n is the number of questions
+    QuizSubject:
+      in: body
+      name: body
+      required: true 
+      schema:
+        type: object
+        properties:
+          subject:
+            $ref: '#/components/prim/Subject'
     QuizSessionStartIter3:
       in: body
       name: body
@@ -831,6 +881,11 @@ components:
       properties:
         newQuestionId:
           $ref: '#/components/prim/QuestionId'
+    QuizBrowse:
+      type: object
+      properties:
+        quizzes: 
+          $ref: '#/components/group/QuizzesBrowsed' 
     QuizSessionStart:
       type: object
       properties:
@@ -896,10 +951,21 @@ components:
           type: array
           items:
             $ref: '#/components/group/Message'
-
+    PlayerScores:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+            example: Jane
+            description: Name of a player
+          score:
+            type: number
+            example: 12
+            description: Score of a player
+    
 paths:
-
-
 
   /v1/admin/auth/register:
     post:
@@ -1153,7 +1219,7 @@ paths:
             $ref: '#/components/return/Error'
       security:
         - Iteration 3 Token Authentication: []
-        
+
 
 
 
@@ -2135,7 +2201,177 @@ paths:
             $ref: '#/components/return/Error'
       security:
         - Iteration 3 Token Authentication: []
-        
+
+  /v1/admin/quiz/{quizid}/public:
+    put:
+      summary: Update the quiz permissions
+      description: 
+        Update the quiz permissions so it is public. All quizzes set to private as default.
+        When this route is called, the timeLastEdited is updated.
+      tags:
+        # - "By Topic: Quiz Management"
+        - "Interface Design HTTP Endpoints"
+      parameters:
+        - $ref: '#/components/path/QuizId'
+        - $ref: '#/components/header/Token'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/components/return/Empty'
+        401:
+          description: Token is empty or invalid (does not refer to valid logged in user session)
+          schema:
+            $ref: '#/components/return/Error'
+        403:
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
+          schema:
+            $ref: '#/components/return/Error'
+      security:
+        - Iteration 3 Token Authentication: []
+  /v1/admin/quiz/{quizid}/subject:
+    put:
+      summary: Update the quiz subject
+      description: 
+        Update the subject of the quiz by passing in one of the subject options.
+        When this route is called, the timeLastEdited is updated.
+      tags:
+        # - "By Topic: Quiz Management"
+        - "Interface Design HTTP Endpoints"
+      parameters:
+        - $ref: '#/components/path/QuizId'
+        - $ref: '#/components/header/Token'
+        - $ref: '#/components/body/QuizSubject'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/components/return/Empty'
+        401:
+          description: Token is empty or invalid (does not refer to valid logged in user session)
+          schema:
+            $ref: '#/components/return/Error'
+        403:
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
+          schema:
+            $ref: '#/components/return/Error'
+        400:
+          description: |
+            If any of the following are true:
+            - Subject provided is not a valid Subject enum
+          schema:
+            $ref: '#/components/return/Error'
+      security:
+        - Iteration 3 Token Authentication: []
+  /v1/admin/quiz/{quizid}/session/{sessionid}/players:
+    delete:
+      summary: Delete a player from a quiz session
+      description: Remove a player from a quiz session.
+      tags:
+        # - "By Topic: Quiz Management"
+        - "Interface Design HTTP Endpoints"
+      parameters:
+        - $ref: '#/components/path/QuizId'
+        - $ref: '#/components/path/SessionId'
+        - $ref: '#/components/header/Token'
+        - in: query
+          name: playerName
+          description: Name of the player to be removed from the session
+          required: true
+          schema:
+            type: string
+            example: "Hayden"
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/components/return/Empty'
+        401:
+          description: Token is empty or invalid (does not refer to a valid logged in user session)
+          schema:
+            $ref: '#/components/return/Error'
+        403:
+          description: Valid token is provided, but user is not an owner of this quiz or quiz doesn't exist
+          schema:
+            $ref: '#/components/return/Error'
+        400:
+          description: |
+            If any of the following are true:
+            - The specified player does not exist in the session
+            - The session is not in LOBBY state
+          schema:
+            $ref: '#/components/return/Error'
+      security:
+        - Iteration 3 Token Authentication: []
+
+
+
+
+
+
+
+
+
+  /v1/admin/quiz/browse/subject:
+    get:
+      summary: Get quizzes on a specific subject
+      description: Get all of the public quizzes on the provided subject
+      tags:
+        # - "By Topic: Quiz Browsing"
+        - "Interface Design HTTP Endpoints"
+      parameters:
+        - $ref: '#/components/header/Token'
+        - $ref: '#/components/query/QuizSubject'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/components/return/QuizBrowse'
+        401:
+          description: Token is empty or invalid (does not refer to valid logged in user session)
+          schema:
+            $ref: '#/components/return/Error'
+        400:
+          description: |
+            If any of the following are true:
+            - Subject provided is not a valid Subject enum
+          schema:
+            $ref: '#/components/return/Error'
+      security:
+        - Iteration 3 Token Authentication: []
+
+  /v1/admin/quiz/browse:
+    get:
+      summary: Get quizzes based on a word or phrase
+      description: Get all of the public quizzes containing given word or phrase in the quiz name
+      tags:
+        # - "By Topic: Quiz Browsing"
+        - "Interface Design HTTP Endpoints"
+      parameters:
+        - $ref: '#/components/header/Token'
+        - $ref: '#/components/query/QuizBrowseKeywords'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/components/return/QuizBrowse'
+        401:
+          description: Token is empty or invalid (does not refer to valid logged in user session)
+          schema:
+            $ref: '#/components/return/Error'
+        400:
+          description: |
+            If any of the following are true:
+            - keywords is less than 3 characters or more than 30 characters long
+            - keywords contains invalid characters. Valid characters are alphanumeric and spaces
+          schema:
+            $ref: '#/components/return/Error'
+      security:
+        - Iteration 3 Token Authentication: []
+
+
+  
+
 
 
 
@@ -2349,15 +2585,6 @@ paths:
 
 
 
-
-
-
-
-
-
-
-
-
   /v1/player/join:
     post:
       summary: Allow a guest player to join a session
@@ -2541,7 +2768,36 @@ paths:
             - If message body is less than 1 character or more than 100 characters
           schema:
             $ref: '#/components/return/Error'
-      
+  
+  /v1/player/{playerid}/question/{questionposition}/score:
+    get:
+      summary: Lists the scores of all players
+      description: List the scores for all players in a session after a question has closed. QuestionPosition starts at 1.
+      tags:
+        # - "By Topic: Playing a Session"
+        - "Interface Design HTTP Endpoints"
+      parameters:
+        - $ref: '#/components/path/PlayerId'
+        - $ref: '#/components/path/QuestionPosition'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/components/return/PlayerScores'
+        400: 
+          description: |
+            If any of the following are true:
+            - session is not in SCORE_SHOW state
+            - questionPosition is not valid for the session
+            - playerId does not exist
+            - if session is not currently on this question
+          schema:
+            $ref: '#/components/return/Error'
+      security:
+          - Iteration 3 Token Authentication: []
+
+
+
 
 
   /v1/clear:
